@@ -1,0 +1,65 @@
+name: CI
+
+# 每次推送到 main / 每个 PR 都跑一遍：
+#   1. pytest 断言测试（拓扑配置、事件总线纯函数、前端本地化、接口契约）
+#   2. 全链路离线自检（同进程真起 API + 静态站，打 11 组真实 HTTP）
+#   3. 事件总线「差异驱动」专项验证
+#   4. 重跑 build_docs.py 并断言 docs/ 与源码一致（防止线上演示版悄悄过期）
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Run pytest
+        run: python -m pytest -q
+
+      - name: Full offline selftest (real HTTP, 11 groups)
+        run: python selftest_omni.py evidence/selftest-omni.txt
+
+      - name: Verify event bus is diff-driven
+        run: python verify_event_bus.py evidence/event-bus-diff.txt
+
+      - name: Rebuild docs and assert no drift
+        run: |
+          python build_docs.py
+          if ! git diff --quiet -- docs/; then
+            echo "::error::docs/ 与源码不同步 —— 请在本地重跑 build_docs.py 并提交结果"
+            git diff --stat -- docs/
+            exit 1
+          fi
+          echo "docs/ 与源码一致 ✅"
+
+      - name: Service readiness check (informational)
+        continue-on-error: true
+        run: python check_services.py
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidence
+          path: evidence/
+          if-no-files-found: warn

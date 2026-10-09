@@ -1,0 +1,94 @@
+# =========================================================================== #
+# OmniAgent Platform —— 微服务拓扑配置
+#
+# 这个文件是控制台唯一的「服务清单来源」。
+# 改端口、加服务、改事件总线标签，只需要动这里，不用改任何代码。
+#
+# 读取逻辑见 server.py 的 load_topology()：
+#   文件缺失 / PyYAML 未安装 / 解析失败 —— 一律回退到内置默认拓扑，
+#   控制台永远不会因为配置坏掉而启动不了（失败信息会记在 /api/v1/overview/stats 的
+#   config_source 字段里，方便排查）。
+# =========================================================================== #
+
+# ---- 端口探测参数（事件总线 / 大盘状态都用它）--------------------------- #
+probe:
+  interval_sec: 3.0      # 事件总线巡检周期（秒）
+  heartbeat_every: 4     # 连续无状态变化时，每 N 轮推一条「巡检心跳」
+  timeout_sec: 0.35      # 单次 TCP 连接探测超时（秒）
+
+# ---- 事件总线上显示的短标签：服务 id -> TAG ----------------------------- #
+event_tags:
+  ai-gateway: GATEWAY
+  ecom-ai-guide: ECOM-AGENT
+  coze-material-studio: MARKETING
+  ai-data-analysis-assistant: ANALYTICS
+  ai-knowledge-assistant: RAG
+  data-automation-workbench: COLLECTOR
+  ark_aigc_demo: FUNCLIP
+
+# ---- 7 大微服务矩阵 ----------------------------------------------------- #
+# 字段：id（唯一，事件标签按它索引）/ name / role / port / url / type
+#       desc（控制台卡片描述）/ tech（技术栈标注）
+services:
+  - id: ai-gateway
+    name: 企业 AI 统一网关
+    role: 流量总线与大模型调度
+    port: 8000
+    url: http://127.0.0.1:8000/dashboard
+    type: Infra
+    desc: 全域流量接管、虚拟 Key 路由、毫秒级主备热切与 Token 计量
+    tech: FastAPI + Redis + MCP
+
+  - id: ecom-ai-guide
+    name: 琼华珠宝 AI 智能导购
+    role: 核心业务 Agent
+    port: 8001
+    url: http://127.0.0.1:8001
+    type: Business
+    desc: 混合检索 + 工具调用 + 报错自纠错链路的多轮导购智能体
+    tech: LangGraph + SQLite + SSE
+
+  - id: coze-material-studio
+    name: 多平台爆款素材工作台
+    role: 内容营销 Agent
+    port: 8002
+    url: http://127.0.0.1:8002
+    type: Business
+    desc: Coze 工作流工程化封装，小红书/抖音营销图文生成与违禁词合规审查
+    tech: Coze API + FastAPI + 正则分词
+
+  - id: ai-data-analysis-assistant
+    name: AI 数据分析专家
+    role: 决策分析 Agent
+    port: 8510
+    url: http://127.0.0.1:8510
+    type: Data
+    desc: DuckDB + 本地 Ollama 驱动，自然语言 Text-to-SQL 与交互式动态图表看板
+    tech: Streamlit + DuckDB + Plotly
+
+  - id: ai-knowledge-assistant
+    name: 企业级智能知识库 (RAG)
+    role: 知识底座
+    port: 8501
+    url: http://127.0.0.1:8501
+    type: Infra
+    desc: 基于 Streamlit + 本地向量检索的高精度行业知识库，支持 PDF/Word 知识检索问答
+    tech: Streamlit + ChromaDB + RAG
+
+  - id: data-automation-workbench
+    name: 自动化情报抓取平台
+    role: 数据管道
+    port: 8765
+    url: http://127.0.0.1:8765
+    type: Data
+    desc: 独立轻量化情报抓取工作台，支持网页结构化采集、价格规则抽取与数据导出
+    tech: Python Native HTTP + SQLite
+
+  - id: ark_aigc_demo
+    name: 多模态音视频智能体 (FunClip)
+    role: 交互 Agent
+    port: 7860
+    url: http://127.0.0.1:7860
+    type: Innovation
+    desc: 基于 FunClip 的本地 AI 音视频自动化切片、多模态语音识别与字幕智能合成
+    tech: Gradio + PyTorch + FunASR

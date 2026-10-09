@@ -1,0 +1,161 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 790" width="1200" height="790" role="img" aria-label="OmniAgent Platform 架构总览">
+  <defs>
+    <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8"/>
+    </marker>
+    <marker id="arw-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#d97706"/>
+    </marker>
+    <style>
+      .t  { font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif; }
+      .h1 { font-size: 25px; font-weight: 700; fill: #0f172a; }
+      .h2 { font-size: 13px; font-weight: 600; fill: #0f172a; }
+      .bd { font-size: 12px; fill: #475569; }
+      .sm { font-size: 11px; fill: #64748b; }
+      .mono { font-family: Consolas, "Courier New", monospace; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1200" height="790" fill="#f1f5f9"/>
+
+  <!-- ============ 标题 ============ -->
+  <text class="t h1" x="40" y="46">OmniAgent Platform 2.0 · 架构总览</text>
+  <text class="t bd" x="40" y="70">一个控制台编排 7 个独立 AI 微服务；前端依赖全本地化，后端可选、可缺省、缺省时如实降级</text>
+
+  <!-- ============ Band 1: 控制台 ============ -->
+  <text class="t sm" x="40" y="104" font-weight="600">一、控制台本体</text>
+
+  <!-- 1) 前端 -->
+  <rect x="40" y="116" width="430" height="200" rx="14" fill="#ffffff" stroke="#cbd5e1"/>
+  <rect x="40" y="116" width="430" height="38" rx="14" fill="#f5f3ff"/>
+  <rect x="40" y="140" width="430" height="14" fill="#f5f3ff"/>
+  <circle cx="62" cy="135" r="6" fill="#7c3aed"/>
+  <text class="t h2" x="78" y="140">控制台前端 · 单页应用</text>
+  <text class="t mono sm" x="60" y="176">templates/index.html</text>
+  <g class="t">
+    <rect x="60" y="190" width="52" height="24" rx="12" fill="#ede9fe" stroke="#c4b5fd"/>
+    <text x="86" y="206" text-anchor="middle" font-size="11" fill="#6d28d9">总览</text>
+    <rect x="120" y="190" width="52" height="24" rx="12" fill="#ede9fe" stroke="#c4b5fd"/>
+    <text x="146" y="206" text-anchor="middle" font-size="11" fill="#6d28d9">网关</text>
+    <rect x="180" y="190" width="52" height="24" rx="12" fill="#ede9fe" stroke="#c4b5fd"/>
+    <text x="206" y="206" text-anchor="middle" font-size="11" fill="#6d28d9">导购</text>
+    <rect x="240" y="190" width="52" height="24" rx="12" fill="#ede9fe" stroke="#c4b5fd"/>
+    <text x="266" y="206" text-anchor="middle" font-size="11" fill="#6d28d9">营销</text>
+    <rect x="300" y="190" width="52" height="24" rx="12" fill="#ede9fe" stroke="#c4b5fd"/>
+    <text x="326" y="206" text-anchor="middle" font-size="11" fill="#6d28d9">分析</text>
+    <rect x="360" y="190" width="66" height="24" rx="12" fill="#ede9fe" stroke="#c4b5fd"/>
+    <text x="393" y="206" text-anchor="middle" font-size="11" fill="#6d28d9">知识库</text>
+  </g>
+  <text class="t bd" x="60" y="244">依赖全部本地化到 static/vendor/</text>
+  <text class="t bd" x="60" y="264">tailwind · chart.js · fontawesome —— 零外部 CDN</text>
+  <text class="t bd" x="60" y="284">断电断网也能正常渲染，不会白屏</text>
+
+  <!-- 2) 后端 -->
+  <rect x="490" y="116" width="370" height="200" rx="14" fill="#ffffff" stroke="#cbd5e1"/>
+  <rect x="490" y="116" width="370" height="38" rx="14" fill="#eff6ff"/>
+  <rect x="490" y="140" width="370" height="14" fill="#eff6ff"/>
+  <circle cx="512" cy="135" r="6" fill="#2563eb"/>
+  <text class="t h2" x="528" y="140">控制台后端 · FastAPI</text>
+  <text class="t mono bd" x="510" y="176">127.0.0.1:8888 （OMNI_PORT 可改）</text>
+  <text class="t bd" x="510" y="200">6 个业务 API</text>
+  <text class="t mono sm" x="510" y="220">/overview/stats · /guide/chat</text>
+  <text class="t mono sm" x="510" y="238">/marketing/generate · /analysis/query</text>
+  <text class="t mono sm" x="510" y="256">/gateway/simulate_failover（仿真）</text>
+  <text class="t bd" x="510" y="282">耗时全部 time.perf_counter() 实测</text>
+  <text class="t bd" x="510" y="302">拓扑来自 services.yaml（单一来源）</text>
+
+  <!-- 3) 事件总线 -->
+  <rect x="880" y="116" width="280" height="200" rx="14" fill="#ffffff" stroke="#cbd5e1"/>
+  <rect x="880" y="116" width="280" height="38" rx="14" fill="#ecfdf5"/>
+  <rect x="880" y="140" width="280" height="14" fill="#ecfdf5"/>
+  <circle cx="902" cy="135" r="6" fill="#059669"/>
+  <text class="t h2" x="918" y="140">中枢事件总线</text>
+  <text class="t mono sm" x="900" y="176">GET /api/v1/events/stream</text>
+  <text class="t bd" x="900" y="200">SSE · 差异驱动，不是滚动假日志</text>
+  <text class="t bd" x="900" y="226">每 3s 对 7 个端口做真实 TCP 探测</text>
+  <text class="t bd" x="900" y="246">与上一轮快照比对</text>
+  <text class="t bd" x="900" y="272">有变化 → 立刻推上线 / 下线事件</text>
+  <text class="t bd" x="900" y="292">无变化 → 每 4 轮推一次巡检心跳</text>
+
+  <!-- 箭头 1 -> 2 -->
+  <line x1="474" y1="216" x2="484" y2="216" stroke="#94a3b8" stroke-width="2" marker-end="url(#arw)"/>
+
+  <!-- 箭头 Band1 -> Band2 -->
+  <line x1="600" y1="320" x2="600" y2="356" stroke="#94a3b8" stroke-width="2" marker-end="url(#arw)"/>
+
+  <!-- ============ Band 2: 适配层 ============ -->
+  <text class="t sm" x="40" y="352" font-weight="600">二、双模式数据源适配层</text>
+  <rect x="40" y="364" width="1060" height="130" rx="14" fill="#ffffff" stroke="#cbd5e1"/>
+  <text class="t h2" x="60" y="392">static/omni-api.js —— 先试真的，真不了才用假的；当前模式始终显示在页面上</text>
+
+  <rect x="60" y="406" width="470" height="70" rx="10" fill="#f0fdf4" stroke="#86efac"/>
+  <text class="t" x="78" y="430" font-size="12" font-weight="600" fill="#047857">① 请求本地后端（2.5s 超时）成功</text>
+  <text class="t bd" x="78" y="452">用真实接口数据 · 顶栏点亮</text>
+  <text class="t mono" x="78" y="468" font-size="11" fill="#047857">本地服务已连接 N/7</text>
+
+  <rect x="570" y="406" width="510" height="70" rx="10" fill="#fffbeb" stroke="#fcd34d"/>
+  <text class="t" x="588" y="430" font-size="12" font-weight="600" fill="#b45309">② 失败 / 无后端（GitHub Pages、file://）</text>
+  <text class="t bd" x="588" y="452">降级到内置演示逻辑，页面依然可交互</text>
+  <text class="t mono" x="588" y="468" font-size="11" fill="#b45309">静态演示模式 · 内置样例数据</text>
+
+  <!-- 箭头 Band2 -> Band3 -->
+  <line x1="600" y1="498" x2="600" y2="534" stroke="#94a3b8" stroke-width="2" marker-end="url(#arw)"/>
+
+  <!-- ============ Band 3: 7 服务 ============ -->
+  <text class="t sm" x="40" y="530" font-weight="600">三、被编排的 7 个微服务（各自独立仓库 / 各占一个端口，不依赖它们是否在线）</text>
+
+  <!-- row 1 -->
+  <g>
+    <rect x="40" y="544" width="270" height="100" rx="12" fill="#ffffff" stroke="#cbd5e1"/>
+    <text class="t mono" x="58" y="572" font-size="15" font-weight="700" fill="#2563eb">:8000</text>
+    <text class="t bd" x="58" y="598">企业 AI 统一网关</text>
+    <text class="t sm" x="58" y="618">Infra · 流量总线与模型调度</text>
+    <text class="t sm" x="58" y="634">FastAPI + Redis + MCP</text>
+
+    <rect x="326" y="544" width="270" height="100" rx="12" fill="#ffffff" stroke="#cbd5e1"/>
+    <text class="t mono" x="344" y="572" font-size="15" font-weight="700" fill="#2563eb">:8001</text>
+    <text class="t bd" x="344" y="598">琼华珠宝 AI 智能导购</text>
+    <text class="t sm" x="344" y="618">Business · 核心业务 Agent</text>
+    <text class="t sm" x="344" y="634">LangGraph + SQLite + SSE</text>
+
+    <rect x="612" y="544" width="270" height="100" rx="12" fill="#ffffff" stroke="#cbd5e1"/>
+    <text class="t mono" x="630" y="572" font-size="15" font-weight="700" fill="#2563eb">:8002</text>
+    <text class="t bd" x="630" y="598">多平台爆款素材工作台</text>
+    <text class="t sm" x="630" y="618">Business · 内容营销 Agent</text>
+    <text class="t sm" x="630" y="634">Coze API + FastAPI</text>
+
+    <rect x="898" y="544" width="262" height="100" rx="12" fill="#ffffff" stroke="#cbd5e1"/>
+    <text class="t mono" x="916" y="572" font-size="15" font-weight="700" fill="#2563eb">:8510</text>
+    <text class="t bd" x="916" y="598">AI 数据分析专家</text>
+    <text class="t sm" x="916" y="618">Data · 决策分析 Agent</text>
+    <text class="t sm" x="916" y="634">Streamlit + DuckDB + Plotly</text>
+  </g>
+
+  <!-- row 2 -->
+  <g>
+    <rect x="40" y="660" width="270" height="100" rx="12" fill="#ffffff" stroke="#cbd5e1"/>
+    <text class="t mono" x="58" y="688" font-size="15" font-weight="700" fill="#2563eb">:8501</text>
+    <text class="t bd" x="58" y="714">企业级智能知识库（RAG）</text>
+    <text class="t sm" x="58" y="734">Infra · 知识底座</text>
+    <text class="t sm" x="58" y="750">Streamlit + ChromaDB</text>
+
+    <rect x="326" y="660" width="270" height="100" rx="12" fill="#ffffff" stroke="#cbd5e1"/>
+    <text class="t mono" x="344" y="688" font-size="15" font-weight="700" fill="#2563eb">:8765</text>
+    <text class="t bd" x="344" y="714">自动化情报抓取平台</text>
+    <text class="t sm" x="344" y="734">Data · 数据管道</text>
+    <text class="t sm" x="344" y="750">Python HTTP + SQLite</text>
+
+    <rect x="612" y="660" width="270" height="100" rx="12" fill="#ffffff" stroke="#cbd5e1"/>
+    <text class="t mono" x="630" y="688" font-size="15" font-weight="700" fill="#2563eb">:7860</text>
+    <text class="t bd" x="630" y="714">多模态音视频智能体</text>
+    <text class="t sm" x="630" y="734">Innovation · 交互 Agent</text>
+    <text class="t sm" x="630" y="750">Gradio + PyTorch + FunASR</text>
+
+    <rect x="898" y="660" width="262" height="100" rx="12" fill="#f8fafc" stroke="#cbd5e1" stroke-dasharray="5 4"/>
+    <text class="t" x="916" y="690" font-size="12" font-weight="600" fill="#047857">● 绿色 = 端口探测在线</text>
+    <text class="t sm" x="916" y="714">○ 灰色 = 未启动</text>
+    <text class="t sm" x="916" y="738">控制台自身不受影响，</text>
+    <text class="t sm" x="916" y="754">只是在顶栏如实标注在线数</text>
+  </g>
+
+</svg>

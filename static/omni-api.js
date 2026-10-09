@@ -67,6 +67,7 @@
       trace: steps,
       self_corrected: selfCorrected,
       model: '本地规则引擎（离线降级）',
+      backend: 'fallback:local-demo',
       latency_ms: Math.round(performance.now() - t0)
     });
   }

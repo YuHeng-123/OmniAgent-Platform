@@ -66,14 +66,17 @@ async def is_port_online(port: int, timeout: float = 0.35) -> bool:
 
 
 async def scan_ports(ports: List[int]) -> Dict[int, bool]:
-    results = await asyncio.gather(*(is_port_online(p) for p in ports))
+    results = await asyncio.gather(*(is_port_online(p, PROBE_TIMEOUT) for p in ports))
     return dict(zip(ports, results))
 
 
 # --------------------------------------------------------------------------- #
-# 核心拓扑数据：7 大微服务矩阵
+# 核心拓扑：从 services.yaml 读取（缺失 / 解析失败时回退到内置默认）
 # --------------------------------------------------------------------------- #
-SERVICES_META = [
+CONFIG_PATH = os.path.join(BASE_DIR, "services.yaml")
+
+# 内置默认拓扑 —— services.yaml 读不到时的兜底，保证控制台永远能起来
+_BUILTIN_SERVICES = [
     {
         "id": "ai-gateway", "name": "企业 AI 统一网关", "role": "流量总线与大模型调度",
         "port": 8000, "url": "http://127.0.0.1:8000/dashboard", "type": "Infra",
@@ -118,7 +121,73 @@ SERVICES_META = [
     },
 ]
 
+_BUILTIN_EVENT_TAGS = {
+    "ai-gateway": "GATEWAY",
+    "ecom-ai-guide": "ECOM-AGENT",
+    "coze-material-studio": "MARKETING",
+    "ai-data-analysis-assistant": "ANALYTICS",
+    "ai-knowledge-assistant": "RAG",
+    "data-automation-workbench": "COLLECTOR",
+    "ark_aigc_demo": "FUNCLIP",
+}
+
+_BUILTIN_PROBE = {"interval_sec": 3.0, "heartbeat_every": 4, "timeout_sec": 0.35}
+
+
+def load_topology(path: str = CONFIG_PATH):
+    """读取 services.yaml，返回 (services, event_tags, probe, source)。
+
+    文件缺失 / PyYAML 未安装 / 解析失败 —— 一律回退内置默认，控制台永不因配置坏掉而
+    启动不能；source 会出现在 /api/v1/overview/stats 里，方便一眼看出拓扑是从哪来的。
+    """
+    try:
+        import yaml
+    except ImportError:
+        return (list(_BUILTIN_SERVICES), dict(_BUILTIN_EVENT_TAGS), dict(_BUILTIN_PROBE),
+                "builtin-defaults (PyYAML 未安装)")
+    if not os.path.isfile(path):
+        return (list(_BUILTIN_SERVICES), dict(_BUILTIN_EVENT_TAGS), dict(_BUILTIN_PROBE),
+                "builtin-defaults (services.yaml 不存在)")
+    try:
+        with open(path, encoding="utf-8") as fh:
+            raw = yaml.safe_load(fh) or {}
+        items = raw.get("services") or []
+        cleaned = []
+        for s in items:
+            if not isinstance(s, dict) or "id" not in s or "port" not in s:
+                raise ValueError("services 条目缺少 id / port：%r" % (s,))
+            cleaned.append({
+                "id": str(s["id"]),
+                "name": str(s.get("name") or s["id"]),
+                "role": str(s.get("role") or ""),
+                "port": int(s["port"]),
+                "url": str(s.get("url") or ""),
+                "type": str(s.get("type") or "Business"),
+                "desc": str(s.get("desc") or ""),
+                "tech": str(s.get("tech") or ""),
+            })
+        if not cleaned:
+            raise ValueError("services 列表为空")
+        tags = {str(k): str(v) for k, v in (raw.get("event_tags") or {}).items()}
+        probe = dict(_BUILTIN_PROBE)
+        raw_probe = raw.get("probe") or {}
+        for key in ("interval_sec", "heartbeat_every", "timeout_sec"):
+            if key in raw_probe:
+                probe[key] = raw_probe[key]
+        probe["interval_sec"] = float(probe["interval_sec"])
+        probe["timeout_sec"] = float(probe["timeout_sec"])
+        probe["heartbeat_every"] = int(probe["heartbeat_every"])
+        return cleaned, tags, probe, "services.yaml"
+    except Exception as exc:  # noqa: BLE001 —— 配置坏了也不能拖垮控制台
+        return (list(_BUILTIN_SERVICES), dict(_BUILTIN_EVENT_TAGS), dict(_BUILTIN_PROBE),
+                "builtin-defaults (services.yaml 解析失败: %s)" % exc)
+
+
+SERVICES_META, EVENT_TAGS, PROBE, CONFIG_SOURCE = load_topology()
 ALL_PORTS = [s["port"] for s in SERVICES_META]
+PROBE_TIMEOUT = PROBE["timeout_sec"]
+EVENT_INTERVAL_SEC = PROBE["interval_sec"]
+HEARTBEAT_EVERY = PROBE["heartbeat_every"]
 
 
 # --------------------------------------------------------------------------- #
@@ -167,6 +236,11 @@ async def get_overview_stats():
         "total_tokens": "1.48M",
         "knowledge_hit_rate": "95.6%",
         "cost_saved_usd": "$48.20",
+        # 拓扑来源 + 指标来源都如实标出来：
+        #   拓扑来自 services.yaml（或内置默认），是真实的；
+        #   下面这 4 个指标是演示样例数据，前端会标注，避免被当成实盘数字。
+        "config_source": CONFIG_SOURCE,
+        "metrics_source": "demo-sample",
         "services": services,
     }
 
@@ -179,19 +253,7 @@ async def get_overview_stats():
 #   · 状态发生变化（上线/下线）→ 立刻推一条事件
 #   · 连续无变化 → 每 HEARTBEAT_EVERY 轮推一条巡检心跳
 # 所以演示时把一个服务停掉，面板上会真的出现"下线"事件。
-EVENT_INTERVAL_SEC = 3.0
-HEARTBEAT_EVERY = 4
-
-# 事件总线上显示用的短标签（与前端着色调色板对应）
-EVENT_TAGS = {
-    "ai-gateway": "GATEWAY",
-    "ecom-ai-guide": "ECOM-AGENT",
-    "coze-material-studio": "MARKETING",
-    "ai-data-analysis-assistant": "ANALYTICS",
-    "ai-knowledge-assistant": "RAG",
-    "data-automation-workbench": "COLLECTOR",
-    "ark_aigc_demo": "FUNCLIP",
-}
+# 巡检周期、心跳频率、探测超时都来自 services.yaml 的 probe 段（见上方 load_topology）。
 
 
 def _sse(payload: Dict[str, Any]) -> str:
@@ -203,25 +265,56 @@ def _ts() -> str:
     return time.strftime("%H:%M:%S")
 
 
+def build_initial_events(prev: Dict[int, bool]) -> List[Dict[str, Any]]:
+    """打开事件流时立刻推送的首帧：1 条接入说明 + 每个服务一条就绪播报。
+
+    抽成纯函数是为了可测 —— 喂一份端口快照即可断言输出，不必真开一条 SSE 长连接
+    （长连接在 Windows + TestClient 下会阻塞）。
+    """
+    online = sum(1 for v in prev.values() if v)
+    events: List[Dict[str, Any]] = [{
+        "ts": _ts(), "tag": "MASTER", "level": "info",
+        "msg": ("事件总线接入成功：本流由真实 TCP 端口探测驱动，每 %.0fs 巡检一次，"
+                "当前在线 %d/%d。" % (EVENT_INTERVAL_SEC, online, len(ALL_PORTS))),
+    }]
+    for s in SERVICES_META:
+        up = prev.get(s["port"])
+        events.append({
+            "ts": _ts(),
+            "tag": EVENT_TAGS.get(s["id"], s["id"].upper()),
+            "level": "ok" if up else "warn",
+            "msg": ("%s（:%d）已就绪。" % (s["name"], s["port"])) if up
+                   else ("%s（:%d）未响应，标记为离线。" % (s["name"], s["port"])),
+        })
+    return events
+
+
+def diff_events(prev: Dict[int, bool], cur: Dict[int, bool]) -> List[Dict[str, Any]]:
+    """比对两轮端口快照，仅返回「状态发生变化」的服务对应的事件（无变化 → 空列表）。
+
+    这是「事件由真实差异驱动、而非定时文本播报」的核心逻辑，单独抽出来便于断言。
+    """
+    events: List[Dict[str, Any]] = []
+    for s in SERVICES_META:
+        was, now = prev.get(s["port"]), cur.get(s["port"])
+        if was == now:
+            continue
+        events.append({
+            "ts": _ts(), "tag": "HEALTH",
+            "level": "ok" if now else "err",
+            "msg": "%s（:%d）状态变化：%s%s" % (
+                s["name"], s["port"], "上线" if now else "下线",
+                "，已重新纳入调度。" if now else "，流量已摘除。"),
+        })
+    return events
+
+
 @app.get("/api/v1/events/stream")
 async def events_stream(request: Request):
     async def gen():
         prev = await scan_ports(ALL_PORTS)
-        online = sum(1 for v in prev.values() if v)
-        yield _sse({
-            "ts": _ts(), "tag": "MASTER", "level": "info",
-            "msg": ("事件总线接入成功：本流由真实 TCP 端口探测驱动，每 %.0fs 巡检一次，"
-                    "当前在线 %d/%d。" % (EVENT_INTERVAL_SEC, online, len(ALL_PORTS))),
-        })
-        for s in SERVICES_META:
-            up = prev.get(s["port"])
-            yield _sse({
-                "ts": _ts(),
-                "tag": EVENT_TAGS.get(s["id"], s["id"].upper()),
-                "level": "ok" if up else "warn",
-                "msg": ("%s（:%d）已就绪。" % (s["name"], s["port"])) if up
-                       else ("%s（:%d）未响应，标记为离线。" % (s["name"], s["port"])),
-            })
+        for ev in build_initial_events(prev):
+            yield _sse(ev)
 
         cycle = 0
         while True:
@@ -230,20 +323,10 @@ async def events_stream(request: Request):
                 break
             cycle += 1
             cur = await scan_ports(ALL_PORTS)
-            changed = 0
-            for s in SERVICES_META:
-                was, now = prev.get(s["port"]), cur.get(s["port"])
-                if was == now:
-                    continue
-                changed += 1
-                yield _sse({
-                    "ts": _ts(), "tag": "HEALTH",
-                    "level": "ok" if now else "err",
-                    "msg": "%s（:%d）状态变化：%s%s" % (
-                        s["name"], s["port"], "上线" if now else "下线",
-                        "，已重新纳入调度。" if now else "，流量已摘除。"),
-                })
-            if changed == 0 and cycle % HEARTBEAT_EVERY == 0:
+            changed = diff_events(prev, cur)
+            for ev in changed:
+                yield _sse(ev)
+            if not changed and cycle % HEARTBEAT_EVERY == 0:
                 n = sum(1 for v in cur.values() if v)
                 yield _sse({
                     "ts": _ts(), "tag": "HEALTH", "level": "info",

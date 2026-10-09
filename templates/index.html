@@ -411,16 +411,16 @@
                             </div>
                         </div>
 
-                        <!-- 架构指标 -->
+                        <!-- 架构指标（全部为运行时实测/实报，不留写死的假数） -->
                         <div class="mt-4 p-3 rounded-xl bg-dark-900 border border-dark-border text-xs font-mono space-y-1.5 text-slate-400">
                             <div class="flex justify-between">
                                 <span>推演框架：</span><span class="text-slate-200">LangGraph 反思状态机</span>
                             </div>
                             <div class="flex justify-between">
-                                <span>单步耗时：</span><span id="guide-latency" class="text-accent-cyan">38 ms</span>
+                                <span>单步耗时：</span><span id="guide-latency" class="text-accent-cyan">—</span>
                             </div>
                             <div class="flex justify-between">
-                                <span>驱动模型：</span><span class="text-accent-emerald">DeepSeek-V3 / Flash</span>
+                                <span>应答来源：</span><span id="guide-backend" class="text-slate-500">—</span>
                             </div>
                         </div>
                     </div>
@@ -884,7 +884,19 @@
                     badge.classList.add('hidden');
                 }
 
-                document.getElementById('guide-latency').innerText = (data.latency_ms || 38) + ' ms';
+                // 单步耗时：用后端实测值；拿不到就显示 "—"，不预设假数
+                const lat = document.getElementById('guide-latency');
+                if (lat) lat.innerText = (data.latency_ms === undefined || data.latency_ms === null)
+                    ? '—' : (data.latency_ms + ' ms');
+
+                // 应答来源：live:xxx = 真上游，fallback:xxx = 本地兜底 —— 直接摊开给用户看
+                const be = document.getElementById('guide-backend');
+                if (be) {
+                    const src = data.backend || 'unknown';
+                    be.innerText = src;
+                    be.className = (src.indexOf('live:') === 0)
+                        ? 'text-accent-emerald' : 'text-accent-amber';
+                }
                 guideHistory.push({ role: 'user', content: msg }, { role: 'assistant', content: data.reply });
 
             } catch (err) {

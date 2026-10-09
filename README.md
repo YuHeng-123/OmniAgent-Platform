@@ -2,19 +2,34 @@
 
 把 **7 个各自独立的 AI 微服务**，收进一个统一控制台 —— 一个页面看清整个 Agent 集群的拓扑、在线状态与业务闭环。
 
-```
-┌──────────────────────────────────────────────────────────────┐
-│  控制台 (FastAPI 8888 / 或纯静态托管)                          │
-│  ├─ 总览     7 个微服务实时在线状态                            │
-│  ├─ 网关     主备毫秒级热切仿真                                │
-│  ├─ 导购     LangGraph 导购 Agent（含自纠错链路）              │
-│  ├─ 营销     Coze 工作流 + 广告法违禁词合规质检                │
-│  ├─ 分析     Text-to-SQL + 动态图表                            │
-│  └─ 知识库   RAG 检索问答                                      │
-└──────────────────────────────────────────────────────────────┘
-```
+![python](https://img.shields.io/badge/python-3.10%2B-blue)
+![frontend deps](https://img.shields.io/badge/frontend%20deps-100%25%20local-brightgreen)
+![external CDN](https://img.shields.io/badge/external%20CDN-0-critical)
+![tests](https://img.shields.io/badge/pytest-40%20passed-brightgreen)
+
+<!-- 推到 GitHub 后，把下面这行取消注释，并把 <你的用户名> 换成你的 GitHub 用户名，就有实时 CI 徽章了
+[![CI](https://github.com/<你的用户名>/OmniAgent-Platform/actions/workflows/ci.yml/badge.svg)](https://github.com/<你的用户名>/OmniAgent-Platform/actions/workflows/ci.yml)
+-->
+
+![架构总览](assets/architecture.svg)
 
 ---
+
+## 60 秒看懂
+
+控制台就 6 个页面，每个页面都能真的点、真的出结果：
+
+| 页面 | 它演示什么 |
+|---|---|
+| 总览 | 7 个微服务的实时在线状态 + 一条**真实 TCP 探测驱动**的事件总线 |
+| 网关 | 主备毫秒级热切**仿真**（不真去熔断某个上游，响应里自带 `simulated: true`） |
+| 导购 | 多轮导购 Agent：优先真连 `:8001` 并解析它的 SSE 流，连不上才降级；含一条自纠错链路 |
+| 营销 | 小红书 / 抖音 / 私域 三平台文案生成 + 《广告法》违禁词合规质检 |
+| 分析 | 自然语言 → Text-to-SQL → 动态图表 |
+| 知识库 | RAG 检索问答的形态演示 |
+
+**它是什么**：一套「Agent 集群编排」的可运行演示 —— 拓扑配置化、前后端真接口、断网自动降级、有断言测试、有 CI。
+**它不是什么**：那 7 个微服务本身不在本仓库；页面里的经营数据是**构造的样例数据**（接口 `metrics_source: demo-sample` 如实标注）。
 
 ## 两种打开方式（都是真的能跑）
 
@@ -125,14 +140,21 @@ GET /api/v1/events/stream   (text/event-stream)
 .venv/Scripts/python verify_event_bus.py     # → evidence/event-bus-diff.txt
 ```
 
-它把底层 `scan_ports` 做注入：第 1 轮全在线、第 2 轮把 `:7860` 置为离线，
-然后断言流里**确实出现了「状态变化：下线」**。实测输出：
+它把底层 `scan_ports` 做注入：第 1 轮取真实探测结果，第 2 轮起把 `:7860` 的在线状态**翻转**，
+然后断言流里**确实出现了一条由差异触发的状态变化事件**。
+
+> 为什么是「翻转」而不是「置为离线」：脚本必须和运行环境无关 ——
+> 你机器上 7 个服务开着，就翻成下线（验下线事件）；一个都没起，就翻成上线（验上线事件）。
+> 两个方向都能证明事件是差异驱动的。**这个坑是实测踩出来的**：原来的写法硬编码「置为离线」，
+> 在一台 7 个服务全没起的机器上会永远等不到变化，把好好的代码验成 FAIL。
+
+实测输出（那一次本机 7 个服务都没起，所以注入方向是「上线」）：
 
 ```
-T+ 0.0s  [MASTER  ] (info) 事件总线接入成功：…当前在线 7/7
-T+ 0.0s  [FUNCLIP ] (ok)   多模态音视频智能体 (FunClip)（:7860）已就绪。
-T+ 3.0s  [HEALTH  ] (err)  多模态音视频智能体 (FunClip)（:7860）状态变化：下线，流量已摘除。
-T+12.1s  [HEALTH  ] (info) 全局健康巡检完成，6/7 在线，本轮无状态变化。
+T+ 0.4s  [MASTER  ] (info) 事件总线接入成功：…当前在线 0/7
+T+ 0.4s  [FUNCLIP ] (warn) 多模态音视频智能体 (FunClip)（:7860）未响应，标记为离线。
+T+ 3.8s  [HEALTH  ] (ok)   多模态音视频智能体 (FunClip)（:7860）状态变化：上线，已重新纳入调度。
+T+13.9s  [HEALTH  ] (info) 全局健康巡检完成，0/7 在线，本轮无状态变化。
 结论: PASS —— 事件确实由状态差异驱动，非定时文本播报
 ```
 
@@ -141,31 +163,43 @@ T+12.1s  [HEALTH  ] (info) 全局健康巡检完成，6/7 在线，本轮无状�
 
 ---
 
-## 2.0 相对 1.0 改了什么（每条都有实测）
+## 2.0 / 2.1 相对 1.0 改了什么（每条都有实测）
 
-| # | 1.0 的问题 | 2.0 的做法 |
+| # | 1.0 的问题 | 现在的做法 |
 |---|---|---|
 | 1 | 导购接口接了 8001 却 `pass` 丢弃结果，页面回的是写死的套话 | 真解析 SSE 流；失败才降级，且 `backend` 如实标注 |
-| 2 | `latency_ms` 是写死的常数（38 / 22 / 42） | 全部 `time.perf_counter()` 实测 |
+| 2 | `latency_ms` 是写死的常数（38 / 22 / 42） | 全部 `time.perf_counter()` 实测；前端拿不到就显示 `—`，不预设假数 |
 | 3 | 前端 4 个 CDN（tailwind / fontawesome / chart.js / Google Fonts），断网即白屏 | 全部本地化到 `static/vendor/`，改系统字体栈，**零外部请求** |
-| 4 | 假模型名 `Gemini-3.8-Flash` | 移除编造模型名 |
+| 4 | 假模型名 `Gemini-3.8-Flash` | 移除编造模型名（pytest 里有断言防回归） |
 | 5 | 同步 socket 探测端口阻塞 async 事件循环 | `asyncio.open_connection` + `asyncio.gather` 并发探测 |
 | 6 | CORS `allow_origins=["*"]` + `credentials=True`（浏览器规范禁止） | `allow_credentials=False` |
 | 7 | 只能在本地跑，无法静态演示 | 新增 `docs/` 纯静态版 + `build_docs.py` 构建脚本 |
 | 8 | 事件总线是**写死的 6 行文本**（时间戳永远停在 `19:15:02`），标着 LIVE 却永不刷新 | 改为真 SSE 差异驱动流（见上一节）；降级时角标明确写「示例事件流」 |
+| 9 | 7 个服务的端口/名称/事件标签硬编码在 `server.py`，加服务得改代码 | 抽到 `services.yaml`；坏配置自动回退内置默认，`/overview/stats` 里的 `config_source` 可直接看出拓扑来自哪 |
+| 10 | 没有任何自动化测试，改动靠人肉点页面 | **40 条 pytest 断言**（拓扑 / 事件总线纯函数 / 前端本地化 / API 契约 / docs 一致性）+ GitHub Actions CI |
+| 11 | `docs/` 是手工产物，容易和源码悄悄脱节 | CI 每次重跑 `build_docs.py` 再 `git diff --exit-code -- docs/` 断言无漂移 |
+| 12 | 导购页硬写「驱动模型：DeepSeek-V3 / Flash」、单步耗时预设 `38 ms` | 假模型名删除；耗时改为「实测值，拿不到显示 `—`」；新增**应答来源**直接显示 `live:` / `fallback:` |
+| 13 | 冗余脚本 `start.bat`、`start_all_services.py`（指向并不存在的 `:9999`）、3 个 `.bak` | 清理；`start_all_services.py` 换成读 `services.yaml` 的 `check_services.py` 就绪检查 |
 
 ---
 
-## 实测证据
+## 测试与 CI
 
-`evidence/selftest-omni.txt` 由 `selftest_omni.py` 生成，**一次跑完 11 组真实 HTTP 校验**（同进程起 API + 起静态站，不依赖长驻服务）：
+三层验证，每一层都能在本地一条命令跑完：
 
-```bash
-.venv/Scripts/python selftest_omni.py       # 全链路自检
-.venv/Scripts/python verify_event_bus.py    # 事件总线差异驱动专项验证
-```
+| 层 | 命令 | 验什么 |
+|---|---|---|
+| ① 断言测试 | `.venv/Scripts/python -m pytest -q` | 拓扑加载与坏配置回退 · 事件总线纯函数 · 前端 0 外部 CDN · docs 与源码一致 · 6 个 API 的响应契约 · SSE 首帧 |
+| ② 全链路自检 | `.venv/Scripts/python selftest_omni.py` | 同进程起 API + 起静态站，打 **11 组真实 HTTP**，结果落 `evidence/selftest-omni.txt` |
+| ③ 事件总线专项 | `.venv/Scripts/python verify_event_bus.py` | 注入式端口探测，断言「停掉一个服务 → 流里真的出现下线事件」 |
 
-覆盖：主控台渲染 · 0 外部 CDN · 7 服务在线数 · 导购降级链路 · 自纠错链路 · 合规质检命中违禁词 · Text-to-SQL · 热切仿真 · docs 静态资源全部 200 · 静态化自检 · **SSE 事件总线首帧 8 条真实事件**。
+CI（`.github/workflows/ci.yml`）在每次 push / PR 上跑：pytest → 全链路自检 → 事件总线专项验证 → **重跑 `build_docs.py` 并断言 `docs/` 无漂移** → 上传 evidence 为 artifact。
+`docs/` 漂移检查是刻意的：静态演示版一旦和源码脱节，线上看到的就不是这份代码的行为。
+
+> 一个实测出来的坑：pytest 里**不能**用 `TestClient` 去读 SSE —— 本机实测 Starlette 的 TestClient 读到无限流会一直阻塞不返回。
+> 所以事件总线这块拆成两种测法：`build_initial_events` / `diff_events` 抽成纯函数直接断言；端到端则真起一个 uvicorn 线程（见 `tests/conftest.py`）。
+
+第 ② 层覆盖：主控台渲染 · 0 外部 CDN · 7 服务在线数 · 导购降级链路 · 自纠错链路 · 合规质检命中违禁词 · Text-to-SQL · 热切仿真 · docs 静态资源全部 200 · 静态化自检 · **SSE 事件总线首帧 8 条真实事件**。
 
 ---
 
@@ -174,7 +208,9 @@ T+12.1s  [HEALTH  ] (info) 全局健康巡检完成，6/7 在线，本轮无状�
 这个仓库是我（作者）用来**演示 Agent 集群编排形态**的控制台，以下几点如实说明：
 
 - **控制台的业务数据是演示数据。** 营销文案、SQL 结果、GMV 数字、热切延迟，都是本地生成的样例，不是某家公司的真实经营数据。
-- **`/api/v1/gateway/simulate_failover` 是仿真端点**，它不真的去熔断某个上游，只演示「主备热切」这个形态。
+- **网关 `:8000` 没有接真实的大模型 API。** 所以导购链路里凡标注 `backend: "fallback:local-demo"` 的回答，都是**本地规则引擎**按关键词拼出来的文本，不是模型生成的；响应里的 `model` 字段会如实写成「本地规则引擎（离线降级）」，不冒充某个模型名。
+- **页面里不存在编造的模型名。** 1.0 曾在导购页硬写 `Gemini-3.8-Flash`，2.0 已移除，并且 pytest 里有一条断言专门防止它回归。
+- **`/api/v1/gateway/simulate_failover` 是仿真端点**，它不真的去熔断某个上游，只演示「主备热切」这个形态；响应里自带 `"simulated": true`。
 - **7 个微服务是独立项目**，不在本仓库内。本仓库是控制台 + 编排层。想看真实链路，需要各自把服务起起来。
 - **端口探测只探本机 `127.0.0.1`**，不做远程服务发现。
 - **事件总线的心跳是 12s 一次**（3s 探测 × 4 轮），只有状态**变化**才实时推送 —— 这是刻意压掉刷屏，不是采样不到。
@@ -187,11 +223,19 @@ T+12.1s  [HEALTH  ] (info) 全局健康巡检完成，6/7 在线，本轮无状�
 ```
 OmniAgent-Platform/
 ├─ server.py              # FastAPI 控制台（页面 + 6 个 API + 端口探测 + SSE 事件总线）
-├─ build_docs.py          # 生成 docs/ 静态演示版（单一拓扑来源：复用 server.py）
+├─ services.yaml          # ★ 唯一拓扑来源：端口/名称/事件标签/探测参数，加服务只改这里
+├─ check_services.py      # 就绪检查：读 services.yaml，逐个 TCP 探测并打印在线表
+├─ build_docs.py          # 生成 docs/ 静态演示版（复用 server.py 的拓扑，单一来源）
 ├─ selftest_omni.py       # 11 组离线自检 → evidence/
 ├─ verify_event_bus.py    # 事件总线「差异驱动」专项验证 → evidence/
-├─ requirements.txt
+├─ tests/
+│  ├─ conftest.py         # 真 uvicorn 线程 fixture（不用会阻塞的 TestClient）
+│  └─ test_omni.py        # 40 条断言：拓扑/事件总线/前端本地化/API 契约
+├─ requirements.txt       # 运行依赖
+├─ requirements-dev.txt   # + pytest
 ├─ run.bat / run.sh       # 一键启动（自动建 venv 装依赖）
+├─ .github/workflows/ci.yml
+├─ assets/architecture.svg
 ├─ templates/
 │  └─ index.html          # 主控台页面（Jinja2 模板）
 ├─ static/
@@ -212,6 +256,15 @@ OmniAgent-Platform/
 
 **总览页 7 个服务全是灰的？**
 正常 —— 说明你只起了控制台，那 7 个服务没起。控制台自身功能不受影响。
+
+**怎么快速知道我的 7 个服务起了没？**
+跑 `.venv/Scripts/python check_services.py`，会打一张在线表（读 `services.yaml`，逐个 TCP 探测）；加 `--require-all` 则要求 7/7 全在线才返回 0。
+
+**改了 `services.yaml` 会怎样？**
+不用改任何代码，重启控制台即生效。如果 yaml 写坏了（比如某个服务缺 `id` / `port`），控制台不会崩，会自动回退到内置默认拓扑，并在 `/api/v1/overview/stats` 的 `config_source` 字段里注明原因。
+
+**CI 说 `docs/` 不同步、把我的 PR 拦了？**
+因为你改了 `templates/index.html` 或 `static/`，但没重跑 `build_docs.py`。本地跑一次 `.venv/Scripts/python build_docs.py` 再提交即可。
 
 **端口 8888 被占用？**
 `OMNI_PORT=8899 python server.py`。

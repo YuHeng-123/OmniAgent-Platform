@@ -15,7 +15,7 @@ import asyncio
 from typing import List, Dict, Any, Optional
 
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse, StreamingResponse
+from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
@@ -26,10 +26,14 @@ import uvicorn
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# 版本号单一来源：页面角标、/healthz、FastAPI 自动文档都读它，避免多处各写各的漂移。
+APP_VERSION = "2.1.0"
+STARTED_AT = time.time()
+
 app = FastAPI(
     title="OmniAgent Platform - 企业级全域 AI 智能体控制中枢",
     description="工业级 Agent 微服务编排底座、统一控制台与多智能体业务闭环",
-    version="2.0.0",
+    version=APP_VERSION,
 )
 
 # 注意：allow_origins=["*"] 与 allow_credentials=True 是浏览器规范禁止的组合，这里置 False
@@ -87,7 +91,7 @@ _BUILTIN_SERVICES = [
         "id": "ecom-ai-guide", "name": "琼华珠宝 AI 智能导购", "role": "核心业务 Agent",
         "port": 8001, "url": "http://127.0.0.1:8001", "type": "Business",
         "desc": "混合检索 + 工具调用 + 报错自纠错链路的多轮导购智能体",
-        "tech": "LangGraph + SQLite + SSE",
+        "tech": "LangGraph + SQLite + SSE", "chat_path": "/api/chat",
     },
     {
         "id": "coze-material-studio", "name": "多平台爆款素材工作台", "role": "内容营销 Agent",
@@ -165,6 +169,8 @@ def load_topology(path: str = CONFIG_PATH):
                 "type": str(s.get("type") or "Business"),
                 "desc": str(s.get("desc") or ""),
                 "tech": str(s.get("tech") or ""),
+                # 可选：控制台导购链路要 POST 的路径，缺省 /api/chat
+                "chat_path": str(s.get("chat_path") or "/api/chat"),
             })
         if not cleaned:
             raise ValueError("services 列表为空")
@@ -189,6 +195,14 @@ PROBE_TIMEOUT = PROBE["timeout_sec"]
 EVENT_INTERVAL_SEC = PROBE["interval_sec"]
 HEARTBEAT_EVERY = PROBE["heartbeat_every"]
 
+# 按 id 索引 —— 业务链路据此按「服务 id」找上游，而不是把端口写死在代码里。
+SERVICE_INDEX = {s["id"]: s for s in SERVICES_META}
+# 导购链路的上游端口 / 路径都取自拓扑（services.yaml 的 ecom-ai-guide 条目）。
+# 改 yaml 里的端口即可切换上游，server.py 无需改动。
+_GUIDE = SERVICE_INDEX.get("ecom-ai-guide")
+GUIDE_PORT = int(_GUIDE["port"]) if _GUIDE else 8001
+GUIDE_CHAT_PATH = (_GUIDE.get("chat_path") or "/api/chat") if _GUIDE else "/api/chat"
+
 
 # --------------------------------------------------------------------------- #
 # 主控台页面路由
@@ -209,6 +223,46 @@ async def index_page(request: Request):
             "services": service_states,
             "online_count": online_count,
             "total_count": len(SERVICES_META),
+            "app_version": APP_VERSION,     # 页面角标用后端版本，避免两处各写各的
+        },
+    )
+
+
+# --------------------------------------------------------------------------- #
+# 健康检查：给监控 / CI / 容器探针用的标准端点
+# （不渲染页面；会真去探一次 7 个端口，所以能反映集群当前在线数）
+# --------------------------------------------------------------------------- #
+@app.get("/healthz")
+async def healthz():
+    states = await scan_ports(ALL_PORTS)
+    online = sum(1 for v in states.values() if v)
+    return {
+        "status": "ok",
+        "version": APP_VERSION,
+        "uptime_sec": round(time.time() - STARTED_AT, 1),
+        "config_source": CONFIG_SOURCE,
+        "services_online": online,
+        "services_total": len(SERVICES_META),
+        "services": [
+            {"id": s["id"], "port": s["port"], "online": bool(states.get(s["port"]))}
+            for s in SERVICES_META
+        ],
+    }
+
+
+# --------------------------------------------------------------------------- #
+# 统一 404：带上 path 与人话提示，替代默认的裸 {"detail":"Not Found"}
+# --------------------------------------------------------------------------- #
+@app.exception_handler(404)
+async def not_found_handler(request: Request, exc):
+    is_api = request.url.path.startswith("/api/")
+    return JSONResponse(
+        status_code=404,
+        content={
+            "status": "not_found",
+            "path": request.url.path,
+            "hint": ("接口不存在；可用接口见 /docs 或 /healthz。") if is_api
+                    else ("这是 OmniAgent 控制台，页面入口是 /；接口清单见 /docs。"),
         },
     )
 
@@ -350,8 +404,12 @@ class GuideChatRequest(BaseModel):
 
 
 async def fetch_from_guide_agent(message: str, history) -> Optional[Dict[str, Any]]:
-    """调用真实导购 Agent (8001) 并解析其 SSE 事件流。失败返回 None 以触发降级。"""
-    if not await is_port_online(8001):
+    """调用真实导购 Agent 并解析其 SSE 事件流。失败返回 None 以触发降级。
+
+    上游地址 = 127.0.0.1:GUIDE_PORT + GUIDE_CHAT_PATH，两者都取自 services.yaml
+    的 ecom-ai-guide 条目（不再硬编码 8001）—— 换上游端口只改拓扑配置即可。
+    """
+    if not await is_port_online(GUIDE_PORT, PROBE_TIMEOUT):
         return None
 
     tokens: List[str] = []
@@ -362,7 +420,7 @@ async def fetch_from_guide_agent(message: str, history) -> Optional[Dict[str, An
         async with httpx.AsyncClient(trust_env=False, timeout=timeout) as client:
             async with client.stream(
                 "POST",
-                "http://127.0.0.1:8001/api/chat",
+                "http://127.0.0.1:%d%s" % (GUIDE_PORT, GUIDE_CHAT_PATH),
                 json={"message": message, "history": history or []},
             ) as resp:
                 if resp.status_code != 200:
@@ -464,7 +522,7 @@ async def guide_chat(req: GuideChatRequest):
             "trace": real["trace"],
             "self_corrected": any(s.get("status") == "retry" for s in real["trace"]),
             "model": "ecom-agent → AI Gateway (8000)",
-            "backend": f"live:{real['backend']}@8001",
+            "backend": f"live:{real['backend']}@{GUIDE_PORT}",
             "latency_ms": int((time.perf_counter() - t0) * 1000),
         }
 
@@ -566,6 +624,7 @@ async def generate_marketing(req: GenerateMarketingRequest):
 # --------------------------------------------------------------------------- #
 @app.get("/api/v1/analysis/overview")
 async def analysis_overview():
+    t0 = time.perf_counter()
     return {
         "total_records": 2450,
         "total_gmv": 1894200.0,
@@ -582,6 +641,10 @@ async def analysis_overview():
             {"channel": "抖音品牌直播", "gmv": 640000, "percent": 33.8},
             {"channel": "天猫官方旗舰", "gmv": 434200, "percent": 22.9},
         ],
+        # 与 /overview/stats 保持一致：这套经营数字是构造的样例，如实标注来源；
+        # 耗时同样是 time.perf_counter 实测，不是预设常数。
+        "metrics_source": "demo-sample",
+        "latency_ms": int((time.perf_counter() - t0) * 1000),
     }
 
 
@@ -628,18 +691,22 @@ async def analysis_query(req: AnalysisQueryRequest):
 @app.post("/api/v1/gateway/simulate_failover")
 async def simulate_failover():
     t0 = time.perf_counter()
-    # 这是一个【演示用仿真端点】，不连真实上游；耗时为本机生成响应的时间
+    # 这是一个【演示用仿真端点】：不连真实上游，也【没有】任何真实模型名 ——
+    # 本仓库未接入任何大模型 API，所以主路由一律写「仿真占位」，不冒充某个
+    # 具体模型版本（1.0 曾硬写过一个编造的模型名，2.1 起移除并有断言防回归）。
+    # 耗时是本机生成响应的实测值（time.perf_counter），非预设常数。
     await asyncio.sleep(0.042)
     return {
         "event": "CIRCUIT_BREAKER_TRIGGERED",
         "simulated": True,
-        "primary_model": "DeepSeek-V3",
+        "primary_model": "上游主模型（仿真占位）",
         "primary_status": "504 Gateway Timeout (Simulated)",
         "failover_model": "本地兜底规则引擎 (Mock Fallback)",
         "failover_status": "200 OK",
         "switch_latency_ms": int((time.perf_counter() - t0) * 1000),
         "token_usage": {"prompt": 120, "completion": 310, "cost_usd": 0.00045},
-        "log_entry": "[FAILOVER-ALERT] 主路由 DeepSeek-V3 响应超时(>3000ms)，触发熔断阈值，热切至本地兜底规则引擎，业务无感重试成功！",
+        "token_usage_note": "样例数值，非真实计费",
+        "log_entry": "[FAILOVER-ALERT] 上游主模型响应超时(>3000ms)，触发熔断阈值，热切至本地兜底规则引擎，业务无感重试成功！",
     }
 
 

@@ -180,11 +180,22 @@ def test_omni_api_js_wires_real_sse_with_fallback():
     assert "示例事件流" in js, "降级路径的角标文案不能丢（否则冒充实时）"
 
 
-@pytest.mark.parametrize("rel", ["templates/index.html", "static/omni-api.js"])
-def test_no_fabricated_driver_model(rel):
+# 编造模型名曾在 server.py 的仿真端点与网关页卡片里各残留几处（2.0 只查了前端
+# 两个文件，漏了后端）—— 现在把全部交付代码文件都纳入断言，README 的历史对照除外。
+CODE_DELIVERABLES = (
+    "server.py",
+    "templates/index.html",
+    "static/omni-api.js",
+    "docs/index.html",
+    "docs/static/omni-api.js",
+)
+
+
+@pytest.mark.parametrize("rel", CODE_DELIVERABLES)
+def test_no_fabricated_model_name_anywhere(rel):
     txt = read(rel)
     assert "Gemini-3.8-Flash" not in txt
-    assert "DeepSeek-V3 / Flash" not in txt, "前端不该硬写一个并不存在的驱动模型"
+    assert "DeepSeek-V3" not in txt, "编造模型名残留在 %s（README 的历史对照除外）" % rel
 
 
 def test_template_no_hardcoded_latency():
@@ -316,3 +327,74 @@ def test_events_stream_first_frame_is_real(base_url):
     assert len(got) >= 1 + len(S.SERVICES_META)
     assert got[0]["tag"] == "MASTER"
     assert len(got[1:1 + len(S.SERVICES_META)]) == len(S.SERVICES_META)
+
+
+# =========================================================================== #
+# 6. 2.1 细节契约：健康检查 / 诚实标注 / 配置化最后一公里 / 标准件
+# =========================================================================== #
+def test_healthz_contract(client):
+    d = client.get("/healthz").json()
+    assert d["status"] == "ok"
+    assert d["version"] == S.APP_VERSION
+    assert d["config_source"] == "services.yaml"
+    assert d["services_total"] == 7
+    assert 0 <= d["services_online"] <= 7
+    assert isinstance(d["uptime_sec"], (int, float)) and d["uptime_sec"] >= 0
+    assert len(d["services"]) == 7
+
+
+def test_404_returns_hint_json(client):
+    r = client.get("/api/v1/definitely-not-here")
+    assert r.status_code == 404
+    d = r.json()
+    assert d["status"] == "not_found"
+    assert d["path"].endswith("definitely-not-here")
+    assert "hint" in d, "404 必须带人话提示，不能是裸 detail"
+
+
+def test_analysis_overview_marks_source_and_latency(client):
+    d = client.get("/api/v1/analysis/overview").json()
+    assert d["metrics_source"] == "demo-sample", "经营数字必须标注是样例"
+    assert isinstance(d["latency_ms"], int) and d["latency_ms"] >= 0
+
+
+def test_failover_primary_model_is_placeholder(client):
+    d = client.post("/api/v1/gateway/simulate_failover").json()
+    assert d["primary_model"] == "上游主模型（仿真占位）", "仿真端点不得冒充真实模型名"
+    assert d["token_usage_note"], "token 用量必须注明是样例"
+
+
+def test_guide_upstream_comes_from_topology():
+    """导购链路的上游端口/路径必须取自拓扑，而不是硬编码 —— 2.1 之前的漏洞。"""
+    meta = {s["id"]: s for s in S.SERVICES_META}
+    guide = meta["ecom-ai-guide"]
+    assert S.GUIDE_PORT == guide["port"]
+    assert S.GUIDE_CHAT_PATH == guide.get("chat_path", "/api/chat")
+
+
+def test_favicon_present_and_wired_everywhere():
+    p = BASE / "static" / "favicon.svg"
+    assert p.exists() and p.stat().st_size > 200
+    assert 'rel="icon"' in read("templates/index.html")
+    assert "/static/favicon.svg" in read("templates/index.html")
+    # docs 是渲染产物：路径应已被改写为相对路径且文件被复制
+    assert "./static/favicon.svg" in read("docs/index.html")
+    assert (BASE / "docs" / "static" / "favicon.svg").exists()
+
+
+def test_version_single_source():
+    """版本号只允许写在 APP_VERSION 一处 —— 页面标题/角标必须是渲染出来的。"""
+    assert S.APP_VERSION == "2.1.0"
+    tpl = read("templates/index.html")
+    assert "OmniAgent Platform 2.0" not in tpl, "模板里不得写死旧版本号"
+    assert "Platform v2.0" not in tpl
+    docs = read("docs/index.html")
+    assert "OmniAgent Platform 2.1.0" in docs, "渲染产物的 title 应带 APP_VERSION"
+    assert "Platform v2.1" in docs
+
+
+def test_docs_404_page_exists():
+    p = BASE / "docs" / "404.html"
+    assert p.exists()
+    txt = p.read_text(encoding="utf-8")
+    assert "404" in txt and "返回" in txt

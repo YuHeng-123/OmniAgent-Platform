@@ -22,7 +22,7 @@ sys.path.insert(0, BASE_DIR)
 
 from jinja2 import Environment, FileSystemLoader  # noqa: E402
 
-from server import SERVICES_META  # noqa: E402  单一拓扑来源
+from server import SERVICES_META, APP_VERSION  # noqa: E402  单一拓扑来源 + 版本号
 
 DOCS_DIR = os.path.join(BASE_DIR, "docs")
 TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
@@ -48,6 +48,7 @@ def build():
         online_count=len(services),
         total_count=len(services),
         static_demo=True,
+        app_version=APP_VERSION,     # 版本号单一来源，与后端 /healthz 一致
     )
 
     # ---------- 2. 绝对路径 → 相对路径 ----------
@@ -74,6 +75,40 @@ def build():
     with open(os.path.join(DOCS_DIR, ".nojekyll"), "w", encoding="utf-8") as f:
         f.write("")
 
+    # GitHub Pages 自定义 404：仓库根路径下任何未命中的地址都会落到这一页。
+    # 纯静态托管没有后端，所以这里自带样式、不依赖任何外部资源。
+    # 样式用内联 <style> 而非 tailwind —— 万一 JS 未执行，这页也要能看。
+    not_found_html = """<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 · 页面不存在 - OmniAgent Platform</title>
+<style>
+  html, body { margin: 0; height: 100%; }
+  body { background: #070b14; color: #e2e8f0; display: flex; align-items: center; justify-content: center;
+         font: 16px/1.7 -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif; }
+  .box { text-align: center; padding: 32px; }
+  .code { font-size: 72px; font-weight: 800; letter-spacing: .04em;
+          background: linear-gradient(90deg, #06b6d4, #8b5cf6);
+          -webkit-background-clip: text; background-clip: text; color: transparent; }
+  p { color: #94a3b8; margin: 12px 0 26px; }
+  a { display: inline-block; padding: 10px 22px; border-radius: 10px; color: #fff; text-decoration: none;
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6); }
+</style>
+</head>
+<body>
+  <div class="box">
+    <div class="code">404</div>
+    <p>这个页面不存在。也许是地址输错了，或者它已随版本一起被清理。</p>
+    <a href="./">&larr; 返回 OmniAgent 控制台</a>
+  </div>
+</body>
+</html>
+"""
+    with open(os.path.join(DOCS_DIR, "404.html"), "w", encoding="utf-8", newline="\n") as f:
+        f.write(not_found_html)
+
     # ---------- 4. 自检 ----------
     report = []
     report.append("html bytes           = %d" % len(html.encode("utf-8")))
@@ -88,6 +123,7 @@ def build():
     )
     report.append("docs/static 文件数   = %d (%d bytes)" % (n_static, n_static_bytes))
     report.append("docs/index.html      = %s" % os.path.exists(out_html))
+    report.append("docs/404.html        = %s" % os.path.exists(os.path.join(DOCS_DIR, "404.html")))
     report.append("docs/.nojekyll       = %s" % os.path.exists(os.path.join(DOCS_DIR, ".nojekyll")))
 
     print("\n".join(report))

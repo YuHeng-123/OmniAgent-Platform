@@ -1,11 +1,12 @@
-# OmniAgent Platform 2.0 · 企业级全域 AI 智能体控制中枢
+# OmniAgent Platform 2.1 · 企业级全域 AI 智能体控制中枢
 
 把 **7 个各自独立的 AI 微服务**，收进一个统一控制台 —— 一个页面看清整个 Agent 集群的拓扑、在线状态与业务闭环。
 
 ![python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![frontend deps](https://img.shields.io/badge/frontend%20deps-100%25%20local-brightgreen)
 ![external CDN](https://img.shields.io/badge/external%20CDN-0-critical)
-![tests](https://img.shields.io/badge/pytest-40%20passed-brightgreen)
+![tests](https://img.shields.io/badge/pytest-51%20passed-brightgreen)
+![license](https://img.shields.io/badge/license-MIT-blue)
 
 <!-- 推到 GitHub 后，把下面这行取消注释，并把 <你的用户名> 换成你的 GitHub 用户名，就有实时 CI 徽章了
 [![CI](https://github.com/<你的用户名>/OmniAgent-Platform/actions/workflows/ci.yml/badge.svg)](https://github.com/<你的用户名>/OmniAgent-Platform/actions/workflows/ci.yml)
@@ -49,6 +50,7 @@ chmod +x run.sh && ./run.sh
 ```
 
 首次运行会自动建 `.venv` 并装依赖，然后启动在 <http://127.0.0.1:8888>。
+健康检查：<http://127.0.0.1:8888/healthz>（版本 / 运行时长 / 拓扑来源 / 实时在线数）。
 
 手动方式：
 
@@ -176,10 +178,13 @@ T+13.9s  [HEALTH  ] (info) 全局健康巡检完成，0/7 在线，本轮无状�
 | 7 | 只能在本地跑，无法静态演示 | 新增 `docs/` 纯静态版 + `build_docs.py` 构建脚本 |
 | 8 | 事件总线是**写死的 6 行文本**（时间戳永远停在 `19:15:02`），标着 LIVE 却永不刷新 | 改为真 SSE 差异驱动流（见上一节）；降级时角标明确写「示例事件流」 |
 | 9 | 7 个服务的端口/名称/事件标签硬编码在 `server.py`，加服务得改代码 | 抽到 `services.yaml`；坏配置自动回退内置默认，`/overview/stats` 里的 `config_source` 可直接看出拓扑来自哪 |
-| 10 | 没有任何自动化测试，改动靠人肉点页面 | **40 条 pytest 断言**（拓扑 / 事件总线纯函数 / 前端本地化 / API 契约 / docs 一致性）+ GitHub Actions CI |
+| 10 | 没有任何自动化测试，改动靠人肉点页面 | **51 条 pytest 断言**（拓扑 / 事件总线纯函数 / 前端本地化 / API 契约 / docs 一致性 / 健康检查）+ GitHub Actions CI |
 | 11 | `docs/` 是手工产物，容易和源码悄悄脱节 | CI 每次重跑 `build_docs.py` 再 `git diff --exit-code -- docs/` 断言无漂移 |
 | 12 | 导购页硬写「驱动模型：DeepSeek-V3 / Flash」、单步耗时预设 `38 ms` | 假模型名删除；耗时改为「实测值，拿不到显示 `—`」；新增**应答来源**直接显示 `live:` / `fallback:` |
 | 13 | 冗余脚本 `start.bat`、`start_all_services.py`（指向并不存在的 `:9999`）、3 个 `.bak` | 清理；`start_all_services.py` 换成读 `services.yaml` 的 `check_services.py` 就绪检查 |
+| 14 | 编造模型名只清了前端：网关页 3 处 + 仿真端点 2 处仍写着 `DeepSeek-V3`，防回归断言也只扫 2 个文件 | 全部改为「上游主模型（仿真占位）」；断言扩到 5 个交付代码文件（连注释里的历史对照都不放行） |
+| 15 | 导购链路硬编码 `8001`，改 yaml 端口后代码不跟着变 | 端口/路径改从拓扑读取（`GUIDE_PORT` / `GUIDE_CHAT_PATH`），换上游只改配置 |
+| 16 | 缺工程标准件：favicon 404、无 `/healthz`、404 返回裸 JSON、版本号三处各写各的、无 LICENSE/CHANGELOG | 补齐：`static/favicon.svg`、`GET /healthz`、带提示的统一 404（Pages 侧配 `docs/404.html`）、`APP_VERSION` 单一来源、MIT LICENSE + CHANGELOG + .editorconfig |
 
 ---
 
@@ -189,7 +194,7 @@ T+13.9s  [HEALTH  ] (info) 全局健康巡检完成，0/7 在线，本轮无状�
 
 | 层 | 命令 | 验什么 |
 |---|---|---|
-| ① 断言测试 | `.venv/Scripts/python -m pytest -q` | 拓扑加载与坏配置回退 · 事件总线纯函数 · 前端 0 外部 CDN · docs 与源码一致 · 6 个 API 的响应契约 · SSE 首帧 |
+| ① 断言测试 | `.venv/Scripts/python -m pytest -q` | 拓扑加载与坏配置回退 · 事件总线纯函数 · 前端 0 外部 CDN · docs 与源码一致 · API 响应契约 · `/healthz` · 编造模型名全文件扫描 · SSE 首帧 |
 | ② 全链路自检 | `.venv/Scripts/python selftest_omni.py` | 同进程起 API + 起静态站，打 **11 组真实 HTTP**，结果落 `evidence/selftest-omni.txt` |
 | ③ 事件总线专项 | `.venv/Scripts/python verify_event_bus.py` | 注入式端口探测，断言「停掉一个服务 → 流里真的出现下线事件」 |
 
@@ -210,7 +215,7 @@ CI（`.github/workflows/ci.yml`）在每次 push / PR 上跑：pytest → 全链
 - **控制台的业务数据是演示数据。** 营销文案、SQL 结果、GMV 数字、热切延迟，都是本地生成的样例，不是某家公司的真实经营数据。
 - **网关 `:8000` 没有接真实的大模型 API。** 所以导购链路里凡标注 `backend: "fallback:local-demo"` 的回答，都是**本地规则引擎**按关键词拼出来的文本，不是模型生成的；响应里的 `model` 字段会如实写成「本地规则引擎（离线降级）」，不冒充某个模型名。
 - **页面里不存在编造的模型名。** 1.0 曾在导购页硬写 `Gemini-3.8-Flash`，2.0 已移除，并且 pytest 里有一条断言专门防止它回归。
-- **`/api/v1/gateway/simulate_failover` 是仿真端点**，它不真的去熔断某个上游，只演示「主备热切」这个形态；响应里自带 `"simulated": true`。
+- **`/api/v1/gateway/simulate_failover` 是仿真端点**，它不真的去熔断某个上游，只演示「主备热切」这个形态；响应里自带 `"simulated": true`，主路由名一律写「上游主模型（仿真占位）」—— 2.1 之前这里曾残留编造的模型名 `DeepSeek-V3`（已清除并有断言防回归），token 数值也标注了 `token_usage_note: 样例数值，非真实计费`。
 - **7 个微服务是独立项目**，不在本仓库内。本仓库是控制台 + 编排层。想看真实链路，需要各自把服务起起来。
 - **端口探测只探本机 `127.0.0.1`**，不做远程服务发现。
 - **事件总线的心跳是 12s 一次**（3s 探测 × 4 轮），只有状态**变化**才实时推送 —— 这是刻意压掉刷屏，不是采样不到。
@@ -222,26 +227,33 @@ CI（`.github/workflows/ci.yml`）在每次 push / PR 上跑：pytest → 全链
 
 ```
 OmniAgent-Platform/
-├─ server.py              # FastAPI 控制台（页面 + 6 个 API + 端口探测 + SSE 事件总线）
-├─ services.yaml          # ★ 唯一拓扑来源：端口/名称/事件标签/探测参数，加服务只改这里
+├─ server.py              # FastAPI 控制台（页面 + API + /healthz + 端口探测 + SSE 事件总线）
+├─ services.yaml          # ★ 唯一拓扑来源：端口/名称/事件标签/探测参数/导购路径，加服务只改这里
 ├─ check_services.py      # 就绪检查：读 services.yaml，逐个 TCP 探测并打印在线表
-├─ build_docs.py          # 生成 docs/ 静态演示版（复用 server.py 的拓扑，单一来源）
+├─ build_docs.py          # 生成 docs/ 静态演示版（复用 server.py 拓扑与版本号，单一来源）
 ├─ selftest_omni.py       # 11 组离线自检 → evidence/
 ├─ verify_event_bus.py    # 事件总线「差异驱动」专项验证 → evidence/
 ├─ tests/
 │  ├─ conftest.py         # 真 uvicorn 线程 fixture（不用会阻塞的 TestClient）
-│  └─ test_omni.py        # 40 条断言：拓扑/事件总线/前端本地化/API 契约
+│  └─ test_omni.py        # 51 条断言：拓扑/事件总线/前端本地化/API 契约/健康检查
 ├─ requirements.txt       # 运行依赖
 ├─ requirements-dev.txt   # + pytest
 ├─ run.bat / run.sh       # 一键启动（自动建 venv 装依赖）
 ├─ .github/workflows/ci.yml
 ├─ assets/architecture.svg
+├─ LICENSE                # MIT
+├─ CHANGELOG.md           # 1.0 → 2.0 → 2.1 的完整变更记录
+├─ .editorconfig
 ├─ templates/
-│  └─ index.html          # 主控台页面（Jinja2 模板）
+│  └─ index.html          # 主控台页面（Jinja2 模板；版本号由 APP_VERSION 注入）
 ├─ static/
 │  ├─ omni-api.js         # 双模式数据源适配层（真接口 ⇄ 内置降级）+ 事件总线客户端
+│  ├─ favicon.svg         # 站点图标（渐变立方体，与品牌标识同款）
 │  └─ vendor/             # 本地化前端库：tailwind / chart.js / fontawesome
 ├─ docs/                  # ← GitHub Pages 发布目录（build_docs.py 生成，勿手改）
+│  ├─ index.html
+│  ├─ 404.html            # Pages 自定义 404（带返回首页链接）
+│  └─ static/…            # 自包含副本（含 favicon）
 └─ evidence/
    ├─ selftest-omni.txt   # 全链路实测证据
    └─ event-bus-diff.txt  # 事件总线差异驱动验证证据

@@ -3,7 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OmniAgent Platform 2.0 - 企业级全域 AI 智能体控制中枢</title>
+    <title>OmniAgent Platform 2.1.0 - 企业级全域 AI 智能体控制中枢</title>
+    <meta name="description" content="把 7 个独立 AI 微服务收进一个统一控制台：拓扑配置化、前后端真接口、断网自动降级，并有断言测试与 CI。">
+    <meta name="theme-color" content="#070b14">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="OmniAgent Platform · 企业级全域 AI 智能体控制中枢">
+    <meta property="og:description" content="7 个 AI 微服务的统一编排与可观测控制台，零外部 CDN、断网可渲染。">
+    <!-- 图标本地化：随 /static/ 一起被 build_docs 改写成相对路径，Pages 子路径下也不 404 -->
+    <link rel="icon" type="image/svg+xml" href="./static/favicon.svg">
     <!-- 依赖全部本地化：断网 / GitHub Pages 均可正常渲染（原为 4 个 CDN 外链） -->
     <script src="./static/vendor/tailwind.js"></script>
     <link href="./static/vendor/fontawesome/css/all.min.css" rel="stylesheet">
@@ -65,6 +72,14 @@
 </head>
 <body class="bg-dark-900 text-slate-200 antialiased h-screen flex overflow-hidden">
 
+    <!-- 禁用 JS 时页面无法渲染（tailwind 与数据都由 JS 驱动）——
+         此处用内联样式，不依赖 tailwind 生成的 class，确保这条提示本身可见。 -->
+    <noscript>
+        <div style="margin:0;padding:14px 18px;background:#3b1d1d;color:#fecaca;border-bottom:1px solid #7f1d1d;font:14px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif;">
+            OmniAgent 控制台是单页应用：界面样式与所有数据都依赖 JavaScript，请启用 JS 后刷新页面。
+        </div>
+    </noscript>
+
     <!-- ================================================================= -->
     <!-- 统一侧边栏导航 (Sidebar) -->
     <!-- ================================================================= -->
@@ -79,7 +94,7 @@
                     <div class="font-extrabold text-base tracking-wider bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
                         OmniAgent
                     </div>
-                    <div class="text-[10px] text-accent-cyan font-mono tracking-widest uppercase">Platform v2.0</div>
+                    <div class="text-[10px] text-accent-cyan font-mono tracking-widest uppercase">Platform v2.1</div>
                 </div>
             </div>
 
@@ -163,7 +178,7 @@
                 <div class="flex items-center text-xs font-mono bg-dark-700 border border-dark-border px-3 py-1.5 rounded-lg text-slate-300">
                     <i class="fas fa-bolt text-accent-amber mr-2"></i>
                     <span>主路由：</span>
-                    <span class="text-accent-cyan font-bold ml-1">DeepSeek-V3</span>
+                    <span class="text-accent-cyan font-bold ml-1">上游主模型（仿真）</span>
                     <span class="text-slate-500 mx-2">|</span>
                     <span>备用热切：</span>
                     <span class="text-accent-emerald font-bold ml-1">本地兜底引擎</span>
@@ -817,9 +832,9 @@
                                 <div>
                                     <div class="flex items-center space-x-2">
                                         <span class="w-2.5 h-2.5 rounded-full bg-accent-cyan animate-pulse"></span>
-                                        <span class="font-bold text-sm text-white">DeepSeek-V3</span>
+                                        <span class="font-bold text-sm text-white">上游主模型（仿真占位）</span>
                                     </div>
-                                    <p class="text-xs text-slate-400 mt-1">主力逻辑与复杂推理模型</p>
+                                    <p class="text-xs text-slate-400 mt-1">未接入真实模型 API · 此卡仅演示主备形态</p>
                                     <div class="text-[11px] font-mono text-accent-cyan mt-2">权重: 70% ｜ 熔断阈值: 3000ms</div>
                                 </div>
                                 <span class="text-[10px] bg-accent-cyan/20 text-accent-cyan px-2 py-0.5 rounded">PRIMARY</span>
@@ -1235,7 +1250,7 @@
             const t2 = new Date(t1.getTime() + 2000);
             const f = (d) => '[' + d.toLocaleTimeString('zh-CN', { hour12: false }) + ']';
             logBox.innerHTML = `
-                <div class="text-accent-amber">${f(t1)} 发起测试请求，路由分发至主模型 DeepSeek-V3...</div>
+                <div class="text-accent-amber">${f(t1)} 发起测试请求，路由分发至上游主模型（仿真）...</div>
                 <div class="text-rose-400">${f(t2)} ⚠️ 主模型无响应超时 (>3000ms)，触发 504 熔断！</div>
                 <div class="text-accent-cyan">${f(t2)} ⚡ 触发断路器自动热切机制，无缝转派至本地兜底规则引擎 (Mock Fallback)！</div>
                 <div class="text-accent-emerald">${f(t2)} ✅ 备用线路 42ms 极速响应成功，HTTP 200 OK！全过程业务端 0 报错！</div>

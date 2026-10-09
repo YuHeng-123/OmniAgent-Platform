@@ -29,6 +29,8 @@ event_tags:
 # ---- 7 大微服务矩阵 ----------------------------------------------------- #
 # 字段：id（唯一，事件标签按它索引）/ name / role / port / url / type
 #       desc（控制台卡片描述）/ tech（技术栈标注）
+#       chat_path（可选）：控制台「导购」链路要 POST 的路径，缺省 /api/chat。
+#                         目前只有 ecom-ai-guide 用到 —— 换上游端口只改这里。
 services:
   - id: ai-gateway
     name: 企业 AI 统一网关
@@ -47,6 +49,9 @@ services:
     type: Business
     desc: 混合检索 + 工具调用 + 报错自纠错链路的多轮导购智能体
     tech: LangGraph + SQLite + SSE
+    # 控制台的「导购」链路会去连 127.0.0.1:<port><chat_path> 并解析其 SSE 流。
+    # 改端口 / 改路径只动这里 —— server.py 不再硬编码 8001。
+    chat_path: /api/chat
 
   - id: coze-material-studio
     name: 多平台爆款素材工作台

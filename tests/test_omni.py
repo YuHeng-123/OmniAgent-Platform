@@ -11,8 +11,11 @@ test_omni.py —— OmniAgent 控制台的断言测试
   4. docs/ 静态演示版（无 Jinja 残留、无绝对路径、无写死时间戳）
   5. 真实 HTTP 接口契约（真 uvicorn，见 conftest.py）
 """
+
 import json
+import os
 import pathlib
+import re
 import sys
 
 import httpx
@@ -84,7 +87,7 @@ def test_missing_yaml_falls_back(tmp_path):
 
 def test_broken_yaml_falls_back(tmp_path):
     bad = tmp_path / "services.yaml"
-    bad.write_text("services:\n  - id: broken\n", encoding="utf-8")   # 缺 port
+    bad.write_text("services:\n  - id: broken\n", encoding="utf-8")  # 缺 port
     services, tags, probe, source = S.load_topology(str(bad))
     assert source.startswith("builtin-defaults"), "坏配置必须回退，不能让控制台起不来"
     assert len(services) == 7
@@ -104,7 +107,7 @@ def test_sse_frame_is_valid():
     frame = S._sse({"ts": "00:00:01", "tag": "MASTER", "msg": "中文消息"})
     assert frame.startswith("data: ")
     assert frame.endswith("\n\n")
-    assert json.loads(frame[len("data: "):].strip())["msg"] == "中文消息"
+    assert json.loads(frame[len("data: ") :].strip())["msg"] == "中文消息"
 
 
 def test_initial_events_all_online():
@@ -161,8 +164,12 @@ def test_template_has_zero_external_cdn():
 
 def test_template_references_local_assets():
     html = read("templates/index.html")
-    for rel in ("static/vendor/tailwind.js", "static/vendor/chart.umd.js",
-                "static/omni-api.js", "static/vendor/fontawesome/css/all.min.css"):
+    for rel in (
+        "static/vendor/tailwind.js",
+        "static/vendor/chart.umd.js",
+        "static/omni-api.js",
+        "static/vendor/fontawesome/css/all.min.css",
+    ):
         assert rel in html, "模板未引用本地资源 %s" % rel
 
 
@@ -221,9 +228,12 @@ def test_docs_event_bus_not_hardcoded():
 
 
 def test_docs_assets_selfcontained():
-    for rel in ("docs/static/omni-api.js", "docs/static/vendor/tailwind.js",
-                "docs/static/vendor/chart.umd.js",
-                "docs/static/vendor/fontawesome/css/all.min.css"):
+    for rel in (
+        "docs/static/omni-api.js",
+        "docs/static/vendor/tailwind.js",
+        "docs/static/vendor/chart.umd.js",
+        "docs/static/vendor/fontawesome/css/all.min.css",
+    ):
         assert (BASE / rel).exists(), "docs 不自包含，缺 %s" % rel
     assert (BASE / "docs" / ".nojekyll").exists()
 
@@ -256,8 +266,7 @@ def test_overview_stats_contract(client):
 
 
 def test_guide_chat_reports_backend_and_latency(client):
-    d = client.post("/api/v1/guide/chat",
-                    json={"message": "你们支持刻字定制吗？", "history": []}).json()
+    d = client.post("/api/v1/guide/chat", json={"message": "你们支持刻字定制吗？", "history": []}).json()
     assert d["backend"].startswith(("live:", "fallback:")), "必须如实标注这次是谁答的"
     assert isinstance(d["latency_ms"], int) and d["latency_ms"] >= 0
     assert len(d["trace"]) >= 2
@@ -265,18 +274,20 @@ def test_guide_chat_reports_backend_and_latency(client):
 
 
 def test_guide_self_correction_path(client):
-    d = client.post("/api/v1/guide/chat",
-                    json={"message": "有500元无门槛券吗", "history": []}).json()
+    d = client.post("/api/v1/guide/chat", json={"message": "有500元无门槛券吗", "history": []}).json()
     assert d["self_corrected"] is True
     assert any(s["status"] == "retry" for s in d["trace"])
 
 
 def test_marketing_flags_banned_words(client):
-    d = client.post("/api/v1/marketing/generate", json={
-        "product_name": "全网唯一顶级和田玉吊坠",
-        "target_platform": "xiaohongshu",
-        "keywords": "第一",
-    }).json()
+    d = client.post(
+        "/api/v1/marketing/generate",
+        json={
+            "product_name": "全网唯一顶级和田玉吊坠",
+            "target_platform": "xiaohongshu",
+            "keywords": "第一",
+        },
+    ).json()
     words = {v["word"] for v in d["compliance"]["violations"]}
     assert {"顶级", "第一", "全网唯一"} <= words
     assert d["compliance"]["status"] == "WARNING"
@@ -284,21 +295,27 @@ def test_marketing_flags_banned_words(client):
 
 
 def test_marketing_clean_copy_passes(client):
-    d = client.post("/api/v1/marketing/generate", json={
-        "product_name": "和田碧玉平安扣吊坠",
-        "target_platform": "douyin",
-        "keywords": "",
-    }).json()
+    d = client.post(
+        "/api/v1/marketing/generate",
+        json={
+            "product_name": "和田碧玉平安扣吊坠",
+            "target_platform": "douyin",
+            "keywords": "",
+        },
+    ).json()
     assert d["compliance"]["status"] == "PASS"
     assert d["compliance"]["score"] == 100
     assert "violations" in d["compliance"]
 
 
-@pytest.mark.parametrize("q,ctype", [
-    ("按品类统计销售额", "bar"),
-    ("各渠道成交额", "pie"),
-    ("近半年销售趋势", "line"),
-])
+@pytest.mark.parametrize(
+    "q,ctype",
+    [
+        ("按品类统计销售额", "bar"),
+        ("各渠道成交额", "pie"),
+        ("近半年销售趋势", "line"),
+    ],
+)
 def test_analysis_query_returns_sql_and_chart(client, q, ctype):
     d = client.post("/api/v1/analysis/query", json={"query_text": q}).json()
     assert d["chart"]["type"] == ctype
@@ -321,12 +338,12 @@ def test_events_stream_first_frame_is_real(base_url):
             assert "text/event-stream" in r.headers.get("content-type", "")
             for line in r.iter_lines():
                 if line.startswith("data:"):
-                    got.append(json.loads(line[len("data:"):].strip()))
+                    got.append(json.loads(line[len("data:") :].strip()))
                 if len(got) >= 1 + len(S.SERVICES_META):
                     break
     assert len(got) >= 1 + len(S.SERVICES_META)
     assert got[0]["tag"] == "MASTER"
-    assert len(got[1:1 + len(S.SERVICES_META)]) == len(S.SERVICES_META)
+    assert len(got[1 : 1 + len(S.SERVICES_META)]) == len(S.SERVICES_META)
 
 
 # =========================================================================== #
@@ -383,14 +400,21 @@ def test_favicon_present_and_wired_everywhere():
 
 
 def test_version_single_source():
-    """版本号只允许写在 APP_VERSION 一处 —— 页面标题/角标必须是渲染出来的。"""
-    assert S.APP_VERSION == "2.1.0"
+    """版本号只允许写在 APP_VERSION 一处 —— 页面标题/角标必须是渲染出来的。
+
+    注意：这里【不】写死某个具体版本号（2.0/2.1/2.2…），否则每次发版都会假 FAIL。
+    断言写成「模板零写死 + 渲染产物必然带当前 APP_VERSION」，版本怎么升都不会误报。
+    """
+    v = S.APP_VERSION
+    assert v and v[0].isdigit(), "APP_VERSION 应形如 2.2.0"
     tpl = read("templates/index.html")
-    assert "OmniAgent Platform 2.0" not in tpl, "模板里不得写死旧版本号"
-    assert "Platform v2.0" not in tpl
+    # 模板里不允许出现任何「OmniAgent Platform <数字>」形态的写死版本号
+    assert not re.search(r"OmniAgent Platform \d", tpl), "模板里写死了版本号"
+    assert not re.search(r"Platform v\d", tpl), "侧边栏角标写死了版本号"
     docs = read("docs/index.html")
-    assert "OmniAgent Platform 2.1.0" in docs, "渲染产物的 title 应带 APP_VERSION"
-    assert "Platform v2.1" in docs
+    assert "OmniAgent Platform %s" % v in docs, "渲染产物 title 应带当前 APP_VERSION"
+    # 侧边栏角标只显示主次版本号（模板里 [:3] 截断），所以这里比对的也是截短后的
+    assert "Platform v%s" % v[:3] in docs, "渲染产物角标应带当前 APP_VERSION"
 
 
 def test_docs_404_page_exists():
@@ -398,3 +422,122 @@ def test_docs_404_page_exists():
     assert p.exists()
     txt = p.read_text(encoding="utf-8")
     assert "404" in txt and "返回" in txt
+
+
+# =========================================================================== #
+# 6. 2.2 新增：历史持久化 / 服务起停管控
+# =========================================================================== #
+def test_history_probes_contract(client):
+    d = client.get("/api/v1/history/probes", params={"minutes": 30, "buckets": 60}).json()
+    assert d["status"] == "ok"
+    assert d["minutes"] == 30
+    assert d["source"] in ("sqlite-history", "monitor-not-started")
+    assert len(d["series"]) == len(S.SERVICES_META)
+    ids = {x["id"] for x in d["series"]}
+    assert ids == {s["id"] for s in S.SERVICES_META}
+    for item in d["series"]:
+        assert isinstance(item["points"], list)
+
+
+def test_history_probes_clamps_params(client):
+    """越界参数必须被夹回合法区间，而不是把窗口交给 SQL 去炸。"""
+    d = client.get("/api/v1/history/probes", params={"minutes": 99999, "buckets": 0}).json()
+    assert 1 <= d["minutes"] <= 1440
+    assert d["bucket_sec"] > 0
+
+
+def test_events_recent_contract(client):
+    d = client.get("/api/v1/events/recent", params={"limit": 5}).json()
+    assert d["status"] == "ok" and d["limit"] == 5
+    assert d["source"] in ("sqlite-history", "monitor-not-started")
+    assert isinstance(d["events"], list)
+    assert len(d["events"]) <= 5
+    for e in d["events"]:
+        # 回放出来的事件必须能直接喂给前端渲染
+        assert {"ts", "tag", "level", "msg"} <= set(e)
+
+
+def test_control_capabilities_contract(client):
+    d = client.get("/api/v1/services/control-capabilities").json()
+    assert d["status"] == "ok" and d["can_stop"] is True
+    assert len(d["services"]) == len(S.SERVICES_META)
+    by_id = {x["id"]: x for x in d["services"]}
+    for s in S.SERVICES_META:
+        # can_start 必须如实反映 yaml 里有没有配 start_cmd —— 没配就别在前端装能启动
+        assert by_id[s["id"]]["can_start"] is bool(s.get("start_cmd"))
+        assert by_id[s["id"]]["port"] == s["port"]
+
+
+def test_stop_unknown_service_returns_actionable_404(client):
+    r = client.post("/api/v1/services/does-not-exist/stop")
+    assert r.status_code == 404
+    body = r.json()
+    # 404 要带「人话提示 + 可选 id 清单」，而不是裸的 {"detail": "Not Found"}
+    assert body.get("hint") or body.get("detail")
+    assert "does-not-exist" in json.dumps(body, ensure_ascii=False)
+
+
+def test_start_without_cmd_is_honest(client):
+    """没在 services.yaml 里配 start_cmd 的服务，必须如实说不会启动，不能假装成功。"""
+    caps = client.get("/api/v1/services/control-capabilities").json()
+    target = next(x["id"] for x in caps["services"] if not x["can_start"])
+    r = client.post("/api/v1/services/%s/start" % target)
+    assert r.status_code == 200
+    d = r.json()
+    if d.get("reason") == "already-online":
+        pytest.skip("该服务当前在线，跳过 not-configured 分支")
+    assert d["started"] is False
+    assert d["reason"] == "not-configured", "未配置启动命令时应如实返回 not-configured"
+    assert d["detail"], "要告诉用户怎么才能启用启动按钮"
+
+
+def test_stop_kills_only_the_configured_port_listener(client):
+    """端到端：自己拉一个假监听进程，点「停止」，它必须死 —— 且不能误杀别人。
+
+    安全性：被杀的一定是本测试自己 spawn 的子进程，
+    绝不会碰到老板正在跑的其它进程（stop 端只杀监听在配置端口上的 PID）。
+    """
+    import subprocess
+    import time as _time
+
+    online = client.get("/api/v1/overview/stats").json()
+    states = {s["id"]: s for s in online["services"]}
+    target = next((s for s in S.SERVICES_META if states.get(s["id"], {}).get("status") != "online"), None)
+    if target is None:
+        pytest.skip("7 个服务全部在线，没有空闲端口可安全演练 stop")
+
+    port = target["port"]
+    child = subprocess.Popen(
+        [
+            sys.executable,
+            "-c",
+            "import socket,time;s=socket.socket();"
+            "s.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1);"
+            "s.bind(('127.0.0.1',%d));s.listen(1);time.sleep(90)" % port,
+        ],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    try:
+        deadline = _time.time() + 10
+        while _time.time() < deadline:
+            if client.get("/api/v1/services/control-capabilities").status_code == 200:
+                st = client.get("/api/v1/overview/stats").json()
+                cur = next(s for s in st["services"] if s["id"] == target["id"])
+                if cur["status"] == "online":
+                    break
+            _time.sleep(0.3)
+        else:
+            pytest.skip("假监听进程未能就绪，跳过")
+
+        d = client.post("/api/v1/services/%s/stop" % target["id"]).json()
+        assert d["port"] == port
+        assert d["stopped"] is True, "点了停止却没杀掉监听进程：%r" % d
+        assert d["pids"], "应返回被终止的 PID 清单以便审计"
+        assert os.getpid() not in d["pids"], "绝不能把控制台/测试进程自己算进去"
+
+        child.wait(timeout=15)
+        assert child.poll() is not None, "假监听进程没有被真正终止"
+    finally:
+        if child.poll() is None:
+            child.kill()

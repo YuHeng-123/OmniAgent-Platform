@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OmniAgent Platform 2.1.0 - 企业级全域 AI 智能体控制中枢</title>
+    <title>OmniAgent Platform 2.2.0 - 企业级全域 AI 智能体控制中枢</title>
     <meta name="description" content="把 7 个独立 AI 微服务收进一个统一控制台：拓扑配置化、前后端真接口、断网自动降级，并有断言测试与 CI。">
     <meta name="theme-color" content="#070b14">
     <meta property="og:type" content="website">
@@ -94,7 +94,7 @@
                     <div class="font-extrabold text-base tracking-wider bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
                         OmniAgent
                     </div>
-                    <div class="text-[10px] text-accent-cyan font-mono tracking-widest uppercase">Platform v2.1</div>
+                    <div class="text-[10px] text-accent-cyan font-mono tracking-widest uppercase">Platform v2.2</div>
                 </div>
             </div>
 
@@ -139,6 +139,12 @@
                         <i class="fas fa-database w-5 text-center mr-2.5 text-pink-400"></i>
                         <span>企业知识库检索</span>
                         <span class="ml-auto text-[10px] bg-pink-500/20 text-pink-400 px-1.5 py-0.5 rounded font-mono">BM25+RAG</span>
+                    </button>
+
+                    <button onclick="switchTab('history')" id="nav-history" class="nav-btn w-full flex items-center px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white hover:bg-dark-700">
+                        <i class="fas fa-clock-rotate-left w-5 text-center mr-2.5 text-accent-cyan"></i>
+                        <span>历史趋势与回放</span>
+                        <span class="ml-auto text-[10px] bg-cyan-500/20 text-accent-cyan px-1.5 py-0.5 rounded font-mono">SQLite</span>
                     </button>
                 </nav>
             </div>
@@ -288,11 +294,22 @@
                                 </div>
                                 <p class="text-xs text-slate-400 mt-2.5 line-clamp-2">全域流量接管、虚拟 Key 路由、毫秒级主备热切与 Token 计量</p>
                                 <div class="mt-3 pt-3 border-t border-dark-border/60 flex items-center justify-between text-xs">
-                                    <span class="text-slate-500 font-mono">PORT: 8000</span>
+                                    <div class="flex items-center space-x-2.5">
+                                        <span class="text-slate-500 font-mono">PORT: 8000</span>
+                                        
+                                        <span class="text-accent-emerald font-semibold flex items-center">
+                                            <i class="fas fa-circle-check text-[10px] mr-1"></i> 服务运行中
+                                        </span>
+                                        
+                                    </div>
+                                    <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，
+                                         没配置就如实禁用，不假装能启动。点击有二次确认。 -->
                                     
-                                    <span class="text-accent-emerald font-semibold flex items-center">
-                                        <i class="fas fa-circle-check text-[10px] mr-1"></i> 服务运行中
-                                    </span>
+                                    <button onclick="serviceControl('ai-gateway', 'stop', this)"
+                                            title="终止监听 :8000 的进程（真实操作，事件总线将推送下线事件）"
+                                            class="px-2.5 py-1 rounded-lg text-[11px] font-medium border border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/25 transition-colors">
+                                        <i class="fas fa-stop mr-1 text-[9px]"></i>停止
+                                    </button>
                                     
                                 </div>
                             </div>
@@ -319,11 +336,22 @@
                                 </div>
                                 <p class="text-xs text-slate-400 mt-2.5 line-clamp-2">混合检索 + 工具调用 + 报错自纠错链路的多轮导购智能体</p>
                                 <div class="mt-3 pt-3 border-t border-dark-border/60 flex items-center justify-between text-xs">
-                                    <span class="text-slate-500 font-mono">PORT: 8001</span>
+                                    <div class="flex items-center space-x-2.5">
+                                        <span class="text-slate-500 font-mono">PORT: 8001</span>
+                                        
+                                        <span class="text-accent-emerald font-semibold flex items-center">
+                                            <i class="fas fa-circle-check text-[10px] mr-1"></i> 服务运行中
+                                        </span>
+                                        
+                                    </div>
+                                    <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，
+                                         没配置就如实禁用，不假装能启动。点击有二次确认。 -->
                                     
-                                    <span class="text-accent-emerald font-semibold flex items-center">
-                                        <i class="fas fa-circle-check text-[10px] mr-1"></i> 服务运行中
-                                    </span>
+                                    <button onclick="serviceControl('ecom-ai-guide', 'stop', this)"
+                                            title="终止监听 :8001 的进程（真实操作，事件总线将推送下线事件）"
+                                            class="px-2.5 py-1 rounded-lg text-[11px] font-medium border border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/25 transition-colors">
+                                        <i class="fas fa-stop mr-1 text-[9px]"></i>停止
+                                    </button>
                                     
                                 </div>
                             </div>
@@ -350,11 +378,22 @@
                                 </div>
                                 <p class="text-xs text-slate-400 mt-2.5 line-clamp-2">Coze 工作流工程化封装，小红书/抖音营销图文生成与违禁词合规审查</p>
                                 <div class="mt-3 pt-3 border-t border-dark-border/60 flex items-center justify-between text-xs">
-                                    <span class="text-slate-500 font-mono">PORT: 8002</span>
+                                    <div class="flex items-center space-x-2.5">
+                                        <span class="text-slate-500 font-mono">PORT: 8002</span>
+                                        
+                                        <span class="text-accent-emerald font-semibold flex items-center">
+                                            <i class="fas fa-circle-check text-[10px] mr-1"></i> 服务运行中
+                                        </span>
+                                        
+                                    </div>
+                                    <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，
+                                         没配置就如实禁用，不假装能启动。点击有二次确认。 -->
                                     
-                                    <span class="text-accent-emerald font-semibold flex items-center">
-                                        <i class="fas fa-circle-check text-[10px] mr-1"></i> 服务运行中
-                                    </span>
+                                    <button onclick="serviceControl('coze-material-studio', 'stop', this)"
+                                            title="终止监听 :8002 的进程（真实操作，事件总线将推送下线事件）"
+                                            class="px-2.5 py-1 rounded-lg text-[11px] font-medium border border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/25 transition-colors">
+                                        <i class="fas fa-stop mr-1 text-[9px]"></i>停止
+                                    </button>
                                     
                                 </div>
                             </div>
@@ -381,11 +420,22 @@
                                 </div>
                                 <p class="text-xs text-slate-400 mt-2.5 line-clamp-2">DuckDB + 本地 Ollama 驱动，自然语言 Text-to-SQL 与交互式动态图表看板</p>
                                 <div class="mt-3 pt-3 border-t border-dark-border/60 flex items-center justify-between text-xs">
-                                    <span class="text-slate-500 font-mono">PORT: 8510</span>
+                                    <div class="flex items-center space-x-2.5">
+                                        <span class="text-slate-500 font-mono">PORT: 8510</span>
+                                        
+                                        <span class="text-accent-emerald font-semibold flex items-center">
+                                            <i class="fas fa-circle-check text-[10px] mr-1"></i> 服务运行中
+                                        </span>
+                                        
+                                    </div>
+                                    <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，
+                                         没配置就如实禁用，不假装能启动。点击有二次确认。 -->
                                     
-                                    <span class="text-accent-emerald font-semibold flex items-center">
-                                        <i class="fas fa-circle-check text-[10px] mr-1"></i> 服务运行中
-                                    </span>
+                                    <button onclick="serviceControl('ai-data-analysis-assistant', 'stop', this)"
+                                            title="终止监听 :8510 的进程（真实操作，事件总线将推送下线事件）"
+                                            class="px-2.5 py-1 rounded-lg text-[11px] font-medium border border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/25 transition-colors">
+                                        <i class="fas fa-stop mr-1 text-[9px]"></i>停止
+                                    </button>
                                     
                                 </div>
                             </div>
@@ -412,11 +462,22 @@
                                 </div>
                                 <p class="text-xs text-slate-400 mt-2.5 line-clamp-2">基于 Streamlit + 本地向量检索的高精度行业知识库，支持 PDF/Word 知识检索问答</p>
                                 <div class="mt-3 pt-3 border-t border-dark-border/60 flex items-center justify-between text-xs">
-                                    <span class="text-slate-500 font-mono">PORT: 8501</span>
+                                    <div class="flex items-center space-x-2.5">
+                                        <span class="text-slate-500 font-mono">PORT: 8501</span>
+                                        
+                                        <span class="text-accent-emerald font-semibold flex items-center">
+                                            <i class="fas fa-circle-check text-[10px] mr-1"></i> 服务运行中
+                                        </span>
+                                        
+                                    </div>
+                                    <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，
+                                         没配置就如实禁用，不假装能启动。点击有二次确认。 -->
                                     
-                                    <span class="text-accent-emerald font-semibold flex items-center">
-                                        <i class="fas fa-circle-check text-[10px] mr-1"></i> 服务运行中
-                                    </span>
+                                    <button onclick="serviceControl('ai-knowledge-assistant', 'stop', this)"
+                                            title="终止监听 :8501 的进程（真实操作，事件总线将推送下线事件）"
+                                            class="px-2.5 py-1 rounded-lg text-[11px] font-medium border border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/25 transition-colors">
+                                        <i class="fas fa-stop mr-1 text-[9px]"></i>停止
+                                    </button>
                                     
                                 </div>
                             </div>
@@ -443,11 +504,22 @@
                                 </div>
                                 <p class="text-xs text-slate-400 mt-2.5 line-clamp-2">独立轻量化情报抓取工作台，支持网页结构化采集、价格规则抽取与数据导出</p>
                                 <div class="mt-3 pt-3 border-t border-dark-border/60 flex items-center justify-between text-xs">
-                                    <span class="text-slate-500 font-mono">PORT: 8765</span>
+                                    <div class="flex items-center space-x-2.5">
+                                        <span class="text-slate-500 font-mono">PORT: 8765</span>
+                                        
+                                        <span class="text-accent-emerald font-semibold flex items-center">
+                                            <i class="fas fa-circle-check text-[10px] mr-1"></i> 服务运行中
+                                        </span>
+                                        
+                                    </div>
+                                    <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，
+                                         没配置就如实禁用，不假装能启动。点击有二次确认。 -->
                                     
-                                    <span class="text-accent-emerald font-semibold flex items-center">
-                                        <i class="fas fa-circle-check text-[10px] mr-1"></i> 服务运行中
-                                    </span>
+                                    <button onclick="serviceControl('data-automation-workbench', 'stop', this)"
+                                            title="终止监听 :8765 的进程（真实操作，事件总线将推送下线事件）"
+                                            class="px-2.5 py-1 rounded-lg text-[11px] font-medium border border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/25 transition-colors">
+                                        <i class="fas fa-stop mr-1 text-[9px]"></i>停止
+                                    </button>
                                     
                                 </div>
                             </div>
@@ -473,11 +545,22 @@
                                 </div>
                                 <p class="text-xs text-slate-400 mt-2.5 line-clamp-2">基于 FunClip 的本地 AI 音视频自动化切片、多模态语音识别与字幕智能合成</p>
                                 <div class="mt-3 pt-3 border-t border-dark-border/60 flex items-center justify-between text-xs">
-                                    <span class="text-slate-500 font-mono">PORT: 7860</span>
+                                    <div class="flex items-center space-x-2.5">
+                                        <span class="text-slate-500 font-mono">PORT: 7860</span>
+                                        
+                                        <span class="text-accent-emerald font-semibold flex items-center">
+                                            <i class="fas fa-circle-check text-[10px] mr-1"></i> 服务运行中
+                                        </span>
+                                        
+                                    </div>
+                                    <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，
+                                         没配置就如实禁用，不假装能启动。点击有二次确认。 -->
                                     
-                                    <span class="text-accent-emerald font-semibold flex items-center">
-                                        <i class="fas fa-circle-check text-[10px] mr-1"></i> 服务运行中
-                                    </span>
+                                    <button onclick="serviceControl('ark_aigc_demo', 'stop', this)"
+                                            title="终止监听 :7860 的进程（真实操作，事件总线将推送下线事件）"
+                                            class="px-2.5 py-1 rounded-lg text-[11px] font-medium border border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/25 transition-colors">
+                                        <i class="fas fa-stop mr-1 text-[9px]"></i>停止
+                                    </button>
                                     
                                 </div>
                             </div>
@@ -952,6 +1035,71 @@
                 </div>
             </div>
 
+            <!-- ------------------------------------------------------------- -->
+            <!-- TAB 7: 历史趋势与回放 (History) —— 2.2 新增 -->
+            <!-- ------------------------------------------------------------- -->
+            <div id="tab-history" class="tab-content hidden space-y-6">
+                <!-- 工具栏：时间范围 + 数据来源标注 -->
+                <div class="glass-card rounded-2xl p-4 border border-dark-border flex items-center justify-between flex-wrap gap-3">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-clock-rotate-left text-accent-cyan"></i>
+                        <h3 class="font-bold text-white text-base">服务可用性与延迟趋势</h3>
+                        <span class="text-xs text-slate-500">由共享巡检器每 3s 探测并落盘 SQLite（本机 data/omni_history.db）</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs text-slate-500">时间窗口：</span>
+                        <div class="flex rounded-lg overflow-hidden border border-dark-border">
+                            <button onclick="setHistoryRange(30, this)" id="hist-range-30" class="hist-range-btn px-3 py-1.5 text-xs font-medium bg-accent-blue/20 text-accent-cyan">30 分钟</button>
+                            <button onclick="setHistoryRange(120, this)" id="hist-range-120" class="hist-range-btn px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-white border-l border-dark-border">2 小时</button>
+                            <button onclick="setHistoryRange(480, this)" id="hist-range-480" class="hist-range-btn px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-white border-l border-dark-border">8 小时</button>
+                        </div>
+                        <span id="history-source-badge" class="text-[11px] font-mono px-2 py-1 rounded-full border border-dark-border bg-dark-700 text-slate-400">加载中…</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- 在线率阶梯图 -->
+                    <div class="glass-card rounded-2xl p-5 border border-dark-border">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-heart-pulse text-accent-emerald"></i>
+                                <h4 class="font-bold text-white text-sm">各服务在线率（窗口内聚合，%）</h4>
+                            </div>
+                            <span class="text-[11px] text-slate-500 font-mono">0 = 离线窗口</span>
+                        </div>
+                        <div class="h-64"><canvas id="history-uptime-canvas"></canvas></div>
+                    </div>
+
+                    <!-- 探测延迟图 -->
+                    <div class="glass-card rounded-2xl p-5 border border-dark-border">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-stopwatch text-accent-amber"></i>
+                                <h4 class="font-bold text-white text-sm">TCP 探测延迟（ms，本机回环）</h4>
+                            </div>
+                            <span class="text-[11px] text-slate-500 font-mono">实测值，非预设</span>
+                        </div>
+                        <div class="h-64"><canvas id="history-latency-canvas"></canvas></div>
+                    </div>
+                </div>
+
+                <!-- 事件回放 -->
+                <div class="glass-card rounded-2xl p-5 border border-dark-border">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-receipt text-accent-purple"></i>
+                            <h4 class="font-bold text-white text-sm">历史事件回放（最近 60 条，倒序）</h4>
+                        </div>
+                        <button onclick="loadHistory(currentHistoryRange)" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-dark-700 hover:bg-dark-600 border border-dark-border text-slate-300">
+                            <i class="fas fa-rotate-right mr-1"></i>刷新
+                        </button>
+                    </div>
+                    <div id="history-event-list" class="bg-dark-900 rounded-xl p-3 font-mono text-xs overflow-y-auto space-y-1.5 border border-dark-border max-h-72">
+                        <div class="text-slate-600">加载中…</div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </main>
 
@@ -968,7 +1116,8 @@
             'marketing': '<i class="fas fa-wand-magic-sparkles text-accent-amber mr-2.5"></i> 多平台爆款营销工场',
             'analytics': '<i class="fas fa-chart-pie text-accent-emerald mr-2.5"></i> 智能数据分析与商业洞察',
             'gateway': '<i class="fas fa-shield-halved text-accent-blue mr-2.5"></i> 模型调度网关与容灾中枢',
-            'rag': '<i class="fas fa-database text-pink-400 mr-2.5"></i> 企业级行业知识库与向量检索'
+            'rag': '<i class="fas fa-database text-pink-400 mr-2.5"></i> 企业级行业知识库与向量检索',
+            'history': '<i class="fas fa-clock-rotate-left text-accent-cyan mr-2.5"></i> 历史趋势与事件回放'
         };
 
         function switchTab(tabId) {
@@ -993,6 +1142,170 @@
             if (tabId === 'analytics') {
                 setTimeout(renderAnalyticsChart, 100);
             }
+            // 历史趋势：切到该页时拉一次数据（切走再切回会刷新）
+            if (tabId === 'history') {
+                setTimeout(loadHistory, 60);
+            }
+        }
+
+        // -------------------------------------------------------------
+        // 服务起停管控（2.2）：二次确认 + 真实 API 调用 + 结果反馈
+        // -------------------------------------------------------------
+        let _confirmTimers = {};
+
+        function showToast(msg, level) {
+            let host = document.getElementById('omni-toast-host');
+            if (!host) {
+                host = document.createElement('div');
+                host.id = 'omni-toast-host';
+                host.style.cssText = 'position:fixed;right:20px;bottom:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;max-width:420px;';
+                document.body.appendChild(host);
+            }
+            const colors = {
+                ok: '#10b981', err: '#f43f5e', warn: '#f59e0b', info: '#06b6d4'
+            };
+            const div = document.createElement('div');
+            div.style.cssText = 'padding:10px 16px;border-radius:12px;font-size:13px;line-height:1.5;color:#e2e8f0;background:rgba(13,19,34,.96);border:1px solid ' + (colors[level] || colors.info) + '66;box-shadow:0 4px 24px rgba(0,0,0,.4);';
+            div.innerHTML = msg;
+            host.appendChild(div);
+            setTimeout(() => div.remove(), 5200);
+        }
+
+        async function serviceControl(serviceId, action, btn) {
+            const key = serviceId + ':' + action;
+            // 第一击：变身为「确认」态，3 秒不点就还原 —— 不用原生 confirm()，体验更贴近产品
+            if (!btn.dataset.armed) {
+                btn.dataset.armed = '1';
+                btn.dataset.prevHtml = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-triangle-exclamation mr-1 text-[9px]"></i>确认' + (action === 'stop' ? '停止' : '启动') + '?';
+                btn.classList.add('animate-pulse');
+                clearTimeout(_confirmTimers[key]);
+                _confirmTimers[key] = setTimeout(() => {
+                    delete btn.dataset.armed;
+                    btn.innerHTML = btn.dataset.prevHtml;
+                    btn.classList.remove('animate-pulse');
+                }, 3000);
+                return;
+            }
+            clearTimeout(_confirmTimers[key]);
+            delete btn.dataset.armed;
+            btn.innerHTML = btn.dataset.prevHtml;
+            btn.classList.remove('animate-pulse');
+            btn.disabled = true;
+
+            try {
+                const r = await OmniAPI.controlService(serviceId, action);
+                if (r && (r.stopped || r.started)) {
+                    showToast('<b>' + (action === 'stop' ? '已停止' : '已拉起') + '</b> ' + (r.detail || '') + (r.event_hint ? '<br>' + r.event_hint : ''), 'ok');
+                    // 状态与事件都交给巡检器 + 事件总线自然刷新，这里不抢跑 —— 这正是演示点
+                } else {
+                    showToast('<b>' + (action === 'stop' ? '停止' : '启动') + '未执行</b>：' + (r && r.detail ? r.detail : '原因未知'), 'warn');
+                }
+            } catch (e) {
+                showToast('<b>请求失败</b>：' + (e && e.message ? e.message : e), 'err');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        // -------------------------------------------------------------
+        // 历史趋势与回放（2.2）：曲线 + 事件列表
+        // -------------------------------------------------------------
+        let currentHistoryRange = 30;
+        let _uptimeChart = null;
+        let _latencyChart = null;
+        const HISTORY_COLORS = ['#06b6d4', '#8b5cf6', '#f59e0b', '#10b981', '#f43f5e', '#3b82f6', '#ec4899'];
+
+        function setHistoryRange(minutes, btn) {
+            currentHistoryRange = minutes;
+            document.querySelectorAll('.hist-range-btn').forEach(b => {
+                b.className = 'hist-range-btn px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-white'
+                    + (b === btn.previousElementSibling || b.nextElementSibling === btn ? ' border-l border-dark-border' : '');
+            });
+            btn.className = 'hist-range-btn px-3 py-1.5 text-xs font-medium bg-accent-blue/20 text-accent-cyan';
+            loadHistory();
+        }
+
+        async function loadHistory() {
+            const badge = document.getElementById('history-source-badge');
+            const evList = document.getElementById('history-event-list');
+            try {
+                const data = await OmniAPI.fetchHistory(currentHistoryRange);
+                renderHistoryCharts(data);
+                if (badge) {
+                    if (data.source === 'sample') {
+                        badge.textContent = '演示样例数据（无后端）';
+                        badge.className = 'text-[11px] font-mono px-2 py-1 rounded-full border border-amber-500/40 bg-amber-500/10 text-accent-amber';
+                    } else if (data.source === 'monitor-not-started') {
+                        badge.textContent = '巡检器未启动';
+                        badge.className = 'text-[11px] font-mono px-2 py-1 rounded-full border border-rose-500/40 bg-rose-500/10 text-rose-400';
+                    } else {
+                        badge.textContent = 'SQLite 实测 · ' + currentHistoryRange + ' 分钟窗口';
+                        badge.className = 'text-[11px] font-mono px-2 py-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 text-accent-emerald';
+                    }
+                }
+                const evData = await OmniAPI.fetchRecentEvents(60);
+                if (evList && evData && evData.events) {
+                    if (!evData.events.length) {
+                        evList.innerHTML = '<div class="text-slate-600">暂无历史事件 —— 控制台运行几分钟后，上下线与巡检心跳会出现在这里。</div>';
+                    } else {
+                        evList.innerHTML = evData.events.map(ev => {
+                            const c = ev.level === 'ok' ? 'text-accent-emerald' : (ev.level === 'err' ? 'text-rose-400' : (ev.level === 'warn' ? 'text-accent-amber' : 'text-slate-400'));
+                            return '<div class="flex gap-2"><span class="text-slate-600 shrink-0">[' + (ev.ts || '') + ']</span>' +
+                                   '<span class="text-accent-cyan shrink-0 w-24">[' + (ev.tag || '') + ']</span>' +
+                                   '<span class="' + c + '">' + escapeHtml(ev.msg || '') + '</span></div>';
+                        }).join('');
+                    }
+                }
+            } catch (e) {
+                if (badge) badge.textContent = '加载失败';
+                if (evList) evList.innerHTML = '<div class="text-rose-400">加载失败：' + escapeHtml(String(e)) + '</div>';
+            }
+        }
+
+        function renderHistoryCharts(data) {
+            if (typeof Chart === 'undefined' || !data || !data.series) return;
+            const series = data.series;
+            const labelsSet = [];
+            const tsIndex = {};
+            series.forEach(s => (s.points || []).forEach(p => {
+                if (!(p[0] in tsIndex)) { tsIndex[p[0]] = labelsSet.length; labelsSet.push(new Date(p[0]).toLocaleTimeString('zh-CN', { hour12: false })); }
+            }));
+            labelsSet.sort();
+            const labels = Object.keys(tsIndex).sort((a, b) => a - b).map(t => new Date(Number(t)).toLocaleTimeString('zh-CN', { hour12: false }));
+
+            const mkDatasets = (pick) => series.map((s, i) => {
+                const map = {};
+                (s.points || []).forEach(p => { map[p[0]] = pick(p); });
+                return {
+                    label: s.name, borderColor: HISTORY_COLORS[i % HISTORY_COLORS.length],
+                    backgroundColor: HISTORY_COLORS[i % HISTORY_COLORS.length] + '33',
+                    stepped: true, pointRadius: 0, borderWidth: 1.5, tension: 0.1, fill: false,
+                    data: Object.keys(tsIndex).sort((a, b) => a - b).map(t => (t in map ? map[t] : null))
+                };
+            });
+
+            const baseOpts = (yTitle) => ({
+                responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+                plugins: { legend: { labels: { color: '#94a3b8', boxWidth: 10, font: { size: 10 } } } },
+                scales: {
+                    x: { ticks: { color: '#64748b', maxTicksLimit: 8, font: { size: 10 } }, grid: { color: 'rgba(35,48,77,.4)' } },
+                    y: { ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: 'rgba(35,48,77,.4)' }, title: { display: true, text: yTitle, color: '#64748b', font: { size: 10 } } }
+                }
+            });
+
+            if (_uptimeChart) _uptimeChart.destroy();
+            if (_latencyChart) _latencyChart.destroy();
+            _uptimeChart = new Chart(document.getElementById('history-uptime-canvas'), {
+                type: 'line',
+                data: { labels: labels, datasets: mkDatasets(p => p[1]) },
+                options: Object.assign(baseOpts('在线率 %'), { scales: Object.assign(baseOpts('在线率 %').scales, { y: Object.assign(baseOpts('在线率 %').scales.y, { min: 0, max: 100 }) }) })
+            });
+            _latencyChart = new Chart(document.getElementById('history-latency-canvas'), {
+                type: 'line',
+                data: { labels: labels, datasets: mkDatasets(p => p[2] == null ? null : Number(p[2].toFixed(2))) },
+                options: baseOpts('ms')
+            });
         }
 
         // -------------------------------------------------------------

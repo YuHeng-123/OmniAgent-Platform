@@ -15,9 +15,11 @@
   var TIMEOUT_MS = 2500;
 
   function apiCall(path, options) {
+    var timeoutMs = (options && options.timeoutMs) || TIMEOUT_MS;
     var ctrl = new AbortController();
-    var timer = setTimeout(function () { ctrl.abort(); }, TIMEOUT_MS);
-    var opts = Object.assign({ signal: ctrl.signal }, options || {});
+    var timer = setTimeout(function () { ctrl.abort(); }, timeoutMs);
+    var opts = Object.assign({}, options || {}, { signal: ctrl.signal });
+    delete opts.timeoutMs;
     return fetch(path, opts)
       .then(function (r) {
         if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -265,8 +267,89 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query_text: queryText })
       }).catch(function () { return localAnalysis({ query_text: queryText }); });
+    },
+
+    /* ---------- 2.2 新增：服务起停管控 / 历史曲线 / 事件回放 ---------- */
+
+    /** 起停服务。action: 'stop' | 'start'。
+     *  静态模式（无后端）返回明确的 not-available —— 管控是真实进程操作，
+     *  没有后端就没有「假装管控」这回事。 */
+    controlService: function (id, action) {
+      if (!OmniAPI.connected) {
+        return Promise.resolve({
+          status: 'not-available',
+          detail: '当前是静态演示模式（无本地后端）—— 服务起停需要运行 run.bat 启动控制台。'
+        });
+      }
+      return apiCall('/api/v1/services/' + encodeURIComponent(id) + '/' + action, {
+        method: 'POST',
+        timeoutMs: 15000        // 杀进程要等 3s 超时 + kill，放宽
+      });
+    },
+
+    /** 历史曲线（在线率 + 延迟）。静态模式返回内置样例曲线，标 sample: true。 */
+    fetchHistory: function (minutes) {
+      var m = minutes || 60;
+      return apiCall('/api/v1/history/probes?minutes=' + m, { timeoutMs: 8000 })
+        .catch(function () { return sampleHistory(m); });
+    },
+
+    /** 最近事件回放。静态模式返回样例事件，标 sample: true。 */
+    fetchRecentEvents: function (limit) {
+      var n = limit || 60;
+      return apiCall('/api/v1/events/recent?limit=' + n, { timeoutMs: 8000 })
+        .catch(function () { return sampleRecentEvents(n); });
     }
   };
+
+  /* ---------- 静态模式的样例历史（明确标注，不冒充实测） ---------- */
+
+  var SAMPLE_SERVICES_META = [
+    { id: 'ai-gateway', name: '企业 AI 统一网关', port: 8000 },
+    { id: 'ecom-ai-guide', name: '琼华珠宝 AI 智能导购', port: 8001 },
+    { id: 'coze-material-studio', name: '多平台爆款素材工作台', port: 8002 },
+    { id: 'ai-data-analysis-assistant', name: 'AI 数据分析专家', port: 8510 },
+    { id: 'ai-knowledge-assistant', name: '企业级智能知识库 (RAG)', port: 8501 },
+    { id: 'data-automation-workbench', name: '自动化情报抓取平台', port: 8765 },
+    { id: 'ark_aigc_demo', name: '多模态音视频智能体 (FunClip)', port: 7860 }
+  ];
+
+  function sampleHistory(minutes) {
+    var n = 48;
+    var step = (minutes * 60 / n) * 1000;
+    var now = Date.now();
+    return Promise.resolve({
+      status: 'ok', minutes: minutes, bucket_sec: minutes * 60 / n,
+      source: 'sample',
+      series: SAMPLE_SERVICES_META.map(function (s, idx) {
+        var points = [];
+        for (var i = n - 1; i >= 0; i--) {
+          var t = Math.round((now - i * step) / 1000) * 1000;
+          // 每个服务造一段不同的「下线窗口」，曲线看起来像真实历史
+          var offline = (i >= (10 + idx * 4)) && (i <= (13 + idx * 4));
+          points.push([t, offline ? 0 : 100, offline ? null : 0.4 + Math.sin(i * 0.7 + idx) * 0.3 + 0.2]);
+        }
+        return { id: s.id, name: s.name, port: s.port, points: points };
+      })
+    });
+  }
+
+  function sampleRecentEvents(limit) {
+    var base = [
+      { ts: '23:41:02', tag: 'HEALTH', level: 'err', msg: '多模态音视频智能体 (FunClip)（:7860）状态变化：下线，流量已摘除。' },
+      { ts: '23:41:05', tag: 'HEALTH', level: 'ok', msg: '多模态音视频智能体 (FunClip)（:7860）状态变化：上线，已重新纳入调度。' },
+      { ts: '23:40:36', tag: 'HEALTH', level: 'info', msg: '全局健康巡检完成，7/7 在线，本轮无状态变化。' },
+      { ts: '23:39:12', tag: 'ECOM-AGENT', level: 'ok', msg: '琼华珠宝 AI 智能导购（:8001）已就绪。' },
+      { ts: '23:38:59', tag: 'MASTER', level: 'info', msg: '事件总线接入成功：本流由真实 TCP 端口探测驱动，每 3s 巡检一次，当前在线 7/7。' }
+    ];
+    var events = [];
+    for (var i = 0; i < Math.min(limit, 24); i++) {
+      var e = Object.assign({}, base[i % base.length]);
+      e.sample = true;
+      events.push(e);
+    }
+    return Promise.resolve({ status: 'ok', limit: limit, source: 'sample', events: events });
+  }
 
   window.OmniAPI = OmniAPI;
 })();

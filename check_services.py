@@ -13,6 +13,7 @@ check_services.py —— 7 个微服务的就绪检查（拓扑来源与主控�
     0 = 全部在线，或（默认模式下）至少 1 个在线
     1 = 一个都没在线；带 --require-all 时，非 7/7 一律返回 1
 """
+
 import argparse
 import os
 import socket
@@ -43,12 +44,10 @@ def probe(port: int, timeout: float):
 
 def main() -> int:
     ap = argparse.ArgumentParser(description="OmniAgent 微服务就绪检查")
-    ap.add_argument("--require-all", action="store_true",
-                    help="只有 7/7 全部在线才返回 0")
+    ap.add_argument("--require-all", action="store_true", help="只有 7/7 全部在线才返回 0")
     args = ap.parse_args()
 
-    print("拓扑来源: %s    探测超时: %.2fs    IPv4 回环: 127.0.0.1"
-          % (CONFIG_SOURCE, PROBE_TIMEOUT))
+    print("拓扑来源: %s    探测超时: %.2fs    IPv4 回环: 127.0.0.1" % (CONFIG_SOURCE, PROBE_TIMEOUT))
     print("-" * 74)
     print("%-10s %-6s %-9s %-11s %s" % ("状态", "端口", "耗时", "类型", "服务"))
     print("-" * 74)
@@ -57,8 +56,10 @@ def main() -> int:
     for s in SERVICES_META:
         up, ms = probe(s["port"], PROBE_TIMEOUT)
         online += 1 if up else 0
-        print("%-10s %-6d %-9s %-11s %s" % (
-            "● 在线" if up else "○ 离线", s["port"], "%.1f ms" % ms, s["type"], s["name"]))
+        print(
+            "%-10s %-6d %-9s %-11s %s"
+            % ("● 在线" if up else "○ 离线", s["port"], "%.1f ms" % ms, s["type"], s["name"])
+        )
 
     total = len(SERVICES_META)
     print("-" * 74)

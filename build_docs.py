@@ -12,6 +12,7 @@ build_docs.py —— 把控制台导出为「纯静态、自包含」的 GitHub 
 用法：
     .venv\\Scripts\\python.exe build_docs.py
 """
+
 import os
 import re
 import shutil
@@ -22,7 +23,7 @@ sys.path.insert(0, BASE_DIR)
 
 from jinja2 import Environment, FileSystemLoader  # noqa: E402
 
-from server import SERVICES_META, APP_VERSION  # noqa: E402  单一拓扑来源 + 版本号
+from server import APP_VERSION, SERVICES_META  # noqa: E402  单一拓扑来源 + 版本号
 
 DOCS_DIR = os.path.join(BASE_DIR, "docs")
 TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
@@ -48,14 +49,14 @@ def build():
         online_count=len(services),
         total_count=len(services),
         static_demo=True,
-        app_version=APP_VERSION,     # 版本号单一来源，与后端 /healthz 一致
+        app_version=APP_VERSION,  # 版本号单一来源，与后端 /healthz 一致
     )
 
     # ---------- 2. 绝对路径 → 相对路径 ----------
     before = html
     html = html.replace('"/static/', '"./static/')
     html = html.replace("'/static/", "'./static/")
-    html = html.replace('"/api/', '"./api/')      # 静态托管下必定 404 → 前端降级
+    html = html.replace('"/api/', '"./api/')  # 静态托管下必定 404 → 前端降级
     html = html.replace("'/api/", "'./api/")
     html = html.replace('href="/"', 'href="./"')
     html = html.replace("url('/static/", "url('./static/")
@@ -118,8 +119,7 @@ def build():
     report.append("未渲染的模板标记数   = " + str(len(re.findall(r"\{\{|\{%", html))))
     n_static = sum(len(fs) for _, _, fs in os.walk(STATIC_DST))
     n_static_bytes = sum(
-        os.path.getsize(os.path.join(r, fn))
-        for r, _, fs in os.walk(STATIC_DST) for fn in fs
+        os.path.getsize(os.path.join(r, fn)) for r, _, fs in os.walk(STATIC_DST) for fn in fs
     )
     report.append("docs/static 文件数   = %d (%d bytes)" % (n_static, n_static_bytes))
     report.append("docs/index.html      = %s" % os.path.exists(out_html))
@@ -127,8 +127,11 @@ def build():
     report.append("docs/.nojekyll       = %s" % os.path.exists(os.path.join(DOCS_DIR, ".nojekyll")))
 
     print("\n".join(report))
-    return 0 if (len(re.findall(r"\{\{|\{%", html)) == 0
-                 and len(re.findall(r'["\'(]/static/', html)) == 0) else 1
+    return (
+        0
+        if (len(re.findall(r"\{\{|\{%", html)) == 0 and len(re.findall(r'["\'(]/static/', html)) == 0)
+        else 1
+    )
 
 
 if __name__ == "__main__":

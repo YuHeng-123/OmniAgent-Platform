@@ -11,6 +11,8 @@ selftest_omni.py —— 一条命令跑完的离线自检
 跑法：
     .venv\\Scripts\\python.exe selftest_omni.py [证据输出路径]
 """
+
+import http.server
 import json
 import os
 import socket
@@ -18,7 +20,6 @@ import socketserver
 import sys
 import threading
 import time
-import http.server
 
 import httpx
 import uvicorn
@@ -72,15 +73,14 @@ STATIC_PORT = pick_port(API_PORT + 1)
 # ---------------------------------------------------------------- 起 API
 cfg = uvicorn.Config(app, host="127.0.0.1", port=API_PORT, log_level="error")
 srv = uvicorn.Server(cfg)
-srv.install_signal_handlers = lambda: None          # 非主线程装信号处理器会报错，绕开
+srv.install_signal_handlers = lambda: None  # 非主线程装信号处理器会报错，绕开
 t_api = threading.Thread(target=srv.run, daemon=True)
 t_api.start()
 
 api_up = False
 for _ in range(120):
     try:
-        httpx.get("http://127.0.0.1:%d/api/v1/overview/stats" % API_PORT,
-                  timeout=1.0, trust_env=False)
+        httpx.get("http://127.0.0.1:%d/api/v1/overview/stats" % API_PORT, timeout=1.0, trust_env=False)
         api_up = True
         break
     except Exception:
@@ -90,6 +90,7 @@ if not api_up:
     emit("FATAL: API 未能在 18s 内启动")
     print("\n".join(lines))
     sys.exit(1)
+
 
 # ---------------------------------------------------------------- 起静态站
 class QuietHandler(http.server.SimpleHTTPRequestHandler):
@@ -119,8 +120,13 @@ section("[1] GET /  主控台页面")
 r = client.get("/")
 emit("HTTP %d, %d bytes" % (r.status_code, len(r.content)))
 emit("含 'OmniAgent'    = %s" % ("OmniAgent" in r.text))
-emit("含外部 CDN 引用   = %s  (必须为 False，否则断网白屏)"
-     % any(k in r.text for k in ("cdn.tailwindcss.com", "cdn.jsdelivr.net", "cdnjs.cloudflare.com", "fonts.googleapis.com")))
+emit(
+    "含外部 CDN 引用   = %s  (必须为 False，否则断网白屏)"
+    % any(
+        k in r.text
+        for k in ("cdn.tailwindcss.com", "cdn.jsdelivr.net", "cdnjs.cloudflare.com", "fonts.googleapis.com")
+    )
+)
 emit("引用 ./static/    = %s" % ("./static/" in r.text or "/static/" in r.text))
 
 section("[2] GET /api/v1/overview/stats  微服务真实在线数")
@@ -130,7 +136,9 @@ for s in d["services"]:
     emit("  port %-5d %-9s %s" % (s["port"], s["status"], s["name"]))
 
 section("[3] POST /api/v1/guide/chat  导购：真上游优先，失败降级")
-res = client.post("/api/v1/guide/chat", json={"message": "你们支持刻字定制吗？多久发货？", "history": []}).json()
+res = client.post(
+    "/api/v1/guide/chat", json={"message": "你们支持刻字定制吗？多久发货？", "history": []}
+).json()
 emit("backend      = %s" % res.get("backend"))
 emit("model        = %s" % res.get("model"))
 emit("latency_ms   = %s   (实测，不是写死的常数)" % res.get("latency_ms"))
@@ -144,9 +152,10 @@ for st in res2.get("trace", []):
     emit("  [%s] %s" % (st.get("status"), st.get("node")))
 
 section("[5] POST /api/v1/marketing/generate  营销文案 + 合规质检")
-mk = client.post("/api/v1/marketing/generate", json={
-    "product_name": "全网唯一顶级和田玉吊坠", "target_platform": "xiaohongshu", "keywords": "第一"
-}).json()
+mk = client.post(
+    "/api/v1/marketing/generate",
+    json={"product_name": "全网唯一顶级和田玉吊坠", "target_platform": "xiaohongshu", "keywords": "第一"},
+).json()
 emit("title       = %s" % mk.get("title"))
 emit("compliance  = %s" % json.dumps(mk.get("compliance"), ensure_ascii=False))
 emit("latency_ms  = %s" % mk.get("latency_ms"))
@@ -187,7 +196,10 @@ for path, must in [
 section("[9] 降级链路：模拟后端 404 时前端取数")
 try:
     rr = static.get("/api/v1/overview/stats")
-    emit("静态站下 GET /api/v1/overview/stats -> HTTP %d（非 200 → 前端 omni-api.js 自动降级）" % rr.status_code)
+    emit(
+        "静态站下 GET /api/v1/overview/stats -> HTTP %d（非 200 → 前端 omni-api.js 自动降级）"
+        % rr.status_code
+    )
 except Exception as e:
     emit("ERR %s" % e)
 
@@ -200,16 +212,27 @@ if os.path.exists(idx):
     emit("残留 Jinja2 标记     = %d  (应为 0)" % n_tpl)
     emit("残留绝对 /static/    = %d  (应为 0)" % html.count('"/static/'))
     emit("含静态演示角标逻辑   = %s" % ("静态演示模式" in html))
-    emit("含外部 CDN           = %s  (应为 False)" % any(
-        k in html for k in ("cdn.tailwindcss.com", "cdn.jsdelivr.net", "cdnjs.cloudflare.com", "fonts.googleapis.com")))
+    emit(
+        "含外部 CDN           = %s  (应为 False)"
+        % any(
+            k in html
+            for k in (
+                "cdn.tailwindcss.com",
+                "cdn.jsdelivr.net",
+                "cdnjs.cloudflare.com",
+                "fonts.googleapis.com",
+            )
+        )
+    )
 else:
     emit("docs/index.html 不存在！")
 
 section("[11] GET /api/v1/events/stream  中枢事件总线（SSE，真实端口探测驱动）")
 sse_events = []
 try:
-    with client.stream("GET", "/api/v1/events/stream",
-                       timeout=httpx.Timeout(30.0, connect=5.0, read=6.0)) as st:
+    with client.stream(
+        "GET", "/api/v1/events/stream", timeout=httpx.Timeout(30.0, connect=5.0, read=6.0)
+    ) as st:
         emit("HTTP %d   content-type = %s" % (st.status_code, st.headers.get("content-type")))
         try:
             for line in st.iter_lines():

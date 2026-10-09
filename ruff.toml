@@ -1,0 +1,30 @@
+# ruff 配置：只开「真的会咬人」的规则，不为了刷绿而刷绿。
+line-length = 110
+target-version = "py311"
+exclude = [
+    ".venv", "venv", "__pycache__",
+    "docs",           # 构建产物
+    "static/vendor",  # 第三方前端库
+]
+
+[lint]
+# E  pycodestyle
+# F  pyflakes（未用变量 / 未定义名 / 未用 import —— 最容易藏真 bug 的一类）
+# I  isort（import 排序）
+# W  空白与制表符混用
+# B  flake8-bugbear（可变默认参数等）
+# 注意：刻意不开 UP（pyupgrade）。本库大量使用 % 格式化构造中文报告文本，
+#       UP031 会要求全量改成 f-string —— 那是风格偏好不是缺陷，开了只会制造噪音。
+select = ["E", "F", "I", "W", "B"]
+ignore = [
+    "E501",   # 行长：中文注释与长字符串很多，交给编辑器软换行，不机械折行
+    "B008",   # FastAPI 惯用法：Depends() 写在默认参数里
+]
+
+[lint.per-file-ignores]
+"tests/*" = ["E402"]     # 测试需要在 import server 前先 sys.path.insert
+"conftest.py" = ["E402"]
+
+[format]
+quote-style = "double"
+indent-style = "space"

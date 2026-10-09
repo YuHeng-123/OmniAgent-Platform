@@ -31,6 +31,13 @@ event_tags:
 #       desc（控制台卡片描述）/ tech（技术栈标注）
 #       chat_path（可选）：控制台「导购」链路要 POST 的路径，缺省 /api/chat。
 #                         目前只有 ecom-ai-guide 用到 —— 换上游端口只改这里。
+#       start_cmd / start_cwd（可选）：控制台卡片「启动」按钮要拉起的命令与工作目录。
+#                         不配置 = 启动按钮禁用（控制台不假装知道服务的启动方式）。
+#                         示例：
+#                           start_cmd: ["streamlit", "run", "app.py", "--server.port", "8510"]
+#                           start_cwd: "D:/path/to/that-service"
+#                         子进程输出会落到 data/service-logs/<id>.log，
+#                         上线后由共享巡检器在下一轮探测里自然翻牌并推送事件。
 services:
   - id: ai-gateway
     name: 企业 AI 统一网关

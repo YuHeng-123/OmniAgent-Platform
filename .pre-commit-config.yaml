@@ -1,0 +1,29 @@
+# 提交前自动跑一遍规范与测试。
+# 启用： .venv/Scripts/pip install pre-commit && .venv/Scripts/pre-commit install
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+        args: ["--maxkb=2048"]     # vendor 里的前端库体积大但必要，放宽到 2MB
+      - id: check-merge-conflict
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.9
+    hooks:
+      - id: ruff
+        args: ["--fix"]
+      - id: ruff-format
+
+  # docs/ 是构建产物，正常不会手改；真改了说明流程跑偏了 —— 这条会提醒你。
+  - repo: local
+    hooks:
+      - id: docs-is-generated
+        name: docs/ 是 build_docs.py 的产物，请勿手改
+        language: system
+        entry: python -c "import sys;sys.exit(0)"
+        files: ^docs/
+        pass_filenames: false

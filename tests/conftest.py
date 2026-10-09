@@ -10,6 +10,7 @@ pytest 公共设施 —— 一个「跑得起来」的本地后端。
 对 127.0.0.1 的请求一律 trust_env=False：否则 httpx 会把本机请求丢给系统代理，
   在开了代理的机器上会假报连不上。
 """
+
 import os
 import socket
 import sys
@@ -54,7 +55,7 @@ def base_url():
     port = _pick_port()
     cfg = uvicorn.Config(app, host="127.0.0.1", port=port, log_level="error")
     srv = uvicorn.Server(cfg)
-    srv.install_signal_handlers = lambda: None      # 非主线程装信号处理器会抛错
+    srv.install_signal_handlers = lambda: None  # 非主线程装信号处理器会抛错
     threading.Thread(target=srv.run, daemon=True).start()
 
     url = "http://127.0.0.1:%d" % port

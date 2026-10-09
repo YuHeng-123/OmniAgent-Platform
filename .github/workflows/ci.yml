@@ -33,6 +33,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
 
+      - name: Lint (ruff)
+        run: |
+          ruff check .
+          ruff format --check . || (echo "::error::代码格式不符合 ruff-format，请在本地跑 ruff format ." && exit 1)
+
       - name: Run pytest
         run: python -m pytest -q
 
@@ -55,6 +60,9 @@ jobs:
       - name: Service readiness check (informational)
         continue-on-error: true
         run: python check_services.py
+
+      - name: Docker image builds
+        run: docker build -t omniagent-console:ci .
 
       - name: Upload evidence
         if: always()

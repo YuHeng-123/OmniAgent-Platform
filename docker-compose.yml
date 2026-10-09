@@ -1,0 +1,29 @@
+# OmniAgent 控制台一键容器化。
+#
+# 说明：这里【只】编排控制台本体。7 个微服务（8000/8001/8002/8501/8510/8765/7860）
+# 是各自独立的仓库，不在本仓库内 —— 想让面板显示在线，有两种做法：
+#   1) 微服务跑在宿主机上：用下面的 extra_hosts（host.docker.internal）让容器访问宿主端口；
+#   2) 微服务也容器化：把它们加进同一个 compose 网络，并把 services.yaml 的 url 改成服务名。
+services:
+  console:
+    build: .
+    image: omniagent-console:2.2
+    container_name: omni-console
+    ports:
+      - "${OMNI_PORT:-8888}:8888"
+    environment:
+      OMNI_PORT: 8888
+      TZ: Asia/Shanghai
+    volumes:
+      # 历史曲线数据（SQLite）持久化到宿主机，重建容器不丢
+      - ./data:/app/data
+    extra_hosts:
+      # 让容器里的 127.0.0.1 探测能打到宿主机上跑的微服务（Linux 需要，Docker Desktop 自带）
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8888/healthz',timeout=4)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s

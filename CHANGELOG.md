@@ -3,6 +3,35 @@
 本项目遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 的组织方式，
 版本号遵循[语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [2.2.0] - 2026-10-10
+
+### 新增
+- **服务起停管控**：服务卡片上的「停止 / 启动」按钮，背后是两个新接口
+  `POST /api/v1/services/{id}/stop` 与 `/start`，外加 `GET /api/v1/services/control-capabilities`
+  告诉前端每个服务哪些操作可用。停掉任意一个服务，**约 3 秒内**事件总线就会推出下线事件 ——
+  演示「差异驱动」不再需要手动去命令行杀进程。
+  - 安全约束：`stop` 只杀监听在**拓扑配置端口**上的进程，端口表之外的 PID 一律不碰；
+  - 诚实约束：`start` 只拉起 `services.yaml` 里配了 `start_cmd` 的服务，没配就如实返回
+    `not-configured` 并说明如何启用，不假装知道没告诉过它的启动方式。
+- **状态历史曲线 + 事件持久化**：SQLite 落盘（`data/omni_history.db`，不入 git），
+  新增 `GET /api/v1/history/probes`（各服务在线率 / 平均延迟，按时间桶降采样）与
+  `GET /api/v1/events/recent`（最近事件倒序回放）。页面从「实时快照」变成「有历史」。
+- **「历史趋势」页签**：30 分 / 2 小时 / 8 小时窗口切换，在线状态阶梯曲线 + 平均延迟折线 +
+  最近事件流水。静态演示模式下走内置样例曲线，不假装有真实历史。
+- **容器化**：`Dockerfile`（python-slim + 非 root + `HEALTHCHECK` 打 `/healthz`）、
+  `docker-compose.yml`（含数据卷与 `host.docker.internal`）、`.dockerignore`。
+- **代码规范**：`ruff.toml` + `.pre-commit-config.yaml`，CI 增加 lint 与镜像构建步骤。
+
+### 变更
+- **事件总线架构重构**：由「每个 SSE 连接各自探测」改为**全局共享巡检器**
+  （lifespan 内启动的 asyncio 任务）。现在 N 个页面连接只探测一次，
+  事件由巡检器统一 diff 并广播给所有订阅者 —— 这也是历史落盘与起停联动的地基。
+- `zip()` 全部补 `strict=True`：探测结果与端口列表本应一一对应，错位时立即抛错而非静默截断。
+- 版本号断言不再写死 `2.1.0`（否则每次发版假 FAIL），改为从 `APP_VERSION` 派生并校验渲染产物。
+
+### 修复
+- `ruff check .` 在工作目录而非项目根执行会「假绿」——已确认并在 CI 里用显式路径避免。
+
 ## [2.1.0] - 2026-10-09
 
 ### 新增

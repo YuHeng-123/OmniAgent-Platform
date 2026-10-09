@@ -1,0 +1,23 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# 运行产物
+logs/
+*.log
+
+# 环境变量与密钥（务必不要提交真实 API Key）
+.env
+.env.*
+
+# 本地备份
+*.bak
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini

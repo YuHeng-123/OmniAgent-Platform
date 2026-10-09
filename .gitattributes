@@ -1,0 +1,28 @@
+# 统一换行符，避免跨平台 clone 后脚本跑不起来
+* text=auto eol=lf
+
+# Windows 批处理必须是 CRLF，否则 cmd 解析可能出错
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# shell 脚本必须是 LF，否则 Linux/macOS 下 exec 报 bad interpreter
+*.sh text eol=lf
+
+# 二进制资源不做换行符转换
+*.woff2 binary
+*.woff binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.jar binary
+*.zip binary
+
+# 前端压缩产物：不参与 diff 统计
+*.min.js -diff
+*.min.css -diff
+
+# GitHub 语言统计：让本仓库被识别为 Python 项目
+docs/static/vendor/* linguist-vendored
+static/vendor/* linguist-vendored

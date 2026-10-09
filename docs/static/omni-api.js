@@ -140,6 +140,95 @@
     return Promise.resolve({ sql: sql, chart: chart, conclusion: conclusion, highlight_product: highlight, latency_ms: Math.round(performance.now() - t0) });
   }
 
+  /* ---------- 事件总线：真实 SSE 优先，失败降级为示例事件 ---------- */
+
+  // 仅在拿不到后端时使用。界面上会明确标成「示例事件流 · 无后端」，
+  // 不会伪装成实时流。
+  var SAMPLE_EVENTS = [
+    { tag: 'MASTER', level: 'info', msg: 'OmniAgent Platform 统一控制总线初始化完成。' },
+    { tag: 'GATEWAY', level: 'info', msg: '流量总线接管，监听 127.0.0.1:8000。' },
+    { tag: 'ECOM-AGENT', level: 'info', msg: '珠宝导购 LangGraph 状态机就绪，知识库向量切片预热。' },
+    { tag: 'MARKETING', level: 'warn', msg: 'Coze 工作流降级保护加载完成，违禁词库 114 词。' },
+    { tag: 'ANALYTICS', level: 'info', msg: 'DuckDB 内存引擎就绪，挂载电商交易数据集 2,450 笔。' },
+    { tag: 'HEALTH', level: 'ok', msg: '全局微服务健康巡检完成，核心业务全部响应。' }
+  ];
+
+  /**
+   * 启动事件总线。
+   * handlers = { onEvent(ev, source), onMode('connecting'|'live'|'sample') }
+   * 返回 { mode, stop() }。
+   *
+   * 真实路径：EventSource('/api/v1/events/stream')，后端每 3s 做一次
+   *          TCP 端口探测，只把「状态变化」和「巡检心跳」推下来。
+   * 降级路径：拿不到后端（GitHub Pages / file:// / 后端未启）→ 播内置示例事件，
+   *          并把角标切成「示例事件流 · 无后端」。
+   */
+  function startEvents(handlers) {
+    var h = handlers || {};
+    var es = null;
+    var state = { mode: 'connecting', stopped: false };
+
+    function fire(ev, source) {
+      if (typeof h.onEvent === 'function') {
+        try { h.onEvent(ev, source); } catch (e) { /* 渲染异常不影响主流程 */ }
+      }
+    }
+    function setMode(m) {
+      if (state.stopped) return;
+      state.mode = m;
+      if (typeof h.onMode === 'function') {
+        try { h.onMode(m); } catch (e) { /* ignore */ }
+      }
+    }
+    function startSample() {
+      setMode('sample');
+      var i = 0;
+      state.sampleTimer = setInterval(function () {
+        if (state.stopped) { clearInterval(state.sampleTimer); return; }
+        var raw = SAMPLE_EVENTS[i % SAMPLE_EVENTS.length];
+        fire({
+          ts: new Date().toTimeString().slice(0, 8),
+          tag: raw.tag, level: raw.level, msg: raw.msg, sample: true
+        }, 'sample');
+        i++;
+      }, 1400);
+    }
+
+    state.stop = function () {
+      state.stopped = true;
+      if (es) { try { es.close(); } catch (e) { /* ignore */ } }
+      if (state.sampleTimer) clearInterval(state.sampleTimer);
+    };
+
+    if (typeof EventSource === 'undefined') {   // 极老浏览器
+      startSample();
+      return state;
+    }
+
+    try {
+      es = new EventSource('/api/v1/events/stream');
+    } catch (e) {
+      startSample();
+      return state;
+    }
+
+    es.onopen = function () { setMode('live'); };
+    es.onmessage = function (m) {
+      var ev;
+      try { ev = JSON.parse(m.data); } catch (e) { return; }
+      fire(ev, 'live');
+    };
+    // EventSource 失败后会自动重连 —— 首次报错就关掉并降级，避免在静态托管上无限刷 404
+    es.onerror = function () {
+      if (state.stopped) return;
+      try { es.close(); } catch (e) { /* ignore */ }
+      es = null;
+      startSample();
+    };
+
+    return state;
+  }
+
   /* ---------- 对外接口 ---------- */
   var OmniAPI = {
     /* 返回 true 表示已连上本地后端 */
@@ -150,6 +239,8 @@
         .then(function (d) { OmniAPI.connected = true; return d; })
         .catch(function () { OmniAPI.connected = false; return null; });
     },
+
+    startEvents: startEvents,
 
     guideChat: function (message, history) {
       return apiCall('/api/v1/guide/chat', {

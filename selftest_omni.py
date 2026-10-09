@@ -205,6 +205,42 @@ if os.path.exists(idx):
 else:
     emit("docs/index.html 不存在！")
 
+section("[11] GET /api/v1/events/stream  中枢事件总线（SSE，真实端口探测驱动）")
+sse_events = []
+try:
+    with client.stream("GET", "/api/v1/events/stream",
+                       timeout=httpx.Timeout(30.0, connect=5.0, read=6.0)) as st:
+        emit("HTTP %d   content-type = %s" % (st.status_code, st.headers.get("content-type")))
+        try:
+            for line in st.iter_lines():
+                if not line.startswith("data:"):
+                    continue
+                try:
+                    sse_events.append(json.loads(line[5:].strip()))
+                except Exception:
+                    continue
+                if len(sse_events) >= 8:
+                    break
+        except httpx.ReadTimeout:
+            emit("(采集 %d 条后读取超时，符合预期：之后只推状态变化/心跳)" % len(sse_events))
+    for ev in sse_events:
+        emit("  [%s] [%-11s] (%s) %s" % (ev.get("ts"), ev.get("tag"), ev.get("level"), ev.get("msg")))
+    emit("初始事件条数 = %d  (1 条接入说明 + 7 条服务就绪播报)" % len(sse_events))
+except Exception as e:
+    emit("ERR %s" % e)
+
+# 事件总线已从「写死的六行文本」改为运行时拉取 —— 校验静态产物里不再有固定时间戳
+if os.path.exists(idx):
+    html_ev = open(idx, encoding="utf-8").read()
+    emit("docs 残留写死时间戳 19:15:02 = %s  (应为 False)" % ("19:15:02" in html_ev))
+    emit("docs 含 startEvents 接线     = %s  (应为 True)" % ("startEvents" in html_ev))
+js_path = os.path.join(DOCS_DIR, "static", "omni-api.js")
+if os.path.exists(js_path):
+    js = open(js_path, encoding="utf-8").read()
+    emit("docs 的 omni-api.js 含 EventSource = %s  (应为 True)" % ("EventSource" in js))
+    emit("docs 的 omni-api.js 含示例降级      = %s  (应为 True)" % ("示例事件流" in js))
+
+
 # ================================================================ 收尾
 section("收尾")
 emit("拓扑服务数 = %d" % len(SERVICES_META))

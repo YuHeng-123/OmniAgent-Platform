@@ -103,6 +103,44 @@ POST /api/v1/guide/chat
 
 ---
 
+## 核心设计：中枢事件总线（真实探测驱动，不是滚动的假日志）
+
+总览页右下角那条事件流，**不是把几行日志写死在前端滚动**，而是一条真 SSE 流：
+
+```
+GET /api/v1/events/stream   (text/event-stream)
+   ├─ 打开即推：1 条接入说明 + 7 条服务就绪播报（基于真实 TCP 探测结果）
+   ├─ 之后每 3s 重新探测 7 个端口，与上一轮快照比对
+   │     ├─ 有变化 → 立刻推「上线 / 下线」事件
+   │     └─ 无变化 → 每第 4 轮推一条巡检心跳（避免刷屏）
+   └─ 客户端断开即回收（request.is_disconnected）
+```
+
+拿不到后端（GitHub Pages / `file://` / 服务未启）时，前端 `omni-api.js` 自动降级为内置示例事件，
+右上角角标从 `LIVE · 真实端口探测` 变成 `示例事件流 · 无后端` —— 不冒充实时。
+
+**这条链路有独立验证脚本**（不靠自夸，靠注入式端口探测做端到端验证）：
+
+```bash
+.venv/Scripts/python verify_event_bus.py     # → evidence/event-bus-diff.txt
+```
+
+它把底层 `scan_ports` 做注入：第 1 轮全在线、第 2 轮把 `:7860` 置为离线，
+然后断言流里**确实出现了「状态变化：下线」**。实测输出：
+
+```
+T+ 0.0s  [MASTER  ] (info) 事件总线接入成功：…当前在线 7/7
+T+ 0.0s  [FUNCLIP ] (ok)   多模态音视频智能体 (FunClip)（:7860）已就绪。
+T+ 3.0s  [HEALTH  ] (err)  多模态音视频智能体 (FunClip)（:7860）状态变化：下线，流量已摘除。
+T+12.1s  [HEALTH  ] (info) 全局健康巡检完成，6/7 在线，本轮无状态变化。
+结论: PASS —— 事件确实由状态差异驱动，非定时文本播报
+```
+
+> **现场演示怎么用**：把任意一个服务停掉（例如 `:7860`），**3 秒内**右侧面板就会出现一条红色的下线事件；
+> 再启动它，3 秒内出现绿色的上线事件。比任何形容词都有说服力。
+
+---
+
 ## 2.0 相对 1.0 改了什么（每条都有实测）
 
 | # | 1.0 的问题 | 2.0 的做法 |
@@ -114,18 +152,20 @@ POST /api/v1/guide/chat
 | 5 | 同步 socket 探测端口阻塞 async 事件循环 | `asyncio.open_connection` + `asyncio.gather` 并发探测 |
 | 6 | CORS `allow_origins=["*"]` + `credentials=True`（浏览器规范禁止） | `allow_credentials=False` |
 | 7 | 只能在本地跑，无法静态演示 | 新增 `docs/` 纯静态版 + `build_docs.py` 构建脚本 |
+| 8 | 事件总线是**写死的 6 行文本**（时间戳永远停在 `19:15:02`），标着 LIVE 却永不刷新 | 改为真 SSE 差异驱动流（见上一节）；降级时角标明确写「示例事件流」 |
 
 ---
 
 ## 实测证据
 
-`evidence/selftest-omni.txt` 由 `selftest_omni.py` 生成，**一次跑完 10 组真实 HTTP 校验**（同进程起 API + 起静态站，不依赖长驻服务）：
+`evidence/selftest-omni.txt` 由 `selftest_omni.py` 生成，**一次跑完 11 组真实 HTTP 校验**（同进程起 API + 起静态站，不依赖长驻服务）：
 
 ```bash
-.venv/Scripts/python selftest_omni.py
+.venv/Scripts/python selftest_omni.py       # 全链路自检
+.venv/Scripts/python verify_event_bus.py    # 事件总线差异驱动专项验证
 ```
 
-覆盖：主控台渲染 · 0 外部 CDN · 7 服务在线数 · 导购降级链路 · 自纠错链路 · 合规质检命中违禁词 · Text-to-SQL · 热切仿真 · docs 静态资源全部 200 · 静态化自检。
+覆盖：主控台渲染 · 0 外部 CDN · 7 服务在线数 · 导购降级链路 · 自纠错链路 · 合规质检命中违禁词 · Text-to-SQL · 热切仿真 · docs 静态资源全部 200 · 静态化自检 · **SSE 事件总线首帧 8 条真实事件**。
 
 ---
 
@@ -137,6 +177,7 @@ POST /api/v1/guide/chat
 - **`/api/v1/gateway/simulate_failover` 是仿真端点**，它不真的去熔断某个上游，只演示「主备热切」这个形态。
 - **7 个微服务是独立项目**，不在本仓库内。本仓库是控制台 + 编排层。想看真实链路，需要各自把服务起起来。
 - **端口探测只探本机 `127.0.0.1`**，不做远程服务发现。
+- **事件总线的心跳是 12s 一次**（3s 探测 × 4 轮），只有状态**变化**才实时推送 —— 这是刻意压掉刷屏，不是采样不到。
 - 无鉴权、无多租户 —— 定位是单机演示。
 
 ---
@@ -145,19 +186,21 @@ POST /api/v1/guide/chat
 
 ```
 OmniAgent-Platform/
-├─ server.py              # FastAPI 控制台（页面 + 5 个 API + 端口探测）
+├─ server.py              # FastAPI 控制台（页面 + 6 个 API + 端口探测 + SSE 事件总线）
 ├─ build_docs.py          # 生成 docs/ 静态演示版（单一拓扑来源：复用 server.py）
-├─ selftest_omni.py       # 10 组离线自检 → evidence/
+├─ selftest_omni.py       # 11 组离线自检 → evidence/
+├─ verify_event_bus.py    # 事件总线「差异驱动」专项验证 → evidence/
 ├─ requirements.txt
 ├─ run.bat / run.sh       # 一键启动（自动建 venv 装依赖）
 ├─ templates/
 │  └─ index.html          # 主控台页面（Jinja2 模板）
 ├─ static/
-│  ├─ omni-api.js         # 双模式数据源适配层（真接口 ⇄ 内置降级）
+│  ├─ omni-api.js         # 双模式数据源适配层（真接口 ⇄ 内置降级）+ 事件总线客户端
 │  └─ vendor/             # 本地化前端库：tailwind / chart.js / fontawesome
 ├─ docs/                  # ← GitHub Pages 发布目录（build_docs.py 生成，勿手改）
 └─ evidence/
-   └─ selftest-omni.txt   # 实测证据
+   ├─ selftest-omni.txt   # 全链路实测证据
+   └─ event-bus-diff.txt  # 事件总线差异驱动验证证据
 ```
 
 ---

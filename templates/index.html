@@ -166,7 +166,7 @@
                     <span class="text-accent-cyan font-bold ml-1">DeepSeek-V3</span>
                     <span class="text-slate-500 mx-2">|</span>
                     <span>备用热切：</span>
-                    <span class="text-accent-emerald font-bold ml-1">Gemini-3.8-Flash</span>
+                    <span class="text-accent-emerald font-bold ml-1">本地兜底引擎</span>
                 </div>
                 <button onclick="triggerQuickFailover()" class="px-3.5 py-1.5 rounded-lg text-xs font-medium bg-gradient-to-r from-accent-blue to-accent-purple hover:opacity-90 text-white transition-opacity shadow-sm flex items-center">
                     <i class="fas fa-rotate mr-1.5"></i> 容灾热切演示
@@ -231,6 +231,11 @@
                     </div>
                 </div>
 
+                <p class="text-[11px] text-slate-500 -mt-2 leading-relaxed">
+                    <i class="fas fa-circle-info mr-1"></i>
+                    以上 4 项中，<b class="text-slate-400">「活跃 Agent 集群」为实时端口探测值</b>；其余（QPS / 响应延迟 / Token 消耗 / 缓存节约 / 命中率）为<b class="text-slate-400">演示样例数据</b>，非实盘经营指标。
+                </p>
+
                 <!-- 架构拓扑流图 & 实时事件流 -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- 业务拓扑架构 -->
@@ -293,15 +298,10 @@
                                 <i class="fas fa-terminal text-accent-emerald"></i>
                                 <h3 class="font-bold text-white text-base">中枢事件总线</h3>
                             </div>
-                            <span class="text-[11px] font-mono text-accent-emerald terminal-glow">LIVE STREAM</span>
+                            <span id="event-bus-mode" class="text-[11px] font-mono text-slate-500">CONNECTING…</span>
                         </div>
                         <div id="event-log-container" class="flex-1 bg-dark-900 rounded-xl p-3 font-mono text-xs overflow-y-auto space-y-2 border border-dark-border h-[420px]">
-                            <div class="text-slate-500">[19:15:02] <span class="text-accent-cyan">[MASTER]</span> OmniAgent Platform 统一控制总线初始化完成。</div>
-                            <div class="text-slate-500">[19:15:08] <span class="text-accent-blue">[GATEWAY]</span> 流量总线接管，监听 127.0.0.1:8000。</div>
-                            <div class="text-slate-500">[19:15:15] <span class="text-accent-purple">[ECOM-AGENT]</span> 珠宝导购 LangGraph 状态机就绪，知识库向量切片预热。</div>
-                            <div class="text-slate-500">[19:15:22] <span class="text-accent-amber">[MARKETING]</span> Coze 工作流降级保护加载完成，违禁词库 114 词。</div>
-                            <div class="text-slate-500">[19:15:30] <span class="text-accent-emerald">[ANALYTICS]</span> DuckDB 内存引擎就绪，挂载电商交易数据集 2,450 笔。</div>
-                            <div class="text-accent-emerald">[19:16:01] <span class="text-accent-cyan">[HEALTH]</span> 全局微服务健康巡检完成，4 大核心业务全部响应。</div>
+                            <div class="text-slate-600">正在接入事件总线…</div>
                         </div>
                     </div>
                 </div>
@@ -650,7 +650,7 @@
                                 <div>
                                     <div class="flex items-center space-x-2">
                                         <span class="w-2.5 h-2.5 rounded-full bg-accent-emerald animate-pulse"></span>
-                                        <span class="font-bold text-sm text-white">Gemini-3.8-Flash</span>
+                                        <span class="font-bold text-sm text-white">本地兜底引擎</span>
                                     </div>
                                     <p class="text-xs text-slate-400 mt-1">极速低延迟与多模态灾备模型</p>
                                     <div class="text-[11px] font-mono text-accent-emerald mt-2">权重: 30% ｜ 热切待命: 42ms</div>
@@ -1087,9 +1087,52 @@
             return div.innerHTML;
         }
 
+        // ---- 中枢事件总线：渲染 + 模式角标 ----
+        const EV_LEVEL_CLS = { ok: 'text-accent-emerald', warn: 'text-accent-amber', err: 'text-rose-400', info: 'text-slate-400' };
+        const EV_TAG_CLS = {
+            MASTER: 'text-accent-cyan', GATEWAY: 'text-accent-blue', HEALTH: 'text-accent-emerald',
+            ANALYTICS: 'text-accent-emerald', RAG: 'text-accent-purple', 'ECOM-AGENT': 'text-accent-purple',
+            MARKETING: 'text-accent-amber', COLLECTOR: 'text-accent-cyan', FUNCLIP: 'text-accent-purple'
+        };
+        const EV_MAX_LINES = 80;
+
+        function appendEventLine(ev) {
+            const box = document.getElementById('event-log-container');
+            if (!box) return;
+            if (box.dataset.placeholder !== 'cleared') {   // 首次收到事件时清掉占位文字
+                box.innerHTML = '';
+                box.dataset.placeholder = 'cleared';
+            }
+            const tag = ev.tag || 'BUS';
+            const line = document.createElement('div');
+            line.className = 'text-slate-500 leading-relaxed';
+            line.innerHTML = '[' + escapeHtml(ev.ts || '') + '] '
+                + '<span class="' + (EV_TAG_CLS[tag] || 'text-accent-purple') + '">[' + escapeHtml(tag) + ']</span> '
+                + '<span class="' + (EV_LEVEL_CLS[ev.level] || 'text-slate-400') + '">' + escapeHtml(ev.msg || '') + '</span>';
+            box.appendChild(line);
+            while (box.children.length > EV_MAX_LINES) box.removeChild(box.firstChild);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        function setEventBusMode(mode) {
+            const el = document.getElementById('event-bus-mode');
+            if (!el) return;
+            if (mode === 'live') {
+                el.className = 'text-[11px] font-mono text-accent-emerald terminal-glow';
+                el.innerHTML = '<i class="fas fa-circle text-[7px] mr-1"></i>LIVE · 真实端口探测';
+            } else if (mode === 'sample') {
+                el.className = 'text-[11px] font-mono text-accent-amber';
+                el.innerHTML = '<i class="fas fa-circle text-[7px] mr-1"></i>示例事件流 · 无后端';
+            }
+        }
+
         // 页面初始化
         window.addEventListener('DOMContentLoaded', () => {
             renderAnalyticsChart();
+
+            // 事件总线：优先真实 SSE（后端每 3s 真探测端口，只推状态变化与心跳）；
+            // 拿不到后端（GitHub Pages / file:// / 服务未启）自动降级为示例事件并改标
+            OmniAPI.startEvents({ onEvent: appendEventLine, onMode: setEventBusMode });
 
             // 运行时模式角标：连得上本地后端 → 显示真实在线数；连不上 → 明确标注"静态演示模式"
             const badge = document.createElement('div');

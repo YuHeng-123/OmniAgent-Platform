@@ -15,7 +15,7 @@ import asyncio
 from typing import List, Dict, Any, Optional
 
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
@@ -172,7 +172,94 @@ async def get_overview_stats():
 
 
 # --------------------------------------------------------------------------- #
-# API 2: 导购工作站 —— 优先真实接入 ecom-agent(8001) 的 SSE 流
+# API 2: 中枢事件总线 —— SSE 真实事件流
+# --------------------------------------------------------------------------- #
+# 这条流不是"写好的日志文本滚动"，而是真的由端口探测驱动的：
+#   · 每 EVENT_INTERVAL_SEC 秒对 7 个服务做一次 TCP 探测，与上一轮快照比对
+#   · 状态发生变化（上线/下线）→ 立刻推一条事件
+#   · 连续无变化 → 每 HEARTBEAT_EVERY 轮推一条巡检心跳
+# 所以演示时把一个服务停掉，面板上会真的出现"下线"事件。
+EVENT_INTERVAL_SEC = 3.0
+HEARTBEAT_EVERY = 4
+
+# 事件总线上显示用的短标签（与前端着色调色板对应）
+EVENT_TAGS = {
+    "ai-gateway": "GATEWAY",
+    "ecom-ai-guide": "ECOM-AGENT",
+    "coze-material-studio": "MARKETING",
+    "ai-data-analysis-assistant": "ANALYTICS",
+    "ai-knowledge-assistant": "RAG",
+    "data-automation-workbench": "COLLECTOR",
+    "ark_aigc_demo": "FUNCLIP",
+}
+
+
+def _sse(payload: Dict[str, Any]) -> str:
+    """SSE 帧：data: <json>\\n\\n"""
+    return "data: " + json.dumps(payload, ensure_ascii=False) + "\n\n"
+
+
+def _ts() -> str:
+    return time.strftime("%H:%M:%S")
+
+
+@app.get("/api/v1/events/stream")
+async def events_stream(request: Request):
+    async def gen():
+        prev = await scan_ports(ALL_PORTS)
+        online = sum(1 for v in prev.values() if v)
+        yield _sse({
+            "ts": _ts(), "tag": "MASTER", "level": "info",
+            "msg": ("事件总线接入成功：本流由真实 TCP 端口探测驱动，每 %.0fs 巡检一次，"
+                    "当前在线 %d/%d。" % (EVENT_INTERVAL_SEC, online, len(ALL_PORTS))),
+        })
+        for s in SERVICES_META:
+            up = prev.get(s["port"])
+            yield _sse({
+                "ts": _ts(),
+                "tag": EVENT_TAGS.get(s["id"], s["id"].upper()),
+                "level": "ok" if up else "warn",
+                "msg": ("%s（:%d）已就绪。" % (s["name"], s["port"])) if up
+                       else ("%s（:%d）未响应，标记为离线。" % (s["name"], s["port"])),
+            })
+
+        cycle = 0
+        while True:
+            await asyncio.sleep(EVENT_INTERVAL_SEC)
+            if await request.is_disconnected():
+                break
+            cycle += 1
+            cur = await scan_ports(ALL_PORTS)
+            changed = 0
+            for s in SERVICES_META:
+                was, now = prev.get(s["port"]), cur.get(s["port"])
+                if was == now:
+                    continue
+                changed += 1
+                yield _sse({
+                    "ts": _ts(), "tag": "HEALTH",
+                    "level": "ok" if now else "err",
+                    "msg": "%s（:%d）状态变化：%s%s" % (
+                        s["name"], s["port"], "上线" if now else "下线",
+                        "，已重新纳入调度。" if now else "，流量已摘除。"),
+                })
+            if changed == 0 and cycle % HEARTBEAT_EVERY == 0:
+                n = sum(1 for v in cur.values() if v)
+                yield _sse({
+                    "ts": _ts(), "tag": "HEALTH", "level": "info",
+                    "msg": "全局健康巡检完成，%d/%d 在线，本轮无状态变化。" % (n, len(ALL_PORTS)),
+                })
+            prev = cur
+
+    return StreamingResponse(gen(), media_type="text/event-stream", headers={
+        "Cache-Control": "no-cache",
+        "Connection": "keep-alive",
+        "X-Accel-Buffering": "no",   # 经 nginx 反代时不缓冲，保证逐条吐
+    })
+
+
+# --------------------------------------------------------------------------- #
+# API 3: 导购工作站 —— 优先真实接入 ecom-agent(8001) 的 SSE 流
 # --------------------------------------------------------------------------- #
 class GuideChatRequest(BaseModel):
     message: str = ""
@@ -310,7 +397,7 @@ async def guide_chat(req: GuideChatRequest):
 
 
 # --------------------------------------------------------------------------- #
-# API 3: 营销工场与合规质检
+# API 4: 营销工场与合规质检
 # --------------------------------------------------------------------------- #
 BANNED_WORDS_DB = [
     {"word": "顶级", "reason": "违反《新广告法》绝对化极限词", "suggest": "高规格 / 典雅品质"},
@@ -392,7 +479,7 @@ async def generate_marketing(req: GenerateMarketingRequest):
 
 
 # --------------------------------------------------------------------------- #
-# API 4: 数据分析与 Text-to-SQL
+# API 5: 数据分析与 Text-to-SQL
 # --------------------------------------------------------------------------- #
 @app.get("/api/v1/analysis/overview")
 async def analysis_overview():
@@ -453,7 +540,7 @@ async def analysis_query(req: AnalysisQueryRequest):
 
 
 # --------------------------------------------------------------------------- #
-# API 5: 网关主备毫秒级热切仿真
+# API 6: 网关主备毫秒级热切仿真
 # --------------------------------------------------------------------------- #
 @app.post("/api/v1/gateway/simulate_failover")
 async def simulate_failover():

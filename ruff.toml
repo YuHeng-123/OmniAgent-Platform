@@ -5,6 +5,7 @@ exclude = [
     ".venv", "venv", "__pycache__",
     "docs",           # 构建产物
     "static/vendor",  # 第三方前端库
+    "labs",           # 收编的纵深模块源码快照（上游代码不按本仓 ruff 规则改造，见 labs/README.md）
 ]
 
 [lint]

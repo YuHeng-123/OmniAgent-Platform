@@ -3,6 +3,21 @@
 本项目遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 的组织方式，
 版本号遵循[语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [2.6.0] - 2026-10-10
+
+### 新增 —— Labs：收编两个纵深模块进中枢
+
+- **labs/graph-xiaohongshu**：LangGraph 1.0+ 小红书营销内容流水线的源码快照
+  （`StateGraph` + subgraph 图编排、`interrupt()` / `Command(resume)` 标准人在环路、
+  AsyncPostgresSaver 状态持久化、日志出口 PII 脱敏、JWT 认证、Vue 3 前端）。
+  收编前完成安全清洗：`.env`（真实 Key）不入库，以 `.env.example` 占位。
+- **labs/funclip-studio**：阿里达摩院 FunClip（MIT © 2023 Alibaba）的 Windows 工程化封装
+  —— 上游源码快照 + 原样保留的 LICENSE / 双语 README（署名上游）+ 本仓作者的一键启停脚本
+  与不加载模型的 ASR 结果兼容性单测；即中枢 7 服务矩阵中的 `:7860`。
+- **labs/README.md**：收编边界如实写明 —— CI（`pytest.ini` / `ruff.toml`）与 Docker
+  （`.dockerignore`）均不包含 labs，各模块重依赖独立管理。
+- `APP_VERSION` → 2.6.0。
+
 ## [2.5.0] - 2026-10-10
 
 ### 变更 —— 控制台主题再重构：「墨金石」→「翡翠 × 奶油 · Jade & Cream」

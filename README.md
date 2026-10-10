@@ -1,4 +1,4 @@
-# OmniAgent Platform 2.5 · 企业级全域 AI 智能体控制中枢
+# OmniAgent Platform 2.6 · 企业级全域 AI 智能体控制中枢
 
 把 **7 个各自独立的 AI 微服务**，收进一个统一控制台 —— 一个页面看清整个 Agent 集群的拓扑、在线状态与业务闭环。
 
@@ -161,6 +161,22 @@ docker compose up --build      # 控制台起在 http://127.0.0.1:8888
 
 ---
 
+## Labs · 收编进中枢的纵深模块（v2.6 新增）
+
+控制台是广度，Labs 是深度。两个支撑业务纵深的具体实现，从独立项目收编为源码快照：
+
+| 模块 | 一句话 | 亮点 |
+|---|---|---|
+| [labs/graph-xiaohongshu](labs/graph-xiaohongshu/) | LangGraph 1.0+ 小红书营销内容流水线 | `StateGraph` + subgraph 图编排 · `interrupt()` + `Command(resume)` 标准人在环路（选题 / 审稿两道人工闸门，驳回带反馈重写）· AsyncPostgresSaver 状态持久化 · 日志出口 PII 脱敏 · 双模型分级调度 · JWT 认证 + Vue 3 前端 |
+| [labs/funclip-studio](labs/funclip-studio/) | FunClip 的 Windows 工程化封装（即 7 服务中的 `:7860`） | 上游为阿里达摩院 FunClip（MIT，LICENSE 与双语 README 原样保留署名）；本仓作者封装一键启停（端口探测 / 日志重定向 / 就绪轮询）与**不加载模型**的 ASR 结果兼容性单测 |
+
+> 边界（如实说明）：CI 与 Docker 均不包含 labs —— 两个模块各带重依赖
+> （langgraph / PostgreSQL、funasr / torch），控制台不装、不跑、不假装跑，
+> 详见 [labs/README.md](labs/README.md)。graph-xiaohongshu 的 `.env` 含真实 Key，
+> 收编前已清洗为 `.env.example` 占位。
+
+---
+
 ## 核心设计：双模式数据源
 
 前端所有取数走 `static/omni-api.js` 这一层适配器：
@@ -273,6 +289,8 @@ T+13.9s  [HEALTH  ] (info) 全局健康巡检完成，0/7 在线，本轮无状�
 | ⑤ 运行时端到端 | `.venv/Scripts/python tools/audit_runtime.py` | 起真服务：真拉起一个假监听进程 → 同一条 SSE 流上等「上线」→ 点 stop → 等「下线」→ 校验历史落盘（**自己拉的进程自己杀，不碰你正在跑的服务**） |
 
 CI（`.github/workflows/ci.yml`）在每次 push / PR 上跑：**ruff check + ruff format --check** → pytest → 前端接线审计 → 全链路自检 → 事件总线专项验证 → **重跑 `build_docs.py` 并断言 `docs/` 无漂移** → 构建 Docker 镜像 → 上传 evidence 为 artifact。
+
+> v2.6 起：`labs/` 收编模块不参与以上任何一步（`pytest.ini` 排除收集、`ruff.toml` 排除 lint、`.dockerignore` 不打包）—— 各模块重依赖独立管理，控制台不为它们背书。
 
 > 第 ⑤ 层（运行时端到端）**故意不进 CI**：它会 spawn 进程、耗时约 40 秒、强依赖本机端口环境。
 > 它是给「我要亲手确认一遍」用的，不必每次提交都跑。`docs/` 漂移检查则是刻意的：

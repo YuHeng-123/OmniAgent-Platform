@@ -14,6 +14,7 @@ data/
 # 环境变量与密钥（务必不要提交真实 API Key）
 .env
 .env.*
+!.env.example
 
 # 本地备份
 *.bak
@@ -24,3 +25,11 @@ data/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# labs/ 收编模块的运行产物（源码快照本身入库，跑起来的产物不入）
+node_modules/
+labs/funclip-studio/output/
+labs/graph-xiaohongshu/static/images/generated/*
+!labs/graph-xiaohongshu/static/images/generated/.gitkeep
+labs/graph-xiaohongshu/frontend/dist/
+labs/graph-xiaohongshu/frontend/node_modules/

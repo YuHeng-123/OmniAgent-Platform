@@ -242,13 +242,13 @@ try:
                     sse_events.append(json.loads(line[5:].strip()))
                 except Exception:
                     continue
-                if len(sse_events) >= 8:
+                if len(sse_events) >= 9:
                     break
         except httpx.ReadTimeout:
             emit("(采集 %d 条后读取超时，符合预期：之后只推状态变化/心跳)" % len(sse_events))
     for ev in sse_events:
         emit("  [%s] [%-11s] (%s) %s" % (ev.get("ts"), ev.get("tag"), ev.get("level"), ev.get("msg")))
-    emit("初始事件条数 = %d  (1 条接入说明 + 7 条服务就绪播报)" % len(sse_events))
+    emit("初始事件条数 = %d  (1 条接入说明 + 8 条服务就绪播报)" % len(sse_events))
 except Exception as e:
     emit("ERR %s" % e)
 

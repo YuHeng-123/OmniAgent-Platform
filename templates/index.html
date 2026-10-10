@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OmniAgent Platform {{ app_version or '2.5' }} - 企业级全域 AI 智能体控制中枢</title>
-    <meta name="description" content="把 7 个独立 AI 微服务收进一个统一控制台：拓扑配置化、前后端真接口、断网自动降级，并有断言测试与 CI。">
+    <meta name="description" content="把 8 个独立 AI 微服务收进一个统一控制台：拓扑配置化、前后端真接口、断网自动降级，并有断言测试与 CI。">
     <meta name="theme-color" content="#123B2E">
     <meta property="og:type" content="website">
     <meta property="og:title" content="OmniAgent Platform · 企业级全域 AI 智能体控制中枢">
-    <meta property="og:description" content="7 个 AI 微服务的统一编排与可观测控制台，零外部 CDN、断网可渲染。">
+    <meta property="og:description" content="8 个 AI 微服务的统一编排与可观测控制台，零外部 CDN、断网可渲染。">
     <!-- 图标本地化：随 /static/ 一起被 build_docs 改写成相对路径，Pages 子路径下也不 404 -->
     <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
     <!-- 依赖全部本地化：断网 / GitHub Pages 均可正常渲染（原为 4 个 CDN 外链） -->
@@ -315,7 +315,7 @@
                     <div class="px-5 py-4">
                         <div class="text-[11px] text-slate-500 mb-1.5">活跃 Agent 集群</div>
                         <div class="kpi-num text-[28px] font-bold leading-none text-white">
-                            <span id="stat-active">4</span><span class="text-sm font-normal text-slate-500 ml-1">/ 7</span>
+                            <span id="stat-active">4</span><span class="text-sm font-normal text-slate-500 ml-1">/ 8</span>
                         </div>
                         <div class="text-[11px] text-accent-emerald mt-2 flex items-center gap-1.5">
                             <span class="w-1 h-1 rounded-full bg-accent-emerald"></span>核心链路在线
@@ -354,7 +354,7 @@
                                 <i class="fas fa-network-wired text-accent-gold text-sm"></i>
                                 <h3 class="font-semibold text-white text-sm">微服务拓扑协同链</h3>
                             </div>
-                            <span class="tag">单体控制台纳管 7 个子服务</span>
+                            <span class="tag">单体控制台纳管 8 个子服务</span>
                         </div>
 
                         <!-- 拓扑节点矩阵：列表行式布局，比嵌套卡片更省眼、更易扫读 -->
@@ -421,6 +421,20 @@
                         <div id="event-log-container" class="flex-1 rounded-lg p-3 font-mono text-[11px] leading-relaxed overflow-y-auto space-y-1.5 h-[380px]">
                             <div class="text-slate-700">正在接入事件总线…</div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Labs · 收编进中枢的纵深模块（源码快照；在线状态复用端口探测） -->
+                <div class="glass-card p-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-flask text-accent-gold text-sm"></i>
+                            <h3 class="font-semibold text-white text-sm">Labs · 收编进中枢的纵深模块</h3>
+                        </div>
+                        <span class="tag">源码快照 · labs/</span>
+                    </div>
+                    <div id="labs-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div class="text-[11px] text-slate-600">正在加载 Labs 模块索引…</div>
                     </div>
                 </div>
             </div>
@@ -1617,6 +1631,36 @@
                     badge.className = 'text-[10px] font-mono text-accent-amber px-3 pb-3';
                 }
             });
+
+            // Labs 纵深模块：连本地后端拉真实索引（README 摘要 + 探测状态）；
+            // 拿不到后端（Pages / file://）就保持占位提示，不假装有数据。
+            fetch('/api/v1/labs').then(r => r.ok ? r.json() : null).then(d => {
+                const grid = document.getElementById('labs-grid');
+                if (!grid || !d || !d.modules || !d.modules.length) return;
+                grid.innerHTML = d.modules.map(m => {
+                    const dot = m.status === 'online'
+                        ? '<span class="w-1.5 h-1.5 rounded-full bg-accent-emerald flex-shrink-0"></span>'
+                        : '<span class="w-1.5 h-1.5 rounded-full bg-slate-700 flex-shrink-0"></span>';
+                    const st = m.status === 'online'
+                        ? '<span class="text-[11px] text-accent-emerald">运行中</span>'
+                        : '<span class="text-[11px] text-slate-600">冷备 · :'+ m.probe_port +' 未监听</span>';
+                    const chips = (m.tech || []).map(t =>
+                        '<span class="tag">'+ t +'</span>').join('');
+                    const marks = (m.highlights || []).map(h =>
+                        '<li class="flex gap-2"><span class="text-accent-gold mt-px">·</span><span>'+ h +'</span></li>').join('');
+                    return ''+
+                    '<div class="rounded-xl border border-dark-border p-4 hover:border-accent-gold/30 transition-colors">'+
+                        '<div class="flex items-center gap-2 mb-1.5">'+ dot +
+                            '<span class="text-[13px] text-slate-200 font-medium font-mono">'+ m.name +'</span>'+
+                            '<span class="tag flex-shrink-0">'+ m.title +'</span>'+
+                            '<span class="ml-auto">'+ st +'</span>'+
+                        '</div>'+
+                        '<ul class="text-[11px] text-slate-500 leading-relaxed space-y-1 mt-2">'+ marks +'</ul>'+
+                        '<div class="flex flex-wrap gap-1.5 mt-3">'+ chips +'</div>'+
+                        '<div class="text-[10px] text-slate-600 mt-3 font-mono break-all">'+ (m.note || '') +'</div>'+
+                    '</div>';
+                }).join('');
+            }).catch(() => {});
         });
     </script>
 </body>

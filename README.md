@@ -1,6 +1,6 @@
-# OmniAgent Platform 2.6 · 企业级全域 AI 智能体控制中枢
+# OmniAgent Platform 2.7 · 企业级全域 AI 智能体控制中枢
 
-把 **7 个各自独立的 AI 微服务**，收进一个统一控制台 —— 一个页面看清整个 Agent 集群的拓扑、在线状态与业务闭环。
+把 **8 个各自独立的 AI 微服务**，收进一个统一控制台 —— 一个页面看清整个 Agent 集群的拓扑、在线状态与业务闭环。
 
 ![python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![frontend deps](https://img.shields.io/badge/frontend%20deps-100%25%20local-brightgreen)
@@ -20,7 +20,7 @@
 
 > 界面主题为「**翡翠 × 奶油 · Jade & Cream**」：深翡翠侧栏 / 顶栏 + 奶油白工作区 + 金渐变唯一点缀 +
 > 三状态色（在线绿 / 告警琥珀 / 故障红），为珠宝电商业务定制；图标全站单色，状态用圆点 + 文字表达。
-> 以下截图全部来自本机真实运行 —— 控制台起在 `:8899`，7 个业务端口用仓库自带的
+> 以下截图全部来自本机真实运行 —— 控制台起在 `:8899`，8 个业务端口用仓库自带的
 > `tools/mock_service.py` 占位，浏览器实际操作后截取，非设计稿。
 
 **总览 · 全域智能体调度大盘**
@@ -71,7 +71,7 @@ BM25 + 向量混合检索，命中切片带置信度与关键词高亮。
 
 | 页面 | 它演示什么 |
 |---|---|
-| 总览 | 7 个微服务的实时在线状态 + 一条**真实 TCP 探测驱动**的事件总线 |
+| 总览 | 8 个微服务的实时在线状态 + 一条**真实 TCP 探测驱动**的事件总线 + Labs 纵深模块索引 |
 | 网关 | 主备毫秒级热切**仿真**（不真去熔断某个上游，响应里自带 `simulated: true`）；三场景确定性轮换（超时熔断 / 限流分流 / 质量降级重生成） |
 | 导购 | 多轮导购 Agent：优先真连 `:8001` 并解析它的 SSE 流，连不上才降级；8 类意图 + 商品池自动配品 |
 | 营销 | 小红书 / 抖音 / 微信私域 / 电商详情页 / 朋友圈 **五渠道**文案生成 + 《广告法》违禁词合规质检（30 条词库） |
@@ -80,14 +80,14 @@ BM25 + 向量混合检索，命中切片带置信度与关键词高亮。
 | 历史 | 在线率 / 延迟曲线（SQLite 落盘，24h 保留）与事件回放 |
 
 **它是什么**：一套「Agent 集群编排」的可运行演示 —— 拓扑配置化、前后端真接口、断网自动降级、有断言测试、有 CI。
-**它不是什么**：那 7 个微服务本身不在本仓库；页面里的经营数据是**构造的样例数据**（接口 `metrics_source: demo-sample` 如实标注）。
+**它不是什么**：8 个微服务里 6 个的运行时不在本仓库（源码收编的 2 个见 Labs 章节）；页面里的经营数据是**构造的样例数据**（接口 `metrics_source: demo-sample` 如实标注）。
 
 ## 三种打开方式（都是真的能跑）
 
 | 场景 | 怎么跑 | 说明 |
 |---|---|---|
 | 🌐 **在线演示 · 零后端** | **[已上线 → yuheng-123.github.io/OmniAgent-Platform](https://yuheng-123.github.io/OmniAgent-Platform/)** | 纯静态、依赖全本地化，**断网也能渲染**；数据来自内置降级层，页面顶栏会明确标注「静态演示模式」。离线场景可双击本地 `docs/index.html` |
-| 💻 **本地全功能** | `run.bat`（Windows）/ `./run.sh`（macOS·Linux） | 真后端、真接口、真耗时；7 个服务在线时亮绿点并实时数出来 |
+| 💻 **本地全功能** | `run.bat`（Windows）/ `./run.sh`（macOS·Linux） | 真后端、真接口、真耗时；8 个服务在线时亮绿点并实时数出来 |
 | 🐳 **容器里跑** | `docker compose up --build` | 控制台镜像化（python-slim · 非 root · 带 healthcheck），历史库落命名卷 |
 
 ### 本地一键启动
@@ -124,7 +124,7 @@ docker compose up --build      # 控制台起在 http://127.0.0.1:8888
 | 变量 | 容器里的值 | 为什么 |
 |---|---|---|
 | `OMNI_HOST` | `0.0.0.0` | 进程若只 bind `127.0.0.1`，Docker 的端口发布（`-p 8888:8888`）是把宿主机端口 DNAT 到容器 eth0，**从宿主机根本打不通**；更坑的是容器自带 healthcheck 从 loopback 打是通的，于是变成「显示健康、实际访问不了」的静默失败 |
-| `OMNI_PROBE_HOST` | `host.docker.internal` | 容器内的 `127.0.0.1` 是容器自己，探不到跑在宿主机上的 7 个微服务 —— 不设这个，面板恒显示 0/7 |
+| `OMNI_PROBE_HOST` | `host.docker.internal` | 容器内的 `127.0.0.1` 是容器自己，探不到跑在宿主机上的 8 个微服务 —— 不设这个，面板恒显示 0/8 |
 
 > **边界说明**：「起停按钮」在容器里只对**容器内**的进程有效（容器看不到宿主机的进程表）。要演示停服→下线事件，请用本地方式跑，或让微服务也一起容器化进同一网络。
 
@@ -143,7 +143,7 @@ docker compose up --build      # 控制台起在 http://127.0.0.1:8888
 
 ---
 
-## 7 个微服务矩阵
+## 8 个微服务矩阵
 
 控制台本身不包含业务逻辑，它编排的是下面这些独立项目（各自一个仓库 / 一个端口）：
 
@@ -156,19 +156,22 @@ docker compose up --build      # 控制台起在 http://127.0.0.1:8888
 | 8510 | AI 数据分析专家 | 决策分析 Agent | Streamlit + DuckDB + Plotly |
 | 8765 | 自动化情报抓取平台 | 数据管道 | Python Native HTTP + SQLite |
 | 7860 | 多模态音视频智能体 (FunClip) | 交互 Agent | Gradio + PyTorch + FunASR |
+| 8020 | 小红书营销内容工厂 (Labs) | 内容营销 Agent | LangGraph 1.0 + Postgres Checkpointer + Vue3 |
 
-**控制台不依赖这 7 个服务是否在线** —— 在线就亮绿点，不在线就灰色，控制台自身照常可用。
+**控制台不依赖这 8 个服务是否在线** —— 在线就亮绿点，不在线就灰色，控制台自身照常可用。
 
 ---
 
-## Labs · 收编进中枢的纵深模块（v2.6 新增）
+## Labs · 收编进中枢的纵深模块（v2.6 收编 · v2.7 注册为探针服务）
 
-控制台是广度，Labs 是深度。两个支撑业务纵深的具体实现，从独立项目收编为源码快照：
+控制台是广度，Labs 是深度。两个支撑业务纵深的具体实现，从独立项目收编进仓库，
+并作为**一等公民注册进服务矩阵**：`:8020` 是 graph-xiaohongshu 的专属探针端口，
+`:7860` 就是 funclip-studio —— 总览页拓扑里直接亮灯，`/api/v1/labs` 提供模块索引（README 摘要 + 亮点 + 状态）。
 
 | 模块 | 一句话 | 亮点 |
 |---|---|---|
-| [labs/graph-xiaohongshu](labs/graph-xiaohongshu/) | LangGraph 1.0+ 小红书营销内容流水线 | `StateGraph` + subgraph 图编排 · `interrupt()` + `Command(resume)` 标准人在环路（选题 / 审稿两道人工闸门，驳回带反馈重写）· AsyncPostgresSaver 状态持久化 · 日志出口 PII 脱敏 · 双模型分级调度 · JWT 认证 + Vue 3 前端 |
-| [labs/funclip-studio](labs/funclip-studio/) | FunClip 的 Windows 工程化封装（即 7 服务中的 `:7860`） | 上游为阿里达摩院 FunClip（MIT，LICENSE 与双语 README 原样保留署名）；本仓作者封装一键启停（端口探测 / 日志重定向 / 就绪轮询）与**不加载模型**的 ASR 结果兼容性单测 |
+| [labs/graph-xiaohongshu](labs/graph-xiaohongshu/) | LangGraph 1.0+ 小红书营销内容流水线（即 8 服务中的 `:8020`） | `StateGraph` + subgraph 图编排 · `interrupt()` + `Command(resume)` 标准人在环路（选题 / 审稿两道人工闸门，驳回带反馈重写）· AsyncPostgresSaver 状态持久化 · 日志出口 PII 脱敏 · 双模型分级调度 · JWT 认证 + Vue 3 前端 |
+| [labs/funclip-studio](labs/funclip-studio/) | FunClip 的 Windows 工程化封装（即 8 服务中的 `:7860`） | 上游为阿里达摩院 FunClip（MIT，LICENSE 与双语 README 原样保留署名）；本仓作者封装一键启停（端口探测 / 日志重定向 / 就绪轮询）与**不加载模型**的 ASR 结果兼容性单测 |
 
 > 边界（如实说明）：CI 与 Docker 均不包含 labs —— 两个模块各带重依赖
 > （langgraph / PostgreSQL、funasr / torch），控制台不装、不跑、不假装跑，
@@ -182,7 +185,7 @@ docker compose up --build      # 控制台起在 http://127.0.0.1:8888
 前端所有取数走 `static/omni-api.js` 这一层适配器：
 
 ```
-                 ┌─── 成功 → 用真实数据（顶栏:「本地服务已连接 N/7」）
+                 ┌─── 成功 → 用真实数据（顶栏:「本地服务已连接 N/8」）
 请求本地后端 ────┤
   (2.5s 超时)    └─── 失败 → 降级到内置演示逻辑（顶栏:「静态演示模式」）
 ```
@@ -208,8 +211,8 @@ POST /api/v1/guide/chat
 
 ```
 GET /api/v1/events/stream   (text/event-stream)
-   ├─ 打开即推：1 条接入说明 + 7 条服务就绪播报（基于真实 TCP 探测结果）
-   ├─ 之后每 3s 重新探测 7 个端口，与上一轮快照比对
+   ├─ 打开即推：1 条接入说明 + 8 条服务就绪播报（基于真实 TCP 探测结果）
+   ├─ 之后每 3s 重新探测 8 个端口，与上一轮快照比对
    │     ├─ 有变化 → 立刻推「上线 / 下线」事件
    │     └─ 无变化 → 每第 4 轮推一条巡检心跳（避免刷屏）
    └─ 客户端断开即回收（request.is_disconnected）
@@ -260,7 +263,7 @@ T+13.9s  [HEALTH  ] (info) 全局健康巡检完成，0/7 在线，本轮无状�
 | 7 | 只能在本地跑，无法静态演示 | 新增 `docs/` 纯静态版 + `build_docs.py` 构建脚本 |
 | 8 | 事件总线是**写死的 6 行文本**（时间戳永远停在 `19:15:02`），标着 LIVE 却永不刷新 | 改为真 SSE 差异驱动流（见上一节）；降级时角标明确写「示例事件流」 |
 | 9 | 7 个服务的端口/名称/事件标签硬编码在 `server.py`，加服务得改代码 | 抽到 `services.yaml`；坏配置自动回退内置默认，`/overview/stats` 里的 `config_source` 可直接看出拓扑来自哪 |
-| 10 | 没有任何自动化测试，改动靠人肉点页面 | **65 条 pytest 断言**（拓扑 / 事件总线纯函数 / 前端本地化 / API 契约 / docs 一致性 / 健康检查 / 历史与起停接口 / 容器网络）+ GitHub Actions CI |
+| 10 | 没有任何自动化测试，改动靠人肉点页面 | **66 条 pytest 断言**（拓扑 / 事件总线纯函数 / 前端本地化 / API 契约 / labs 契约 / docs 一致性 / 健康检查 / 历史与起停接口 / 容器网络）+ GitHub Actions CI |
 | 11 | `docs/` 是手工产物，容易和源码悄悄脱节 | CI 每次重跑 `build_docs.py` 再 `git diff --exit-code -- docs/` 断言无漂移 |
 | 12 | 导购页硬写「驱动模型：DeepSeek-V3 / Flash」、单步耗时预设 `38 ms` | 假模型名删除；耗时改为「实测值，拿不到显示 `—`」；新增**应答来源**直接显示 `live:` / `fallback:` |
 | 13 | 冗余脚本 `start.bat`、`start_all_services.py`（指向并不存在的 `:9999`）、3 个 `.bak` | 清理；`start_all_services.py` 换成读 `services.yaml` 的 `check_services.py` 就绪检查 |
@@ -299,13 +302,13 @@ CI（`.github/workflows/ci.yml`）在每次 push / PR 上跑：**ruff check + ru
 > 一个实测出来的坑：pytest 里**不能**用 `TestClient` 去读 SSE —— 本机实测 Starlette 的 TestClient 读到无限流会一直阻塞不返回。
 > 所以事件总线这块拆成两种测法：`build_initial_events` / `diff_events` 抽成纯函数直接断言；端到端则真起一个 uvicorn 线程（见 `tests/conftest.py`）。
 
-第 ② 层覆盖：主控台渲染 · 0 外部 CDN · 7 服务在线数 · 导购降级链路 · 自纠错链路 · 合规质检命中违禁词 · Text-to-SQL · 热切仿真 · docs 静态资源全部 200 · 静态化自检 · **SSE 事件总线首帧 8 条真实事件**。
+第 ② 层覆盖：主控台渲染 · 0 外部 CDN · 8 服务在线数 · 导购降级链路 · 自纠错链路 · 合规质检命中违禁词 · Text-to-SQL · 热切仿真 · docs 静态资源全部 200 · 静态化自检 · **SSE 事件总线首帧 9 条真实事件**。
 
 ---
 
 ## 现场演示：让「停服 → 3 秒内弹下线事件」真的跑起来
 
-这是全项目最有说服力的一个互动点。但 7 个微服务不在本仓库里 —— 不起它们时面板 7 张卡片全灰，
+这是全项目最有说服力的一个互动点。但 8 个微服务里 6 个的运行时不在本仓库里 —— 不起它们时面板上对应卡片全灰，
 按钮没有对象可按。仓库自带一个**明确标注为假**的监听工具专门解决这个：
 
 ```bash
@@ -346,7 +349,7 @@ start_cmd: ["python", "tools/mock_service.py", "8002", "--id", "coze-material-st
 - **「启动」按钮只认 `start_cmd`。** 没在 `services.yaml` 里配置启动命令的服务，点了会如实返回 `not-configured` 并提示怎么配 —— 控制台不假装知道你没告诉过它的启动方式。
 - **历史曲线是从控制台启动那一刻才开始记的。** 数据落在本地 SQLite（`data/omni_history.db`，不入 git），保留 24 小时；换个机器/清掉目录就是空的，静态演示模式下显示的是内置样例曲线而非真实历史。
 - **`/api/v1/gateway/simulate_failover` 是仿真端点**，它不真的去熔断某个上游，只演示「主备热切」这个形态；响应里自带 `"simulated": true`，主路由名一律写「上游主模型（仿真占位）」—— 2.1 之前这里曾残留编造的模型名 `DeepSeek-V3`（已清除并有断言防回归），token 数值也标注了 `token_usage_note: 样例数值，非真实计费`。
-- **7 个微服务是独立项目**，不在本仓库内。本仓库是控制台 + 编排层。想看真实链路，需要各自把服务起起来。
+- **8 个微服务里 6 个是独立项目**（运行时不在本仓库内）；funclip-studio 与 graph-xiaohongshu 的**源码**已收编进 `labs/`（`:7860` / `:8020`），但运行时同样需要各自起。本仓库是控制台 + 编排层 + Labs 源码。想看真实链路，需要各自把服务起起来。
 - **端口探测的目标地址是 `PROBE_HOST`**（默认 `127.0.0.1`，容器里指 `host.docker.internal`），不做远程服务发现 —— 它探的是「本机/宿主」这一台。
 - **容器镜像在本机没有构建过。** 作者的环境没装 Docker CLI，所以 `Dockerfile` / `docker-compose.yml` 未经 `docker build` 验证；CI 里那条 `docker build` 步骤也要等仓库推上去才会真正执行。其中**最容易踩的两个坑已在代码层修掉并有断言锁定**（监听地址、探测地址、非 root 写权限），但「镜像能不能 build 成功」这一条仍属未验证。
 - **事件总线的心跳是 12s 一次**（3s 探测 × 4 轮），只有状态**变化**才实时推送 —— 这是刻意压掉刷屏，不是采样不到。
@@ -358,7 +361,7 @@ start_cmd: ["python", "tools/mock_service.py", "8002", "--id", "coze-material-st
 
 ```
 OmniAgent-Platform/
-├─ server.py              # FastAPI 控制台（页面 + API + /healthz + 共享巡检器 + SSE 事件总线 + 起停管控）
+├─ server.py              # FastAPI 控制台（页面 + API + /api/v1/labs + /healthz + 共享巡检器 + SSE 事件总线 + 起停管控）
 ├─ services.yaml          # ★ 唯一拓扑来源：端口/名称/事件标签/探测参数/导购路径/start_cmd，加服务只改这里
 ├─ check_services.py      # 就绪检查：读 services.yaml，逐个 TCP 探测并打印在线表
 ├─ build_docs.py          # 生成 docs/ 静态演示版（复用 server.py 拓扑与版本号，单一来源）
@@ -366,7 +369,7 @@ OmniAgent-Platform/
 ├─ verify_event_bus.py    # 事件总线「差异驱动」专项验证 → evidence/
 ├─ tests/
 │  ├─ conftest.py         # 真 uvicorn 线程 fixture（不用会阻塞的 TestClient）
-│  └─ test_omni.py        # 58 条断言：拓扑/事件总线/前端本地化/API 契约/健康检查/历史与起停
+│  └─ test_omni.py        # 66 条断言：拓扑/事件总线/前端本地化/API 契约/labs/健康检查/历史与起停
 ├─ requirements.txt       # 运行依赖（+ psutil：服务起停用）
 ├─ requirements-dev.txt   # + pytest / ruff / pre-commit
 ├─ run.bat / run.sh       # 一键启动（自动建 venv 装依赖）
@@ -392,6 +395,10 @@ OmniAgent-Platform/
 │  ├─ index.html
 │  ├─ 404.html            # Pages 自定义 404（带返回首页链接）
 │  └─ static/…            # 自包含副本（含 favicon）
+├─ labs/                  # ★ v2.6 收编的纵深模块源码（不进 CI / 不进镜像）
+│  ├─ README.md           # Labs 导航与边界说明
+│  ├─ graph-xiaohongshu/  # LangGraph 1.0 营销 Agent（探针端口 :8020）
+│  └─ funclip-studio/     # FunClip 封装层 + 上游源码（探针端口 :7860）
 └─ evidence/
    ├─ selftest-omni.txt   # 全链路实测证据
    └─ event-bus-diff.txt  # 事件总线差异驱动验证证据
@@ -404,11 +411,11 @@ OmniAgent-Platform/
 **页面打开是白板 / 样式丢了？**
 1.0 时代是因为依赖外部 CDN。2.0 已全部本地化。若仍异常，检查浏览器控制台是否 404 了 `static/vendor/...`（确认你是从仓库根目录启动，而不是把 `index.html` 单独拷出去）。
 
-**总览页 7 个服务全是灰的？**
-正常 —— 说明你只起了控制台，那 7 个服务没起。控制台自身功能不受影响。
+**总览页 8 个服务全是灰的？**
+正常 —— 说明你只起了控制台，那 8 个服务没起。控制台自身功能不受影响。
 
-**怎么快速知道我的 7 个服务起了没？**
-跑 `.venv/Scripts/python check_services.py`，会打一张在线表（读 `services.yaml`，逐个 TCP 探测）；加 `--require-all` 则要求 7/7 全在线才返回 0。
+**怎么快速知道我的 8 个服务起了没？**
+跑 `.venv/Scripts/python check_services.py`，会打一张在线表（读 `services.yaml`，逐个 TCP 探测）；加 `--require-all` 则要求 8/8 全在线才返回 0。
 
 **改了 `services.yaml` 会怎样？**
 不用改任何代码，重启控制台即生效。如果 yaml 写坏了（比如某个服务缺 `id` / `port`），控制台不会崩，会自动回退到内置默认拓扑，并在 `/api/v1/overview/stats` 的 `config_source` 字段里注明原因。

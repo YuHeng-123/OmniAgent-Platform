@@ -25,8 +25,9 @@ event_tags:
   ai-knowledge-assistant: RAG
   data-automation-workbench: COLLECTOR
   ark_aigc_demo: FUNCLIP
+  graph-xiaohongshu: LABS-XHS
 
-# ---- 7 大微服务矩阵 ----------------------------------------------------- #
+# ---- 8 大微服务矩阵 ----------------------------------------------------- #
 # 字段：id（唯一，事件标签按它索引）/ name / role / port / url / type
 #       desc（控制台卡片描述）/ tech（技术栈标注）
 #       chat_path（可选）：控制台「导购」链路要 POST 的路径，缺省 /api/chat。
@@ -109,5 +110,18 @@ services:
     port: 7860
     url: http://127.0.0.1:7860
     type: Innovation
-    desc: 基于 FunClip 的本地 AI 音视频自动化切片、多模态语音识别与字幕智能合成
+    desc: FunClip 音视频自动化切片与字幕合成 · 上游源码已收编 labs/funclip-studio
     tech: Gradio + PyTorch + FunASR
+
+  # Labs 收编的第 8 个服务：LangGraph 1.0 营销 Agent（源码在 labs/graph-xiaohongshu/）。
+  # 上游默认端口 8000 与 ai-gateway 冲突，控制台统一按 8020 探测 ——
+  # 启动命令：uvicorn app.main:app --port 8020（工作目录 labs/graph-xiaohongshu，
+  # 需自备 .env 与 Postgres；未配置 start_cmd，控制台不假装知道它的启动方式）。
+  - id: graph-xiaohongshu
+    name: 小红书营销内容工厂 (Labs)
+    role: 内容营销 Agent
+    port: 8020
+    url: http://127.0.0.1:8020
+    type: Innovation
+    desc: LangGraph 1.0 多轮状态机营销流水线——选题→成文→配图，HITL 人工审核中断恢复
+    tech: LangGraph 1.0 + Postgres Checkpointer + Vue3

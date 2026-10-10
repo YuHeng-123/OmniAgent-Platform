@@ -80,9 +80,10 @@ psql -U postgres -c "CREATE DATABASE langgraph_db;"
 pip install -r requirements.txt
 copy .env.example .env      # 填入数据库密码与 LLM API Key
 
-# 3. 起后端（FastAPI）
-uvicorn app.main:app --reload --port 8000
-# API 文档: http://localhost:8000/docs
+# 3. 起后端（FastAPI）—— 端口用 8020：上游默认 8000 与中枢 ai-gateway 冲突，
+#    控制台的探针卡片也按 8020 探测
+uvicorn app.main:app --reload --port 8020
+# API 文档: http://localhost:8020/docs
 
 # 4. 起前端（可选，开发模式）
 cd frontend && npm install && npm run dev

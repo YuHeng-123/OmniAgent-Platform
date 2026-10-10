@@ -3,6 +3,27 @@
 本项目遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 的组织方式，
 版本号遵循[语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [2.7.0] - 2026-10-10
+
+### 新增 —— Labs 转正：graph-xiaohongshu 注册为第 8 个探针服务
+
+- **真融合**：`graph-xiaohongshu` 从「源码快照」升级为服务矩阵一等公民 ——
+  `services.yaml` 与内置兜底拓扑各加第 8 个服务条目，探针端口 **`:8020`**
+  （上游默认 8000 与 ai-gateway 冲突，README 已写明统一改 8020 启动）。
+- **`GET /api/v1/labs`**：Labs 模块索引端点 —— 两个模块的名称 / 技术栈 / 亮点 /
+  README 摘要（运行时读 `labs/*/README.md`）+ 复用端口探测的在线状态。
+- **总览页新增「Labs · 收编进中枢的纵深模块」区块**：两张模块卡
+  （亮点列表 + 技术 chip + 运行中/冷备状态），连本地后端拉真数据、
+  Pages 静态模式保持占位提示不装数据。
+- **FunClip 卡片口径**：desc 明确「上游源码已收编 labs/funclip-studio」。
+- **拓扑口径 7 → 8 全量同步**：KPI 分母、纳管 tag、meta description、
+  事件总线首帧（`0/8` / `8/8`）、`check_services` FAQ、诚实边界；
+  `tests/test_omni.py` 9 处断言同步 + 新增 `/api/v1/labs` 契约测试；
+  `selftest_omni.py` SSE 首帧采集阈值 8 → 9（1 接入 + 8 就绪播报）。
+- Key 安全复查：labs 全目录扫描真实 Key 特征（含项目实际三个 Key 的特征串）零命中；
+  `yuannengai` 仅存在于环境变量读取默认值与 PII 脱敏正则，无泄密面。
+- `APP_VERSION` → 2.7.0。
+
 ## [2.6.0] - 2026-10-10
 
 ### 新增 —— Labs：收编两个纵深模块进中枢

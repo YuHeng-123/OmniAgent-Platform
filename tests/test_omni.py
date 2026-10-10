@@ -53,11 +53,11 @@ def read(rel: str) -> str:
 # =========================================================================== #
 def test_topology_loaded_from_yaml():
     assert S.CONFIG_SOURCE == "services.yaml", "拓扑没有从 services.yaml 加载"
-    assert len(S.SERVICES_META) == 7
+    assert len(S.SERVICES_META) == 8
 
 
 def test_topology_ports_exact():
-    assert S.ALL_PORTS == [8000, 8001, 8002, 8510, 8501, 8765, 7860]
+    assert S.ALL_PORTS == [8000, 8001, 8002, 8510, 8501, 8765, 7860, 8020]
 
 
 def test_every_service_has_event_tag():
@@ -81,7 +81,7 @@ def test_probe_params_sane():
 def test_missing_yaml_falls_back(tmp_path):
     services, tags, probe, source = S.load_topology(str(tmp_path / "nope.yaml"))
     assert source.startswith("builtin-defaults")
-    assert len(services) == 7
+    assert len(services) == 8
     assert probe == S._BUILTIN_PROBE
 
 
@@ -90,7 +90,7 @@ def test_broken_yaml_falls_back(tmp_path):
     bad.write_text("services:\n  - id: broken\n", encoding="utf-8")  # 缺 port
     services, tags, probe, source = S.load_topology(str(bad))
     assert source.startswith("builtin-defaults"), "坏配置必须回退，不能让控制台起不来"
-    assert len(services) == 7
+    assert len(services) == 8
 
 
 def test_empty_services_list_falls_back(tmp_path):
@@ -115,7 +115,7 @@ def test_initial_events_all_online():
     evs = S.build_initial_events(prev)
     assert len(evs) == 1 + len(S.SERVICES_META)
     assert evs[0]["tag"] == "MASTER"
-    assert "7/7" in evs[0]["msg"]
+    assert "8/8" in evs[0]["msg"]
     assert all(e["level"] == "ok" for e in evs[1:])
     assert all("已就绪" in e["msg"] for e in evs[1:])
 
@@ -123,7 +123,7 @@ def test_initial_events_all_online():
 def test_initial_events_all_offline():
     prev = {p: False for p in S.ALL_PORTS}
     evs = S.build_initial_events(prev)
-    assert "0/7" in evs[0]["msg"]
+    assert "0/8" in evs[0]["msg"]
     assert all(e["level"] == "warn" for e in evs[1:])
     assert all("离线" in e["msg"] for e in evs[1:])
 
@@ -259,10 +259,22 @@ def test_index_page_renders(client):
 def test_overview_stats_contract(client):
     d = client.get("/api/v1/overview/stats").json()
     assert d["status"] == "ok"
-    assert d["total_count"] == 7
-    assert len(d["services"]) == 7
+    assert d["total_count"] == 8
+    assert len(d["services"]) == 8
     assert d["config_source"] == "services.yaml"
     assert d["metrics_source"] == "demo-sample", "演示指标必须如实标注来源"
+
+
+def test_labs_endpoint_contract(client):
+    """labs 收编模块索引：两个模块、状态合法、README 摘要非空（文档在，索引才立得住）。"""
+    d = client.get("/api/v1/labs").json()
+    assert d["status"] == "ok"
+    assert {m["id"] for m in d["modules"]} == {"graph-xiaohongshu", "funclip-studio"}
+    for m in d["modules"]:
+        assert m["status"] in ("online", "offline")
+        assert m["readme_excerpt"], "README 摘要不应为空 —— labs/*/README.md 必须随源码一起收编"
+        assert m["highlights"]
+        assert m["probe_port"] in S.ALL_PORTS, "Labs 探测端口必须是拓扑内的真实端口"
 
 
 def test_guide_chat_reports_backend_and_latency(client):
@@ -354,10 +366,10 @@ def test_healthz_contract(client):
     assert d["status"] == "ok"
     assert d["version"] == S.APP_VERSION
     assert d["config_source"] == "services.yaml"
-    assert d["services_total"] == 7
-    assert 0 <= d["services_online"] <= 7
+    assert d["services_total"] == 8
+    assert 0 <= d["services_online"] <= 8
     assert isinstance(d["uptime_sec"], (int, float)) and d["uptime_sec"] >= 0
-    assert len(d["services"]) == 7
+    assert len(d["services"]) == 8
 
 
 def test_404_returns_hint_json(client):
@@ -504,7 +516,7 @@ def test_stop_kills_only_the_configured_port_listener(client):
     states = {s["id"]: s for s in online["services"]}
     target = next((s for s in S.SERVICES_META if states.get(s["id"], {}).get("status") != "online"), None)
     if target is None:
-        pytest.skip("7 个服务全部在线，没有空闲端口可安全演练 stop")
+        pytest.skip("8 个服务全部在线，没有空闲端口可安全演练 stop")
 
     port = target["port"]
     child = subprocess.Popen(

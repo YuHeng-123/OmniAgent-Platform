@@ -2,7 +2,7 @@
 OmniAgent Platform 2.0 —— 企业级全域 AI 智能体控制中枢（统一控制台）
 
 设计要点：
-1. 控制台自身可独立运行，不依赖其余 7 个微服务是否在线；在线的会亮绿点。
+1. 控制台自身可独立运行，不依赖其余 8 个微服务是否在线；在线的会亮绿点。
 2. 导购接口优先调用真实的 ecom-agent(8001) 并解析其 SSE 流；
    8001 不可用 / 上游报错时，自动降级到本地演示引擎，并在响应里如实标注 backend。
 3. 所有耗时都是实测（time.perf_counter），不再返回写死的常数。
@@ -30,7 +30,7 @@ from pydantic import BaseModel
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # 版本号单一来源：页面角标、/healthz、FastAPI 自动文档都读它，避免多处各写各的漂移。
-APP_VERSION = "2.6.0"
+APP_VERSION = "2.7.0"
 STARTED_AT = time.time()
 
 app = FastAPI(
@@ -167,8 +167,18 @@ _BUILTIN_SERVICES = [
         "port": 7860,
         "url": "http://127.0.0.1:7860",
         "type": "Innovation",
-        "desc": "基于 FunClip 的本地 AI 音视频自动化切片、多模态语音识别与字幕智能合成",
+        "desc": "FunClip 音视频自动化切片与字幕合成 · 上游源码已收编 labs/funclip-studio",
         "tech": "Gradio + PyTorch + FunASR",
+    },
+    {
+        "id": "graph-xiaohongshu",
+        "name": "小红书营销内容工厂 (Labs)",
+        "role": "内容营销 Agent",
+        "port": 8020,
+        "url": "http://127.0.0.1:8020",
+        "type": "Innovation",
+        "desc": "LangGraph 1.0 多轮状态机营销流水线——选题→成文→配图，HITL 人工审核中断恢复",
+        "tech": "LangGraph 1.0 + Postgres Checkpointer + Vue3",
     },
 ]
 
@@ -180,6 +190,7 @@ _BUILTIN_EVENT_TAGS = {
     "ai-knowledge-assistant": "RAG",
     "data-automation-workbench": "COLLECTOR",
     "ark_aigc_demo": "FUNCLIP",
+    "graph-xiaohongshu": "LABS-XHS",
 }
 
 _BUILTIN_PROBE = {"interval_sec": 3.0, "heartbeat_every": 4, "timeout_sec": 0.35}
@@ -270,7 +281,7 @@ HEARTBEAT_EVERY = PROBE["heartbeat_every"]
 #   从容器内 loopback 打是通的，于是会显示「健康，但外部访问不了」这种静默失败。
 BIND_HOST = os.environ.get("OMNI_HOST") or "127.0.0.1"
 
-# PROBE_HOST：探测 7 个微服务时连的地址。
+# PROBE_HOST：探测 8 个微服务时连的地址。
 #   本机默认 127.0.0.1；容器里必须 host.docker.internal —— 容器内的 127.0.0.1 是
 #   容器自己，永远探不到跑在宿主机上的服务（否则面板恒显示 0/7）。
 PROBE_HOST = os.environ.get("OMNI_PROBE_HOST") or str(PROBE.get("host") or "127.0.0.1")
@@ -538,7 +549,7 @@ async def index_page(request: Request):
 
 # --------------------------------------------------------------------------- #
 # 健康检查：给监控 / CI / 容器探针用的标准端点
-# （不渲染页面；会真去探一次 7 个端口，所以能反映集群当前在线数）
+# （不渲染页面；会真去探一次 8 个端口，所以能反映集群当前在线数）
 # --------------------------------------------------------------------------- #
 @app.get("/healthz")
 async def healthz():
@@ -628,10 +639,84 @@ async def get_overview_stats():
 
 
 # --------------------------------------------------------------------------- #
+# API 1b: Labs 收编模块索引
+# --------------------------------------------------------------------------- #
+# labs/ 是收编进中枢的纵深项目源码（graph-xiaohongshu / funclip-studio）。
+# 这个端点如实返回它们的元信息与 README 摘要，供大盘「Labs 纵深模块」区块渲染；
+# 在线状态直接复用端口探测结果（graph-xiaohongshu→:8020，funclip-studio→:7860）。
+LABS_META = [
+    {
+        "id": "graph-xiaohongshu",
+        "dir": "labs/graph-xiaohongshu",
+        "name": "graph-xiaohongshu",
+        "title": "小红书营销内容工厂",
+        "probe_port": 8020,
+        "tech": [
+            "LangGraph 1.0",
+            "StateGraph",
+            "HITL interrupt/resume",
+            "Postgres Checkpointer",
+            "FastAPI",
+            "Vue3",
+            "PII 脱敏",
+        ],
+        "highlights": [
+            "LangGraph 1.0+ 多轮状态机：选题 → 成文 → 配图 → 审核，节点式编排",
+            "人在环路（HITL）：interrupt() 中断 + Command(resume) 恢复的人工审核流",
+            "Postgres Checkpointer 持久化会话状态，进程重启后工作流可续跑",
+            "日志 PII 脱敏器：API Key / 手机号 / 邮箱落盘前自动打码",
+        ],
+        "note": "源码快照收编 · 历史版本见 Gitee mood6666/graph_xiaohongshu",
+    },
+    {
+        "id": "funclip-studio",
+        "dir": "labs/funclip-studio",
+        "name": "funclip-studio",
+        "title": "FunClip 音视频剪辑工作台",
+        "probe_port": 7860,
+        "tech": ["FunASR", "Gradio", "PyTorch", "热词感知", "说话人分段", "双语字幕"],
+        "highlights": [
+            "基于达摩院 FunASR 的端到端语音识别与视频时间戳对齐",
+            "热词感知识别 + 按说话人/关键词分段剪辑",
+            "自动生成双语字幕并烧录成片",
+            "自有封装层：一键启停脚本 + 不加载模型的 ASR 兼容性单测",
+        ],
+        "note": "上游 damo-vilab/FunClip（MIT © 2023 Alibaba）· 保留完整署名，见 labs/funclip-studio/LICENSE",
+    },
+]
+
+
+def _readme_excerpt(rel_dir: str, limit: int = 360) -> str:
+    """读 labs/<模块>/README.md 开头若干字符作摘要；读不到就如实返回空串。"""
+    path = os.path.join(BASE_DIR, rel_dir, "README.md")
+    try:
+        with open(path, "r", encoding="utf-8") as fh:
+            text = fh.read()
+    except OSError:
+        return ""
+    # 去掉 Markdown 标题符号与空行，取前 limit 个字符
+    lines = [ln.lstrip("# ").strip() for ln in text.splitlines() if ln.strip()]
+    return " ".join(lines)[:limit]
+
+
+@app.get("/api/v1/labs")
+async def get_labs():
+    states = await scan_ports([m["probe_port"] for m in LABS_META])
+    modules = []
+    for m in LABS_META:
+        item = dict(m)
+        item["status"] = "online" if states.get(m["probe_port"]) else "offline"
+        item["readme_excerpt"] = _readme_excerpt(m["dir"])
+        item.pop("dir", None)
+        modules.append(item)
+    return {"status": "ok", "modules": modules}
+
+
+# --------------------------------------------------------------------------- #
 # API 2: 中枢事件总线 —— SSE 真实事件流
 # --------------------------------------------------------------------------- #
 # 这条流不是"写好的日志文本滚动"，而是真的由端口探测驱动的：
-#   · 每 EVENT_INTERVAL_SEC 秒对 7 个服务做一次 TCP 探测，与上一轮快照比对
+#   · 每 EVENT_INTERVAL_SEC 秒对 8 个服务做一次 TCP 探测，与上一轮快照比对
 #   · 状态发生变化（上线/下线）→ 立刻推一条事件
 #   · 连续无变化 → 每 HEARTBEAT_EVERY 轮推一条巡检心跳
 # 所以演示时把一个服务停掉，面板上会真的出现"下线"事件。

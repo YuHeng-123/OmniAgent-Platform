@@ -4,7 +4,7 @@ verify_event_bus.py —— 证明「中枢事件总线」是**差异驱动**的�
 为什么需要它：
   事件总线最有说服力的一句宣传是「你把一个服务停掉，面板上会真的出现下线事件」。
   但这句话不验证就只是自夸。本脚本用**注入式端口探测**做端到端验证：
-    · 巡检器第 1 轮探测：取真实结果 → 期望 8 条初始事件（1 条接入说明 + 7 条就绪播报）
+    · 巡检器第 1 轮探测：取真实结果 → 期望 9 条初始事件（1 条接入说明 + 8 条就绪播报）
     · 巡检器第 2 轮探测：把 :7860 的在线状态**翻转** → 期望出现 1 条「状态变化」事件
     · 之后无变化 → 每 4 轮期望出现 1 条「巡检心跳」
   全程走真实 HTTP + 真实 SSE 流，唯一被替换的是底层单端口探测函数
@@ -155,7 +155,9 @@ try:
                     "  T+%5.1fs  [%s] [%-11s] (%s) %s"
                     % (time.time() - t0, ev.get("ts"), ev.get("tag"), ev.get("level"), ev.get("msg"))
                 )
-                if len(events) >= 10:
+                if len(events) >= 1 + len(server.ALL_PORTS) + 2:
+                    # 首帧(1 接入 + N 播报) + 至少 1 条状态变化 + 1 条心跳 —— 数量跟拓扑走，
+                    # 写死会在服务数变化时提前断流（2.7 加第 8 服务时实测踩过）。
                     break
         except httpx.ReadTimeout:
             lines.append("  (读取超时，已采集 %d 条)" % len(events))
@@ -163,7 +165,8 @@ except Exception as e:
     lines.append("ERR %s" % e)
 
 lines.append("-" * 72)
-initial = events[:8]
+initial_n = 1 + len(server.ALL_PORTS)  # 1 条接入说明 + N 条服务就绪播报
+initial = events[:initial_n]
 changed = [e for e in events if "状态变化" in e.get("msg", "") and "无状态变化" not in e.get("msg", "")]
 # 注意排除「本轮无状态变化」这句心跳文案 —— 它含「状态变化」子串，
 # 不排除的话心跳会被误算成一次状态变化（实测踩过）。
@@ -175,14 +178,14 @@ flip_dir = "下线" if _flip["first"] else "上线"
 
 lines.append("注入方向           = :%d 翻转为「%s」" % (FLIP_PORT, flip_dir))
 lines.append("巡检器第 1 轮在线数= %d/%d" % (n1, total))
-lines.append("初始事件条数       = %d  (期望 8)" % len(initial))
+lines.append("初始事件条数       = %d  (期望 %d)" % (len(initial), initial_n))
 lines.append("初始 ok 条数       = %d  (应等于第 1 轮在线数 %d)" % (len(initial_ok), n1))
 lines.append("接入说明在线数一致 = %s" % (("当前在线 %d/%d" % (n1, total)) in initial[0].get("msg", "")))
 lines.append("捕获「状态变化」   = %d 条  (期望 >=1，且含 :%d)" % (len(changed), FLIP_PORT))
 lines.append("捕获「巡检心跳」   = %d 条  (期望 >=1)" % len(beat))
 
 ok = (
-    len(initial) == 8
+    len(initial) == initial_n
     and len(initial_ok) == n1
     and ("当前在线 %d/%d" % (n1, total)) in initial[0].get("msg", "")
     and len(changed) >= 1

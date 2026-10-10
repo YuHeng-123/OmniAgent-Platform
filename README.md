@@ -15,6 +15,32 @@
 
 ---
 
+## 界面预览
+
+> 以下截图全部来自本机真实运行 —— 控制台起在 `:8899`，7 个业务端口用仓库自带的 `tools/mock_service.py` 占位，浏览器实际操作后截取，非设计稿。
+
+**总览 · 全域智能体调度大盘**
+7/7 在线，每张卡片带真实的起停按钮；右侧「中枢事件总线」由真 TCP 探测的差异驱动。
+
+![总览](assets/screenshots/01-overview.png)
+
+**历史趋势与事件回放**
+数据落 SQLite（24h 保留）。在线率曲线中段那道坑，就是一次真实的「某服务下线 → 后被重新拉起」。
+
+![历史趋势](assets/screenshots/02-history.png)
+
+**垂直电商 AI 智能导购**
+真发一条需求，右侧 LangGraph 推理时序逐步 `DONE`；底部如实标注本次应答来源 `fallback:local-demo`（上游 `:8001` 未起）。
+
+![导购](assets/screenshots/03-guide.png)
+
+**模型调度网关与容灾中枢**
+点「注入主链路宕机故障」后：504 超时 → 自动切备用链路 → 42ms 响应、全过行业务 0 报错。
+
+![网关](assets/screenshots/04-gateway.png)
+
+---
+
 ## 60 秒看懂
 
 控制台就 6 个页面，每个页面都能真的点、真的出结果：
@@ -307,6 +333,7 @@ OmniAgent-Platform/
 ├─ .pre-commit-config.yaml
 ├─ .github/workflows/ci.yml
 ├─ assets/architecture.svg
+├─ assets/screenshots/    # README 用的真机截图（本机实跑后截取）
 ├─ LICENSE                # MIT
 ├─ CHANGELOG.md           # 1.0 → 2.0 → 2.1 → 2.2 的完整变更记录
 ├─ .editorconfig

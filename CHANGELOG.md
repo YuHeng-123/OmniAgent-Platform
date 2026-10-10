@@ -25,6 +25,10 @@
   `/healthz` 新增 `networking` 字段，容器排障时一眼看出 bind 到哪、探的是谁。
 - **代码规范**：`ruff.toml` + `.pre-commit-config.yaml`，CI 增加 lint 与镜像构建步骤。
 
+### 文档
+- README 新增「界面预览」：4 张**真机截图**（总览 / 历史趋势 / 导购 / 网关容灾），
+  均在本机实跑后截取，落 `assets/screenshots/`，不是设计稿。
+
 ### 变更
 - **事件总线架构重构**：由「每个 SSE 连接各自探测」改为**全局共享巡检器**
   （lifespan 内启动的 asyncio 任务）。现在 N 个页面连接只探测一次，

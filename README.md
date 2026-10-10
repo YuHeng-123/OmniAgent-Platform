@@ -9,7 +9,8 @@
 ![license](https://img.shields.io/badge/license-MIT-blue)
 
 [![CI](https://github.com/YuHeng-123/OmniAgent-Platform/actions/workflows/ci.yml/badge.svg)](https://github.com/YuHeng-123/OmniAgent-Platform/actions/workflows/ci.yml)
-<!-- ↑ 这个徽章在仓库推上 GitHub 后即显示真实 CI 状态；本地看 README 时它只是个占位图。 -->
+[![Live Demo](https://img.shields.io/badge/%F0%9F%8C%90_Live_Demo-GitHub_Pages-2ea44f?style=for-the-badge)](https://yuheng-123.github.io/OmniAgent-Platform/)
+<!-- ↑ CI 徽章已激活：每次 push 自动跑 65 测试 + ruff + docker build。 -->
 
 ![架构总览](assets/architecture.svg)
 
@@ -61,7 +62,7 @@
 
 | 场景 | 怎么跑 | 说明 |
 |---|---|---|
-| 🌐 **在线演示 · 零后端** | 打开 `docs/index.html`（或部署 GitHub Pages） | 纯静态、依赖全本地化，**断网也能渲染**；数据来自内置降级层，页面顶栏会明确标注「静态演示模式」 |
+| 🌐 **在线演示 · 零后端** | **[已上线 → yuheng-123.github.io/OmniAgent-Platform](https://yuheng-123.github.io/OmniAgent-Platform/)** | 纯静态、依赖全本地化，**断网也能渲染**；数据来自内置降级层，页面顶栏会明确标注「静态演示模式」。离线场景可双击本地 `docs/index.html` |
 | 💻 **本地全功能** | `run.bat`（Windows）/ `./run.sh`（macOS·Linux） | 真后端、真接口、真耗时；7 个服务在线时亮绿点并实时数出来 |
 | 🐳 **容器里跑** | `docker compose up --build` | 控制台镜像化（python-slim · 非 root · 带 healthcheck），历史库落命名卷 |
 

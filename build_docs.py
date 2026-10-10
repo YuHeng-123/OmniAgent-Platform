@@ -87,13 +87,13 @@ def build():
 <title>404 · 页面不存在 - OmniAgent Platform</title>
 <style>
   html, body { margin: 0; height: 100%; }
-  body { background: #0B0B0F; color: #E5E5EA; display: flex; align-items: center; justify-content: center;
+  body { background: #F5F0E6; color: #2B241B; display: flex; align-items: center; justify-content: center;
          font: 16px/1.7 -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif; }
   .box { text-align: center; padding: 32px; }
-  .code { font-size: 72px; font-weight: 800; letter-spacing: .04em; color: #D9B36A; }
-  p { color: #8A8A96; margin: 12px 0 26px; }
-  a { display: inline-block; padding: 10px 22px; border-radius: 10px; color: #17130A; font-weight: 600;
-      text-decoration: none; background: #D9B36A; border: 1px solid #E4C283; }
+  .code { font-size: 72px; font-weight: 800; letter-spacing: .04em; color: #123B2E; }
+  p { color: #857A62; margin: 12px 0 26px; }
+  a { display: inline-block; padding: 10px 22px; border-radius: 10px; color: #221A06; font-weight: 600;
+      text-decoration: none; background: linear-gradient(135deg, #E8C87E, #C9A05A); border: 1px solid #D9B36A; }
 </style>
 </head>
 <body>

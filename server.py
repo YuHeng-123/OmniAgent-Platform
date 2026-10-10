@@ -30,7 +30,7 @@ from pydantic import BaseModel
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # 版本号单一来源：页面角标、/healthz、FastAPI 自动文档都读它，避免多处各写各的漂移。
-APP_VERSION = "2.4.0"
+APP_VERSION = "2.5.0"
 STARTED_AT = time.time()
 
 app = FastAPI(

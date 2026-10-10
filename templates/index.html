@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OmniAgent Platform {{ app_version or '2.4' }} - 企业级全域 AI 智能体控制中枢</title>
+    <title>OmniAgent Platform {{ app_version or '2.5' }} - 企业级全域 AI 智能体控制中枢</title>
     <meta name="description" content="把 7 个独立 AI 微服务收进一个统一控制台：拓扑配置化、前后端真接口、断网自动降级，并有断言测试与 CI。">
-    <meta name="theme-color" content="#0B0B0F">
+    <meta name="theme-color" content="#123B2E">
     <meta property="og:type" content="website">
     <meta property="og:title" content="OmniAgent Platform · 企业级全域 AI 智能体控制中枢">
     <meta property="og:description" content="7 个 AI 微服务的统一编排与可观测控制台，零外部 CDN、断网可渲染。">
@@ -19,10 +19,11 @@
     <script src="/static/omni-api.js"></script>
     <script>
         /* ============================================================
-         * Design Tokens v4 —— 「墨金石 · Inkwell & Champagne」
-         * 原则：石墨中性底 + 唯一主色(香槟金) + 三种状态色。
+         * Design Tokens v5 —— 「翡翠 × 奶油 · Jade & Cream」
+         * 珠宝电商控制台：深翡翠侧栏/顶栏 + 奶油白工作区。
          *   金 = 品牌/可交互；绿/琥珀/红 = 在线/告警/故障，永不做装饰。
-         *   禁：渐变文字、幽灵大图标、遍地霓虹、多层辉光。
+         *   slate-* 与 white 已变量化：翡翠区自动切米白字，奶油区自动切咖啡字。
+         *   dark-* 为历史命名：900=奶油页底 800=翡翠 700=暖纸 600=暖纸深。
          * ============================================================ */
         tailwind.config = {
             darkMode: 'class',
@@ -30,20 +31,30 @@
                 extend: {
                     colors: {
                         dark: {
-                            900: '#0B0B0F',
-                            800: '#101015',
-                            700: '#16161C',
-                            600: '#1E1E26',
-                            border: '#222229'
+                            900: 'rgb(245 240 230 / <alpha-value>)',
+                            800: 'rgb(18 59 46 / <alpha-value>)',
+                            700: 'rgb(251 247 238 / <alpha-value>)',
+                            600: 'rgb(239 232 216 / <alpha-value>)',
+                            border: 'rgb(229 220 200 / <alpha-value>)'
                         },
                         accent: {
-                            gold: '#D9B36A',
-                            steel: '#7FA3C8',
-                            sand: '#C9B896',
-                            emerald: '#4CD08D',
-                            amber: '#E2A83D',
-                            rose: '#E66868'
-                        }
+                            gold: 'rgb(194 155 58 / <alpha-value>)',
+                            steel: 'rgb(94 126 112 / <alpha-value>)',
+                            sand: 'rgb(140 122 78 / <alpha-value>)',
+                            emerald: 'rgb(30 127 79 / <alpha-value>)',
+                            amber: 'rgb(180 83 9 / <alpha-value>)',
+                            rose: 'rgb(192 52 52 / <alpha-value>)'
+                        },
+                        slate: {
+                            100: 'var(--ink-strong)',
+                            200: 'var(--ink-body)',
+                            300: 'var(--ink-soft)',
+                            400: 'var(--ink-mute)',
+                            500: 'var(--ink-faint)',
+                            600: 'var(--ink-ghost)',
+                            700: 'var(--ink-whisper)'
+                        },
+                        white: 'var(--ink-white)'
                     }
                 }
             }
@@ -54,84 +65,106 @@
         * { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif; }
         code, pre, .font-mono { font-family: "JetBrains Mono", "Cascadia Code", Consolas, "Courier New", monospace; }
 
-        /* ---- 全局底色：石墨近黑，顶部一丝极弱暖光定氛围 ---- */
+        /* ---- 语义墨色：奶油区（默认）与翡翠区（aside/header）自动切换 ---- */
+        :root {
+            --ink-white: #2B241B; --ink-strong: #332B1F; --ink-body: #4A4132;
+            --ink-soft: #6B5F4B; --ink-mute: #857A62; --ink-faint: #9C9077;
+            --ink-ghost: #B3A88E; --ink-whisper: #C9BFA6;
+        }
+        aside, header {
+            --ink-white: #F8F4E6; --ink-strong: #F6F1E1; --ink-body: #E4DEC9;
+            --ink-soft: #C9C3AC; --ink-mute: #ADBBAE; --ink-faint: #86988B;
+            --ink-ghost: #647E70; --ink-whisper: #4E6B5D;
+        }
+        /* 翡翠区内的分隔线：半透明米白，不用奶油区的暖沙线 */
+        aside, aside .border-dark-border, header.border-dark-border {
+            border-color: rgba(246, 241, 225, 0.12) !important;
+        }
+
+        /* ---- 全局底色：奶油纸面，顶部一丝极弱金光定氛围 ---- */
         body {
             background:
-                radial-gradient(1000px 320px at 50% -12%, rgba(217, 179, 106, 0.045), transparent 62%),
-                #0B0B0F;
+                radial-gradient(1000px 320px at 50% -12%, rgba(201, 162, 39, 0.06), transparent 62%),
+                #F5F0E6;
         }
-        ::selection { background: rgba(217, 179, 106, 0.28); color: #F5E9CD; }
+        ::selection { background: rgba(194, 155, 58, 0.30); color: #2B241B; }
 
-        /* Custom scrollbar：石墨细条 */
+        /* Custom scrollbar：暖沙细条 */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #23232B; border-radius: 8px; border: 2px solid #0B0B0F; }
-        ::-webkit-scrollbar-thumb:hover { background: #34343E; }
+        ::-webkit-scrollbar-thumb { background: #D8CDB4; border-radius: 8px; border: 2px solid #F5F0E6; }
+        ::-webkit-scrollbar-thumb:hover { background: #C5B896; }
 
-        /* ---- 卡片：单一层级语言 —— 面板只靠 1px 发丝线，无辉光无渐变 ---- */
+        /* ---- 卡片：暖白面板 + 柔影，单一层级语言 ---- */
         .glass-card {
-            background: #101015;
-            border: 1px solid #1F1F27;
-            border-radius: 12px;
+            background: #FFFDF9;
+            border: 1px solid #E7DEC9;
+            border-radius: 14px;
+            box-shadow: 0 1px 2px rgba(60, 50, 30, 0.04), 0 4px 16px rgba(60, 50, 30, 0.05);
         }
-        .glass-card:hover { border-color: #2A2A34; }
+        .glass-card:hover { border-color: #D9CCAE; }
 
         /* ---- KPI 数字：等宽数字，波动时不跳版 ---- */
         .kpi-num { font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
 
-        /* ---- 徽章 / 技术标签：全部统一低调石墨 mono，不再五颜六色 ---- */
+        /* ---- 徽章 / 技术标签：暖沙 mono ---- */
         .tag {
             display: inline-flex; align-items: center;
             padding: 1px 7px; border-radius: 5px;
             font-size: 10px; line-height: 15px; font-family: "JetBrains Mono", Consolas, monospace;
-            color: #6E6E7A; background: #141419;
-            border: 1px solid #23232B;
+            color: #8C7A5A; background: #F5EFDF;
+            border: 1px solid #E5DCC3;
         }
-        .tag-accent { color: #D9B36A; border-color: rgba(217, 179, 106, 0.32); background: rgba(217, 179, 106, 0.06); }
+        .tag-accent { color: #8F6E14; border-color: rgba(194, 155, 58, 0.40); background: rgba(194, 155, 58, 0.10); }
 
-        /* ---- 侧边导航：激活态 = 金色细亮条 + 微金底，其余全部扁平 ---- */
+        /* ---- 侧边导航：激活态 = 金渐变胶囊（全站唯一高饱和块）---- */
         .nav-btn { position: relative; border: 1px solid transparent; }
         .nav-btn.nav-active {
-            background: rgba(217, 179, 106, 0.07);
-            color: #F4F4F6;
+            background: linear-gradient(135deg, #E8C87E, #C9A05A);
+            color: #14382C;
+            font-weight: 600;
+            box-shadow: 0 2px 10px rgba(178, 138, 62, 0.38);
         }
-        .nav-btn.nav-active::before {
-            content: ""; position: absolute; left: 0; top: 24%; bottom: 24%;
-            width: 2px; border-radius: 2px; background: #D9B36A;
+        .nav-btn.nav-active .tag {
+            color: #4A3A12; background: rgba(255, 253, 245, 0.55);
+            border-color: rgba(255, 253, 245, 0.65);
         }
 
-        /* ---- 主操作按钮：香槟金实底、深字，全场唯一高饱和元素 ---- */
+        /* ---- 主操作按钮：金渐变实底、深字，全场唯一高饱和元素 ---- */
         .btn-primary {
-            background: #D9B36A; color: #17130A; font-weight: 600;
-            border: 1px solid #E4C283;
+            background: linear-gradient(135deg, #E8C87E, #C9A05A); color: #221A06; font-weight: 600;
+            border: 1px solid #D9B36A;
             transition: filter .15s ease, transform .05s ease;
         }
-        .btn-primary:hover { filter: brightness(1.08); }
+        .btn-primary:hover { filter: brightness(1.06); }
         .btn-primary:active { transform: translateY(1px); }
 
         /* ---- 次级 / 幽灵按钮 ---- */
         .btn-ghost {
-            background: transparent; color: #B4B4BF;
-            border: 1px solid #2A2A34;
+            background: transparent; color: #7A6F5A;
+            border: 1px solid #D9CFB6;
             transition: border-color .15s ease, color .15s ease;
         }
-        .btn-ghost:hover { border-color: #3E3E4A; color: #F4F4F6; }
+        .btn-ghost:hover { border-color: #C29B3A; color: #4A4132; }
+        /* 翡翠区内的幽灵按钮（顶栏容灾演示 / 窄屏菜单） */
+        header .btn-ghost { color: #D9D2BC; border-color: rgba(246, 241, 225, 0.22); }
+        header .btn-ghost:hover { border-color: rgba(232, 200, 126, 0.65); color: #F8F4E6; }
 
         /* ---- 快捷提问 chip：极简胶囊 ---- */
         .chip {
             padding: 3px 11px; border-radius: 999px;
-            font-size: 12px; line-height: 18px; color: #A2A2AE;
-            border: 1px solid #26262E; background: transparent;
+            font-size: 12px; line-height: 18px; color: #857A62;
+            border: 1px solid #DFD5BC; background: transparent;
             transition: border-color .15s ease, color .15s ease;
             white-space: nowrap;
         }
-        .chip:hover { border-color: rgba(217, 179, 106, 0.45); color: #E9D6A8; }
+        .chip:hover { border-color: rgba(194, 155, 58, 0.55); color: #6B5310; }
 
         /* ---- 输入框聚焦：金色细线 ---- */
-        input:focus { border-color: rgba(217, 179, 106, 0.55) !important; box-shadow: 0 0 0 3px rgba(217, 179, 106, 0.08); }
+        input:focus { border-color: rgba(194, 155, 58, 0.60) !important; box-shadow: 0 0 0 3px rgba(194, 155, 58, 0.10); }
 
-        /* ---- 事件流：纯终端质感 ---- */
-        #event-log-container { background: #0A0A0E; }
+        /* ---- 事件流：暖纸内嵌质感 ---- */
+        #event-log-container { background: #F6F0E1; }
 
         /* ---- 窄屏适配：<1024px 侧边栏抽屉化 ---- */
         #sidebar-overlay { display: none; }
@@ -140,12 +173,12 @@
                 position: fixed; left: 0; top: 0; bottom: 0; z-index: 50;
                 transform: translateX(-100%);
                 transition: transform .22s ease;
-                box-shadow: 0 0 60px rgba(0,0,0,.55);
+                box-shadow: 0 0 60px rgba(18, 40, 32, 0.35);
             }
             body.sidebar-open > aside { transform: translateX(0); }
             body.sidebar-open #sidebar-overlay {
                 display: block; position: fixed; inset: 0;
-                background: rgba(5,5,8,.6); z-index: 40;
+                background: rgba(24, 34, 28, 0.45); z-index: 40;
             }
         }
     </style>
@@ -248,7 +281,7 @@
     <main class="flex-1 flex flex-col bg-dark-900 overflow-hidden relative min-w-0">
 
         <!-- 顶部全局工具栏 -->
-        <header class="h-14 bg-dark-800/70 backdrop-blur border-b border-dark-border flex items-center justify-between px-4 sm:px-6 gap-3 z-20 flex-shrink-0">
+        <header class="h-14 bg-dark-800 border-b border-dark-border flex items-center justify-between px-4 sm:px-6 gap-3 z-20 flex-shrink-0">
             <div class="flex items-center gap-3 min-w-0">
                 <button onclick="toggleSidebar()" class="lg:hidden btn-ghost w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0" title="展开导航">
                     <i class="fas fa-bars text-[13px]"></i>
@@ -352,7 +385,7 @@
                                     <span class="text-[11px] text-accent-emerald">运行中</span>
                                     <button onclick="serviceControl('{{ s.id }}', 'stop', this)"
                                             title="终止监听 :{{ s.port }} 的进程（真实操作，事件总线将推送下线事件）"
-                                            class="mt-1 w-full py-1 rounded-md text-[11px] border border-dark-border text-slate-500 hover:border-rose-500/40 hover:text-rose-400 transition-colors">
+                                            class="mt-1 w-full py-1 rounded-md text-[11px] border border-dark-border text-slate-500 hover:border-accent-rose/40 hover:text-accent-rose transition-colors">
                                         停止
                                     </button>
                                     {% elif s.start_cmd %}
@@ -699,7 +732,7 @@
 
                             <!-- 核心业务闭环按键：直接推送到营销工场 -->
                             <div class="p-3 rounded-lg bg-accent-amber/10 border border-accent-amber/30 flex items-center justify-between gap-3">
-                                <div class="text-[11px] text-amber-300 min-w-0">
+                                <div class="text-[11px] text-accent-amber min-w-0">
                                     <span class="font-semibold">发现潜力品：</span><span id="highlight-product-name">纯银国风手镯</span>
                                 </div>
                                 <button onclick="pipeToMarketing()" class="btn-primary px-3 py-1.5 rounded-md text-[11px] flex-shrink-0">
@@ -863,9 +896,9 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <div class="flex rounded-lg overflow-hidden border border-dark-border">
-                            <button onclick="setHistoryRange(30, this)" id="hist-range-30" class="hist-range-btn px-3 py-1.5 text-[11px] text-slate-400 hover:text-white bg-accent-gold/10 text-accent-gold">30 分钟</button>
-                            <button onclick="setHistoryRange(120, this)" id="hist-range-120" class="hist-range-btn px-3 py-1.5 text-[11px] text-slate-400 hover:text-white border-l border-dark-border">2 小时</button>
-                            <button onclick="setHistoryRange(480, this)" id="hist-range-480" class="hist-range-btn px-3 py-1.5 text-[11px] text-slate-400 hover:text-white border-l border-dark-border">8 小时</button>
+                            <button onclick="setHistoryRange(30, this)" id="hist-range-30" class="hist-range-btn px-3 py-1.5 text-[11px] text-slate-400 hover:text-slate-100 bg-accent-gold/10 text-accent-gold">30 分钟</button>
+                            <button onclick="setHistoryRange(120, this)" id="hist-range-120" class="hist-range-btn px-3 py-1.5 text-[11px] text-slate-400 hover:text-slate-100 border-l border-dark-border">2 小时</button>
+                            <button onclick="setHistoryRange(480, this)" id="hist-range-480" class="hist-range-btn px-3 py-1.5 text-[11px] text-slate-400 hover:text-slate-100 border-l border-dark-border">8 小时</button>
                         </div>
                         <span id="history-source-badge" class="text-[11px] font-mono px-2 py-1 rounded-md border border-dark-border bg-dark-900 text-slate-500">加载中</span>
                     </div>
@@ -978,10 +1011,10 @@
                 document.body.appendChild(host);
             }
             const colors = {
-                ok: '#4CD08D', err: '#E66868', warn: '#E2A83D', info: '#7FA3C8'
+                ok: '#1E7F4F', err: '#C03434', warn: '#B45309', info: '#5E7E70'
             };
             const div = document.createElement('div');
-            div.style.cssText = 'padding:10px 16px;border-radius:8px;font-size:13px;line-height:1.5;color:#D8D8E0;background:rgba(16,16,21,.97);border:1px solid ' + (colors[level] || colors.info) + '55;box-shadow:0 8px 28px rgba(0,0,0,.5);';
+            div.style.cssText = 'padding:10px 16px;border-radius:10px;font-size:13px;line-height:1.5;color:#3E362A;background:rgba(255,253,249,.98);border:1px solid ' + (colors[level] || colors.info) + '66;box-shadow:0 10px 30px rgba(50,40,20,.18);';
             div.innerHTML = msg;
             host.appendChild(div);
             setTimeout(() => div.remove(), 5200);
@@ -1030,13 +1063,13 @@
         let currentHistoryRange = 30;
         let _uptimeChart = null;
         let _latencyChart = null;
-        // 图表系列配色：与设计系统一致（金 / 钢蓝 / 沙 / 绿 / 红），不再用霓虹色系
-        const HISTORY_COLORS = ['#D9B36A', '#7FA3C8', '#C9B896', '#4CD08D', '#E66868', '#8E8E9A', '#E2A83D'];
+        // 图表系列配色：翡翠×奶油设计系统（金 / 灰绿 / 翡翠 / 琥珀 / 红 / 暖沙 / 深绿）
+        const HISTORY_COLORS = ['#C9A227', '#5E7E70', '#1E7F4F', '#B45309', '#C03434', '#8C7A4E', '#3E5F52'];
 
         function setHistoryRange(minutes, btn) {
             currentHistoryRange = minutes;
             document.querySelectorAll('.hist-range-btn').forEach(b => {
-                b.className = 'hist-range-btn px-3 py-1.5 text-[11px] text-slate-400 hover:text-white'
+                b.className = 'hist-range-btn px-3 py-1.5 text-[11px] text-slate-400 hover:text-slate-100'
                     + (b === btn.previousElementSibling || b.nextElementSibling === btn ? ' border-l border-dark-border' : '');
             });
             btn.className = 'hist-range-btn px-3 py-1.5 text-[11px] text-accent-gold bg-accent-gold/10';
@@ -1052,13 +1085,13 @@
                 if (badge) {
                     if (data.source === 'sample') {
                         badge.textContent = '演示样例数据（无后端）';
-                        badge.className = 'text-[11px] font-mono px-2 py-1 rounded-full border border-amber-500/40 bg-amber-500/10 text-accent-amber';
+                        badge.className = 'text-[11px] font-mono px-2 py-1 rounded-full border border-accent-amber/40 bg-accent-amber/10 text-accent-amber';
                     } else if (data.source === 'monitor-not-started') {
                         badge.textContent = '巡检器未启动';
-                        badge.className = 'text-[11px] font-mono px-2 py-1 rounded-full border border-rose-500/40 bg-rose-500/10 text-rose-400';
+                        badge.className = 'text-[11px] font-mono px-2 py-1 rounded-full border border-accent-rose/40 bg-accent-rose/10 text-accent-rose';
                     } else {
                         badge.textContent = 'SQLite 实测 · ' + currentHistoryRange + ' 分钟窗口';
-                        badge.className = 'text-[11px] font-mono px-2 py-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 text-accent-emerald';
+                        badge.className = 'text-[11px] font-mono px-2 py-1 rounded-full border border-accent-emerald/40 bg-accent-emerald/10 text-accent-emerald';
                     }
                 }
                 const evData = await OmniAPI.fetchRecentEvents(60);
@@ -1067,7 +1100,7 @@
                         evList.innerHTML = '<div class="text-slate-600">暂无历史事件 —— 控制台运行几分钟后，上下线与巡检心跳会出现在这里。</div>';
                     } else {
                         evList.innerHTML = evData.events.map(ev => {
-                            const c = ev.level === 'ok' ? 'text-accent-emerald' : (ev.level === 'err' ? 'text-rose-400' : (ev.level === 'warn' ? 'text-accent-amber' : 'text-slate-400'));
+                            const c = ev.level === 'ok' ? 'text-accent-emerald' : (ev.level === 'err' ? 'text-accent-rose' : (ev.level === 'warn' ? 'text-accent-amber' : 'text-slate-400'));
                             return '<div class="flex gap-2"><span class="text-slate-600 shrink-0">[' + (ev.ts || '') + ']</span>' +
                                    '<span class="text-accent-gold shrink-0 w-24">[' + (ev.tag || '') + ']</span>' +
                                    '<span class="' + c + '">' + escapeHtml(ev.msg || '') + '</span></div>';
@@ -1076,7 +1109,7 @@
                 }
             } catch (e) {
                 if (badge) badge.textContent = '加载失败';
-                if (evList) evList.innerHTML = '<div class="text-rose-400">加载失败：' + escapeHtml(String(e)) + '</div>';
+                if (evList) evList.innerHTML = '<div class="text-accent-rose">加载失败：' + escapeHtml(String(e)) + '</div>';
             }
         }
 
@@ -1104,10 +1137,10 @@
 
             const baseOpts = (yTitle) => ({
                 responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
-                plugins: { legend: { labels: { color: '#8E8E9A', boxWidth: 10, font: { size: 10 } } } },
+                plugins: { legend: { labels: { color: '#988C74', boxWidth: 10, font: { size: 10 } } } },
                 scales: {
-                    x: { ticks: { color: '#5C5C68', maxTicksLimit: 8, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,.05)' } },
-                    y: { ticks: { color: '#5C5C68', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,.05)' }, title: { display: true, text: yTitle, color: '#5C5C68', font: { size: 10 } } }
+                    x: { ticks: { color: '#7A6F5A', maxTicksLimit: 8, font: { size: 10 } }, grid: { color: 'rgba(43,36,27,.07)' } },
+                    y: { ticks: { color: '#7A6F5A', font: { size: 10 } }, grid: { color: 'rgba(43,36,27,.07)' }, title: { display: true, text: yTitle, color: '#7A6F5A', font: { size: 10 } } }
                 }
             });
 
@@ -1192,8 +1225,8 @@
                     stepDiv.className = `px-3 py-2.5 rounded-lg ${isRetry ? 'bg-accent-amber/10 border border-accent-amber/30' : 'bg-dark-700/40 border border-dark-border'} text-[11px]`;
                     stepDiv.innerHTML = `
                         <div class="flex items-center justify-between font-mono mb-1">
-                            <span class="${isRetry ? 'text-amber-400 font-bold' : 'text-slate-300'}">${step.node}</span>
-                            <span class="${isRetry ? 'text-amber-400' : 'text-accent-emerald'}">${step.status.toUpperCase()}</span>
+                            <span class="${isRetry ? 'text-accent-amber font-bold' : 'text-slate-300'}">${step.node}</span>
+                            <span class="${isRetry ? 'text-accent-amber' : 'text-accent-emerald'}">${step.status.toUpperCase()}</span>
                         </div>
                         <div class="text-slate-400">${step.detail}</div>
                     `;
@@ -1314,11 +1347,11 @@
                         label: '成交额 (元)',
                         data: currentChartData.data,
                         backgroundColor: isPie ? [
-                            'rgba(217, 179, 106, 0.85)',
-                            'rgba(127, 163, 200, 0.85)',
-                            'rgba(201, 184, 150, 0.85)'
-                        ] : 'rgba(217, 179, 106, 0.8)',
-                        borderColor: isPie ? '#101015' : 'rgba(217, 179, 106, 0.9)',
+                            'rgba(194, 155, 58, 0.85)',
+                            'rgba(94, 126, 112, 0.85)',
+                            'rgba(30, 127, 79, 0.85)'
+                        ] : 'rgba(194, 155, 58, 0.8)',
+                        borderColor: isPie ? '#FFFDF9' : 'rgba(194, 155, 58, 0.9)',
                         borderWidth: 1,
                         borderRadius: 4
                     }]
@@ -1327,11 +1360,11 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { display: isPie, labels: { color: '#8E8E9A', boxWidth: 10, font: { size: 11 } } }
+                        legend: { display: isPie, labels: { color: '#988C74', boxWidth: 10, font: { size: 11 } } }
                     },
                     scales: isPie ? {} : {
-                        y: { ticks: { color: '#5C5C68' }, grid: { color: 'rgba(255,255,255,.05)' } },
-                        x: { ticks: { color: '#5C5C68' }, grid: { display: false } }
+                        y: { ticks: { color: '#7A6F5A' }, grid: { color: 'rgba(43,36,27,.07)' } },
+                        x: { ticks: { color: '#7A6F5A' }, grid: { display: false } }
                     }
                 }
             });
@@ -1382,7 +1415,7 @@
             try {
                 data = await OmniAPI.gatewayFailover();
             } catch (e) {
-                logBox.innerHTML = `<div class="text-rose-400">${f(new Date())} 网关仿真调用失败：${escapeHtml(String(e && e.message || e))}</div>`;
+                logBox.innerHTML = `<div class="text-accent-rose">${f(new Date())} 网关仿真调用失败：${escapeHtml(String(e && e.message || e))}</div>`;
                 return;
             }
             const t1 = new Date();
@@ -1390,8 +1423,8 @@
             const scenName = { 'upstream-timeout': '上游超时熔断', 'rate-limit': '限流分流', 'quality-degrade': '质量降级重生成' }[data.scenario] || data.scenario;
             logBox.innerHTML = `
                 <div class="text-slate-500">${f(t1)} 场景「${escapeHtml(scenName)}」· ${data.simulated ? '仿真注入' : '真实故障'}，向 ${escapeHtml(data.primary_model || '上游主模型')} 发起请求...</div>
-                <div class="text-rose-400">${f(t2)} ⚠️ ${escapeHtml(data.primary_status)}</div>
-                <div class="text-amber-300">${f(t2)} ↳ ${escapeHtml(data.primary_detail || '')}</div>
+                <div class="text-accent-rose">${f(t2)} ⚠️ ${escapeHtml(data.primary_status)}</div>
+                <div class="text-accent-amber">${f(t2)} ↳ ${escapeHtml(data.primary_detail || '')}</div>
                 <div class="text-accent-gold">${f(t2)} ⚡ ${escapeHtml(data.event)}：转派至 ${escapeHtml(data.failover_model)}</div>
                 <div class="text-accent-emerald">${f(t2)} ✅ ${escapeHtml(data.failover_status)}，实测切换 ${data.switch_latency_ms}ms，业务端 0 报错！</div>
                 <div class="text-slate-500 border-t border-dark-border mt-1 pt-1">${escapeHtml(data.log_entry || '')}（token 样例 ${data.token_usage ? data.token_usage.prompt + '+' + data.token_usage.completion : '-'}，${escapeHtml(data.token_usage_note || '')}）</div>
@@ -1519,7 +1552,7 @@
         }
 
         // ---- 中枢事件总线：渲染 + 模式角标 ----
-        const EV_LEVEL_CLS = { ok: 'text-accent-emerald', warn: 'text-accent-amber', err: 'text-rose-400', info: 'text-slate-400' };
+        const EV_LEVEL_CLS = { ok: 'text-accent-emerald', warn: 'text-accent-amber', err: 'text-accent-rose', info: 'text-slate-400' };
         const EV_TAG_CLS = {
             MASTER: 'text-accent-gold', GATEWAY: 'text-accent-steel', HEALTH: 'text-accent-emerald',
             ANALYTICS: 'text-accent-emerald', RAG: 'text-accent-sand', 'ECOM-AGENT': 'text-accent-sand',

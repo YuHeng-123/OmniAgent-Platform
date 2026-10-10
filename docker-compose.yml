@@ -13,12 +13,20 @@ services:
       - "${OMNI_PORT:-8888}:8888"
     environment:
       OMNI_PORT: 8888
+      # 容器里必须 bind 0.0.0.0，否则上面的端口发布从宿主机打不通（容器 healthcheck
+      # 却会通过，变成「健康但访问不了」的静默失败）
+      OMNI_HOST: 0.0.0.0
+      # 容器内的 127.0.0.1 是容器自己，探不到宿主机上的微服务 —— 必须指向宿主机
+      OMNI_PROBE_HOST: host.docker.internal
       TZ: Asia/Shanghai
     volumes:
-      # 历史曲线数据（SQLite）持久化到宿主机，重建容器不丢
-      - ./data:/app/data
+      # 历史曲线数据（SQLite）持久化。
+      # 用【命名卷】而不是 ./data 绑定挂载：镜像里以非 root（omni）运行，
+      # 而绑定挂载会沿用宿主机目录的属主 —— 宿主机上 data/ 不存在时 Docker 以 root
+      # 创建，容器内 uid 1000 就写不进 SQLite。命名卷由 Docker 管理属主，不会踩这个坑。
+      - omni-data:/app/data
     extra_hosts:
-      # 让容器里的 127.0.0.1 探测能打到宿主机上跑的微服务（Linux 需要，Docker Desktop 自带）
+      # 让 OMNI_PROBE_HOST=host.docker.internal 能解析到宿主机（Linux 需要显式配，Docker Desktop 自带）
       - "host.docker.internal:host-gateway"
     restart: unless-stopped
     healthcheck:
@@ -27,3 +35,6 @@ services:
       timeout: 5s
       retries: 3
       start_period: 15s
+
+volumes:
+  omni-data:

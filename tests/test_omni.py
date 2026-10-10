@@ -541,3 +541,58 @@ def test_stop_kills_only_the_configured_port_listener(client):
     finally:
         if child.poll() is None:
             child.kill()
+
+
+# =========================================================================== #
+# 6. 容器化与监听地址（配置漂移守卫）
+#    背景：容器里进程若只 bind 127.0.0.1，Docker 的端口发布（-p 8888:8888）转发到
+#    容器 eth0，宿主机打不通；而容器 healthcheck 从 loopback 打是通的 —— 于是变成
+#    「显示健康、实际访问不了」的静默失败。这组断言把这条锁死。
+# =========================================================================== #
+def test_local_defaults_bind_loopback_only():
+    """本机运行默认只监听回环 —— 不把控制台意外暴露到局域网。"""
+    assert S.BIND_HOST == "127.0.0.1"
+    assert S.PROBE_HOST == "127.0.0.1"
+
+
+def test_uvicorn_uses_configurable_bind_host():
+    """启动必须走 BIND_HOST；写死 127.0.0.1 会让容器端口发布失效。"""
+    src = read("server.py")
+    assert "uvicorn.run(app, host=BIND_HOST" in src, "启动未使用 BIND_HOST"
+    assert 'uvicorn.run(app, host="127.0.0.1"' not in src, "启动又把监听地址写死了"
+
+
+@pytest.mark.parametrize(
+    "needle",
+    [
+        "asyncio.open_connection(PROBE_HOST",  # 端口探测
+        '"http://%s:%d%s" % (PROBE_HOST',  # 导购上游
+    ],
+)
+def test_probe_paths_use_probe_host(needle):
+    """探测与导购上游都要走 PROBE_HOST，否则容器里永远探不到宿主机服务。"""
+    assert needle in read("server.py")
+
+
+def test_dockerfile_sets_container_networking():
+    df = read("Dockerfile")
+    assert "OMNI_HOST=0.0.0.0" in df, "镜像里没把监听地址设成 0.0.0.0，端口发布打不通"
+    assert "OMNI_PROBE_HOST=host.docker.internal" in df, "镜像里没把探测地址指向宿主机"
+    assert "HEALTHCHECK" in df
+    assert "USER omni" in df, "镜像应以非 root 运行"
+
+
+def test_compose_agrees_with_dockerfile_on_networking():
+    yml = read("docker-compose.yml")
+    assert "OMNI_HOST: 0.0.0.0" in yml
+    assert "OMNI_PROBE_HOST: host.docker.internal" in yml
+    # 非 root + 绑定挂载会让 uid 1000 写不进 SQLite（宿主机 data/ 被 root 创建）
+    assert "omni-data:/app/data" in yml, "历史库应该用命名卷，而不是绑定挂载"
+    assert "./data:/app/data" not in yml, "绑定挂载会踩非 root 写权限的坑"
+
+
+def test_healthz_reports_networking(client):
+    """排障用：healthz 要能一眼看出 bind 到哪、探的是谁。"""
+    net = client.get("/healthz").json().get("networking") or {}
+    assert net.get("bind_host") == S.BIND_HOST
+    assert net.get("probe_host") == S.PROBE_HOST

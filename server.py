@@ -61,7 +61,7 @@ app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), na
 # --------------------------------------------------------------------------- #
 async def is_port_online(port: int, timeout: float = 0.35) -> bool:
     try:
-        reader, writer = await asyncio.wait_for(asyncio.open_connection("127.0.0.1", port), timeout=timeout)
+        reader, writer = await asyncio.wait_for(asyncio.open_connection(PROBE_HOST, port), timeout=timeout)
         writer.close()
         try:
             await writer.wait_closed()
@@ -259,6 +259,21 @@ ALL_PORTS = [s["port"] for s in SERVICES_META]
 PROBE_TIMEOUT = PROBE["timeout_sec"]
 EVENT_INTERVAL_SEC = PROBE["interval_sec"]
 HEARTBEAT_EVERY = PROBE["heartbeat_every"]
+
+# --------------------------------------------------------------------------- #
+# 监听地址 / 探测地址 —— 这两个必须可配置，否则容器化跑不通（见 Dockerfile）
+# --------------------------------------------------------------------------- #
+# BIND_HOST：控制台自己 listen 的地址。
+#   本机默认 127.0.0.1（刻意不暴露到局域网，符合「单机演示」定位）；
+#   容器里必须 0.0.0.0 —— Docker 的端口发布（-p 8888:8888）是把宿主机端口 DNAT 到
+#   容器的 eth0，进程只 bind 回环的话宿主机根本打不通；更糟的是容器自带 healthcheck
+#   从容器内 loopback 打是通的，于是会显示「健康，但外部访问不了」这种静默失败。
+BIND_HOST = os.environ.get("OMNI_HOST") or "127.0.0.1"
+
+# PROBE_HOST：探测 7 个微服务时连的地址。
+#   本机默认 127.0.0.1；容器里必须 host.docker.internal —— 容器内的 127.0.0.1 是
+#   容器自己，永远探不到跑在宿主机上的服务（否则面板恒显示 0/7）。
+PROBE_HOST = os.environ.get("OMNI_PROBE_HOST") or str(PROBE.get("host") or "127.0.0.1")
 # 归一化：保证无论拓扑来自 yaml 还是内置默认，每个条目都带 start_cmd / start_cwd 键，
 # 下游（起停 API、前端渲染）不需要再判键。
 for _s in SERVICES_META:
@@ -534,6 +549,11 @@ async def healthz():
         "version": APP_VERSION,
         "uptime_sec": round(time.time() - STARTED_AT, 1),
         "config_source": CONFIG_SOURCE,
+        "networking": {
+            # 容器化排障用：bind 是不是 0.0.0.0、探的是不是宿主机，一眼可见
+            "bind_host": BIND_HOST,
+            "probe_host": PROBE_HOST,
+        },
         "services_online": online,
         "services_total": len(SERVICES_META),
         "monitor": {
@@ -758,8 +778,8 @@ class GuideChatRequest(BaseModel):
 async def fetch_from_guide_agent(message: str, history) -> Optional[Dict[str, Any]]:
     """调用真实导购 Agent 并解析其 SSE 事件流。失败返回 None 以触发降级。
 
-    上游地址 = 127.0.0.1:GUIDE_PORT + GUIDE_CHAT_PATH，两者都取自 services.yaml
-    的 ecom-ai-guide 条目（不再硬编码 8001）—— 换上游端口只改拓扑配置即可。
+    上游地址 = PROBE_HOST:GUIDE_PORT + GUIDE_CHAT_PATH。端口与路径取自 services.yaml
+    的 ecom-ai-guide 条目（不再硬编码 8001）；主机取自 PROBE_HOST，容器化时指向宿主机。
     """
     if not await is_port_online(GUIDE_PORT, PROBE_TIMEOUT):
         return None
@@ -772,7 +792,7 @@ async def fetch_from_guide_agent(message: str, history) -> Optional[Dict[str, An
         async with httpx.AsyncClient(trust_env=False, timeout=timeout) as client:
             async with client.stream(
                 "POST",
-                "http://127.0.0.1:%d%s" % (GUIDE_PORT, GUIDE_CHAT_PATH),
+                "http://%s:%d%s" % (PROBE_HOST, GUIDE_PORT, GUIDE_CHAT_PATH),
                 json={"message": message, "history": history or []},
             ) as resp:
                 if resp.status_code != 200:
@@ -1187,7 +1207,11 @@ WIN_DETACHED = 0x00000008 | 0x00000200  # DETACHED_PROCESS | CREATE_NEW_PROCESS_
 
 
 def find_listener_pids(port: int) -> List[int]:
-    """找出监听在 127.0.0.1:port 上的进程 PID 列表（psutil 缺失时返回空）。"""
+    """找出**本机**监听在 port 上的进程 PID 列表（psutil 缺失时返回空）。
+
+    注意：这是本机视角 —— 容器里只能看到容器自己的进程，看不到宿主机上的服务。
+    所以「起停」在容器化部署下只对容器内的进程有效，这是刻意的边界。
+    """
     try:
         import psutil
     except ImportError:
@@ -1361,6 +1385,8 @@ if __name__ == "__main__":
     port = int(os.environ.get("OMNI_PORT", "8888"))
     print("=" * 57)
     print("  OmniAgent Platform %s - 企业级全域 AI 控制中枢已启动" % APP_VERSION)
-    print(f"  访问主控台: http://127.0.0.1:{port}")
+    _shown = "127.0.0.1" if BIND_HOST in ("0.0.0.0", "::") else BIND_HOST
+    print(f"  监听地址: {BIND_HOST}    访问主控台: http://{_shown}:{port}")
+    print(f"  探测微服务的地址: {PROBE_HOST}")
     print("=" * 57)
-    uvicorn.run(app, host="127.0.0.1", port=port)
+    uvicorn.run(app, host=BIND_HOST, port=port)

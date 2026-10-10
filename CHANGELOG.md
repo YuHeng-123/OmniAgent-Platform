@@ -19,7 +19,10 @@
 - **「历史趋势」页签**：30 分 / 2 小时 / 8 小时窗口切换，在线状态阶梯曲线 + 平均延迟折线 +
   最近事件流水。静态演示模式下走内置样例曲线，不假装有真实历史。
 - **容器化**：`Dockerfile`（python-slim + 非 root + `HEALTHCHECK` 打 `/healthz`）、
-  `docker-compose.yml`（含数据卷与 `host.docker.internal`）、`.dockerignore`。
+  `docker-compose.yml`（命名卷持久化历史库 + `host.docker.internal`）、`.dockerignore`。
+- **两个可配置的网络地址**：`OMNI_HOST`（控制台监听地址）与 `OMNI_PROBE_HOST`（探测 7 个
+  微服务的地址）。本机默认仍是 `127.0.0.1`，容器里由镜像设为 `0.0.0.0` / `host.docker.internal`。
+  `/healthz` 新增 `networking` 字段，容器排障时一眼看出 bind 到哪、探的是谁。
 - **代码规范**：`ruff.toml` + `.pre-commit-config.yaml`，CI 增加 lint 与镜像构建步骤。
 
 ### 变更
@@ -38,6 +41,16 @@
 
 ### 修复
 - `ruff check .` 在工作目录而非项目根执行会「假绿」——已确认并在 CI 里用显式路径避免。
+- **容器网络三处会「跑起来就是坏的」**（读代码即得，非猜测；已修 + 断言锁定）：
+  1. `uvicorn.run(host="127.0.0.1")` 写死 —— 容器里只 bind 回环，Docker 的端口发布
+     （`-p 8888:8888`）转发到容器 eth0，从宿主机**打不通**；而容器 healthcheck 从
+     loopback 打是通的，于是显示「健康」却访问不了。改为走 `BIND_HOST`。
+  2. 端口探测写死 `127.0.0.1` —— 容器内的回环是容器自己，**永远探不到宿主机上的微服务**
+     （面板恒显示 0/7），`extra_hosts` 也因此形同虚设。改为走 `PROBE_HOST`；导购上游同理。
+  3. `./data:/app/data` 绑定挂载 + 非 root 运行 —— 宿主机 `data/` 不存在时由 Docker 以 root
+     创建，容器内 uid 1000 写不进 SQLite。改用**命名卷**。
+  本机实测：设 `OMNI_HOST=0.0.0.0` 后从非回环地址访问 `/healthz` 返回 200（即端口发布可达）。
+  注意：**镜像本身仍未在本机 build 过**（环境无 Docker CLI），这条属未验证。
 
 ## [2.1.0] - 2026-10-09
 

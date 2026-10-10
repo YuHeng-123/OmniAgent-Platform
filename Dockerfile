@@ -9,7 +9,9 @@ LABEL org.opencontainers.image.source="https://github.com/<你的用户名>/Omni
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
-    OMNI_PORT=8888
+    OMNI_PORT=8888 \
+    OMNI_HOST=0.0.0.0 \
+    OMNI_PROBE_HOST=host.docker.internal
 
 WORKDIR /app
 

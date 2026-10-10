@@ -836,30 +836,70 @@ async def fetch_from_guide_agent(message: str, history) -> Optional[Dict[str, An
 
 # 导购本地演示引擎的知识池：商品 / 售后 / 保养 / 选材，与 static/omni-api.js 镜像。
 GUIDE_PRODUCTS = [
-    {"tag": "福禄双全", "name": "【琼华·福禄双全】天然和田碧玉平安扣吊坠", "price": 1680,
-     "list": 2399, "spec": "新疆且末老料，油润细腻，附国家级宝玉石质检证书",
-     "fit": ["长辈", "妈妈", "婆婆", "平安", "玉"]},
-    {"tag": "月满西楼", "name": "【琼华·月满西楼】天然淡水无瑕珍珠项链", "price": 1120,
-     "list": 1480, "spec": "8-9mm 微瑕近圆，正圆强光皮光极亮",
-     "fit": ["长辈", "妈妈", "婆婆", "优雅", "珍珠", "通勤"]},
-    {"tag": "星辰大海", "name": "【琼华·星辰大海】D色莫桑钻经典六爪戒指", "price": 699,
-     "list": 2999, "spec": "D色/VVS1 切工，GRA 独立腰码证书，火彩直逼天然钻",
-     "fit": ["女友", "老婆", "求婚", "结婚", "纪念", "戒指", "莫桑"]},
-    {"tag": "竹报平安", "name": "【琼华·竹报平安】天然和田玉青白玉竹节手串", "price": 668,
-     "list": 880, "spec": "青白玉竹节雕工，15颗均色，弹力绳双层打结",
-     "fit": ["自己", "手串", "日常", "玉"]},
-    {"tag": "鸿运当头", "name": "【琼华·鸿运当头】天然南红玛瑙平安无事牌", "price": 968,
-     "list": 1280, "spec": "川料柿子红，满色满肉，牌形方正",
-     "fit": ["爸爸", "男士", "本命年", "转运"]},
-    {"tag": "映月", "name": "【琼华·映月】925银镶和田玉小方牌项链", "price": 359,
-     "list": 459, "spec": "入门款，青白玉小方牌+925银链，白领通勤首选",
-     "fit": ["入门", "学生", "预算", "通勤", "项链"]},
-    {"tag": "岁岁团圆", "name": "【琼华·岁岁团圆】天然珍珠耳钉 7-8mm", "price": 528,
-     "list": 680, "spec": "正圆强光，耳针925银，配防丢耳塞",
-     "fit": ["女友", "老婆", "耳饰", "珍珠", "日常"]},
-    {"tag": "金玉满堂", "name": "【琼华·金玉满堂】足金镶嵌和田玉小吊坠", "price": 1688,
-     "list": 1980, "spec": "足金镶口+和田青玉，金玉良缘的经典组合",
-     "fit": ["金", "贵气", "婚嫁", "妈妈"]},
+    {
+        "tag": "福禄双全",
+        "name": "【琼华·福禄双全】天然和田碧玉平安扣吊坠",
+        "price": 1680,
+        "list": 2399,
+        "spec": "新疆且末老料，油润细腻，附国家级宝玉石质检证书",
+        "fit": ["长辈", "妈妈", "婆婆", "平安", "玉"],
+    },
+    {
+        "tag": "月满西楼",
+        "name": "【琼华·月满西楼】天然淡水无瑕珍珠项链",
+        "price": 1120,
+        "list": 1480,
+        "spec": "8-9mm 微瑕近圆，正圆强光皮光极亮",
+        "fit": ["长辈", "妈妈", "婆婆", "优雅", "珍珠", "通勤"],
+    },
+    {
+        "tag": "星辰大海",
+        "name": "【琼华·星辰大海】D色莫桑钻经典六爪戒指",
+        "price": 699,
+        "list": 2999,
+        "spec": "D色/VVS1 切工，GRA 独立腰码证书，火彩直逼天然钻",
+        "fit": ["女友", "老婆", "求婚", "结婚", "纪念", "戒指", "莫桑"],
+    },
+    {
+        "tag": "竹报平安",
+        "name": "【琼华·竹报平安】天然和田玉青白玉竹节手串",
+        "price": 668,
+        "list": 880,
+        "spec": "青白玉竹节雕工，15颗均色，弹力绳双层打结",
+        "fit": ["自己", "手串", "日常", "玉"],
+    },
+    {
+        "tag": "鸿运当头",
+        "name": "【琼华·鸿运当头】天然南红玛瑙平安无事牌",
+        "price": 968,
+        "list": 1280,
+        "spec": "川料柿子红，满色满肉，牌形方正",
+        "fit": ["爸爸", "男士", "本命年", "转运"],
+    },
+    {
+        "tag": "映月",
+        "name": "【琼华·映月】925银镶和田玉小方牌项链",
+        "price": 359,
+        "list": 459,
+        "spec": "入门款，青白玉小方牌+925银链，白领通勤首选",
+        "fit": ["入门", "学生", "预算", "通勤", "项链"],
+    },
+    {
+        "tag": "岁岁团圆",
+        "name": "【琼华·岁岁团圆】天然珍珠耳钉 7-8mm",
+        "price": 528,
+        "list": 680,
+        "spec": "正圆强光，耳针925银，配防丢耳塞",
+        "fit": ["女友", "老婆", "耳饰", "珍珠", "日常"],
+    },
+    {
+        "tag": "金玉满堂",
+        "name": "【琼华·金玉满堂】足金镶嵌和田玉小吊坠",
+        "price": 1688,
+        "list": 1980,
+        "spec": "足金镶口+和田青玉，金玉良缘的经典组合",
+        "fit": ["金", "贵气", "婚嫁", "妈妈"],
+    },
 ]
 
 GUIDE_COUPON_REPLY = (
@@ -912,6 +952,7 @@ def _recommend_hit(user_msg: str) -> bool:
 def _pick_guide_product(user_msg: str):
     """按关键词与预算数字从知识池选品：先按场景词匹配，再用预算数字过滤。"""
     import re as _re
+
     scored = []
     for p in GUIDE_PRODUCTS:
         s = sum(1 for k in p["fit"] if k in user_msg)
@@ -943,7 +984,9 @@ def local_guide_reply(user_msg: str):
     is_diff = any(k in user_msg for k in ["区别", "真假", "莫桑", "培育", "天然", "证书"])
     is_after_sales = any(k in user_msg for k in ["退", "换", "售后", "保修", "维修", "断线", "坏"])
     is_care = any(k in user_msg for k in ["保养", "清洗", "变黑", "氧化", "佩戴", "护理", "发干"])
-    is_compare = any(k in user_msg for k in ["哪个好", "比", "vs", "选", "值得"]) and ("玉" in user_msg or "珍珠" in user_msg)
+    is_compare = any(k in user_msg for k in ["哪个好", "比", "vs", "选", "值得"]) and (
+        "玉" in user_msg or "珍珠" in user_msg
+    )
     if is_coupon:
         intent_label = "COUPON_QUERY"
     elif is_after_sales:
@@ -1019,7 +1062,8 @@ def local_guide_reply(user_msg: str):
             {
                 "node": "知识检索 (RAG)",
                 "status": "done",
-                "detail": "命中《珠宝养护百科》切片 #%s" % ("117：珍珠（有机宝石）养护" if pearl else "092：和田玉日常养护"),
+                "detail": "命中《珠宝养护百科》切片 #%s"
+                % ("117：珍珠（有机宝石）养护" if pearl else "092：和田玉日常养护"),
             }
         )
         reply = GUIDE_CARE_PEARL_REPLY if pearl else GUIDE_CARE_JADE_REPLY
@@ -1069,7 +1113,13 @@ def local_guide_reply(user_msg: str):
             for i, p in enumerate(picks):
                 lines.append(
                     "%s **%s**\n- %s\n- 专柜价 ¥%s ｜ **限时到手价：¥%s**"
-                    % (icons[i % len(icons)], p["name"], p["spec"], format(p["list"], ","), format(p["price"], ","))
+                    % (
+                        icons[i % len(icons)],
+                        p["name"],
+                        p["spec"],
+                        format(p["list"], ","),
+                        format(p["price"], ","),
+                    )
                 )
                 lines.append("")
             lines.append("您更中意哪一款？我可以帮您把参数、证书样张再展开讲讲～")

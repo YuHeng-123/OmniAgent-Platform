@@ -1,16 +1,16 @@
-# OmniAgent Platform 2.3 · 企业级全域 AI 智能体控制中枢
+# OmniAgent Platform 2.4 · 企业级全域 AI 智能体控制中枢
 
 把 **7 个各自独立的 AI 微服务**，收进一个统一控制台 —— 一个页面看清整个 Agent 集群的拓扑、在线状态与业务闭环。
 
 ![python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![frontend deps](https://img.shields.io/badge/frontend%20deps-100%25%20local-brightgreen)
 ![external CDN](https://img.shields.io/badge/external%20CDN-0-critical)
-![tests](https://img.shields.io/badge/pytest-65%20passed-brightgreen)
+![tests](https://img.shields.io/badge/pytest-65%20tests-brightgreen)
 ![license](https://img.shields.io/badge/license-MIT-blue)
 
 [![CI](https://github.com/YuHeng-123/OmniAgent-Platform/actions/workflows/ci.yml/badge.svg)](https://github.com/YuHeng-123/OmniAgent-Platform/actions/workflows/ci.yml)
 [![Live Demo](https://img.shields.io/badge/%F0%9F%8C%90_Live_Demo-GitHub_Pages-2ea44f?style=for-the-badge)](https://yuheng-123.github.io/OmniAgent-Platform/)
-<!-- ↑ CI 徽章已激活：每次 push 自动跑 65 测试 + ruff + docker build。 -->
+<!-- ↑ CI 徽章已激活：每次 push 自动跑 65 项测试 + ruff + docker build。 -->
 
 ![架构总览](assets/architecture.svg)
 
@@ -18,42 +18,65 @@
 
 ## 界面预览
 
-> 以下截图全部来自本机真实运行 —— 控制台起在 `:8899`，7 个业务端口用仓库自带的 `tools/mock_service.py` 占位，浏览器实际操作后截取，非设计稿。
+> 界面主题为「**墨金石 · Inkwell & Champagne**」：石墨近黑底 + 唯一香槟金主色 + 三状态色（在线绿 / 告警琥珀 / 故障红），
+> 去掉渐变文字、辉光与彩虹图标，面板统一为单层发丝线。以下截图全部来自本机真实运行 ——
+> 控制台起在 `:8899`，7 个业务端口用仓库自带的 `tools/mock_service.py` 占位，浏览器实际操作后截取，非设计稿。
 
 **总览 · 全域智能体调度大盘**
 7/7 在线，每张卡片带真实的起停按钮；右侧「中枢事件总线」由真 TCP 探测的差异驱动。
 
 ![总览](assets/screenshots/01-overview.png)
 
+**垂直电商 AI 智能导购**
+真发一条需求，右侧 LangGraph 推理时序逐步 `DONE`；底部如实标注本次应答来源（上游 `:8001` 未起时降级为本地兜底）。
+
+![导购](assets/screenshots/03-guide.png)
+
+**爆款营销工场 · 多平台文案 + 违禁词质检**
+选渠道、填卖点，一键生成文案，并逐条给出《广告法》违禁词检出与合规改写建议。
+
+![营销](assets/screenshots/05-marketing.png)
+
+**数据分析决策 · Text-to-SQL**
+自然语言 → SQL → 动态图表 → 经营结论，并自动标注「发现潜力品」以便一键转营销。
+
+![分析](assets/screenshots/06-analytics.png)
+
+**模型调度网关与容灾中枢**
+点「注入主链路宕机故障」后：上游超时 / 限流 → 自动热切备用链路，全程业务无感。
+
+![网关](assets/screenshots/04-gateway.png)
+
+**企业知识库检索 · RAG**
+BM25 + 向量混合检索，命中切片带置信度与关键词高亮。
+
+![知识库](assets/screenshots/07-rag.png)
+
 **历史趋势与事件回放**
 数据落 SQLite（24h 保留）。在线率曲线中段那道坑，就是一次真实的「某服务下线 → 后被重新拉起」。
 
 ![历史趋势](assets/screenshots/02-history.png)
 
-**垂直电商 AI 智能导购**
-真发一条需求，右侧 LangGraph 推理时序逐步 `DONE`；底部如实标注本次应答来源 `fallback:local-demo`（上游 `:8001` 未起）。
+**移动端 · 窄屏抽屉导航**
+窗口窄于 1024px 时侧栏自动收起为抽屉，手机也能完整操作。
 
-![导购](assets/screenshots/03-guide.png)
-
-**模型调度网关与容灾中枢**
-点「注入主链路宕机故障」后：504 超时 → 自动切备用链路 → 42ms 响应、全过行业务 0 报错。
-
-![网关](assets/screenshots/04-gateway.png)
+![移动端](assets/screenshots/08-mobile.png)
 
 ---
 
 ## 60 秒看懂
 
-控制台就 6 个页面，每个页面都能真的点、真的出结果：
+控制台就 7 个页面，每个页面都能真的点、真的出结果：
 
 | 页面 | 它演示什么 |
 |---|---|
 | 总览 | 7 个微服务的实时在线状态 + 一条**真实 TCP 探测驱动**的事件总线 |
-| 网关 | 主备毫秒级热切**仿真**（不真去熔断某个上游，响应里自带 `simulated: true`） |
-| 导购 | 多轮导购 Agent：优先真连 `:8001` 并解析它的 SSE 流，连不上才降级；含一条自纠错链路 |
-| 营销 | 小红书 / 抖音 / 私域 三平台文案生成 + 《广告法》违禁词合规质检 |
-| 分析 | 自然语言 → Text-to-SQL → 动态图表 |
-| 知识库 | RAG 检索问答的形态演示 |
+| 网关 | 主备毫秒级热切**仿真**（不真去熔断某个上游，响应里自带 `simulated: true`）；三场景确定性轮换（超时熔断 / 限流分流 / 质量降级重生成） |
+| 导购 | 多轮导购 Agent：优先真连 `:8001` 并解析它的 SSE 流，连不上才降级；8 类意图 + 商品池自动配品 |
+| 营销 | 小红书 / 抖音 / 微信私域 / 电商详情页 / 朋友圈 **五渠道**文案生成 + 《广告法》违禁词合规质检（30 条词库） |
+| 分析 | 自然语言 → Text-to-SQL → 动态图表 → 经营结论（8 类问法） |
+| 知识库 | BM25 + 向量混合检索，命中切片带置信度与关键词高亮 |
+| 历史 | 在线率 / 延迟曲线（SQLite 落盘，24h 保留）与事件回放 |
 
 **它是什么**：一套「Agent 集群编排」的可运行演示 —— 拓扑配置化、前后端真接口、断网自动降级、有断言测试、有 CI。
 **它不是什么**：那 7 个微服务本身不在本仓库；页面里的经营数据是**构造的样例数据**（接口 `metrics_source: demo-sample` 如实标注）。

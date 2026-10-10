@@ -7,12 +7,12 @@
 [3] 未配置 start_cmd 的服务：ai-gateway, ecom-ai-guide, coze-material-studio, ai-data-analysis-assistant, ai-knowledge-assistant, data-automation-workbench, ark_aigc_demo（点启动会如实拒绝）
 
 [4] 演练对象：企业 AI 统一网关（:8000）
-    已拉起假监听进程 pid=12052
+    已拉起假监听进程 pid=22072
     整条流共收到 10 条事件
 
 [7] SQLite 表：probes, events, sqlite_sequence
-    probes           413 行
-    events           25 行
+    probes           448 行
+    events           27 行
     sqlite_sequence  1 行
 
 ==========================================================================

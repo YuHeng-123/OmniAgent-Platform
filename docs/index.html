@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OmniAgent Platform 2.3.0 - 企业级全域 AI 智能体控制中枢</title>
+    <title>OmniAgent Platform 2.4.0 - 企业级全域 AI 智能体控制中枢</title>
     <meta name="description" content="把 7 个独立 AI 微服务收进一个统一控制台：拓扑配置化、前后端真接口、断网自动降级，并有断言测试与 CI。">
-    <meta name="theme-color" content="#070b14">
+    <meta name="theme-color" content="#0B0B0F">
     <meta property="og:type" content="website">
     <meta property="og:title" content="OmniAgent Platform · 企业级全域 AI 智能体控制中枢">
     <meta property="og:description" content="7 个 AI 微服务的统一编排与可观测控制台，零外部 CDN、断网可渲染。">
@@ -18,25 +18,31 @@
     <!-- 双模式数据源：本地后端优先，失败自动降级（静态托管也能完整演示） -->
     <script src="./static/omni-api.js"></script>
     <script>
+        /* ============================================================
+         * Design Tokens v4 —— 「墨金石 · Inkwell & Champagne」
+         * 原则：石墨中性底 + 唯一主色(香槟金) + 三种状态色。
+         *   金 = 品牌/可交互；绿/琥珀/红 = 在线/告警/故障，永不做装饰。
+         *   禁：渐变文字、幽灵大图标、遍地霓虹、多层辉光。
+         * ============================================================ */
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
                         dark: {
-                            900: '#070b14',
-                            800: '#0d1322',
-                            700: '#141c30',
-                            600: '#1e2942',
-                            border: '#23304d'
+                            900: '#0B0B0F',
+                            800: '#101015',
+                            700: '#16161C',
+                            600: '#1E1E26',
+                            border: '#222229'
                         },
                         accent: {
-                            cyan: '#06b6d4',
-                            blue: '#3b82f6',
-                            purple: '#8b5cf6',
-                            emerald: '#10b981',
-                            amber: '#f59e0b',
-                            rose: '#f43f5e'
+                            gold: '#D9B36A',
+                            steel: '#7FA3C8',
+                            sand: '#C9B896',
+                            emerald: '#4CD08D',
+                            amber: '#E2A83D',
+                            rose: '#E66868'
                         }
                     }
                 }
@@ -46,27 +52,101 @@
     <style>
         /* 离线字体：不再请求 Google Fonts（外网），改用系统字体栈 */
         * { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif; }
-        code, pre { font-family: "JetBrains Mono", "Cascadia Code", Consolas, "Courier New", monospace; }
-        
-        /* Custom scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #070b14; }
-        ::-webkit-scrollbar-thumb { background: #1e2942; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+        code, pre, .font-mono { font-family: "JetBrains Mono", "Cascadia Code", Consolas, "Courier New", monospace; }
 
+        /* ---- 全局底色：石墨近黑，顶部一丝极弱暖光定氛围 ---- */
+        body {
+            background:
+                radial-gradient(1000px 320px at 50% -12%, rgba(217, 179, 106, 0.045), transparent 62%),
+                #0B0B0F;
+        }
+        ::selection { background: rgba(217, 179, 106, 0.28); color: #F5E9CD; }
+
+        /* Custom scrollbar：石墨细条 */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #23232B; border-radius: 8px; border: 2px solid #0B0B0F; }
+        ::-webkit-scrollbar-thumb:hover { background: #34343E; }
+
+        /* ---- 卡片：单一层级语言 —— 面板只靠 1px 发丝线，无辉光无渐变 ---- */
         .glass-card {
-            background: rgba(13, 19, 34, 0.75);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(35, 48, 77, 0.8);
+            background: #101015;
+            border: 1px solid #1F1F27;
+            border-radius: 12px;
         }
-        .glow-cyan {
-            box-shadow: 0 0 20px -3px rgba(6, 182, 212, 0.25);
+        .glass-card:hover { border-color: #2A2A34; }
+
+        /* ---- KPI 数字：等宽数字，波动时不跳版 ---- */
+        .kpi-num { font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+
+        /* ---- 徽章 / 技术标签：全部统一低调石墨 mono，不再五颜六色 ---- */
+        .tag {
+            display: inline-flex; align-items: center;
+            padding: 1px 7px; border-radius: 5px;
+            font-size: 10px; line-height: 15px; font-family: "JetBrains Mono", Consolas, monospace;
+            color: #6E6E7A; background: #141419;
+            border: 1px solid #23232B;
         }
-        .glow-purple {
-            box-shadow: 0 0 20px -3px rgba(139, 92, 246, 0.25);
+        .tag-accent { color: #D9B36A; border-color: rgba(217, 179, 106, 0.32); background: rgba(217, 179, 106, 0.06); }
+
+        /* ---- 侧边导航：激活态 = 金色细亮条 + 微金底，其余全部扁平 ---- */
+        .nav-btn { position: relative; border: 1px solid transparent; }
+        .nav-btn.nav-active {
+            background: rgba(217, 179, 106, 0.07);
+            color: #F4F4F6;
         }
-        .terminal-glow {
-            text-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+        .nav-btn.nav-active::before {
+            content: ""; position: absolute; left: 0; top: 24%; bottom: 24%;
+            width: 2px; border-radius: 2px; background: #D9B36A;
+        }
+
+        /* ---- 主操作按钮：香槟金实底、深字，全场唯一高饱和元素 ---- */
+        .btn-primary {
+            background: #D9B36A; color: #17130A; font-weight: 600;
+            border: 1px solid #E4C283;
+            transition: filter .15s ease, transform .05s ease;
+        }
+        .btn-primary:hover { filter: brightness(1.08); }
+        .btn-primary:active { transform: translateY(1px); }
+
+        /* ---- 次级 / 幽灵按钮 ---- */
+        .btn-ghost {
+            background: transparent; color: #B4B4BF;
+            border: 1px solid #2A2A34;
+            transition: border-color .15s ease, color .15s ease;
+        }
+        .btn-ghost:hover { border-color: #3E3E4A; color: #F4F4F6; }
+
+        /* ---- 快捷提问 chip：极简胶囊 ---- */
+        .chip {
+            padding: 3px 11px; border-radius: 999px;
+            font-size: 12px; line-height: 18px; color: #A2A2AE;
+            border: 1px solid #26262E; background: transparent;
+            transition: border-color .15s ease, color .15s ease;
+            white-space: nowrap;
+        }
+        .chip:hover { border-color: rgba(217, 179, 106, 0.45); color: #E9D6A8; }
+
+        /* ---- 输入框聚焦：金色细线 ---- */
+        input:focus { border-color: rgba(217, 179, 106, 0.55) !important; box-shadow: 0 0 0 3px rgba(217, 179, 106, 0.08); }
+
+        /* ---- 事件流：纯终端质感 ---- */
+        #event-log-container { background: #0A0A0E; }
+
+        /* ---- 窄屏适配：<1024px 侧边栏抽屉化 ---- */
+        #sidebar-overlay { display: none; }
+        @media (max-width: 1023px) {
+            body > aside {
+                position: fixed; left: 0; top: 0; bottom: 0; z-index: 50;
+                transform: translateX(-100%);
+                transition: transform .22s ease;
+                box-shadow: 0 0 60px rgba(0,0,0,.55);
+            }
+            body.sidebar-open > aside { transform: translateX(0); }
+            body.sidebar-open #sidebar-overlay {
+                display: block; position: fixed; inset: 0;
+                background: rgba(5,5,8,.6); z-index: 40;
+            }
         }
     </style>
 </head>
@@ -83,483 +163,375 @@
     <!-- ================================================================= -->
     <!-- 统一侧边栏导航 (Sidebar) -->
     <!-- ================================================================= -->
-    <aside class="w-64 bg-dark-800 border-r border-dark-border flex flex-col justify-between z-30 select-none">
-        <div>
-            <!-- 品牌标识 -->
-            <div class="h-16 flex items-center px-6 border-b border-dark-border bg-gradient-to-r from-dark-800 to-dark-700">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-accent-cyan via-accent-blue to-accent-purple flex items-center justify-center shadow-lg mr-3 shadow-accent-cyan/20">
-                    <i class="fas fa-cubes text-white text-base"></i>
+    <aside class="w-60 bg-dark-800 border-r border-dark-border flex flex-col justify-between z-30 select-none flex-shrink-0">
+        <div class="flex flex-col min-h-0 overflow-y-auto">
+            <!-- 品牌标识：去掉渐变方块与渐变文字，改为金色描边方章 -->
+            <div class="h-16 flex items-center px-5 border-b border-dark-border flex-shrink-0">
+                <div class="w-8 h-8 rounded-lg border border-accent-gold/40 bg-accent-gold/10 flex items-center justify-center mr-3">
+                    <i class="fas fa-cubes text-accent-gold text-sm"></i>
                 </div>
                 <div>
-                    <div class="font-extrabold text-base tracking-wider bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
-                        OmniAgent
-                    </div>
-                    <div class="text-[10px] text-accent-cyan font-mono tracking-widest uppercase">Platform v2.3</div>
+                    <div class="font-semibold text-sm tracking-wide text-slate-100">OmniAgent</div>
+                    <div class="text-[10px] text-slate-600 font-mono tracking-wider">Platform v2.4</div>
                 </div>
             </div>
 
             <!-- 核心功能导航 -->
-            <div class="p-3">
-                <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider px-3 mb-2 mt-3">核心业务中枢</div>
-                <nav class="space-y-1">
-                    <button onclick="switchTab('overview')" id="nav-overview" class="nav-btn w-full flex items-center px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all text-white bg-accent-blue/15 border border-accent-blue/30 text-accent-cyan">
-                        <i class="fas fa-layer-group w-5 text-center mr-2.5 text-accent-cyan"></i>
+            <div class="p-2.5">
+                <div class="text-[10px] font-medium text-slate-600 px-3 mb-1.5 mt-3">核心业务</div>
+                <nav class="space-y-0.5">
+                    <button onclick="switchTab('overview');closeSidebarOnMobile()" id="nav-overview" class="nav-btn nav-active w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] text-slate-400 hover:text-slate-100 transition-colors">
+                        <i class="fas fa-layer-group w-4 text-center text-[12px]"></i>
                         <span>全局监控大盘</span>
-                        <span class="ml-auto w-2 h-2 rounded-full bg-accent-emerald animate-pulse"></span>
                     </button>
 
-                    <button onclick="switchTab('guide')" id="nav-guide" class="nav-btn w-full flex items-center px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white hover:bg-dark-700">
-                        <i class="fas fa-store w-5 text-center mr-2.5 text-accent-purple"></i>
+                    <button onclick="switchTab('guide');closeSidebarOnMobile()" id="nav-guide" class="nav-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] text-slate-400 hover:text-slate-100 transition-colors">
+                        <i class="fas fa-store w-4 text-center text-[12px]"></i>
                         <span>电商智能导购</span>
-                        <span class="ml-auto text-[10px] bg-accent-purple/20 text-accent-purple px-1.5 py-0.5 rounded font-mono">LangGraph</span>
+                        <span class="ml-auto tag">LangGraph</span>
                     </button>
 
-                    <button onclick="switchTab('marketing')" id="nav-marketing" class="nav-btn w-full flex items-center px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white hover:bg-dark-700">
-                        <i class="fas fa-wand-magic-sparkles w-5 text-center mr-2.5 text-accent-amber"></i>
+                    <button onclick="switchTab('marketing');closeSidebarOnMobile()" id="nav-marketing" class="nav-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] text-slate-400 hover:text-slate-100 transition-colors">
+                        <i class="fas fa-wand-magic-sparkles w-4 text-center text-[12px]"></i>
                         <span>爆款营销工场</span>
-                        <span class="ml-auto text-[10px] bg-accent-amber/20 text-accent-amber px-1.5 py-0.5 rounded font-mono">Coze</span>
+                        <span class="ml-auto tag">Coze</span>
                     </button>
 
-                    <button onclick="switchTab('analytics')" id="nav-analytics" class="nav-btn w-full flex items-center px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white hover:bg-dark-700">
-                        <i class="fas fa-chart-pie w-5 text-center mr-2.5 text-accent-emerald"></i>
+                    <button onclick="switchTab('analytics');closeSidebarOnMobile()" id="nav-analytics" class="nav-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] text-slate-400 hover:text-slate-100 transition-colors">
+                        <i class="fas fa-chart-pie w-4 text-center text-[12px]"></i>
                         <span>数据分析决策</span>
-                        <span class="ml-auto text-[10px] bg-accent-emerald/20 text-accent-emerald px-1.5 py-0.5 rounded font-mono">DuckDB</span>
+                        <span class="ml-auto tag">DuckDB</span>
                     </button>
                 </nav>
 
-                <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider px-3 mb-2 mt-6">底层引擎</div>
-                <nav class="space-y-1">
-                    <button onclick="switchTab('gateway')" id="nav-gateway" class="nav-btn w-full flex items-center px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white hover:bg-dark-700">
-                        <i class="fas fa-shield-halved w-5 text-center mr-2.5 text-accent-blue"></i>
+                <div class="text-[10px] font-medium text-slate-600 px-3 mb-1.5 mt-6">底层引擎</div>
+                <nav class="space-y-0.5">
+                    <button onclick="switchTab('gateway');closeSidebarOnMobile()" id="nav-gateway" class="nav-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] text-slate-400 hover:text-slate-100 transition-colors">
+                        <i class="fas fa-shield-halved w-4 text-center text-[12px]"></i>
                         <span>模型调度网关</span>
-                        <span class="ml-auto text-[10px] bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded font-mono">MCP</span>
+                        <span class="ml-auto tag">MCP</span>
                     </button>
 
-                    <button onclick="switchTab('rag')" id="nav-rag" class="nav-btn w-full flex items-center px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white hover:bg-dark-700">
-                        <i class="fas fa-database w-5 text-center mr-2.5 text-pink-400"></i>
+                    <button onclick="switchTab('rag');closeSidebarOnMobile()" id="nav-rag" class="nav-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] text-slate-400 hover:text-slate-100 transition-colors">
+                        <i class="fas fa-database w-4 text-center text-[12px]"></i>
                         <span>企业知识库检索</span>
-                        <span class="ml-auto text-[10px] bg-pink-500/20 text-pink-400 px-1.5 py-0.5 rounded font-mono">BM25+RAG</span>
+                        <span class="ml-auto tag">RAG</span>
                     </button>
 
-                    <button onclick="switchTab('history')" id="nav-history" class="nav-btn w-full flex items-center px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white hover:bg-dark-700">
-                        <i class="fas fa-clock-rotate-left w-5 text-center mr-2.5 text-accent-cyan"></i>
+                    <button onclick="switchTab('history');closeSidebarOnMobile()" id="nav-history" class="nav-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] text-slate-400 hover:text-slate-100 transition-colors">
+                        <i class="fas fa-clock-rotate-left w-4 text-center text-[12px]"></i>
                         <span>历史趋势与回放</span>
-                        <span class="ml-auto text-[10px] bg-cyan-500/20 text-accent-cyan px-1.5 py-0.5 rounded font-mono">SQLite</span>
+                        <span class="ml-auto tag">SQLite</span>
                     </button>
                 </nav>
             </div>
         </div>
 
-        <!-- 底部运行状态卡片 -->
-        <div class="p-3 border-t border-dark-border bg-dark-900/40">
-            <div class="p-3 rounded-xl bg-dark-700/60 border border-dark-border text-xs flex items-center justify-between">
-                <div class="flex items-center space-x-2">
-                    <span class="relative flex h-2.5 w-2.5">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-accent-emerald"></span>
-                    </span>
-                    <span class="text-slate-300 font-medium">中枢就绪</span>
+        <!-- 底部运行状态 -->
+        <div class="p-2.5 border-t border-dark-border flex-shrink-0">
+            <div class="px-3 py-2 text-[11px] flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald"></span>
+                    <span class="text-slate-400">中枢就绪</span>
                 </div>
-                <span class="text-slate-400 font-mono text-[11px] bg-dark-800 px-2 py-0.5 rounded border border-dark-border">PORT 8888</span>
+                <span class="text-slate-600 font-mono text-[10px]">:8888</span>
             </div>
         </div>
     </aside>
 
+    <!-- 窄屏抽屉遮罩 -->
+    <div id="sidebar-overlay" onclick="closeSidebarOnMobile()"></div>
+
     <!-- ================================================================= -->
     <!-- 主工作区 (Main Workspace) -->
     <!-- ================================================================= -->
-    <main class="flex-1 flex flex-col bg-dark-900 overflow-hidden relative">
+    <main class="flex-1 flex flex-col bg-dark-900 overflow-hidden relative min-w-0">
 
         <!-- 顶部全局工具栏 -->
-        <header class="h-16 bg-dark-800/80 backdrop-blur-md border-b border-dark-border flex items-center justify-between px-8 z-20">
-            <div class="flex items-center space-x-3">
-                <h1 id="page-title" class="text-lg font-bold text-white tracking-wide flex items-center">
-                    <i class="fas fa-layer-group text-accent-cyan mr-2.5"></i>
+        <header class="h-14 bg-dark-800/70 backdrop-blur border-b border-dark-border flex items-center justify-between px-4 sm:px-6 gap-3 z-20 flex-shrink-0">
+            <div class="flex items-center gap-3 min-w-0">
+                <button onclick="toggleSidebar()" class="lg:hidden btn-ghost w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0" title="展开导航">
+                    <i class="fas fa-bars text-[13px]"></i>
+                </button>
+                <h1 id="page-title" class="text-[15px] font-semibold text-white truncate flex items-center">
+                    <i class="fas fa-layer-group text-accent-gold mr-2.5 text-sm"></i>
                     全域智能体调度总览大盘
                 </h1>
-                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-accent-cyan/15 text-accent-cyan border border-accent-cyan/30">企业级生产态</span>
             </div>
 
-            <div class="flex items-center space-x-4">
-                <div class="flex items-center text-xs font-mono bg-dark-700 border border-dark-border px-3 py-1.5 rounded-lg text-slate-300">
-                    <i class="fas fa-bolt text-accent-amber mr-2"></i>
-                    <span>主路由：</span>
-                    <span class="text-accent-cyan font-bold ml-1">上游主模型（仿真）</span>
-                    <span class="text-slate-500 mx-2">|</span>
-                    <span>备用热切：</span>
-                    <span class="text-accent-emerald font-bold ml-1">本地兜底引擎</span>
+            <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                <div class="hidden md:flex items-center text-[11px] font-mono text-slate-500">
+                    <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald mr-2"></span>
+                    <span>主路由 <b class="text-slate-400 font-medium">上游主模型（仿真）</b> · 热切 <b class="text-slate-400 font-medium">本地兜底</b></span>
                 </div>
-                <button onclick="triggerQuickFailover()" class="px-3.5 py-1.5 rounded-lg text-xs font-medium bg-gradient-to-r from-accent-blue to-accent-purple hover:opacity-90 text-white transition-opacity shadow-sm flex items-center">
-                    <i class="fas fa-rotate mr-1.5"></i> 容灾热切演示
+                <button onclick="triggerQuickFailover()" class="btn-ghost px-3 py-1.5 rounded-md text-[11px] whitespace-nowrap">
+                    容灾热切演示
                 </button>
             </div>
         </header>
 
         <!-- 内容区域 (各 Tab 面板) -->
-        <div class="flex-1 overflow-y-auto p-6 relative">
+        <div class="flex-1 overflow-y-auto p-4 sm:p-5 relative">
 
             <!-- ------------------------------------------------------------- -->
             <!-- TAB 1: 全局大盘 (Overview) -->
             <!-- ------------------------------------------------------------- -->
-            <div id="tab-overview" class="tab-content space-y-6">
-                <!-- 指标数据卡片 -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
-                    <div class="glass-card rounded-2xl p-5 border border-dark-border relative overflow-hidden group hover:border-accent-cyan/40 transition-colors">
-                        <div class="absolute -right-3 -bottom-3 text-6xl text-white/5 group-hover:text-accent-cyan/10 transition-colors">
-                            <i class="fas fa-microchip"></i>
+            <div id="tab-overview" class="tab-content space-y-5">
+                <!-- 指标带：一条横向数据带，用分隔线代替 4 张卡 —— 少一层框，多一层秩序 -->
+                <div class="glass-card px-2 py-1 grid grid-cols-2 lg:grid-cols-4 divide-x divide-y lg:divide-y-0 divide-dark-border">
+                    <div class="px-5 py-4">
+                        <div class="text-[11px] text-slate-500 mb-1.5">活跃 Agent 集群</div>
+                        <div class="kpi-num text-[28px] font-bold leading-none text-white">
+                            <span id="stat-active">4</span><span class="text-sm font-normal text-slate-500 ml-1">/ 7</span>
                         </div>
-                        <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">活跃 Agent 集群</div>
-                        <div class="text-3xl font-extrabold text-white mt-2 flex items-baseline">
-                            <span id="stat-active">4</span>
-                            <span class="text-sm font-normal text-slate-400 ml-1.5">/ 7 微服务</span>
-                        </div>
-                        <div class="text-xs text-accent-emerald mt-2 flex items-center">
-                            <i class="fas fa-circle-check mr-1"></i> 核心业务链路 100% 在线
+                        <div class="text-[11px] text-accent-emerald mt-2 flex items-center gap-1.5">
+                            <span class="w-1 h-1 rounded-full bg-accent-emerald"></span>核心链路在线
                         </div>
                     </div>
 
-                    <div class="glass-card rounded-2xl p-5 border border-dark-border relative overflow-hidden group hover:border-accent-blue/40 transition-colors">
-                        <div class="absolute -right-3 -bottom-3 text-6xl text-white/5 group-hover:text-accent-blue/10 transition-colors">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                        <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">24h 网关请求吞吐 (QPS)</div>
-                        <div class="text-3xl font-extrabold text-white mt-2">3,482</div>
-                        <div class="text-xs text-accent-cyan mt-2 flex items-center">
-                            <i class="fas fa-arrow-trend-up mr-1"></i> 平均响应延迟 42ms
-                        </div>
+                    <div class="px-5 py-4">
+                        <div class="text-[11px] text-slate-500 mb-1.5">24h 请求吞吐</div>
+                        <div class="kpi-num text-[28px] font-bold leading-none text-white">3,482<span class="text-sm font-normal text-slate-500 ml-1">QPS</span></div>
+                        <div class="text-[11px] text-slate-500 mt-2">平均延迟 42ms</div>
                     </div>
 
-                    <div class="glass-card rounded-2xl p-5 border border-dark-border relative overflow-hidden group hover:border-accent-purple/40 transition-colors">
-                        <div class="absolute -right-3 -bottom-3 text-6xl text-white/5 group-hover:text-accent-purple/10 transition-colors">
-                            <i class="fas fa-coins"></i>
-                        </div>
-                        <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Token 消耗总计</div>
-                        <div class="text-3xl font-extrabold text-white mt-2">1.48 M</div>
-                        <div class="text-xs text-accent-amber mt-2 flex items-center">
-                            <i class="fas fa-piggy-bank mr-1"></i> 提示词缓存节约 $48.20
-                        </div>
+                    <div class="px-5 py-4">
+                        <div class="text-[11px] text-slate-500 mb-1.5">Token 消耗</div>
+                        <div class="kpi-num text-[28px] font-bold leading-none text-white">1.48<span class="text-sm font-normal text-slate-500 ml-1">M</span></div>
+                        <div class="text-[11px] text-slate-500 mt-2">缓存节约 $48.20</div>
                     </div>
 
-                    <div class="glass-card rounded-2xl p-5 border border-dark-border relative overflow-hidden group hover:border-accent-emerald/40 transition-colors">
-                        <div class="absolute -right-3 -bottom-3 text-6xl text-white/5 group-hover:text-accent-emerald/10 transition-colors">
-                            <i class="fas fa-bullseye"></i>
-                        </div>
-                        <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">RAG 知识库命中率</div>
-                        <div class="text-3xl font-extrabold text-white mt-2">95.6%</div>
-                        <div class="text-xs text-accent-emerald mt-2 flex items-center">
-                            <i class="fas fa-filter mr-1"></i> 双路重排召回率极高
-                        </div>
+                    <div class="px-5 py-4">
+                        <div class="text-[11px] text-slate-500 mb-1.5">RAG 命中率</div>
+                        <div class="kpi-num text-[28px] font-bold leading-none text-white">95.6<span class="text-sm font-normal text-slate-500 ml-1">%</span></div>
+                        <div class="text-[11px] text-slate-500 mt-2">双路重排召回</div>
                     </div>
                 </div>
 
-                <p class="text-[11px] text-slate-500 -mt-2 leading-relaxed">
-                    <i class="fas fa-circle-info mr-1"></i>
-                    以上 4 项中，<b class="text-slate-400">「活跃 Agent 集群」为实时端口探测值</b>；其余（QPS / 响应延迟 / Token 消耗 / 缓存节约 / 命中率）为<b class="text-slate-400">演示样例数据</b>，非实盘经营指标。
+                <p class="text-[11px] text-slate-600 leading-relaxed pl-1">
+                    数据口径：<b class="text-slate-500">「活跃 Agent 集群」为实时端口探测值</b>，其余三项为演示样例数据，非实盘经营指标。
                 </p>
 
                 <!-- 架构拓扑流图 & 实时事件流 -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-5">
                     <!-- 业务拓扑架构 -->
-                    <div class="lg:col-span-2 glass-card rounded-2xl p-6 border border-dark-border">
-                        <div class="flex items-center justify-between mb-5">
-                            <div class="flex items-center space-x-2">
-                                <i class="fas fa-network-wired text-accent-cyan"></i>
-                                <h3 class="font-bold text-white text-base">企业全域微服务拓扑协同链</h3>
+                    <div class="lg:col-span-3 glass-card p-5">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-network-wired text-accent-gold text-sm"></i>
+                                <h3 class="font-semibold text-white text-sm">微服务拓扑协同链</h3>
                             </div>
-                            <span class="text-xs text-slate-400">单体控制台纳管分布式子服务</span>
+                            <span class="tag">单体控制台纳管 7 个子服务</span>
                         </div>
 
-                        <!-- 拓扑节点矩阵 -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- 拓扑节点矩阵：列表行式布局，比嵌套卡片更省眼、更易扫读 -->
+                        <div class="divide-y divide-dark-border border-t border-dark-border">
                             
-                            <div class="p-4 rounded-xl bg-dark-700/50 border border-dark-border flex flex-col justify-between hover:border-slate-500 transition-colors">
-                                <div class="flex items-start justify-between">
-                                    <div class="flex items-center space-x-3">
-                                        
-                                        <span class="relative flex h-3 w-3">
-                                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
-                                            <span class="relative inline-flex rounded-full h-3 w-3 bg-accent-emerald"></span>
-                                        </span>
-                                        
-                                        <div>
-                                            <div class="font-bold text-sm text-white">企业 AI 统一网关</div>
-                                            <div class="text-xs text-slate-400">流量总线与大模型调度</div>
-                                        </div>
+                            <div class="flex items-center gap-3 py-3 group">
+                                <!-- 状态点：绿=在线 / 灰=离线（唯一的状态色） -->
+                                
+                                <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald flex-shrink-0"></span>
+                                
+
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[13px] text-slate-200 font-medium truncate">企业 AI 统一网关</span>
+                                        <span class="tag flex-shrink-0">Infra</span>
                                     </div>
-                                    <span class="text-[11px] font-mono px-2 py-0.5 rounded-full 
-                                         bg-accent-blue/15 text-accent-blue border border-accent-blue/30
-                                        ">
-                                        Infra
-                                    </span>
+                                    <div class="text-[11px] text-slate-600 truncate mt-0.5">流量总线与大模型调度 · 全域流量接管、虚拟 Key 路由、毫秒级主备热切与 Token 计量</div>
                                 </div>
-                                <p class="text-xs text-slate-400 mt-2.5 line-clamp-2">全域流量接管、虚拟 Key 路由、毫秒级主备热切与 Token 计量</p>
-                                <div class="mt-3 pt-3 border-t border-dark-border/60 flex items-center justify-between text-xs">
-                                    <div class="flex items-center space-x-2.5">
-                                        <span class="text-slate-500 font-mono">PORT: 8000</span>
-                                        
-                                        <span class="text-accent-emerald font-semibold flex items-center">
-                                            <i class="fas fa-circle-check text-[10px] mr-1"></i> 服务运行中
-                                        </span>
-                                        
-                                    </div>
-                                    <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，
-                                         没配置就如实禁用，不假装能启动。点击有二次确认。 -->
+
+                                <span class="text-[11px] font-mono text-slate-600 flex-shrink-0 hidden sm:block">:8000</span>
+
+                                <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，
+没配置就如实禁用，不假装能启动。点击有二次确认。 -->
+                                <div class="flex-shrink-0 w-[68px] text-right">
                                     
+                                    <span class="text-[11px] text-accent-emerald">运行中</span>
                                     <button onclick="serviceControl('ai-gateway', 'stop', this)"
                                             title="终止监听 :8000 的进程（真实操作，事件总线将推送下线事件）"
-                                            class="px-2.5 py-1 rounded-lg text-[11px] font-medium border border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/25 transition-colors">
-                                        <i class="fas fa-stop mr-1 text-[9px]"></i>停止
+                                            class="mt-1 w-full py-1 rounded-md text-[11px] border border-dark-border text-slate-500 hover:border-rose-500/40 hover:text-rose-400 transition-colors">
+                                        停止
                                     </button>
                                     
                                 </div>
                             </div>
                             
-                            <div class="p-4 rounded-xl bg-dark-700/50 border border-dark-border flex flex-col justify-between hover:border-slate-500 transition-colors">
-                                <div class="flex items-start justify-between">
-                                    <div class="flex items-center space-x-3">
-                                        
-                                        <span class="relative flex h-3 w-3">
-                                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
-                                            <span class="relative inline-flex rounded-full h-3 w-3 bg-accent-emerald"></span>
-                                        </span>
-                                        
-                                        <div>
-                                            <div class="font-bold text-sm text-white">琼华珠宝 AI 智能导购</div>
-                                            <div class="text-xs text-slate-400">核心业务 Agent</div>
-                                        </div>
+                            <div class="flex items-center gap-3 py-3 group">
+                                <!-- 状态点：绿=在线 / 灰=离线（唯一的状态色） -->
+                                
+                                <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald flex-shrink-0"></span>
+                                
+
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[13px] text-slate-200 font-medium truncate">琼华珠宝 AI 智能导购</span>
+                                        <span class="tag flex-shrink-0">Business</span>
                                     </div>
-                                    <span class="text-[11px] font-mono px-2 py-0.5 rounded-full 
-                                         bg-accent-purple/15 text-accent-purple border border-accent-purple/30
-                                        ">
-                                        Business
-                                    </span>
+                                    <div class="text-[11px] text-slate-600 truncate mt-0.5">核心业务 Agent · 混合检索 + 工具调用 + 报错自纠错链路的多轮导购智能体</div>
                                 </div>
-                                <p class="text-xs text-slate-400 mt-2.5 line-clamp-2">混合检索 + 工具调用 + 报错自纠错链路的多轮导购智能体</p>
-                                <div class="mt-3 pt-3 border-t border-dark-border/60 flex items-center justify-between text-xs">
-                                    <div class="flex items-center space-x-2.5">
-                                        <span class="text-slate-500 font-mono">PORT: 8001</span>
-                                        
-                                        <span class="text-accent-emerald font-semibold flex items-center">
-                                            <i class="fas fa-circle-check text-[10px] mr-1"></i> 服务运行中
-                                        </span>
-                                        
-                                    </div>
-                                    <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，
-                                         没配置就如实禁用，不假装能启动。点击有二次确认。 -->
+
+                                <span class="text-[11px] font-mono text-slate-600 flex-shrink-0 hidden sm:block">:8001</span>
+
+                                <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，
+没配置就如实禁用，不假装能启动。点击有二次确认。 -->
+                                <div class="flex-shrink-0 w-[68px] text-right">
                                     
+                                    <span class="text-[11px] text-accent-emerald">运行中</span>
                                     <button onclick="serviceControl('ecom-ai-guide', 'stop', this)"
                                             title="终止监听 :8001 的进程（真实操作，事件总线将推送下线事件）"
-                                            class="px-2.5 py-1 rounded-lg text-[11px] font-medium border border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/25 transition-colors">
-                                        <i class="fas fa-stop mr-1 text-[9px]"></i>停止
+                                            class="mt-1 w-full py-1 rounded-md text-[11px] border border-dark-border text-slate-500 hover:border-rose-500/40 hover:text-rose-400 transition-colors">
+                                        停止
                                     </button>
                                     
                                 </div>
                             </div>
                             
-                            <div class="p-4 rounded-xl bg-dark-700/50 border border-dark-border flex flex-col justify-between hover:border-slate-500 transition-colors">
-                                <div class="flex items-start justify-between">
-                                    <div class="flex items-center space-x-3">
-                                        
-                                        <span class="relative flex h-3 w-3">
-                                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
-                                            <span class="relative inline-flex rounded-full h-3 w-3 bg-accent-emerald"></span>
-                                        </span>
-                                        
-                                        <div>
-                                            <div class="font-bold text-sm text-white">多平台爆款素材工作台</div>
-                                            <div class="text-xs text-slate-400">内容营销 Agent</div>
-                                        </div>
+                            <div class="flex items-center gap-3 py-3 group">
+                                <!-- 状态点：绿=在线 / 灰=离线（唯一的状态色） -->
+                                
+                                <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald flex-shrink-0"></span>
+                                
+
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[13px] text-slate-200 font-medium truncate">多平台爆款素材工作台</span>
+                                        <span class="tag flex-shrink-0">Business</span>
                                     </div>
-                                    <span class="text-[11px] font-mono px-2 py-0.5 rounded-full 
-                                         bg-accent-purple/15 text-accent-purple border border-accent-purple/30
-                                        ">
-                                        Business
-                                    </span>
+                                    <div class="text-[11px] text-slate-600 truncate mt-0.5">内容营销 Agent · Coze 工作流工程化封装，小红书/抖音营销图文生成与违禁词合规审查</div>
                                 </div>
-                                <p class="text-xs text-slate-400 mt-2.5 line-clamp-2">Coze 工作流工程化封装，小红书/抖音营销图文生成与违禁词合规审查</p>
-                                <div class="mt-3 pt-3 border-t border-dark-border/60 flex items-center justify-between text-xs">
-                                    <div class="flex items-center space-x-2.5">
-                                        <span class="text-slate-500 font-mono">PORT: 8002</span>
-                                        
-                                        <span class="text-accent-emerald font-semibold flex items-center">
-                                            <i class="fas fa-circle-check text-[10px] mr-1"></i> 服务运行中
-                                        </span>
-                                        
-                                    </div>
-                                    <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，
-                                         没配置就如实禁用，不假装能启动。点击有二次确认。 -->
+
+                                <span class="text-[11px] font-mono text-slate-600 flex-shrink-0 hidden sm:block">:8002</span>
+
+                                <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，
+没配置就如实禁用，不假装能启动。点击有二次确认。 -->
+                                <div class="flex-shrink-0 w-[68px] text-right">
                                     
+                                    <span class="text-[11px] text-accent-emerald">运行中</span>
                                     <button onclick="serviceControl('coze-material-studio', 'stop', this)"
                                             title="终止监听 :8002 的进程（真实操作，事件总线将推送下线事件）"
-                                            class="px-2.5 py-1 rounded-lg text-[11px] font-medium border border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/25 transition-colors">
-                                        <i class="fas fa-stop mr-1 text-[9px]"></i>停止
+                                            class="mt-1 w-full py-1 rounded-md text-[11px] border border-dark-border text-slate-500 hover:border-rose-500/40 hover:text-rose-400 transition-colors">
+                                        停止
                                     </button>
                                     
                                 </div>
                             </div>
                             
-                            <div class="p-4 rounded-xl bg-dark-700/50 border border-dark-border flex flex-col justify-between hover:border-slate-500 transition-colors">
-                                <div class="flex items-start justify-between">
-                                    <div class="flex items-center space-x-3">
-                                        
-                                        <span class="relative flex h-3 w-3">
-                                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
-                                            <span class="relative inline-flex rounded-full h-3 w-3 bg-accent-emerald"></span>
-                                        </span>
-                                        
-                                        <div>
-                                            <div class="font-bold text-sm text-white">AI 数据分析专家</div>
-                                            <div class="text-xs text-slate-400">决策分析 Agent</div>
-                                        </div>
+                            <div class="flex items-center gap-3 py-3 group">
+                                <!-- 状态点：绿=在线 / 灰=离线（唯一的状态色） -->
+                                
+                                <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald flex-shrink-0"></span>
+                                
+
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[13px] text-slate-200 font-medium truncate">AI 数据分析专家</span>
+                                        <span class="tag flex-shrink-0">Data</span>
                                     </div>
-                                    <span class="text-[11px] font-mono px-2 py-0.5 rounded-full 
-                                         bg-accent-emerald/15 text-accent-emerald border border-accent-emerald/30
-                                        ">
-                                        Data
-                                    </span>
+                                    <div class="text-[11px] text-slate-600 truncate mt-0.5">决策分析 Agent · DuckDB + 本地 Ollama 驱动，自然语言 Text-to-SQL 与交互式动态图表看板</div>
                                 </div>
-                                <p class="text-xs text-slate-400 mt-2.5 line-clamp-2">DuckDB + 本地 Ollama 驱动，自然语言 Text-to-SQL 与交互式动态图表看板</p>
-                                <div class="mt-3 pt-3 border-t border-dark-border/60 flex items-center justify-between text-xs">
-                                    <div class="flex items-center space-x-2.5">
-                                        <span class="text-slate-500 font-mono">PORT: 8510</span>
-                                        
-                                        <span class="text-accent-emerald font-semibold flex items-center">
-                                            <i class="fas fa-circle-check text-[10px] mr-1"></i> 服务运行中
-                                        </span>
-                                        
-                                    </div>
-                                    <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，
-                                         没配置就如实禁用，不假装能启动。点击有二次确认。 -->
+
+                                <span class="text-[11px] font-mono text-slate-600 flex-shrink-0 hidden sm:block">:8510</span>
+
+                                <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，
+没配置就如实禁用，不假装能启动。点击有二次确认。 -->
+                                <div class="flex-shrink-0 w-[68px] text-right">
                                     
+                                    <span class="text-[11px] text-accent-emerald">运行中</span>
                                     <button onclick="serviceControl('ai-data-analysis-assistant', 'stop', this)"
                                             title="终止监听 :8510 的进程（真实操作，事件总线将推送下线事件）"
-                                            class="px-2.5 py-1 rounded-lg text-[11px] font-medium border border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/25 transition-colors">
-                                        <i class="fas fa-stop mr-1 text-[9px]"></i>停止
+                                            class="mt-1 w-full py-1 rounded-md text-[11px] border border-dark-border text-slate-500 hover:border-rose-500/40 hover:text-rose-400 transition-colors">
+                                        停止
                                     </button>
                                     
                                 </div>
                             </div>
                             
-                            <div class="p-4 rounded-xl bg-dark-700/50 border border-dark-border flex flex-col justify-between hover:border-slate-500 transition-colors">
-                                <div class="flex items-start justify-between">
-                                    <div class="flex items-center space-x-3">
-                                        
-                                        <span class="relative flex h-3 w-3">
-                                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
-                                            <span class="relative inline-flex rounded-full h-3 w-3 bg-accent-emerald"></span>
-                                        </span>
-                                        
-                                        <div>
-                                            <div class="font-bold text-sm text-white">企业级智能知识库 (RAG)</div>
-                                            <div class="text-xs text-slate-400">知识底座</div>
-                                        </div>
+                            <div class="flex items-center gap-3 py-3 group">
+                                <!-- 状态点：绿=在线 / 灰=离线（唯一的状态色） -->
+                                
+                                <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald flex-shrink-0"></span>
+                                
+
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[13px] text-slate-200 font-medium truncate">企业级智能知识库 (RAG)</span>
+                                        <span class="tag flex-shrink-0">Infra</span>
                                     </div>
-                                    <span class="text-[11px] font-mono px-2 py-0.5 rounded-full 
-                                         bg-accent-blue/15 text-accent-blue border border-accent-blue/30
-                                        ">
-                                        Infra
-                                    </span>
+                                    <div class="text-[11px] text-slate-600 truncate mt-0.5">知识底座 · 基于 Streamlit + 本地向量检索的高精度行业知识库，支持 PDF/Word 知识检索问答</div>
                                 </div>
-                                <p class="text-xs text-slate-400 mt-2.5 line-clamp-2">基于 Streamlit + 本地向量检索的高精度行业知识库，支持 PDF/Word 知识检索问答</p>
-                                <div class="mt-3 pt-3 border-t border-dark-border/60 flex items-center justify-between text-xs">
-                                    <div class="flex items-center space-x-2.5">
-                                        <span class="text-slate-500 font-mono">PORT: 8501</span>
-                                        
-                                        <span class="text-accent-emerald font-semibold flex items-center">
-                                            <i class="fas fa-circle-check text-[10px] mr-1"></i> 服务运行中
-                                        </span>
-                                        
-                                    </div>
-                                    <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，
-                                         没配置就如实禁用，不假装能启动。点击有二次确认。 -->
+
+                                <span class="text-[11px] font-mono text-slate-600 flex-shrink-0 hidden sm:block">:8501</span>
+
+                                <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，
+没配置就如实禁用，不假装能启动。点击有二次确认。 -->
+                                <div class="flex-shrink-0 w-[68px] text-right">
                                     
+                                    <span class="text-[11px] text-accent-emerald">运行中</span>
                                     <button onclick="serviceControl('ai-knowledge-assistant', 'stop', this)"
                                             title="终止监听 :8501 的进程（真实操作，事件总线将推送下线事件）"
-                                            class="px-2.5 py-1 rounded-lg text-[11px] font-medium border border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/25 transition-colors">
-                                        <i class="fas fa-stop mr-1 text-[9px]"></i>停止
+                                            class="mt-1 w-full py-1 rounded-md text-[11px] border border-dark-border text-slate-500 hover:border-rose-500/40 hover:text-rose-400 transition-colors">
+                                        停止
                                     </button>
                                     
                                 </div>
                             </div>
                             
-                            <div class="p-4 rounded-xl bg-dark-700/50 border border-dark-border flex flex-col justify-between hover:border-slate-500 transition-colors">
-                                <div class="flex items-start justify-between">
-                                    <div class="flex items-center space-x-3">
-                                        
-                                        <span class="relative flex h-3 w-3">
-                                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
-                                            <span class="relative inline-flex rounded-full h-3 w-3 bg-accent-emerald"></span>
-                                        </span>
-                                        
-                                        <div>
-                                            <div class="font-bold text-sm text-white">自动化情报抓取平台</div>
-                                            <div class="text-xs text-slate-400">数据管道</div>
-                                        </div>
+                            <div class="flex items-center gap-3 py-3 group">
+                                <!-- 状态点：绿=在线 / 灰=离线（唯一的状态色） -->
+                                
+                                <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald flex-shrink-0"></span>
+                                
+
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[13px] text-slate-200 font-medium truncate">自动化情报抓取平台</span>
+                                        <span class="tag flex-shrink-0">Data</span>
                                     </div>
-                                    <span class="text-[11px] font-mono px-2 py-0.5 rounded-full 
-                                         bg-accent-emerald/15 text-accent-emerald border border-accent-emerald/30
-                                        ">
-                                        Data
-                                    </span>
+                                    <div class="text-[11px] text-slate-600 truncate mt-0.5">数据管道 · 独立轻量化情报抓取工作台，支持网页结构化采集、价格规则抽取与数据导出</div>
                                 </div>
-                                <p class="text-xs text-slate-400 mt-2.5 line-clamp-2">独立轻量化情报抓取工作台，支持网页结构化采集、价格规则抽取与数据导出</p>
-                                <div class="mt-3 pt-3 border-t border-dark-border/60 flex items-center justify-between text-xs">
-                                    <div class="flex items-center space-x-2.5">
-                                        <span class="text-slate-500 font-mono">PORT: 8765</span>
-                                        
-                                        <span class="text-accent-emerald font-semibold flex items-center">
-                                            <i class="fas fa-circle-check text-[10px] mr-1"></i> 服务运行中
-                                        </span>
-                                        
-                                    </div>
-                                    <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，
-                                         没配置就如实禁用，不假装能启动。点击有二次确认。 -->
+
+                                <span class="text-[11px] font-mono text-slate-600 flex-shrink-0 hidden sm:block">:8765</span>
+
+                                <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，
+没配置就如实禁用，不假装能启动。点击有二次确认。 -->
+                                <div class="flex-shrink-0 w-[68px] text-right">
                                     
+                                    <span class="text-[11px] text-accent-emerald">运行中</span>
                                     <button onclick="serviceControl('data-automation-workbench', 'stop', this)"
                                             title="终止监听 :8765 的进程（真实操作，事件总线将推送下线事件）"
-                                            class="px-2.5 py-1 rounded-lg text-[11px] font-medium border border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/25 transition-colors">
-                                        <i class="fas fa-stop mr-1 text-[9px]"></i>停止
+                                            class="mt-1 w-full py-1 rounded-md text-[11px] border border-dark-border text-slate-500 hover:border-rose-500/40 hover:text-rose-400 transition-colors">
+                                        停止
                                     </button>
                                     
                                 </div>
                             </div>
                             
-                            <div class="p-4 rounded-xl bg-dark-700/50 border border-dark-border flex flex-col justify-between hover:border-slate-500 transition-colors">
-                                <div class="flex items-start justify-between">
-                                    <div class="flex items-center space-x-3">
-                                        
-                                        <span class="relative flex h-3 w-3">
-                                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
-                                            <span class="relative inline-flex rounded-full h-3 w-3 bg-accent-emerald"></span>
-                                        </span>
-                                        
-                                        <div>
-                                            <div class="font-bold text-sm text-white">多模态音视频智能体 (FunClip)</div>
-                                            <div class="text-xs text-slate-400">交互 Agent</div>
-                                        </div>
+                            <div class="flex items-center gap-3 py-3 group">
+                                <!-- 状态点：绿=在线 / 灰=离线（唯一的状态色） -->
+                                
+                                <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald flex-shrink-0"></span>
+                                
+
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[13px] text-slate-200 font-medium truncate">多模态音视频智能体 (FunClip)</span>
+                                        <span class="tag flex-shrink-0">Innovation</span>
                                     </div>
-                                    <span class="text-[11px] font-mono px-2 py-0.5 rounded-full 
-                                         bg-pink-500/15 text-pink-400 border border-pink-500/30 ">
-                                        Innovation
-                                    </span>
+                                    <div class="text-[11px] text-slate-600 truncate mt-0.5">交互 Agent · 基于 FunClip 的本地 AI 音视频自动化切片、多模态语音识别与字幕智能合成</div>
                                 </div>
-                                <p class="text-xs text-slate-400 mt-2.5 line-clamp-2">基于 FunClip 的本地 AI 音视频自动化切片、多模态语音识别与字幕智能合成</p>
-                                <div class="mt-3 pt-3 border-t border-dark-border/60 flex items-center justify-between text-xs">
-                                    <div class="flex items-center space-x-2.5">
-                                        <span class="text-slate-500 font-mono">PORT: 7860</span>
-                                        
-                                        <span class="text-accent-emerald font-semibold flex items-center">
-                                            <i class="fas fa-circle-check text-[10px] mr-1"></i> 服务运行中
-                                        </span>
-                                        
-                                    </div>
-                                    <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，
-                                         没配置就如实禁用，不假装能启动。点击有二次确认。 -->
+
+                                <span class="text-[11px] font-mono text-slate-600 flex-shrink-0 hidden sm:block">:7860</span>
+
+                                <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，
+没配置就如实禁用，不假装能启动。点击有二次确认。 -->
+                                <div class="flex-shrink-0 w-[68px] text-right">
                                     
+                                    <span class="text-[11px] text-accent-emerald">运行中</span>
                                     <button onclick="serviceControl('ark_aigc_demo', 'stop', this)"
                                             title="终止监听 :7860 的进程（真实操作，事件总线将推送下线事件）"
-                                            class="px-2.5 py-1 rounded-lg text-[11px] font-medium border border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/25 transition-colors">
-                                        <i class="fas fa-stop mr-1 text-[9px]"></i>停止
+                                            class="mt-1 w-full py-1 rounded-md text-[11px] border border-dark-border text-slate-500 hover:border-rose-500/40 hover:text-rose-400 transition-colors">
+                                        停止
                                     </button>
                                     
                                 </div>
@@ -569,16 +541,16 @@
                     </div>
 
                     <!-- 实时调度事件流水 (Live Log Ticker) -->
-                    <div class="glass-card rounded-2xl p-6 border border-dark-border flex flex-col">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="flex items-center space-x-2">
-                                <i class="fas fa-terminal text-accent-emerald"></i>
-                                <h3 class="font-bold text-white text-base">中枢事件总线</h3>
+                    <div class="lg:col-span-2 glass-card p-5 flex flex-col">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-terminal text-accent-gold text-sm"></i>
+                                <h3 class="font-semibold text-white text-sm">中枢事件总线</h3>
                             </div>
-                            <span id="event-bus-mode" class="text-[11px] font-mono text-slate-500">CONNECTING…</span>
+                            <span id="event-bus-mode" class="text-[11px] font-mono text-slate-600">连接中</span>
                         </div>
-                        <div id="event-log-container" class="flex-1 bg-dark-900 rounded-xl p-3 font-mono text-xs overflow-y-auto space-y-2 border border-dark-border h-[420px]">
-                            <div class="text-slate-600">正在接入事件总线…</div>
+                        <div id="event-log-container" class="flex-1 rounded-lg p-3 font-mono text-[11px] leading-relaxed overflow-y-auto space-y-1.5 h-[380px]">
+                            <div class="text-slate-700">正在接入事件总线…</div>
                         </div>
                     </div>
                 </div>
@@ -592,109 +564,108 @@
                     <!-- 左侧：实时智能对话区 (Chat Window) -->
                     <div class="lg:col-span-7 glass-card rounded-2xl flex flex-col border border-dark-border overflow-hidden">
                         <!-- 对话头部 -->
-                        <div class="p-4 border-b border-dark-border bg-dark-700/60 flex items-center justify-between">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-accent-purple to-pink-500 flex items-center justify-center text-white shadow-md">
-                                    <i class="fas fa-gem"></i>
+                        <div class="p-4 border-b border-dark-border flex items-center justify-between">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-8 h-8 rounded-lg bg-dark-600 border border-dark-border flex items-center justify-center text-accent-gold flex-shrink-0">
+                                    <i class="fas fa-gem text-sm"></i>
                                 </div>
-                                <div>
-                                    <div class="font-bold text-white text-sm">琼华珠宝 · AI 智能导购智能体</div>
-                                    <div class="text-xs text-accent-purple flex items-center">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-accent-purple mr-1.5 animate-ping"></span>
+                                <div class="min-w-0">
+                                    <div class="text-[13px] text-white font-medium truncate">琼华珠宝 · AI 智能导购智能体</div>
+                                    <div class="text-[11px] text-accent-emerald flex items-center gap-1.5">
+                                        <span class="w-1 h-1 rounded-full bg-accent-emerald"></span>
                                         多轮会话 + 工具自纠错推理引擎
                                     </div>
                                 </div>
                             </div>
-                            <button onclick="clearGuideChat()" class="text-xs text-slate-400 hover:text-white px-2.5 py-1 rounded bg-dark-600 border border-dark-border">
-                                <i class="fas fa-trash-can mr-1"></i> 清空
+                            <button onclick="clearGuideChat()" class="btn-ghost px-2.5 py-1 rounded-md text-[11px]">
+                                清空
                             </button>
                         </div>
 
                         <!-- 聊天消息流 -->
                         <div id="guide-messages" class="flex-1 p-5 overflow-y-auto space-y-4">
                             <!-- 欢迎语 -->
-                            <div class="flex items-start space-x-3">
-                                <div class="w-8 h-8 rounded-lg bg-accent-purple/20 text-accent-purple flex items-center justify-center text-sm flex-shrink-0">
+                            <div class="flex items-start gap-3">
+                                <div class="w-7 h-7 rounded-md bg-accent-sand/15 text-accent-sand flex items-center justify-center text-[11px] flex-shrink-0 mt-0.5">
                                     <i class="fas fa-robot"></i>
                                 </div>
-                                <div class="p-4 rounded-2xl rounded-tl-none bg-dark-700 border border-dark-border text-sm leading-relaxed max-w-[85%]">
-                                    您好！我是琼华珠宝的资深 AI 选品顾问“小琼”。💎<br><br>
-                                    我可以为您智能挑选玉石、莫桑钻、珍珠等珠宝饰品，支持按预算/送礼人群推荐，也可以帮您查询最新满减优惠券与鉴定证书。请问您今天想挑选哪类首饰？
+                                <div class="rounded-xl rounded-tl-sm bg-dark-700 border border-dark-border text-[13px] leading-relaxed px-4 py-3 max-w-[85%] text-slate-300">
+                                    您好！我是琼华珠宝的资深 AI 选品顾问「小琼」。<br><br>
+                                    我可以为您智能挑选玉石、莫桑钻、珍珠等珠宝饰品，支持按预算 / 送礼人群推荐，也可以帮您查询最新满减优惠券与鉴定证书。请问您今天想挑选哪类首饰？
                                 </div>
                             </div>
                         </div>
 
-                        <!-- 快捷提问词卡片 -->
-                        <div class="px-4 py-2 border-t border-dark-border/60 bg-dark-800/40 flex items-center space-x-2 overflow-x-auto text-xs">
-                            <span class="text-slate-500 whitespace-nowrap">快捷测试：</span>
-                            <button onclick="sendQuickPrompt('帮我推荐一款 1000-2000 元送长辈的和田玉吊坠')" class="px-2.5 py-1 rounded-full bg-dark-700 hover:bg-dark-600 border border-dark-border text-slate-300 whitespace-nowrap">
-                                🎁 送长辈天然玉石
+                        <!-- 快捷提问词：统一 chip 样式，去掉 emoji 与彩色底 -->
+                        <div class="px-4 py-2.5 border-t border-dark-border flex items-center gap-2 overflow-x-auto">
+                            <span class="text-[11px] text-slate-600 whitespace-nowrap">快捷测试</span>
+                            <button onclick="sendQuickPrompt('帮我推荐一款 1000-2000 元送长辈的和田玉吊坠')" class="chip">
+                                送长辈天然玉石
                             </button>
-                            <button onclick="sendQuickPrompt('有没有 500 元无门槛优惠券？')" class="px-2.5 py-1 rounded-full bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 whitespace-nowrap">
-                                ⚡ 测试【券超出自纠错】
+                            <button onclick="sendQuickPrompt('有没有 500 元无门槛优惠券？')" class="chip">
+                                测试券超出自纠错
                             </button>
-                            <button onclick="sendQuickPrompt('莫桑钻和天然钻石有什么区别？保真吗？')" class="px-2.5 py-1 rounded-full bg-dark-700 hover:bg-dark-600 border border-dark-border text-slate-300 whitespace-nowrap">
-                                🔍 莫桑钻百科与证书
+                            <button onclick="sendQuickPrompt('莫桑钻和天然钻石有什么区别？保真吗？')" class="chip">
+                                莫桑钻百科与证书
                             </button>
                         </div>
 
                         <!-- 底部输入框 -->
-                        <div class="p-4 border-t border-dark-border bg-dark-800/80">
-                            <form onsubmit="handleGuideSend(event)" class="flex space-x-3">
-                                <input id="guide-input" type="text" placeholder="输入您对珠宝的需求，如“想买个两千元左右显气质的珍珠项链”..." class="flex-1 bg-dark-900 border border-dark-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-accent-purple text-white placeholder-slate-500" />
-                                <button type="submit" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-accent-purple to-pink-600 text-white font-medium text-sm hover:opacity-90 transition-opacity flex items-center">
-                                    <span>发送</span>
-                                    <i class="fas fa-paper-plane ml-1.5 text-xs"></i>
+                        <div class="p-4 border-t border-dark-border">
+                            <form onsubmit="handleGuideSend(event)" class="flex gap-2.5">
+                                <input id="guide-input" type="text" placeholder="输入您对珠宝的需求，如“想买个两千元左右显气质的珍珠项链”…" class="flex-1 bg-dark-900 border border-dark-border rounded-lg px-4 py-2.5 text-[13px] focus:outline-none text-white placeholder-slate-600" />
+                                <button type="submit" class="btn-primary px-5 py-2.5 rounded-lg text-[13px] flex items-center">
+                                    发送
                                 </button>
                             </form>
                         </div>
                     </div>
 
                     <!-- 右侧：实时决策链路与自纠错追踪 (Trace Panel) -->
-                    <div class="lg:col-span-5 glass-card rounded-2xl p-5 border border-dark-border flex flex-col justify-between">
+                    <div class="lg:col-span-5 glass-card p-5 flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between pb-3 border-b border-dark-border mb-4">
-                                <div class="flex items-center space-x-2">
-                                    <i class="fas fa-route text-accent-amber"></i>
-                                    <h3 class="font-bold text-white text-sm">Agent 推理时序与自纠错跟踪</h3>
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-route text-accent-amber text-sm"></i>
+                                    <h3 class="font-semibold text-white text-sm">Agent 推理时序与自纠错跟踪</h3>
                                 </div>
-                                <span id="guide-self-correct-badge" class="hidden px-2 py-0.5 rounded text-[10px] font-mono bg-accent-amber/20 text-accent-amber border border-accent-amber/40">
-                                    <i class="fas fa-triangle-exclamation mr-1"></i> 触发纠错机制
+                                <span id="guide-self-correct-badge" class="hidden px-2 py-0.5 rounded text-[10px] font-mono bg-accent-amber/15 text-accent-amber border border-accent-amber/30">
+                                    触发纠错机制
                                 </span>
                             </div>
 
-                            <div id="guide-trace-steps" class="space-y-3">
-                                <div class="p-3 rounded-xl bg-dark-700/40 border border-dark-border text-xs">
-                                    <div class="flex items-center justify-between text-slate-400 font-mono mb-1">
-                                        <span>Step 1: 意图路由</span>
+                            <div id="guide-trace-steps" class="space-y-2">
+                                <div class="px-3 py-2.5 rounded-lg bg-dark-700/40 border border-dark-border text-[11px]">
+                                    <div class="flex items-center justify-between text-slate-500 font-mono mb-1">
+                                        <span>Step 1 · 意图路由</span>
                                         <span class="text-accent-emerald">READY</span>
                                     </div>
-                                    <div class="text-slate-300">等待用户输入，激活分类状态机...</div>
+                                    <div class="text-slate-400">等待用户输入，激活分类状态机…</div>
                                 </div>
-                                <div class="p-3 rounded-xl bg-dark-700/40 border border-dark-border text-xs">
-                                    <div class="flex items-center justify-between text-slate-400 font-mono mb-1">
-                                        <span>Step 2: 向量混合检索</span>
-                                        <span class="text-slate-500">IDLE</span>
+                                <div class="px-3 py-2.5 rounded-lg bg-dark-700/40 border border-dark-border text-[11px]">
+                                    <div class="flex items-center justify-between text-slate-500 font-mono mb-1">
+                                        <span>Step 2 · 向量混合检索</span>
+                                        <span class="text-slate-600">IDLE</span>
                                     </div>
-                                    <div class="text-slate-500">BM25 + Chroma 向量空间待命</div>
+                                    <div class="text-slate-600">BM25 + 向量空间待命</div>
                                 </div>
-                                <div class="p-3 rounded-xl bg-dark-700/40 border border-dark-border text-xs">
-                                    <div class="flex items-center justify-between text-slate-400 font-mono mb-1">
-                                        <span>Step 3: 工具调用 & 校验</span>
-                                        <span class="text-slate-500">IDLE</span>
+                                <div class="px-3 py-2.5 rounded-lg bg-dark-700/40 border border-dark-border text-[11px]">
+                                    <div class="flex items-center justify-between text-slate-500 font-mono mb-1">
+                                        <span>Step 3 · 工具调用与校验</span>
+                                        <span class="text-slate-600">IDLE</span>
                                     </div>
-                                    <div class="text-slate-500">支持优惠券合规性与库存实时校验</div>
+                                    <div class="text-slate-600">支持优惠券合规性与库存实时校验</div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- 架构指标（全部为运行时实测/实报，不留写死的假数） -->
-                        <div class="mt-4 p-3 rounded-xl bg-dark-900 border border-dark-border text-xs font-mono space-y-1.5 text-slate-400">
+                        <div class="mt-4 p-3 rounded-lg bg-dark-900 border border-dark-border text-[11px] font-mono space-y-1.5 text-slate-500">
                             <div class="flex justify-between">
                                 <span>推演框架：</span><span class="text-slate-200">LangGraph 反思状态机</span>
                             </div>
                             <div class="flex justify-between">
-                                <span>单步耗时：</span><span id="guide-latency" class="text-accent-cyan">—</span>
+                                <span>单步耗时：</span><span id="guide-latency" class="text-accent-gold">—</span>
                             </div>
                             <div class="flex justify-between">
                                 <span>应答来源：</span><span id="guide-backend" class="text-slate-500">—</span>
@@ -707,102 +678,103 @@
             <!-- ------------------------------------------------------------- -->
             <!-- TAB 3: 爆款营销工场 (Marketing Studio) -->
             <!-- ------------------------------------------------------------- -->
-            <div id="tab-marketing" class="tab-content hidden space-y-6">
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<div id="tab-marketing" class="tab-content hidden space-y-5">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
                     <!-- 左侧：参数与生成配置 -->
-                    <div class="lg:col-span-5 glass-card rounded-2xl p-6 border border-dark-border space-y-5">
-                        <div class="flex items-center space-x-2 pb-3 border-b border-dark-border">
-                            <i class="fas fa-pen-nib text-accent-amber text-base"></i>
-                            <h3 class="font-bold text-white text-base">多平台爆款内容生成器</h3>
+                    <div class="lg:col-span-5 glass-card p-5 space-y-5">
+                        <div class="flex items-center gap-2 pb-3 border-b border-dark-border">
+                            <i class="fas fa-pen-nib text-accent-amber text-sm"></i>
+                            <h3 class="font-semibold text-white text-sm">多平台爆款内容生成器</h3>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-slate-400 uppercase mb-2">主推产品 / 主题名称</label>
-                            <input id="mkt-product-name" type="text" value="天然和田碧玉平安扣吊坠" class="w-full bg-dark-900 border border-dark-border rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-accent-amber" />
+                            <label class="block text-[11px] text-slate-500 mb-2">主推产品 / 主题名称</label>
+                            <input id="mkt-product-name" type="text" value="天然和田碧玉平安扣吊坠" class="w-full bg-dark-900 border border-dark-border rounded-lg px-3.5 py-2.5 text-[13px] text-white focus:outline-none" />
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-slate-400 uppercase mb-2">发布渠道矩阵</label>
-                            <div class="grid grid-cols-5 gap-3">
+                            <label class="block text-[11px] text-slate-500 mb-2">发布渠道矩阵</label>
+                            <!-- 5 个渠道统一为同一套中性样式，选中态只有一种金色 -->
+                            <div class="grid grid-cols-3 sm:grid-cols-5 gap-2">
                                 <label class="cursor-pointer">
                                     <input type="radio" name="mkt-platform" value="xiaohongshu" checked class="peer sr-only">
-                                    <div class="p-3 rounded-xl border border-dark-border bg-dark-700/60 peer-checked:border-accent-rose peer-checked:bg-accent-rose/10 text-center transition-all">
-                                        <i class="fab fa-instagram text-accent-rose block text-lg mb-1"></i>
-                                        <span class="text-xs font-medium">小红书图文</span>
+                                    <div class="py-2.5 px-1 rounded-lg border border-dark-border text-center transition-colors peer-checked:border-accent-gold/50 peer-checked:bg-accent-gold/10 peer-checked:text-accent-gold">
+                                        <i class="fab fa-instagram block text-sm mb-1"></i>
+                                        <span class="text-[11px]">小红书图文</span>
                                     </div>
                                 </label>
                                 <label class="cursor-pointer">
                                     <input type="radio" name="mkt-platform" value="douyin" class="peer sr-only">
-                                    <div class="p-3 rounded-xl border border-dark-border bg-dark-700/60 peer-checked:border-accent-cyan peer-checked:bg-accent-cyan/10 text-center transition-all">
-                                        <i class="fab fa-tiktok text-accent-cyan block text-lg mb-1"></i>
-                                        <span class="text-xs font-medium">抖音口播短视频</span>
+                                    <div class="py-2.5 px-1 rounded-lg border border-dark-border text-center transition-colors peer-checked:border-accent-gold/50 peer-checked:bg-accent-gold/10 peer-checked:text-accent-gold">
+                                        <i class="fab fa-tiktok block text-sm mb-1"></i>
+                                        <span class="text-[11px]">抖音口播</span>
                                     </div>
                                 </label>
                                 <label class="cursor-pointer">
                                     <input type="radio" name="mkt-platform" value="wechat" class="peer sr-only">
-                                    <div class="p-3 rounded-xl border border-dark-border bg-dark-700/60 peer-checked:border-accent-emerald peer-checked:bg-accent-emerald/10 text-center transition-all">
-                                        <i class="fab fa-weixin text-accent-emerald block text-lg mb-1"></i>
-                                        <span class="text-xs font-medium">微信私域长图文</span>
+                                    <div class="py-2.5 px-1 rounded-lg border border-dark-border text-center transition-colors peer-checked:border-accent-gold/50 peer-checked:bg-accent-gold/10 peer-checked:text-accent-gold">
+                                        <i class="fab fa-weixin block text-sm mb-1"></i>
+                                        <span class="text-[11px]">微信私域</span>
                                     </div>
                                 </label>
                                 <label class="cursor-pointer">
                                     <input type="radio" name="mkt-platform" value="tmall" class="peer sr-only">
-                                    <div class="p-3 rounded-xl border border-dark-border bg-dark-700/60 peer-checked:border-accent-amber peer-checked:bg-accent-amber/10 text-center transition-all">
-                                        <i class="fas fa-shopping-bag text-accent-amber block text-lg mb-1"></i>
-                                        <span class="text-xs font-medium">电商详情页</span>
+                                    <div class="py-2.5 px-1 rounded-lg border border-dark-border text-center transition-colors peer-checked:border-accent-gold/50 peer-checked:bg-accent-gold/10 peer-checked:text-accent-gold">
+                                        <i class="fas fa-shopping-bag block text-sm mb-1"></i>
+                                        <span class="text-[11px]">电商详情页</span>
                                     </div>
                                 </label>
                                 <label class="cursor-pointer">
                                     <input type="radio" name="mkt-platform" value="moments" class="peer sr-only">
-                                    <div class="p-3 rounded-xl border border-dark-border bg-dark-700/60 peer-checked:border-accent-blue peer-checked:bg-accent-blue/10 text-center transition-all">
-                                        <i class="fas fa-mobile-screen text-accent-blue block text-lg mb-1"></i>
-                                        <span class="text-xs font-medium">朋友圈短文案</span>
+                                    <div class="py-2.5 px-1 rounded-lg border border-dark-border text-center transition-colors peer-checked:border-accent-gold/50 peer-checked:bg-accent-gold/10 peer-checked:text-accent-gold">
+                                        <i class="fas fa-mobile-screen block text-sm mb-1"></i>
+                                        <span class="text-[11px]">朋友圈短文案</span>
                                     </div>
                                 </label>
                             </div>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-slate-400 uppercase mb-2">核心卖点关键词</label>
-                            <input id="mkt-keywords" type="text" value="温润细腻, 原矿老料, 附权威证书, 送礼高阶" class="w-full bg-dark-900 border border-dark-border rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-accent-amber" />
+                            <label class="block text-[11px] text-slate-500 mb-2">核心卖点关键词</label>
+                            <input id="mkt-keywords" type="text" value="温润细腻, 原矿老料, 附权威证书, 送礼高阶" class="w-full bg-dark-900 border border-dark-border rounded-lg px-3.5 py-2.5 text-[13px] text-white focus:outline-none" />
                         </div>
 
-                        <button onclick="handleMarketingGenerate()" class="w-full py-3 rounded-xl bg-gradient-to-r from-accent-amber to-orange-500 text-white font-bold text-sm hover:opacity-90 transition-opacity shadow-lg shadow-amber-500/20 flex items-center justify-center">
-                            <i class="fas fa-wand-magic-sparkles mr-2"></i> 一键生成爆款内容并质检
+                        <button onclick="handleMarketingGenerate()" class="btn-primary w-full py-2.5 rounded-lg text-[13px]">
+                            一键生成爆款内容并质检
                         </button>
                     </div>
 
                     <!-- 右侧：生成文案与合规检测面板 -->
-                    <div class="lg:col-span-7 space-y-6">
+                    <div class="lg:col-span-7 space-y-5">
                         <!-- 文案展示区 -->
-                        <div class="glass-card rounded-2xl p-6 border border-dark-border">
-                            <div class="flex items-center justify-between pb-3 border-b border-dark-border mb-4">
-                                <h4 id="mkt-result-title" class="font-bold text-white text-sm">一眼惊艳！被闺蜜追着要链接的【天然和田碧玉平安扣吊坠】到底有多绝✨</h4>
-                                <button onclick="copyMarketingContent()" class="text-xs text-accent-cyan hover:underline flex items-center">
-                                    <i class="fas fa-copy mr-1"></i> 复制文案
+                        <div class="glass-card p-5">
+                            <div class="flex items-center justify-between pb-3 border-b border-dark-border mb-4 gap-3">
+                                <h4 id="mkt-result-title" class="font-medium text-white text-[13px] leading-snug">一眼惊艳！被闺蜜追着要链接的【天然和田碧玉平安扣吊坠】到底有多绝</h4>
+                                <button onclick="copyMarketingContent()" class="btn-ghost px-2.5 py-1 rounded-md text-[11px] flex-shrink-0">
+                                    复制文案
                                 </button>
                             </div>
-                            <div id="mkt-result-body" class="p-4 rounded-xl bg-dark-900 border border-dark-border text-sm text-slate-300 leading-relaxed font-mono whitespace-pre-wrap max-h-[260px] overflow-y-auto">
-点击左侧「一键生成」，系统将通过 Coze 低代码工作流生成专业营销素材并自动完成违禁词合规质检。
+                            <div id="mkt-result-body" class="p-4 rounded-lg bg-dark-900 border border-dark-border text-[12px] text-slate-400 leading-relaxed font-mono whitespace-pre-wrap max-h-[280px] overflow-y-auto">
+                                点击左侧「一键生成」，系统将通过 Coze 低代码工作流生成专业营销素材并自动完成违禁词合规质检。
                             </div>
                         </div>
 
                         <!-- 智能合规质检报告 (Compliance Shield) -->
-                        <div class="glass-card rounded-2xl p-6 border border-dark-border">
+                        <div class="glass-card p-5">
                             <div class="flex items-center justify-between mb-4">
-                                <div class="flex items-center space-x-2">
-                                    <i class="fas fa-shield-virus text-accent-emerald text-base"></i>
-                                    <h4 class="font-bold text-white text-sm">《新广告法》与平台违禁词质检报告</h4>
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-shield-virus text-accent-emerald text-sm"></i>
+                                    <h4 class="font-semibold text-white text-sm">《新广告法》与平台违禁词质检报告</h4>
                                 </div>
-                                <div class="flex items-center space-x-2">
-                                    <span class="text-xs text-slate-400">合规评分：</span>
-                                    <span id="mkt-score" class="text-lg font-extrabold text-accent-emerald font-mono">100 / 100</span>
+                                <div class="flex items-center gap-2 flex-shrink-0">
+                                    <span class="text-[11px] text-slate-500">合规评分</span>
+                                    <span id="mkt-score" class="text-[15px] font-semibold text-accent-emerald font-mono">100 / 100</span>
                                 </div>
                             </div>
 
-                            <div id="mkt-violations-container" class="p-3.5 rounded-xl bg-dark-900 border border-dark-border text-xs text-slate-400">
+                            <div id="mkt-violations-container" class="p-3.5 rounded-lg bg-dark-900 border border-dark-border text-[11px] text-slate-400">
                                 <div class="text-accent-emerald flex items-center">
-                                    <i class="fas fa-circle-check mr-2"></i> 文案整体合规度极高，未检出极限词（如“顶级/第一/全网唯一”等高危违禁词），符合发布标准。
+                                    <i class="fas fa-circle-check mr-2"></i> 文案整体合规度极高，未检出极限词（如「顶级 / 第一 / 全网唯一」等高危违禁词），符合发布标准。
                                 </div>
                             </div>
                         </div>
@@ -813,96 +785,89 @@
             <!-- ------------------------------------------------------------- -->
             <!-- TAB 4: 智能数据分析与决策中心 (Data Analytics & Text-to-SQL) -->
             <!-- ------------------------------------------------------------- -->
-            <div id="tab-analytics" class="tab-content hidden space-y-6">
-                <!-- 概览指标 -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div class="glass-card rounded-xl p-4 border border-dark-border">
-                        <div class="text-xs text-slate-400">挂载样本量</div>
-                        <div class="text-2xl font-bold text-white mt-1">2,450 笔</div>
-                        <div class="text-[11px] text-accent-cyan mt-1">电商真实交易沉淀</div>
+            <div id="tab-analytics" class="tab-content hidden space-y-5">
+                <!-- 概览指标：同样用数据带，数字做主角 -->
+                <div class="glass-card px-2 py-1 grid grid-cols-2 lg:grid-cols-4 divide-x divide-y lg:divide-y-0 divide-dark-border">
+                    <div class="px-5 py-4">
+                        <div class="text-[11px] text-slate-500 mb-1.5">挂载样本量</div>
+                        <div class="kpi-num text-[22px] font-semibold leading-none text-white">2,450<span class="text-sm text-slate-500 ml-1">笔</span></div>
+                        <div class="text-[11px] text-slate-600 mt-2">电商真实交易沉淀</div>
                     </div>
-                    <div class="glass-card rounded-xl p-4 border border-dark-border">
-                        <div class="text-xs text-slate-400">累计成交 GMV</div>
-                        <div class="text-2xl font-bold text-accent-emerald mt-1">¥ 1,894,200</div>
-                        <div class="text-[11px] text-accent-emerald mt-1">月复合增长 9.2%</div>
+                    <div class="px-5 py-4">
+                        <div class="text-[11px] text-slate-500 mb-1.5">累计成交 GMV</div>
+                        <div class="kpi-num text-[22px] font-semibold leading-none text-white">189.4<span class="text-sm text-slate-500 ml-1">万</span></div>
+                        <div class="text-[11px] text-accent-emerald mt-2">月复合增长 9.2%</div>
                     </div>
-                    <div class="glass-card rounded-xl p-4 border border-dark-border">
-                        <div class="text-xs text-slate-400">全店平均客单价</div>
-                        <div class="text-2xl font-bold text-white mt-1">¥ 773.1</div>
-                        <div class="text-[11px] text-slate-400 mt-1">私域客单高达 ¥920</div>
+                    <div class="px-5 py-4">
+                        <div class="text-[11px] text-slate-500 mb-1.5">平均客单价</div>
+                        <div class="kpi-num text-[22px] font-semibold leading-none text-white">773.1<span class="text-sm text-slate-500 ml-1">元</span></div>
+                        <div class="text-[11px] text-slate-600 mt-2">私域客单 ¥920</div>
                     </div>
-                    <div class="glass-card rounded-xl p-4 border border-dark-border">
-                        <div class="text-xs text-slate-400">完单履约率</div>
-                        <div class="text-2xl font-bold text-accent-purple mt-1">94.2%</div>
-                        <div class="text-[11px] text-accent-purple mt-1">退款率低于行业均值</div>
+                    <div class="px-5 py-4">
+                        <div class="text-[11px] text-slate-500 mb-1.5">完单履约率</div>
+                        <div class="kpi-num text-[22px] font-semibold leading-none text-white">94.2<span class="text-sm text-slate-500 ml-1">%</span></div>
+                        <div class="text-[11px] text-slate-600 mt-2">退款率低于行业均值</div>
                     </div>
                 </div>
 
                 <!-- 自然语言 Text-to-SQL 交互台 -->
-                <div class="glass-card rounded-2xl p-6 border border-dark-border space-y-5">
+                <div class="glass-card p-5 space-y-4">
                     <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-2">
-                            <i class="fas fa-brain text-accent-emerald text-base"></i>
-                            <h3 class="font-bold text-white text-base">Text-to-SQL 自然语言数据探索</h3>
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-brain text-accent-emerald text-sm"></i>
+                            <h3 class="font-semibold text-white text-sm">Text-to-SQL 自然语言数据探索</h3>
                         </div>
-                        <span class="text-xs text-slate-400 font-mono">底层引擎：DuckDB In-Memory OLAP</span>
+                        <span class="tag">DuckDB In-Memory OLAP</span>
                     </div>
 
                     <!-- 搜索栏 -->
-                    <div class="flex space-x-3">
-                        <input id="sql-query-input" type="text" value="统计各品类销售额占比与订单数" placeholder="用自然语言提问，如“各渠道销售额对比”、“近半年月度增长趋势”..." class="flex-1 bg-dark-900 border border-dark-border rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-accent-emerald" />
-                        <button onclick="handleAnalyticsQuery()" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-accent-emerald to-teal-600 text-white font-bold text-sm hover:opacity-90 transition-opacity">
-                            <i class="fas fa-play mr-1.5 text-xs"></i> 执行智能查询
+                    <div class="flex gap-2.5">
+                        <input id="sql-query-input" type="text" value="统计各品类销售额占比与订单数" placeholder="用自然语言提问，如「各渠道销售额对比」「近半年月度增长趋势」…" class="flex-1 bg-dark-900 border border-dark-border rounded-lg px-4 py-2.5 text-[13px] text-white focus:outline-none" />
+                        <button onclick="handleAnalyticsQuery()" class="btn-primary px-5 py-2.5 rounded-lg text-[13px]">
+                            执行查询
                         </button>
                     </div>
 
-                    <!-- 快捷预设提问 -->
-                    <div class="flex items-center space-x-2 text-xs">
-                        <span class="text-slate-500">快速洞察：</span>
-                        <button onclick="setQueryAndRun('统计各品类销售额占比与订单数')" class="px-3 py-1 rounded-full bg-dark-700 hover:bg-dark-600 border border-dark-border text-slate-300">
-                            📊 各品类销售占比
-                        </button>
-                        <button onclick="setQueryAndRun('各获客渠道成交额与客单价对比')" class="px-3 py-1 rounded-full bg-dark-700 hover:bg-dark-600 border border-dark-border text-slate-300">
-                            🛍️ 获客渠道构成
-                        </button>
-                        <button onclick="setQueryAndRun('近半年月度 GMV 销售走势')" class="px-3 py-1 rounded-full bg-dark-700 hover:bg-dark-600 border border-dark-border text-slate-300">
-                            📈 月度趋势走势
-                        </button>
+                    <!-- 快捷预设提问：与全局 chip 语言一致 -->
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="text-[11px] text-slate-600">快速洞察</span>
+                        <button onclick="setQueryAndRun('统计各品类销售额占比与订单数')" class="chip">各品类销售占比</button>
+                        <button onclick="setQueryAndRun('各获客渠道成交额与客单价对比')" class="chip">获客渠道构成</button>
+                        <button onclick="setQueryAndRun('近半年月度 GMV 销售走势')" class="chip">月度趋势走势</button>
                     </div>
 
                     <!-- SQL 解析与图表展示 -->
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 pt-3">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 pt-1">
                         <!-- 图表区域 -->
-                        <div class="lg:col-span-7 bg-dark-900/60 p-4 rounded-xl border border-dark-border">
+                        <div class="lg:col-span-7 bg-dark-900/40 p-3 rounded-lg border border-dark-border">
                             <div class="h-64 relative flex items-center justify-center">
                                 <canvas id="analytics-chart-canvas"></canvas>
                             </div>
                         </div>
 
                         <!-- SQL 语句与结论闭环 -->
-                        <div class="lg:col-span-5 flex flex-col justify-between space-y-4">
+                        <div class="lg:col-span-5 flex flex-col gap-3">
                             <div>
-                                <div class="text-xs font-semibold text-slate-400 uppercase mb-1.5">生成并执行的 SQL</div>
-                                <pre id="sql-display" class="p-3 rounded-xl bg-dark-900 text-accent-cyan text-xs border border-dark-border overflow-x-auto">SELECT category AS 品类, SUM(amount) AS 销售额 FROM orders GROUP BY category;</pre>
+                                <div class="text-[11px] text-slate-500 mb-1.5">生成并执行的 SQL</div>
+                                <pre id="sql-display" class="p-3 rounded-lg bg-dark-900 text-accent-gold text-[11px] border border-dark-border overflow-x-auto">SELECT category AS 品类, SUM(amount) AS 销售额 FROM orders GROUP BY category;</pre>
                             </div>
 
-                            <div class="p-4 rounded-xl bg-dark-700/60 border border-dark-border">
-                                <div class="text-xs font-semibold text-slate-300 mb-1 flex items-center">
-                                    <i class="fas fa-lightbulb text-accent-amber mr-1.5"></i> AI 商业洞察
+                            <div class="p-3.5 rounded-lg bg-dark-700/40 border border-dark-border">
+                                <div class="text-[11px] text-slate-400 mb-1 flex items-center gap-1.5">
+                                    <i class="fas fa-lightbulb text-accent-amber"></i> AI 商业洞察
                                 </div>
-                                <p id="sql-conclusion" class="text-xs text-slate-300 leading-relaxed">
+                                <p id="sql-conclusion" class="text-[12px] text-slate-400 leading-relaxed">
                                     天然玉石吊坠与莫桑钻贡献了超过 60% 的总营收；纯银手镯本月环比微跌 6.8%，建议结合营销模块开展专场满减引流。
                                 </p>
                             </div>
 
-                            <!-- 🔥 核心业务闭环按键：直接推送到营销工场 -->
-                            <div class="p-3.5 rounded-xl bg-accent-amber/10 border border-accent-amber/30 flex items-center justify-between">
-                                <div class="text-xs text-amber-300">
-                                    <span class="font-bold">发现滞销/潜力品：</span><span id="highlight-product-name">纯银国风手镯</span>
+                            <!-- 核心业务闭环按键：直接推送到营销工场 -->
+                            <div class="p-3 rounded-lg bg-accent-amber/10 border border-accent-amber/30 flex items-center justify-between gap-3">
+                                <div class="text-[11px] text-amber-300 min-w-0">
+                                    <span class="font-semibold">发现潜力品：</span><span id="highlight-product-name">纯银国风手镯</span>
                                 </div>
-                                <button onclick="pipeToMarketing()" class="px-3 py-1.5 rounded-lg bg-accent-amber text-dark-900 font-bold text-xs hover:bg-amber-400 transition-colors flex items-center">
-                                    <span>推送到营销工场</span>
-                                    <i class="fas fa-arrow-right ml-1.5"></i>
+                                <button onclick="pipeToMarketing()" class="btn-primary px-3 py-1.5 rounded-md text-[11px] flex-shrink-0">
+                                    推送营销工场
                                 </button>
                             </div>
                         </div>
@@ -913,94 +878,94 @@
             <!-- ------------------------------------------------------------- -->
             <!-- TAB 5: 模型网关与调度中心 (Gateway & Failover) -->
             <!-- ------------------------------------------------------------- -->
-            <div id="tab-gateway" class="tab-content hidden space-y-6">
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    <div class="lg:col-span-8 glass-card rounded-2xl p-6 border border-dark-border space-y-5">
+            <div id="tab-gateway" class="tab-content hidden space-y-5">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                    <div class="lg:col-span-8 glass-card p-5 space-y-4">
                         <div class="flex items-center justify-between pb-3 border-b border-dark-border">
-                            <div class="flex items-center space-x-2">
-                                <i class="fas fa-shield-halved text-accent-blue text-base"></i>
-                                <h3 class="font-bold text-white text-base">企业统一模型池与权重路由</h3>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-shield-halved text-accent-steel text-sm"></i>
+                                <h3 class="font-semibold text-white text-sm">企业统一模型池与权重路由</h3>
                             </div>
-                            <span class="text-xs text-accent-emerald font-mono">ACTIVE MATRIX</span>
+                            <span class="text-[11px] text-accent-emerald font-mono">ACTIVE MATRIX</span>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="p-4 rounded-xl bg-dark-700/50 border border-accent-cyan/30 flex items-start justify-between">
-                                <div>
-                                    <div class="flex items-center space-x-2">
-                                        <span class="w-2.5 h-2.5 rounded-full bg-accent-cyan animate-pulse"></span>
-                                        <span class="font-bold text-sm text-white">上游主模型（仿真占位）</span>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div class="p-3.5 rounded-lg border border-accent-gold/25 bg-accent-gold/5">
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-accent-gold"></span>
+                                        <span class="text-[13px] text-slate-100 font-medium">上游主模型（仿真占位）</span>
                                     </div>
-                                    <p class="text-xs text-slate-400 mt-1">未接入真实模型 API · 此卡仅演示主备形态</p>
-                                    <div class="text-[11px] font-mono text-accent-cyan mt-2">权重: 70% ｜ 熔断阈值: 3000ms</div>
+                                    <span class="tag tag-accent">PRIMARY</span>
                                 </div>
-                                <span class="text-[10px] bg-accent-cyan/20 text-accent-cyan px-2 py-0.5 rounded">PRIMARY</span>
+                                <p class="text-[11px] text-slate-500">未接入真实模型 API · 仅演示主备形态</p>
+                                <div class="text-[11px] font-mono text-accent-gold mt-2">权重 70% ｜ 熔断阈值 3000ms</div>
                             </div>
 
-                            <div class="p-4 rounded-xl bg-dark-700/50 border border-accent-emerald/30 flex items-start justify-between">
-                                <div>
-                                    <div class="flex items-center space-x-2">
-                                        <span class="w-2.5 h-2.5 rounded-full bg-accent-emerald animate-pulse"></span>
-                                        <span class="font-bold text-sm text-white">本地兜底引擎</span>
+                            <div class="p-3.5 rounded-lg border border-accent-emerald/25 bg-accent-emerald/5">
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald"></span>
+                                        <span class="text-[13px] text-slate-100 font-medium">本地兜底引擎</span>
                                     </div>
-                                    <p class="text-xs text-slate-400 mt-1">极速低延迟与多模态灾备模型</p>
-                                    <div class="text-[11px] font-mono text-accent-emerald mt-2">权重: 30% ｜ 热切待命: 42ms</div>
+                                    <span class="tag">BACKUP</span>
                                 </div>
-                                <span class="text-[10px] bg-accent-emerald/20 text-accent-emerald px-2 py-0.5 rounded">BACKUP</span>
+                                <p class="text-[11px] text-slate-500">极速低延迟与多模态灾备模型</p>
+                                <div class="text-[11px] font-mono text-accent-emerald mt-2">权重 30% ｜ 热切待命 42ms</div>
                             </div>
                         </div>
 
                         <!-- 容灾演练控制台 -->
-                        <div class="p-5 rounded-xl bg-dark-900 border border-dark-border space-y-4">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <div class="font-bold text-sm text-white flex items-center">
-                                        <i class="fas fa-triangle-exclamation text-accent-amber mr-2"></i>
+                        <div class="p-4 rounded-lg bg-dark-900 border border-dark-border space-y-3">
+                            <div class="flex items-center justify-between gap-3 flex-wrap">
+                                <div class="min-w-0">
+                                    <div class="text-[13px] text-slate-100 font-medium flex items-center gap-2">
+                                        <i class="fas fa-triangle-exclamation text-accent-amber text-xs"></i>
                                         高可用容灾演练控制器
                                     </div>
-                                    <p class="text-xs text-slate-400 mt-0.5">模拟主节点 504 Gateway Timeout，触发网关断路器（Circuit Breaker）毫秒级自动热切</p>
+                                    <p class="text-[11px] text-slate-500 mt-0.5">模拟主节点故障，触发网关断路器（Circuit Breaker）毫秒级自动热切</p>
                                 </div>
-                                <button onclick="triggerQuickFailover()" class="px-4 py-2 rounded-xl bg-accent-rose/20 text-accent-rose hover:bg-accent-rose/30 border border-accent-rose/40 text-xs font-bold transition-colors">
-                                    <i class="fas fa-bug mr-1.5"></i> 注入主线路宕机故障
+                                <button onclick="triggerQuickFailover()" class="btn-ghost px-3.5 py-2 rounded-md text-[11px] border-accent-rose/30 text-accent-rose hover:bg-accent-rose/10 flex-shrink-0">
+                                    注入主线路故障
                                 </button>
                             </div>
 
                             <!-- 热切执行日志 -->
-                            <div id="failover-log-box" class="p-3 rounded-lg bg-dark-800 text-xs font-mono text-slate-400 space-y-1 border border-dark-border">
+                            <div id="failover-log-box" class="p-3 rounded-lg bg-dark-900 text-[11px] font-mono text-slate-500 space-y-1 border border-dark-border">
                                 <div>[GATEWAY] 路由心跳检测正常。主节点响应率 99.98%。</div>
                             </div>
                         </div>
                     </div>
 
                     <!-- 右侧：虚拟 Key 与 MCP 工具协议 -->
-                    <div class="lg:col-span-4 glass-card rounded-2xl p-6 border border-dark-border space-y-4">
-                        <div class="font-bold text-white text-sm flex items-center pb-2 border-b border-dark-border">
-                            <i class="fas fa-key text-accent-purple mr-2"></i> 虚拟 API Key 配额池
+                    <div class="lg:col-span-4 glass-card p-5 space-y-4">
+                        <div class="text-[13px] text-slate-100 font-medium flex items-center gap-2 pb-2 border-b border-dark-border">
+                            <i class="fas fa-key text-accent-sand text-xs"></i> 虚拟 API Key 配额池
                         </div>
-                        <div class="space-y-2.5 text-xs font-mono">
-                            <div class="p-2.5 rounded-lg bg-dark-700/60 flex justify-between items-center border border-dark-border">
+                        <div class="space-y-2 text-[11px] font-mono">
+                            <div class="px-3 py-2 rounded-lg bg-dark-900 flex justify-between items-center border border-dark-border">
                                 <div>
-                                    <span class="text-slate-300">sk-omni-prod-***</span>
-                                    <div class="text-[10px] text-slate-500 font-sans">电商业务组</div>
+                                    <span class="text-slate-400">sk-omni-prod-***</span>
+                                    <div class="text-[10px] text-slate-600 font-sans">电商业务组</div>
                                 </div>
-                                <span class="text-accent-emerald">82% 额度</span>
+                                <span class="text-accent-emerald">82%</span>
                             </div>
-                            <div class="p-2.5 rounded-lg bg-dark-700/60 flex justify-between items-center border border-dark-border">
+                            <div class="px-3 py-2 rounded-lg bg-dark-900 flex justify-between items-center border border-dark-border">
                                 <div>
-                                    <span class="text-slate-300">sk-omni-mkt-***</span>
-                                    <div class="text-[10px] text-slate-500 font-sans">爆款营销工场</div>
+                                    <span class="text-slate-400">sk-omni-mkt-***</span>
+                                    <div class="text-[10px] text-slate-600 font-sans">爆款营销工场</div>
                                 </div>
-                                <span class="text-accent-cyan">94% 额度</span>
+                                <span class="text-accent-gold">94%</span>
                             </div>
                         </div>
 
-                        <div class="font-bold text-white text-sm flex items-center pt-3 pb-2 border-b border-dark-border">
-                            <i class="fas fa-puzzle-piece text-accent-emerald mr-2"></i> MCP 工具协议挂载
+                        <div class="text-[13px] text-slate-100 font-medium flex items-center gap-2 pt-3 pb-2 border-b border-dark-border">
+                            <i class="fas fa-puzzle-piece text-accent-emerald text-xs"></i> MCP 工具协议挂载
                         </div>
-                        <div class="text-xs text-slate-400 space-y-1.5">
-                            <div class="flex items-center"><i class="fas fa-check text-accent-emerald mr-2 text-[10px]"></i> tools.query_products (商品检索)</div>
-                            <div class="flex items-center"><i class="fas fa-check text-accent-emerald mr-2 text-[10px]"></i> tools.get_coupons (满减券查询)</div>
-                            <div class="flex items-center"><i class="fas fa-check text-accent-emerald mr-2 text-[10px]"></i> tools.text_to_sql (DuckDB OLAP)</div>
+                        <div class="text-[11px] text-slate-500 space-y-1.5 font-mono">
+                            <div class="flex items-center gap-2"><span class="text-accent-emerald">✓</span> tools.query_products</div>
+                            <div class="flex items-center gap-2"><span class="text-accent-emerald">✓</span> tools.get_coupons</div>
+                            <div class="flex items-center gap-2"><span class="text-accent-emerald">✓</span> tools.text_to_sql</div>
                         </div>
                     </div>
                 </div>
@@ -1009,39 +974,39 @@
             <!-- ------------------------------------------------------------- -->
             <!-- TAB 6: 知识库检索 (RAG) -->
             <!-- ------------------------------------------------------------- -->
-            <div id="tab-rag" class="tab-content hidden space-y-6">
-                <div class="glass-card rounded-2xl p-6 border border-dark-border space-y-5">
+            <div id="tab-rag" class="tab-content hidden space-y-5">
+                <div class="glass-card p-5 space-y-4">
                     <div class="flex items-center justify-between pb-3 border-b border-dark-border">
-                        <div class="flex items-center space-x-2">
-                            <i class="fas fa-book-bookmark text-pink-400 text-base"></i>
-                            <h3 class="font-bold text-white text-base">企业级行业知识切片与双路检索</h3>
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-book-bookmark text-accent-sand text-sm"></i>
+                            <h3 class="font-semibold text-white text-sm">行业知识切片与双路检索</h3>
                         </div>
-                        <span class="text-xs text-slate-400">BM25 关键词匹配 + 向量相似度重排 (RRF)</span>
+                        <span class="tag">BM25 + 向量重排 RRF</span>
                     </div>
 
-                    <div class="flex space-x-3">
-                        <input id="rag-input" type="text" value="莫桑石日常佩戴会褪色或磨损吗？" class="flex-1 bg-dark-900 border border-dark-border rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-pink-500" />
-                        <button onclick="handleRagSearch()" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 to-rose-600 text-white font-bold text-sm hover:opacity-90 transition-opacity">
-                            <i class="fas fa-search mr-1.5"></i> 检索双路召回切片
+                    <div class="flex gap-2.5">
+                        <input id="rag-input" type="text" value="莫桑石日常佩戴会褪色或磨损吗？" class="flex-1 bg-dark-900 border border-dark-border rounded-lg px-4 py-2.5 text-[13px] text-white focus:outline-none" />
+                        <button onclick="handleRagSearch()" class="btn-primary px-5 py-2.5 rounded-lg text-[13px]">
+                            检索切片
                         </button>
                     </div>
 
-                    <div id="rag-results" class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                        <div class="p-4 rounded-xl bg-dark-700/50 border border-dark-border space-y-2">
-                            <div class="flex justify-between items-center text-xs">
-                                <span class="font-bold text-white">切片 #381：莫桑钻硬度与物理耐久性</span>
-                                <span class="font-mono text-accent-emerald bg-emerald-500/10 px-2 py-0.5 rounded">置信度: 0.942</span>
+                    <div id="rag-results" class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+                        <div class="p-3.5 rounded-lg bg-dark-900 border border-dark-border space-y-1.5">
+                            <div class="flex justify-between items-center text-[11px]">
+                                <span class="text-slate-200 font-medium">切片 #381 · 莫桑钻硬度与物理耐久性</span>
+                                <span class="font-mono text-accent-emerald">0.942</span>
                             </div>
-                            <p class="text-xs text-slate-300 leading-relaxed">
-                                莫桑石（碳化硅）莫氏硬度为 9.25，仅次于天然钻石（10）。日常正常佩戴下，不会发生任何划伤、磨损或氧化褪色现象，其光学色散值高达 0.104，折射率稳定持久。
+                            <p class="text-[12px] text-slate-400 leading-relaxed">
+                                莫桑石（碳化硅）莫氏硬度为 9.25，仅次于天然钻石（10）。日常正常佩戴下不会发生划伤、磨损或氧化褪色，其光学色散值高达 0.104，折射率稳定持久。
                             </p>
                         </div>
-                        <div class="p-4 rounded-xl bg-dark-700/50 border border-dark-border space-y-2">
-                            <div class="flex justify-between items-center text-xs">
-                                <span class="font-bold text-white">切片 #119：和田碧玉原矿老料鉴别规范</span>
-                                <span class="font-mono text-accent-cyan bg-cyan-500/10 px-2 py-0.5 rounded">置信度: 0.887</span>
+                        <div class="p-3.5 rounded-lg bg-dark-900 border border-dark-border space-y-1.5">
+                            <div class="flex justify-between items-center text-[11px]">
+                                <span class="text-slate-200 font-medium">切片 #119 · 和田碧玉原矿老料鉴别规范</span>
+                                <span class="font-mono text-accent-gold">0.887</span>
                             </div>
-                            <p class="text-xs text-slate-300 leading-relaxed">
+                            <p class="text-[12px] text-slate-400 leading-relaxed">
                                 新疆且末与青海老料在强光透射下呈现致密毡状交织结构，油脂光泽感强，黑点分布均匀自然。琼华每一件出库碧玉饰品均经 NGTC 国家级宝玉石质检机构一物一证检验。
                             </p>
                         </div>
@@ -1052,64 +1017,61 @@
             <!-- ------------------------------------------------------------- -->
             <!-- TAB 7: 历史趋势与回放 (History) —— 2.2 新增 -->
             <!-- ------------------------------------------------------------- -->
-            <div id="tab-history" class="tab-content hidden space-y-6">
+            <div id="tab-history" class="tab-content hidden space-y-5">
                 <!-- 工具栏：时间范围 + 数据来源标注 -->
-                <div class="glass-card rounded-2xl p-4 border border-dark-border flex items-center justify-between flex-wrap gap-3">
-                    <div class="flex items-center space-x-2">
-                        <i class="fas fa-clock-rotate-left text-accent-cyan"></i>
-                        <h3 class="font-bold text-white text-base">服务可用性与延迟趋势</h3>
-                        <span class="text-xs text-slate-500">由共享巡检器每 3s 探测并落盘 SQLite（本机 data/omni_history.db）</span>
+                <div class="glass-card px-4 py-3 flex items-center justify-between flex-wrap gap-3">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <i class="fas fa-clock-rotate-left text-accent-gold text-sm"></i>
+                        <h3 class="font-semibold text-white text-sm">服务可用性与延迟趋势</h3>
+                        <span class="text-[11px] text-slate-600 hidden sm:inline">共享巡检器每 3s 探测并落盘 SQLite</span>
                     </div>
-                    <div class="flex items-center space-x-2">
-                        <span class="text-xs text-slate-500">时间窗口：</span>
+                    <div class="flex items-center gap-2">
                         <div class="flex rounded-lg overflow-hidden border border-dark-border">
-                            <button onclick="setHistoryRange(30, this)" id="hist-range-30" class="hist-range-btn px-3 py-1.5 text-xs font-medium bg-accent-blue/20 text-accent-cyan">30 分钟</button>
-                            <button onclick="setHistoryRange(120, this)" id="hist-range-120" class="hist-range-btn px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-white border-l border-dark-border">2 小时</button>
-                            <button onclick="setHistoryRange(480, this)" id="hist-range-480" class="hist-range-btn px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-white border-l border-dark-border">8 小时</button>
+                            <button onclick="setHistoryRange(30, this)" id="hist-range-30" class="hist-range-btn px-3 py-1.5 text-[11px] text-slate-400 hover:text-white bg-accent-gold/10 text-accent-gold">30 分钟</button>
+                            <button onclick="setHistoryRange(120, this)" id="hist-range-120" class="hist-range-btn px-3 py-1.5 text-[11px] text-slate-400 hover:text-white border-l border-dark-border">2 小时</button>
+                            <button onclick="setHistoryRange(480, this)" id="hist-range-480" class="hist-range-btn px-3 py-1.5 text-[11px] text-slate-400 hover:text-white border-l border-dark-border">8 小时</button>
                         </div>
-                        <span id="history-source-badge" class="text-[11px] font-mono px-2 py-1 rounded-full border border-dark-border bg-dark-700 text-slate-400">加载中…</span>
+                        <span id="history-source-badge" class="text-[11px] font-mono px-2 py-1 rounded-md border border-dark-border bg-dark-900 text-slate-500">加载中</span>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
                     <!-- 在线率阶梯图 -->
-                    <div class="glass-card rounded-2xl p-5 border border-dark-border">
+                    <div class="glass-card p-4">
                         <div class="flex items-center justify-between mb-3">
-                            <div class="flex items-center space-x-2">
-                                <i class="fas fa-heart-pulse text-accent-emerald"></i>
-                                <h4 class="font-bold text-white text-sm">各服务在线率（窗口内聚合，%）</h4>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-heart-pulse text-accent-emerald text-xs"></i>
+                                <h4 class="text-slate-200 text-[13px] font-medium">各服务在线率（窗口内聚合 %）</h4>
                             </div>
-                            <span class="text-[11px] text-slate-500 font-mono">0 = 离线窗口</span>
+                            <span class="text-[10px] text-slate-600 font-mono">0 = 离线窗口</span>
                         </div>
                         <div class="h-64"><canvas id="history-uptime-canvas"></canvas></div>
                     </div>
 
                     <!-- 探测延迟图 -->
-                    <div class="glass-card rounded-2xl p-5 border border-dark-border">
+                    <div class="glass-card p-4">
                         <div class="flex items-center justify-between mb-3">
-                            <div class="flex items-center space-x-2">
-                                <i class="fas fa-stopwatch text-accent-amber"></i>
-                                <h4 class="font-bold text-white text-sm">TCP 探测延迟（ms，本机回环）</h4>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-stopwatch text-accent-amber text-xs"></i>
+                                <h4 class="text-slate-200 text-[13px] font-medium">TCP 探测延迟（ms 本机回环）</h4>
                             </div>
-                            <span class="text-[11px] text-slate-500 font-mono">实测值，非预设</span>
+                            <span class="text-[10px] text-slate-600 font-mono">实测值，非预设</span>
                         </div>
                         <div class="h-64"><canvas id="history-latency-canvas"></canvas></div>
                     </div>
                 </div>
 
                 <!-- 事件回放 -->
-                <div class="glass-card rounded-2xl p-5 border border-dark-border">
+                <div class="glass-card p-4">
                     <div class="flex items-center justify-between mb-3">
-                        <div class="flex items-center space-x-2">
-                            <i class="fas fa-receipt text-accent-purple"></i>
-                            <h4 class="font-bold text-white text-sm">历史事件回放（最近 60 条，倒序）</h4>
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-receipt text-accent-sand text-xs"></i>
+                            <h4 class="text-slate-200 text-[13px] font-medium">历史事件回放（最近 60 条，倒序）</h4>
                         </div>
-                        <button onclick="loadHistory(currentHistoryRange)" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-dark-700 hover:bg-dark-600 border border-dark-border text-slate-300">
-                            <i class="fas fa-rotate-right mr-1"></i>刷新
-                        </button>
+                        <button onclick="loadHistory(currentHistoryRange)" class="btn-ghost px-2.5 py-1 rounded-md text-[11px]">刷新</button>
                     </div>
-                    <div id="history-event-list" class="bg-dark-900 rounded-xl p-3 font-mono text-xs overflow-y-auto space-y-1.5 border border-dark-border max-h-72">
-                        <div class="text-slate-600">加载中…</div>
+                    <div id="history-event-list" class="bg-dark-900 rounded-lg p-3 font-mono text-[11px] overflow-y-auto space-y-1.5 border border-dark-border max-h-72">
+                        <div class="text-slate-700">加载中</div>
                     </div>
                 </div>
             </div>
@@ -1125,13 +1087,13 @@
         // Tab 切换控制器
         // -------------------------------------------------------------
         const TAB_TITLES = {
-            'overview': '<i class="fas fa-layer-group text-accent-cyan mr-2.5"></i> 全域智能体调度总览大盘',
-            'guide': '<i class="fas fa-store text-accent-purple mr-2.5"></i> 垂直电商智能导购工作站',
+            'overview': '<i class="fas fa-layer-group text-accent-gold mr-2.5"></i> 全域智能体调度总览大盘',
+            'guide': '<i class="fas fa-store text-accent-sand mr-2.5"></i> 垂直电商智能导购工作站',
             'marketing': '<i class="fas fa-wand-magic-sparkles text-accent-amber mr-2.5"></i> 多平台爆款营销工场',
             'analytics': '<i class="fas fa-chart-pie text-accent-emerald mr-2.5"></i> 智能数据分析与商业洞察',
-            'gateway': '<i class="fas fa-shield-halved text-accent-blue mr-2.5"></i> 模型调度网关与容灾中枢',
-            'rag': '<i class="fas fa-database text-pink-400 mr-2.5"></i> 企业级行业知识库与向量检索',
-            'history': '<i class="fas fa-clock-rotate-left text-accent-cyan mr-2.5"></i> 历史趋势与事件回放'
+            'gateway': '<i class="fas fa-shield-halved text-accent-steel mr-2.5"></i> 模型调度网关与容灾中枢',
+            'rag': '<i class="fas fa-database text-accent-sand mr-2.5"></i> 企业级行业知识库与向量检索',
+            'history': '<i class="fas fa-clock-rotate-left text-accent-gold mr-2.5"></i> 历史趋势与事件回放'
         };
 
         function switchTab(tabId) {
@@ -1140,14 +1102,10 @@
             const target = document.getElementById('tab-' + tabId);
             if (target) target.classList.remove('hidden');
 
-            // 更新侧边栏高亮
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.className = "nav-btn w-full flex items-center px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white hover:bg-dark-700";
-            });
+            // 更新侧边栏高亮（类名必须与模板里的导航按钮一致，见 NAV_BASE / NAV_ACTIVE）
+            document.querySelectorAll('.nav-btn').forEach(btn => { btn.className = NAV_BASE; });
             const activeBtn = document.getElementById('nav-' + tabId);
-            if (activeBtn) {
-                activeBtn.className = "nav-btn w-full flex items-center px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all text-white bg-accent-blue/15 border border-accent-blue/30 text-accent-cyan";
-            }
+            if (activeBtn) activeBtn.className = NAV_ACTIVE;
 
             // 更新顶部标题
             document.getElementById('page-title').innerHTML = TAB_TITLES[tabId] || 'OmniAgent 控制中心';
@@ -1161,6 +1119,14 @@
                 setTimeout(loadHistory, 60);
             }
         }
+
+        // 导航按钮类名常量：模板与切换逻辑共用一份，避免两处漂移
+        const NAV_BASE = "nav-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] text-slate-400 hover:text-slate-100 transition-colors";
+        const NAV_ACTIVE = "nav-btn nav-active w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] text-slate-400 hover:text-slate-100 transition-colors";
+
+        // 窄屏抽屉导航：仅 <1024px 生效（样式见 CSS 的 @media）
+        function toggleSidebar() { document.body.classList.toggle('sidebar-open'); }
+        function closeSidebarOnMobile() { document.body.classList.remove('sidebar-open'); }
 
         // -------------------------------------------------------------
         // 服务起停管控（2.2）：二次确认 + 真实 API 调用 + 结果反馈
@@ -1176,10 +1142,10 @@
                 document.body.appendChild(host);
             }
             const colors = {
-                ok: '#10b981', err: '#f43f5e', warn: '#f59e0b', info: '#06b6d4'
+                ok: '#4CD08D', err: '#E66868', warn: '#E2A83D', info: '#7FA3C8'
             };
             const div = document.createElement('div');
-            div.style.cssText = 'padding:10px 16px;border-radius:12px;font-size:13px;line-height:1.5;color:#e2e8f0;background:rgba(13,19,34,.96);border:1px solid ' + (colors[level] || colors.info) + '66;box-shadow:0 4px 24px rgba(0,0,0,.4);';
+            div.style.cssText = 'padding:10px 16px;border-radius:8px;font-size:13px;line-height:1.5;color:#D8D8E0;background:rgba(16,16,21,.97);border:1px solid ' + (colors[level] || colors.info) + '55;box-shadow:0 8px 28px rgba(0,0,0,.5);';
             div.innerHTML = msg;
             host.appendChild(div);
             setTimeout(() => div.remove(), 5200);
@@ -1228,15 +1194,16 @@
         let currentHistoryRange = 30;
         let _uptimeChart = null;
         let _latencyChart = null;
-        const HISTORY_COLORS = ['#06b6d4', '#8b5cf6', '#f59e0b', '#10b981', '#f43f5e', '#3b82f6', '#ec4899'];
+        // 图表系列配色：与设计系统一致（金 / 钢蓝 / 沙 / 绿 / 红），不再用霓虹色系
+        const HISTORY_COLORS = ['#D9B36A', '#7FA3C8', '#C9B896', '#4CD08D', '#E66868', '#8E8E9A', '#E2A83D'];
 
         function setHistoryRange(minutes, btn) {
             currentHistoryRange = minutes;
             document.querySelectorAll('.hist-range-btn').forEach(b => {
-                b.className = 'hist-range-btn px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-white'
+                b.className = 'hist-range-btn px-3 py-1.5 text-[11px] text-slate-400 hover:text-white'
                     + (b === btn.previousElementSibling || b.nextElementSibling === btn ? ' border-l border-dark-border' : '');
             });
-            btn.className = 'hist-range-btn px-3 py-1.5 text-xs font-medium bg-accent-blue/20 text-accent-cyan';
+            btn.className = 'hist-range-btn px-3 py-1.5 text-[11px] text-accent-gold bg-accent-gold/10';
             loadHistory();
         }
 
@@ -1266,7 +1233,7 @@
                         evList.innerHTML = evData.events.map(ev => {
                             const c = ev.level === 'ok' ? 'text-accent-emerald' : (ev.level === 'err' ? 'text-rose-400' : (ev.level === 'warn' ? 'text-accent-amber' : 'text-slate-400'));
                             return '<div class="flex gap-2"><span class="text-slate-600 shrink-0">[' + (ev.ts || '') + ']</span>' +
-                                   '<span class="text-accent-cyan shrink-0 w-24">[' + (ev.tag || '') + ']</span>' +
+                                   '<span class="text-accent-gold shrink-0 w-24">[' + (ev.tag || '') + ']</span>' +
                                    '<span class="' + c + '">' + escapeHtml(ev.msg || '') + '</span></div>';
                         }).join('');
                     }
@@ -1301,10 +1268,10 @@
 
             const baseOpts = (yTitle) => ({
                 responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
-                plugins: { legend: { labels: { color: '#94a3b8', boxWidth: 10, font: { size: 10 } } } },
+                plugins: { legend: { labels: { color: '#8E8E9A', boxWidth: 10, font: { size: 10 } } } },
                 scales: {
-                    x: { ticks: { color: '#64748b', maxTicksLimit: 8, font: { size: 10 } }, grid: { color: 'rgba(35,48,77,.4)' } },
-                    y: { ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: 'rgba(35,48,77,.4)' }, title: { display: true, text: yTitle, color: '#64748b', font: { size: 10 } } }
+                    x: { ticks: { color: '#5C5C68', maxTicksLimit: 8, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,.05)' } },
+                    y: { ticks: { color: '#5C5C68', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,.05)' }, title: { display: true, text: yTitle, color: '#5C5C68', font: { size: 10 } } }
                 }
             });
 
@@ -1346,12 +1313,12 @@
         function appendUserMessage(msg) {
             const container = document.getElementById('guide-messages');
             const div = document.createElement('div');
-            div.className = "flex items-start justify-end space-x-3";
+            div.className = "flex items-start justify-end gap-3";
             div.innerHTML = `
-                <div class="p-3.5 rounded-2xl rounded-tr-none bg-accent-purple text-white text-sm max-w-[80%] leading-relaxed shadow-md">
+                <div class="rounded-xl rounded-tr-sm bg-accent-sand text-dark-900 text-[13px] px-4 py-2.5 max-w-[80%] leading-relaxed">
                     ${escapeHtml(msg)}
                 </div>
-                <div class="w-8 h-8 rounded-lg bg-accent-purple/30 text-white flex items-center justify-center text-sm flex-shrink-0">
+                <div class="w-7 h-7 rounded-md bg-dark-700 text-slate-400 flex items-center justify-center text-[11px] flex-shrink-0 mt-0.5">
                     <i class="fas fa-user"></i>
                 </div>
             `;
@@ -1362,12 +1329,12 @@
         function appendAgentMessage(reply) {
             const container = document.getElementById('guide-messages');
             const div = document.createElement('div');
-            div.className = "flex items-start space-x-3";
+            div.className = "flex items-start gap-3";
             div.innerHTML = `
-                <div class="w-8 h-8 rounded-lg bg-accent-purple/20 text-accent-purple flex items-center justify-center text-sm flex-shrink-0">
+                <div class="w-7 h-7 rounded-md bg-accent-sand/15 text-accent-sand flex items-center justify-center text-[11px] flex-shrink-0 mt-0.5">
                     <i class="fas fa-robot"></i>
                 </div>
-                <div class="p-4 rounded-2xl rounded-tl-none bg-dark-700 border border-dark-border text-sm leading-relaxed max-w-[85%] text-slate-200">
+                <div class="rounded-xl rounded-tl-sm bg-dark-700 border border-dark-border text-[13px] leading-relaxed px-4 py-3 max-w-[85%] text-slate-300">
                     ${reply.replace(/\n/g, '<br>')}
                 </div>
             `;
@@ -1386,7 +1353,7 @@
                 (data.trace || []).forEach(step => {
                     const stepDiv = document.createElement('div');
                     const isRetry = step.status === 'retry';
-                    stepDiv.className = `p-3 rounded-xl ${isRetry ? 'bg-amber-500/10 border border-amber-500/30' : 'bg-dark-700/40 border border-dark-border'} text-xs`;
+                    stepDiv.className = `px-3 py-2.5 rounded-lg ${isRetry ? 'bg-accent-amber/10 border border-accent-amber/30' : 'bg-dark-700/40 border border-dark-border'} text-[11px]`;
                     stepDiv.innerHTML = `
                         <div class="flex items-center justify-between font-mono mb-1">
                             <span class="${isRetry ? 'text-amber-400 font-bold' : 'text-slate-300'}">${step.node}</span>
@@ -1427,11 +1394,11 @@
 
         function clearGuideChat() {
             document.getElementById('guide-messages').innerHTML = `
-                <div class="flex items-start space-x-3">
-                    <div class="w-8 h-8 rounded-lg bg-accent-purple/20 text-accent-purple flex items-center justify-center text-sm flex-shrink-0">
+                <div class="flex items-start gap-3">
+                    <div class="w-7 h-7 rounded-md bg-accent-sand/15 text-accent-sand flex items-center justify-center text-[11px] flex-shrink-0 mt-0.5">
                         <i class="fas fa-robot"></i>
                     </div>
-                    <div class="p-4 rounded-2xl rounded-tl-none bg-dark-700 border border-dark-border text-sm leading-relaxed max-w-[85%]">
+                    <div class="rounded-xl rounded-tl-sm bg-dark-700 border border-dark-border text-[13px] leading-relaxed px-4 py-3 max-w-[85%]">
                         会话已清空，小琼随时为您服务！
                     </div>
                 </div>
@@ -1461,8 +1428,8 @@
                     let html = '<div class="space-y-2">';
                     data.compliance.violations.forEach(v => {
                         html += `
-                            <div class="p-2.5 rounded bg-rose-500/15 border border-rose-500/30 text-rose-300">
-                                <span class="font-bold">❌ 检出违禁词【${v.word}】：</span>${v.reason}
+                            <div class="p-2.5 rounded-lg bg-accent-rose/10 border border-accent-rose/30 text-accent-rose">
+                                <span class="font-semibold">检出违禁词【${v.word}】：</span>${v.reason}
                                 <div class="text-slate-400 mt-1">推荐合规改写：<span class="text-accent-emerald font-semibold">${v.suggest}</span></div>
                             </div>
                         `;
@@ -1477,14 +1444,14 @@
                     `;
                 }
             } catch (err) {
-                alert('文案生成服务调用失败');
+                showToast('<b>文案生成失败</b>：服务未响应，已保留上次结果。', 'err');
             }
         }
 
         function copyMarketingContent() {
             const text = document.getElementById('mkt-result-body').innerText;
             navigator.clipboard.writeText(text);
-            alert('营销文案已成功复制到剪贴板！');
+            showToast('营销文案已复制到剪贴板', 'ok');
         }
 
         // -------------------------------------------------------------
@@ -1511,24 +1478,24 @@
                         label: '成交额 (元)',
                         data: currentChartData.data,
                         backgroundColor: isPie ? [
-                            'rgba(6, 182, 212, 0.75)',
-                            'rgba(59, 130, 246, 0.75)',
-                            'rgba(139, 92, 246, 0.75)'
-                        ] : 'rgba(16, 185, 129, 0.75)',
-                        borderColor: isPie ? '#070b14' : '#10b981',
-                        borderWidth: 1.5,
-                        borderRadius: 8
+                            'rgba(217, 179, 106, 0.85)',
+                            'rgba(127, 163, 200, 0.85)',
+                            'rgba(201, 184, 150, 0.85)'
+                        ] : 'rgba(217, 179, 106, 0.8)',
+                        borderColor: isPie ? '#101015' : 'rgba(217, 179, 106, 0.9)',
+                        borderWidth: 1,
+                        borderRadius: 4
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { display: isPie, labels: { color: '#cbd5e1' } }
+                        legend: { display: isPie, labels: { color: '#8E8E9A', boxWidth: 10, font: { size: 11 } } }
                     },
                     scales: isPie ? {} : {
-                        y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(51, 65, 85, 0.3)' } },
-                        x: { ticks: { color: '#94a3b8' }, grid: { display: false } }
+                        y: { ticks: { color: '#5C5C68' }, grid: { color: 'rgba(255,255,255,.05)' } },
+                        x: { ticks: { color: '#5C5C68' }, grid: { display: false } }
                     }
                 }
             });
@@ -1548,7 +1515,7 @@
                 currentChartData = data.chart;
                 renderAnalyticsChart();
             } catch (err) {
-                alert('数据查询解析失败');
+                showToast('<b>查询解析失败</b>：换一种问法再试试。', 'err');
             }
         }
 
@@ -1589,7 +1556,7 @@
                 <div class="text-slate-500">${f(t1)} 场景「${escapeHtml(scenName)}」· ${data.simulated ? '仿真注入' : '真实故障'}，向 ${escapeHtml(data.primary_model || '上游主模型')} 发起请求...</div>
                 <div class="text-rose-400">${f(t2)} ⚠️ ${escapeHtml(data.primary_status)}</div>
                 <div class="text-amber-300">${f(t2)} ↳ ${escapeHtml(data.primary_detail || '')}</div>
-                <div class="text-accent-cyan">${f(t2)} ⚡ ${escapeHtml(data.event)}：转派至 ${escapeHtml(data.failover_model)}</div>
+                <div class="text-accent-gold">${f(t2)} ⚡ ${escapeHtml(data.event)}：转派至 ${escapeHtml(data.failover_model)}</div>
                 <div class="text-accent-emerald">${f(t2)} ✅ ${escapeHtml(data.failover_status)}，实测切换 ${data.switch_latency_ms}ms，业务端 0 报错！</div>
                 <div class="text-slate-500 border-t border-dark-border mt-1 pt-1">${escapeHtml(data.log_entry || '')}（token 样例 ${data.token_usage ? data.token_usage.prompt + '+' + data.token_usage.completion : '-'}，${escapeHtml(data.token_usage_note || '')}）</div>
             `;
@@ -1660,7 +1627,7 @@
                 if (query.indexOf(k) >= 0 && text.indexOf(k) >= 0) hits.add(k);
             }));
             hits.forEach(k => {
-                html = html.split(escapeHtml(k)).join('<mark class="bg-pink-500/30 text-pink-300 rounded px-0.5">' + escapeHtml(k) + '</mark>');
+                html = html.split(escapeHtml(k)).join('<mark class="bg-accent-gold/25 text-accent-gold rounded px-0.5">' + escapeHtml(k) + '</mark>');
             });
             return html;
         }
@@ -1678,12 +1645,12 @@
 
             if (!scored.length) {
                 container.innerHTML = `
-                    <div class="p-4 rounded-xl bg-dark-700/50 border border-amber-500/30 space-y-2 md:col-span-2">
-                        <div class="flex justify-between items-center text-xs">
-                            <span class="font-bold text-amber-300">未检索到强相关切片</span>
-                            <span class="font-mono text-slate-500">扫描 ${KB_SLICES.length} 条 · ${ms}ms</span>
+                    <div class="p-4 rounded-lg bg-dark-900 border border-accent-amber/30 space-y-1.5 md:col-span-2">
+                        <div class="flex justify-between items-center text-[11px]">
+                            <span class="text-accent-amber font-medium">未检索到强相关切片</span>
+                            <span class="font-mono text-slate-600">扫描 ${KB_SLICES.length} 条 · ${ms}ms</span>
                         </div>
-                        <p class="text-xs text-slate-300 leading-relaxed">
+                        <p class="text-[12px] text-slate-400 leading-relaxed">
                             知识库（${KB_SLICES.length} 条切片）中没有与「${escapeHtml(q)}」直接相关的条目——宁可如实说没有，不硬凑结果。
                             建议换个问法试试：莫桑石 / 珍珠保养 / 和田玉产地 / 退换货 / 会员积分 / 平安扣寓意。
                         </p>
@@ -1693,14 +1660,14 @@
 
             const cards = scored.map((x, i) => {
                 const conf = Math.min(0.98, 0.72 + x.score * 0.03).toFixed(3);
-                const colors = ['text-accent-emerald bg-emerald-500/10', 'text-accent-cyan bg-cyan-500/10', 'text-accent-purple bg-purple-500/10'];
+                const colors = ['text-accent-emerald', 'text-accent-gold', 'text-accent-sand'];
                 return `
-                <div class="p-4 rounded-xl bg-dark-700/50 border border-dark-border space-y-2">
-                    <div class="flex justify-between items-center text-xs">
-                        <span class="font-bold text-white">切片 #${x.s.id}：${escapeHtml(x.s.title)}</span>
-                        <span class="font-mono ${colors[i] || colors[0]} px-2 py-0.5 rounded">置信度: ${conf}</span>
+                <div class="p-3.5 rounded-lg bg-dark-900 border border-dark-border space-y-1.5">
+                    <div class="flex justify-between items-center text-[11px]">
+                        <span class="text-slate-200 font-medium">切片 #${x.s.id} · ${escapeHtml(x.s.title)}</span>
+                        <span class="font-mono ${colors[i] || colors[0]}">${conf}</span>
                     </div>
-                    <p class="text-xs text-slate-300 leading-relaxed">${kbHighlight(x.s.text, q)}</p>
+                    <p class="text-[12px] text-slate-400 leading-relaxed">${kbHighlight(x.s.text, q)}</p>
                 </div>`;
             }).join('');
             container.innerHTML = `
@@ -1718,9 +1685,9 @@
         // ---- 中枢事件总线：渲染 + 模式角标 ----
         const EV_LEVEL_CLS = { ok: 'text-accent-emerald', warn: 'text-accent-amber', err: 'text-rose-400', info: 'text-slate-400' };
         const EV_TAG_CLS = {
-            MASTER: 'text-accent-cyan', GATEWAY: 'text-accent-blue', HEALTH: 'text-accent-emerald',
-            ANALYTICS: 'text-accent-emerald', RAG: 'text-accent-purple', 'ECOM-AGENT': 'text-accent-purple',
-            MARKETING: 'text-accent-amber', COLLECTOR: 'text-accent-cyan', FUNCLIP: 'text-accent-purple'
+            MASTER: 'text-accent-gold', GATEWAY: 'text-accent-steel', HEALTH: 'text-accent-emerald',
+            ANALYTICS: 'text-accent-emerald', RAG: 'text-accent-sand', 'ECOM-AGENT': 'text-accent-sand',
+            MARKETING: 'text-accent-amber', COLLECTOR: 'text-accent-gold', FUNCLIP: 'text-accent-sand'
         };
         const EV_MAX_LINES = 80;
 
@@ -1735,7 +1702,7 @@
             const line = document.createElement('div');
             line.className = 'text-slate-500 leading-relaxed';
             line.innerHTML = '[' + escapeHtml(ev.ts || '') + '] '
-                + '<span class="' + (EV_TAG_CLS[tag] || 'text-accent-purple') + '">[' + escapeHtml(tag) + ']</span> '
+                + '<span class="' + (EV_TAG_CLS[tag] || 'text-accent-sand') + '">[' + escapeHtml(tag) + ']</span> '
                 + '<span class="' + (EV_LEVEL_CLS[ev.level] || 'text-slate-400') + '">' + escapeHtml(ev.msg || '') + '</span>';
             box.appendChild(line);
             while (box.children.length > EV_MAX_LINES) box.removeChild(box.firstChild);
@@ -1746,11 +1713,11 @@
             const el = document.getElementById('event-bus-mode');
             if (!el) return;
             if (mode === 'live') {
-                el.className = 'text-[11px] font-mono text-accent-emerald terminal-glow';
-                el.innerHTML = '<i class="fas fa-circle text-[7px] mr-1"></i>LIVE · 真实端口探测';
+                el.className = 'text-[10px] font-mono text-accent-emerald';
+                el.textContent = 'LIVE · 真实端口探测';
             } else if (mode === 'sample') {
-                el.className = 'text-[11px] font-mono text-accent-amber';
-                el.innerHTML = '<i class="fas fa-circle text-[7px] mr-1"></i>示例事件流 · 无后端';
+                el.className = 'text-[10px] font-mono text-accent-amber';
+                el.textContent = '示例事件流 · 无后端';
             }
         }
 
@@ -1765,8 +1732,8 @@
             // 运行时模式角标：连得上本地后端 → 显示真实在线数；连不上 → 明确标注"静态演示模式"
             const badge = document.createElement('div');
             badge.id = 'runtime-mode-badge';
-            badge.className = 'flex items-center justify-center text-[11px] font-mono text-slate-500 bg-dark-700/60 border border-dark-border rounded-lg mx-3 mb-3 px-2.5 py-2';
-            badge.innerHTML = '<i class="fas fa-spinner fa-spin mr-1.5"></i>正在探测本地后端…';
+            badge.className = 'text-[10px] font-mono text-slate-600 px-3 pb-3';
+            badge.innerHTML = '正在探测本地后端…';
             const aside = document.querySelector('aside');
             if (aside) aside.appendChild(badge);
 
@@ -1774,11 +1741,11 @@
                 if (d && d.online_count !== undefined) {
                     const el = document.getElementById('stat-active');
                     if (el) el.innerText = d.online_count;
-                    badge.innerHTML = '<i class="fas fa-circle text-[7px] text-accent-emerald mr-1.5"></i>本地服务已连接 ' + d.online_count + '/' + d.total_count;
-                    badge.className = 'flex items-center justify-center text-[11px] font-mono text-accent-emerald bg-emerald-500/10 border border-emerald-500/30 rounded-lg mx-3 mb-3 px-2.5 py-2';
+                    badge.textContent = '已连接本地后端 · ' + d.online_count + '/' + d.total_count;
+                    badge.className = 'text-[10px] font-mono text-accent-emerald px-3 pb-3';
                 } else {
-                    badge.innerHTML = '<i class="fas fa-circle text-[7px] text-accent-amber mr-1.5"></i>静态演示模式 · 内置样例数据';
-                    badge.className = 'flex items-center justify-center text-[11px] font-mono text-accent-amber bg-amber-500/10 border border-amber-500/30 rounded-lg mx-3 mb-3 px-2.5 py-2';
+                    badge.textContent = '静态演示模式 · 内置样例数据';
+                    badge.className = 'text-[10px] font-mono text-accent-amber px-3 pb-3';
                 }
             });
         });

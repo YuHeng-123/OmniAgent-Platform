@@ -41,6 +41,10 @@ jobs:
       - name: Run pytest
         run: python -m pytest -q
 
+      # 纯静态分析：抓「按钮点了没反应」这类死接线（onclick 无实现 / OmniAPI 无方法 / id 悬空）
+      - name: Frontend wiring audit (static)
+        run: python tools/audit_frontend_wiring.py evidence/frontend-wiring.txt
+
       - name: Full offline selftest (real HTTP, 11 groups)
         run: python selftest_omni.py evidence/selftest-omni.txt
 

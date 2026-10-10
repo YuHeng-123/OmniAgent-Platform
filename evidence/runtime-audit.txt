@@ -1,0 +1,52 @@
+==========================================================================
+运行时端到端审计
+==========================================================================
+
+[0] 服务就绪 = ✅  http://127.0.0.1:8931
+
+[3] 未配置 start_cmd 的服务：ai-gateway, ecom-ai-guide, coze-material-studio, ai-data-analysis-assistant, ai-knowledge-assistant, data-automation-workbench, ark_aigc_demo（点启动会如实拒绝）
+
+[4] 演练对象：企业 AI 统一网关（:8000）
+    已拉起假监听进程 pid=14016
+    整条流共收到 10 条事件
+
+[7] SQLite 表：probes, events, sqlite_sequence
+    probes           301 行
+    events           19 行
+    sqlite_sequence  1 行
+
+==========================================================================
+明细：30 项检查
+  ✅ 服务在 30s 内就绪
+  ✅ GET / 返回 200
+  ✅ 首页含 nav-history
+  ✅ 首页含 tab-history
+  ✅ 首页含 history-uptime-canvas
+  ✅ 首页含 history-latency-canvas
+  ✅ 首页含 停止
+  ✅ 首页含 启动
+  ✅ 首页里没有未渲染的 Jinja 标记
+  ✅ /healthz 状态 ok
+  ✅ 版本与 APP_VERSION 一致
+  ✅ healthz 带巡检器信息
+  ✅ 能力表条数 == 服务数
+  ✅ can_start 如实反映 start_cmd
+  ✅ 同一条流上捕获到「上线」差异事件
+  ✅ stop 返回 stopped=True
+  ✅ stop 未把自己算进被杀 PID
+  ✅ 假监听进程真的被终止
+  ✅ 同一条流上捕获到「下线」差异事件
+  ✅ 下线事件是差异驱动（含「状态变化」字样）
+  ✅ history/probes source=sqlite-history
+  ✅ 该服务有历史点
+  ✅ events/recent 能回放
+  ✅ 回放含该端口的记录
+  ✅ 未知 API 返回 404 且带提示
+  ✅ favicon 可访问
+  ✅ SQLite 落盘文件存在
+  ✅ 表 probes 有数据
+  ✅ 表 events 有数据
+  ✅ 表 sqlite_sequence 有数据
+
+结论：PASS —— 起停真实生效、事件总线真的推了上下线、历史与回放真的落盘
+==========================================================================

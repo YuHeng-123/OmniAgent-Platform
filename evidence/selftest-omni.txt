@@ -42,7 +42,7 @@ HTTP 200, 110826 bytes
 ========================================================================
 backend      = fallback:local-demo
 model        = 本地规则引擎 (离线降级)
-latency_ms   = 353   (实测，不是写死的常数)
+latency_ms   = 355   (实测，不是写死的常数)
 trace 节点数 = 3
 reply 前 120 字 = 收到您的咨询！小琼随时在为您服务。琼华珠宝坚持选用天然玉石、优质珍珠与切工宝石，支持 7 天无理由退换及终身免费清洗保养。请问您今天想挑选哪类饰品？
 
@@ -88,7 +88,7 @@ Q: 近半年趋势
   "primary_status": "504 Gateway Timeout (Simulated)",
   "failover_model": "本地兜底规则引擎 (Mock Fallback)",
   "failover_status": "200 OK",
-  "switch_latency_ms": 53,
+  "switch_latency_ms": 49,
   "token_usage": {
     "prompt": 120,
     "completion": 310,
@@ -127,14 +127,14 @@ bytes                = 114754
 == [11] GET /api/v1/events/stream  中枢事件总线（SSE，真实端口探测驱动）
 ========================================================================
 HTTP 200   content-type = text/event-stream; charset=utf-8
-  [00:53:03] [MASTER     ] (info) 事件总线接入成功：本流由真实 TCP 端口探测驱动，每 3s 巡检一次，当前在线 0/7。
-  [00:53:03] [GATEWAY    ] (warn) 企业 AI 统一网关（:8000）未响应，标记为离线。
-  [00:53:03] [ECOM-AGENT ] (warn) 琼华珠宝 AI 智能导购（:8001）未响应，标记为离线。
-  [00:53:03] [MARKETING  ] (warn) 多平台爆款素材工作台（:8002）未响应，标记为离线。
-  [00:53:03] [ANALYTICS  ] (warn) AI 数据分析专家（:8510）未响应，标记为离线。
-  [00:53:03] [RAG        ] (warn) 企业级智能知识库 (RAG)（:8501）未响应，标记为离线。
-  [00:53:03] [COLLECTOR  ] (warn) 自动化情报抓取平台（:8765）未响应，标记为离线。
-  [00:53:03] [FUNCLIP    ] (warn) 多模态音视频智能体 (FunClip)（:7860）未响应，标记为离线。
+  [10:33:26] [MASTER     ] (info) 事件总线接入成功：本流由真实 TCP 端口探测驱动，每 3s 巡检一次，当前在线 0/7。
+  [10:33:26] [GATEWAY    ] (warn) 企业 AI 统一网关（:8000）未响应，标记为离线。
+  [10:33:26] [ECOM-AGENT ] (warn) 琼华珠宝 AI 智能导购（:8001）未响应，标记为离线。
+  [10:33:26] [MARKETING  ] (warn) 多平台爆款素材工作台（:8002）未响应，标记为离线。
+  [10:33:26] [ANALYTICS  ] (warn) AI 数据分析专家（:8510）未响应，标记为离线。
+  [10:33:26] [RAG        ] (warn) 企业级智能知识库 (RAG)（:8501）未响应，标记为离线。
+  [10:33:26] [COLLECTOR  ] (warn) 自动化情报抓取平台（:8765）未响应，标记为离线。
+  [10:33:26] [FUNCLIP    ] (warn) 多模态音视频智能体 (FunClip)（:7860）未响应，标记为离线。
 初始事件条数 = 8  (1 条接入说明 + 7 条服务就绪播报)
 docs 残留写死时间戳 19:15:02 = False  (应为 False)
 docs 含 startEvents 接线     = True  (应为 True)

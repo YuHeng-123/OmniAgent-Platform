@@ -30,19 +30,82 @@
 
   /* ---------- 内置演示逻辑：与 server.py 的行为保持一致 ---------- */
 
+  // 导购知识池（与 server.py GUIDE_PRODUCTS 镜像）
+  var GUIDE_PRODUCTS = [
+    { tag: '福禄双全', name: '【琼华·福禄双全】天然和田碧玉平安扣吊坠', price: 1680, list: 2399,
+      spec: '新疆且末老料，油润细腻，附国家级宝玉石质检证书',
+      fit: ['长辈', '妈妈', '婆婆', '平安', '玉'] },
+    { tag: '月满西楼', name: '【琼华·月满西楼】天然淡水无瑕珍珠项链', price: 1120, list: 1480,
+      spec: '8-9mm 微瑕近圆，正圆强光皮光极亮',
+      fit: ['长辈', '妈妈', '婆婆', '优雅', '珍珠', '通勤'] },
+    { tag: '星辰大海', name: '【琼华·星辰大海】D色莫桑钻经典六爪戒指', price: 699, list: 2999,
+      spec: 'D色/VVS1 切工，GRA 独立腰码证书，火彩直逼天然钻',
+      fit: ['女友', '老婆', '求婚', '结婚', '纪念', '戒指', '莫桑'] },
+    { tag: '竹报平安', name: '【琼华·竹报平安】天然和田玉青白玉竹节手串', price: 668, list: 880,
+      spec: '青白玉竹节雕工，15颗均色，弹力绳双层打结',
+      fit: ['自己', '手串', '日常', '玉'] },
+    { tag: '鸿运当头', name: '【琼华·鸿运当头】天然南红玛瑙平安无事牌', price: 968, list: 1280,
+      spec: '川料柿子红，满色满肉，牌形方正',
+      fit: ['爸爸', '男士', '本命年', '转运'] },
+    { tag: '映月', name: '【琼华·映月】925银镶和田玉小方牌项链', price: 359, list: 459,
+      spec: '入门款，青白玉小方牌+925银链，白领通勤首选',
+      fit: ['入门', '学生', '预算', '通勤', '项链'] },
+    { tag: '岁岁团圆', name: '【琼华·岁岁团圆】天然珍珠耳钉 7-8mm', price: 528, list: 680,
+      spec: '正圆强光，耳针925银，配防丢耳塞',
+      fit: ['女友', '老婆', '耳饰', '珍珠', '日常'] },
+    { tag: '金玉满堂', name: '【琼华·金玉满堂】足金镶嵌和田玉小吊坠', price: 1688, list: 1980,
+      spec: '足金镶口+和田青玉，金玉良缘的经典组合',
+      fit: ['金', '贵气', '婚嫁', '妈妈'] }
+  ];
+
+  function _pickGuideProducts(msg) {
+    var scored = [];
+    GUIDE_PRODUCTS.forEach(function (p) {
+      var s = 0;
+      p.fit.forEach(function (k) { if (msg.indexOf(k) >= 0) s++; });
+      if (s > 0) scored.push({ s: s, p: p });
+    });
+    scored.sort(function (a, b) { return b.s - a.s; });
+    if (scored.length) {
+      var top = scored[0].s;
+      return scored.filter(function (x) { return x.s === top; }).slice(0, 3).map(function (x) { return x.p; });
+    }
+    var m = msg.match(/(\d{3,5})/);
+    if (m) {
+      var budget = parseInt(m[1], 10);
+      var inRange = GUIDE_PRODUCTS.filter(function (p) { return p.price <= budget * 1.2; });
+      inRange.sort(function (a, b) { return b.price - a.price; });
+      if (inRange.length) return inRange.slice(0, 3);
+      return GUIDE_PRODUCTS.slice().sort(function (a, b) { return a.price - b.price; }).slice(0, 2);
+    }
+    return [];
+  }
+
+  function _recommendHit(msg) {
+    return ['推荐', '买', '送', '项链', '手串', '戒指', '玉', '翡翠', '看', '挑'].some(function (k) { return msg.indexOf(k) >= 0; });
+  }
+
   function localGuideChat(userMsg) {
     var msg = (userMsg || '').trim();
     var t0 = performance.now();
 
     var isCoupon = ['券', '优惠', '打折', '便宜', '省钱', '满减'].some(function (k) { return msg.indexOf(k) >= 0; });
-    var isRecommend = ['推荐', '买', '送', '项链', '手串', '戒指', '玉', '翡翠'].some(function (k) { return msg.indexOf(k) >= 0; });
     var isDiff = ['区别', '真假', '莫桑', '培育', '天然', '证书'].some(function (k) { return msg.indexOf(k) >= 0; });
+    var isAfterSales = ['退', '换', '售后', '保修', '维修', '断线', '坏'].some(function (k) { return msg.indexOf(k) >= 0; });
+    var isCare = ['保养', '清洗', '变黑', '氧化', '佩戴', '护理', '发干'].some(function (k) { return msg.indexOf(k) >= 0; });
+    var isCompare = ['哪个好', '比', 'vs', '选', '值得'].some(function (k) { return msg.indexOf(k) >= 0; }) && (msg.indexOf('玉') >= 0 || msg.indexOf('珍珠') >= 0);
+
+    var intentLabel = isCoupon ? 'COUPON_QUERY'
+      : isAfterSales ? 'AFTER_SALES'
+      : isCare ? 'CARE_GUIDE'
+      : isCompare ? 'MATERIAL_COMPARE'
+      : isDiff ? 'KNOWLEDGE_QA'
+      : (_recommendHit(msg) || _pickGuideProducts(msg).length) ? 'PRODUCT_RECOMMEND'
+      : 'KNOWLEDGE_QA';
 
     var steps = [
-      { node: '意图识别 (Router)', status: 'done',
-        detail: '分类为: ' + (isCoupon ? 'COUPON_QUERY' : (isRecommend ? 'PRODUCT_RECOMMEND' : 'KNOWLEDGE_QA')) },
-      { node: '向量库混合检索 (RAG)', status: 'done',
-        detail: '检索到 4 条高置信度知识切片，相似度最高 0.942' }
+      { node: '意图识别 (Router)', status: 'done', detail: '分类为: ' + intentLabel },
+      { node: '向量库混合检索 (RAG)', status: 'done', detail: '检索到 4 条高置信度知识切片，相似度最高 0.942' }
     ];
     var selfCorrected = false;
     var reply;
@@ -52,16 +115,48 @@
       steps.push({ node: '工具调用 (Tool Calling)', status: 'retry', detail: "调用 get_coupon('500元无门槛') 失败：券面额超出系统上限" });
       steps.push({ node: '⚡ 自动反思与自纠错 (Self-Correction)', status: 'done', detail: '触发纠错策略：自动降级检索最接近规则，回正为【满2000减200】与【新人50元立减】' });
       reply = '非常抱歉呀，小琼帮您查了一下，目前店内没有【500元无门槛券】哦～ 不过小琼为您申请到了当前最划算的组合：\n\n1. **新人专享礼**：满 300 减 50 元立减券；\n2. **珠宝品类大额券**：满 2000 减 200 元满减券！\n\n如果您今天选购【天然和田玉青海老料吊坠】（原价 ¥1,880），再凑单一个小银饰，即可直接立减 200 元，非常划算！需要我帮您锁定领券名额吗？';
-    } else if (isRecommend) {
-      steps.push({ node: '工具调用 (Tool Calling)', status: 'done', detail: "执行 query_products(category='jade', price_range=[1000, 2500])，命中 3 款商品" });
-      steps.push({ node: '决策合成 (Synthesis)', status: 'done', detail: '结合送礼/自戴场景，生成亲和力导购话术' });
-      reply = '为您精心挑选了店内两款口碑极高的送礼首选：\n\n🌟 **【琼华·福禄双全】天然和田碧玉平安扣吊坠**\n- 材质：新疆且末老料，油润细腻，附国家级宝玉石质检证书\n- 礼盒：配东方国风锦盒与特调沉香香片\n- 专柜价：¥2,399 ｜ **限时到手价：¥1,680**\n\n💍 **【琼华·月满西楼】天然淡水无瑕珍珠项链**\n- 规格：8-9mm 微瑕近圆，正圆强光皮光极亮\n- **专柜价：¥1,480 ｜ 限时活动价：¥1,120**\n\n两款都非常温润显气质，长辈收到都特别喜欢。您更偏好玉石的内敛还是珍珠的优雅呢？';
+    } else if (isCoupon) {
+      steps.push({ node: '工具调用 (Tool Calling)', status: 'done', detail: '执行 list_coupons(active=True)，返回 2 张可用券 + 1 条直播福袋规则' });
+      reply = '现在店内能叠的优惠小琼帮您理好了：\n\n1. **新人专享礼**：满 300 减 50 元立减券（下单页自动带出）；\n2. **珠宝品类大额券**：满 2000 减 200 元，玉石/珍珠通用；\n3. **私域暗号**：直播间蹲「整点福袋」，可抽 88 折码，与大额券二选一不叠加。\n\n搭配建议：选【映月】925银镶和田玉方牌（¥359）可直接用新人券；两件拼到 ¥2,000 用大额券最划算。需要我按您的预算配个组合吗？';
+    } else if (isAfterSales) {
+      steps.push({ node: '工具调用 (Tool Calling)', status: 'done', detail: '执行 query_after_sales_policy()，命中《售后服务手册 v3.2》4 条' });
+      reply = '小琼把售后政策给您讲清楚，放心买：\n\n1. **7 天无理由退换**：签收起 7 天内、吊牌完好的都可退换，店铺运费险已默认勾选；\n2. **1 年免费质保**：绳线老化、佩戴中断线，免费换新绳并重新手工编织；\n3. **终身免费养护**：清洗、抛光、换耳针，寄回或到店都行；\n4. **证书复验**：每件附国家级 CMA/CNAS 质检证书，支持任何权威机构复检，假一赔十。\n\n您是想办理退换，还是想给手上的宝贝做个养护？';
+    } else if (isCare) {
+      var pearl = msg.indexOf('珍珠') >= 0;
+      steps.push({ node: '知识检索 (RAG)', status: 'done', detail: '命中《珠宝养护百科》切片 #' + (pearl ? '117：珍珠（有机宝石）养护' : '092：和田玉日常养护') });
+      reply = pearl
+        ? '珍珠是有机宝石，比玉石更娇贵，记住「后戴先摘」四个字：\n\n1. 化妆、喷香水**之后**再戴——汗液与化妆品的酸碱会蚀损珍珠层；\n2. 回家卸妆**之前**先摘，用眼镜布这类软布干擦汗渍；\n3. 存放时平铺在绒布盒里，**别挂在钩上**（珠层怕拉丝）；\n4. 忌直接水洗——项链绳线遇水易松，脏了寄回，免费做超声波护理。'
+        : '玉石保养记住「三避一养」就够了：\n\n1. **避磕碰**：玉硬度高但脆，运动、健身、做家务建议取下；\n2. **避化学品**：香水、洗手液会慢慢蚀损光泽，护肤化妆完成后再佩戴；\n3. **避高温暴晒**：长期暴晒会让玉「失水」发干，洗澡温泉记得摘；\n4. **常佩戴是最好的养玉**：人体油脂让玉越来越温润，「人养玉三年，玉养人一生」。\n\n日常用软布蘸清水擦干即可，**忌超声波机洗**。到店可免费做一次深度养护～';
+    } else if (isCompare) {
+      steps.push({ node: '知识检索 (RAG)', status: 'done', detail: '命中珠宝百科切片 #402：《选品指南：玉石 vs 有机宝石》' });
+      reply = '很多顾客在玉和珍珠之间纠结，其实看场景就清楚了：\n\n- **送长辈、讲平安寓意** → 选玉。和田玉温润内敛，平安扣、无事牌都是经典；\n- **日常通勤、气质百搭** → 选珍珠。正圆强光最抬气色，衬衫针织全适配；\n- **预算 500-800** → 珍珠耳钉或玉手串最从容；**预算 1500+** → 碧玉吊坠、珍珠项链一步到位。\n\n当然不少老客是「左手玉、右手珠」都收 😊 您想先看哪一类？';
     } else if (isDiff) {
       steps.push({ node: '知识检索 (RAG)', status: 'done', detail: '命中珠宝百科知识切片 #381：《莫桑钻与天然钻石光学特质比对》' });
       reply = '这是很多顾客关心的专业问题，小琼为您通俗解答：\n\n1. **物理成分**：天然钻石是纯碳晶体（硬度10）；莫桑石是碳化硅（硬度9.25），硬度非常接近，日常佩戴不易磨损；\n2. **火彩表现**：莫桑钻的色散值（0.104）高于天然钻石，在阳光下火彩更耀眼；\n3. **品质与证书**：琼华选用的每一颗莫桑石均为 D色/VVS1 级切工，并配备 GRA 独立腰码证书，支持专业复检，请放心选购！';
     } else {
-      steps.push({ node: '语义理解', status: 'done', detail: '常规意图应答' });
-      reply = '收到您的咨询！小琼随时在为您服务。琼华珠宝坚持选用天然玉石、优质珍珠与切工宝石，支持 7 天无理由退换及终身免费清洗保养。请问您今天想挑选哪类饰品？';
+      var picks = _pickGuideProducts(msg);
+      if (picks.length) {
+        steps.push({ node: '工具调用 (Tool Calling)', status: 'done', detail: '执行 query_products(keywords="' + msg.slice(0, 12) + '")，命中 ' + picks.length + ' 款商品' });
+        steps.push({ node: '决策合成 (Synthesis)', status: 'done', detail: '结合送礼/自戴场景与预算，生成亲和力导购话术' });
+        var icons = ['🌟', '💍', '📿'];
+        var lines = ['按您提到的需求，小琼挑了这几款最合适的：', ''];
+        picks.forEach(function (p, i) {
+          lines.push(icons[i % icons.length] + ' **' + p.name + '**');
+          lines.push('- ' + p.spec);
+          lines.push('- 专柜价 ¥' + p.list.toLocaleString() + ' ｜ **限时到手价：¥' + p.price.toLocaleString() + '**');
+          lines.push('');
+        });
+        lines.push('您更中意哪一款？我可以帮您把参数、证书样张再展开讲讲～');
+        reply = lines.join('\n').replace(/\n+$/, '');
+      } else {
+        steps.push({ node: '语义理解', status: 'done', detail: '常规意图应答' });
+        var welcomePool = [
+          '收到您的咨询！小琼随时在为您服务。琼华珠宝坚持选用天然玉石、优质珍珠与切工宝石，支持 7 天无理由退换及终身免费清洗保养。请问您今天想挑选哪类饰品？',
+          '您好呀～小琼在的。无论想找送长辈的平安扣、送爱人的珍珠，还是日常戴的入门款，告诉我场合和预算，我来帮您配三套方案。也可以直接问我优惠、售后和保养～',
+          '欢迎光临琼华珠宝 🌸 小琼可以帮您：按预算选款、讲清证书与材质、查优惠组合、安排售后养护。您先说说想看哪一类？'
+        ];
+        reply = welcomePool[msg.length % welcomePool.length];
+      }
     }
 
     return Promise.resolve({
@@ -73,6 +168,45 @@
       latency_ms: Math.round(performance.now() - t0)
     });
   }
+
+  // 违禁词库（与 server.py BANNED_WORDS_DB 镜像，30 条，改动请两边同步）
+  var BANNED_WORDS_DB = [
+    // 《广告法》绝对化极限词
+    { word: '顶级', reason: '违反《新广告法》绝对化极限词', suggest: '高规格 / 典雅品质' },
+    { word: '第一', reason: '违反《新广告法》极限用语，禁止排他性宣传', suggest: '名列前茅 / 匠心之选' },
+    { word: '最好', reason: '违反《广告法》绝对化用语', suggest: '品质出众' },
+    { word: '最佳', reason: '违反《广告法》绝对化用语', suggest: '出色之选' },
+    { word: '最高级', reason: '《广告法》明令禁止用语', suggest: '高级感 / 轻奢质感' },
+    { word: '国家级', reason: '《广告法》禁止的无依据等级用语', suggest: '权威认证（附证书编号）' },
+    { word: '世界级', reason: '无依据的等级用语', suggest: '国际水准设计' },
+    { word: '绝无仅有', reason: '虚假夸大宣传', suggest: '稀有难得 / 珍藏款' },
+    { word: '全网唯一', reason: '不可证实的虚假陈述', suggest: '独具匠心 / 原创设计' },
+    { word: '全网最低', reason: '价格绝对化承诺，无法证实', suggest: '限时优惠价' },
+    { word: '销量第一', reason: '排他性数据宣传，需权威数据支撑', suggest: '热销口碑款' },
+    { word: '永久', reason: '绝对化承诺，不可证实', suggest: '长期有效' },
+    { word: '永远', reason: '绝对化承诺', suggest: '长久相伴' },
+    // 质量与承诺类
+    { word: '100%保真', reason: '金融担保类承诺，严禁绝对化承诺', suggest: '附权威质检证书 / 假一赔十' },
+    { word: '假一赔万', reason: '赔付承诺过度，超出可履行范围', suggest: '假一赔十（写入售后条款）' },
+    { word: '纯天然无添加', reason: '绝对化质量承诺', suggest: '天然原矿（附证书）' },
+    { word: '无效退款', reason: '功效类退款承诺', suggest: '不满意支持 7 天退换' },
+    { word: '稳赚', reason: '投资回报承诺，涉金融风险', suggest: '具有收藏价值' },
+    { word: '升值', reason: '投资收益承诺，不可证实', suggest: '具有收藏潜力' },
+    // 医疗 / 功效类
+    { word: '包治百病', reason: '医疗夸大功效违禁词', suggest: '温润养人 / 身心愉悦' },
+    { word: '抗衰老', reason: '医疗功效宣传，饰品不具备', suggest: '温润养人' },
+    { word: '立即见效', reason: '功效承诺', suggest: '佩戴体验佳' },
+    { word: '保平安', reason: '功效承诺（平台敏感词）', suggest: '平安寓意' },
+    // 封建迷信类（平台明令）
+    { word: '辟邪', reason: '封建迷信宣传，平台禁止', suggest: '祈福寓意' },
+    { word: '开光', reason: '封建迷信宣传，平台禁止', suggest: '祈愿主题设计' },
+    { word: '镇宅', reason: '封建迷信宣传', suggest: '居家陈设雅趣' },
+    { word: '招财', reason: '迷信功效宣传（部分平台禁）', suggest: '美好寓意' },
+    // 虚假渊源 / 出身类（珠宝行业高发）
+    { word: '祖传', reason: '虚构渊源宣传', suggest: '传统工艺' },
+    { word: '宫廷御用', reason: '虚假出身宣传', suggest: '宫廷风设计' },
+    { word: '包老', reason: '年代不可证实的宣传', suggest: '经典器形' }
+  ];
 
   function localMarketing(req) {
     var t0 = performance.now();
@@ -89,19 +223,19 @@
     } else {
       title = '【私域臻品】温润如玉，岁岁平安 —— ' + pname + '年度私享鉴赏';
       content = '尊敬的贵宾客户：\n\n玉能养人，亦能寄托心愿。琼华工坊历时三月精雕细琢，甄选上乘玉料，为您呈献本季限定之作 ——【' + pname + '】。\n\n· 原矿老料手工开相，触手温润如凝脂；\n· 搭配特制国风沉香礼盒，随礼赠定制保养真皮擦布；\n· VIP 私享专线特权，尊享终身免费复检与绳线焕新服务。\n\n愿此玉伴您与家人四季常安，福泽绵长。欢迎垂询您的专属珠宝顾问。';
+    } else if (platform === 'tmall') {
+      title = '【琼华甄选】' + pname + ' —— 一证一物，戴得放心';
+      content = '【商品亮点】\n· ' + ((req.selling_points || '').trim() || '原矿老料 · 手工精雕 · 一物一证') + '\n· 权威机构质检证书随货同行，支持任意权威机构复检\n\n【参数规格】\n· 材质：天然和田玉 / 淡水珍珠 / 莫桑石（按款）｜金属：S925 / 足金镶口\n· 赠品：东方国风锦盒 + 沉香香片 + 专业擦玉布 + 证书保护套\n\n【贴心服务】\n✓ 7 天无理由退换（吊牌完好），运费险默认赠送\n✓ 1 年免费换绳织补，终身免费清洗养护\n✓ 收货后 48 小时内发货，顺丰保价包邮\n\n【温馨提示】玉石色泽自然天成，同一块料不同光线下呈现略有差异，实物为准。';
+    } else if (platform === 'moments') {
+      title = '朋友圈日常分享 · ' + pname;
+      content = '老客都懂，一年就开两次的玉料 😊\n【' + pname + '】到货实拍，日光下没加滤镜。\n\n· 温润挂，上手比照片好看十倍\n· 证书齐全，支持复检（不接受验货可以退）\n· 这批只有 12 件，老规矩：老客优先，先到先挑\n\n私信我发细节图，暗号「看货」📖';
     }
 
-    var BANNED = [
-      { word: '顶级', reason: '违反《新广告法》绝对化极限词', suggest: '高规格 / 典雅品质' },
-      { word: '第一', reason: '违反《新广告法》极限用语，禁止排他性宣传', suggest: '名列前茅 / 匠心之选' },
-      { word: '绝无仅有', reason: '虚假夸大宣传', suggest: '稀有难得 / 珍藏款' },
-      { word: '全网唯一', reason: '不可证实的虚假陈述', suggest: '独具匠心 / 原创设计' },
-      { word: '100%保真', reason: '金融担保类承诺，严禁绝对化承诺', suggest: '附权威质检证书 / 假一赔十' },
-      { word: '包治百病', reason: '医疗夸大功效违禁词', suggest: '温润养人 / 身心愉悦' }
-    ];
     var kw = req.keywords || '';
-    var violations = BANNED.filter(function (b) { return pname.indexOf(b.word) >= 0 || kw.indexOf(b.word) >= 0; });
-    var score = Math.max(80, 100 - violations.length * 10);
+    // 质检对象 = 商品名 + 卖点 + 最终文案（与 server.py 行为一致，连模板一起查）
+    var hay = pname + '|' + kw + '|' + title + '|' + content;
+    var violations = BANNED_WORDS_DB.filter(function (b) { return hay.indexOf(b.word) >= 0; });
+    var score = Math.max(60, 100 - violations.length * 10);
 
     return Promise.resolve({
       title: title,
@@ -134,13 +268,78 @@
       chart = { type: 'pie', labels: ['微信私域', '抖音直播', '天猫旗舰'], data: [820000, 640000, 434200] };
       conclusion = '微信私域客单价最高（¥920/单），复购率达 34.6%，是高价值珠宝的核心出货阵地。';
       highlight = '高客单天然翡翠挂件';
+    } else if (q.indexOf('客单') >= 0 || q.indexOf('复购') >= 0) {
+      sql = 'SELECT channel AS 渠道, ROUND(AVG(amount),1) AS 客单价, ROUND(SUM(CASE WHEN is_repurchase=1 THEN 1 ELSE 0 END)*100.0/COUNT(*),1) AS 复购率 FROM orders GROUP BY channel;';
+      chart = { type: 'bar', labels: ['微信私域', '抖音直播', '天猫旗舰'], data: [920, 640, 588] };
+      conclusion = '私域客单价 ¥920、复购率 34.6% 双第一；直播间拉新强但留存弱（复购 22.1%），建议直播话术固定埋点「加企微领保养券」，把公域流量沉到私域。';
+      highlight = '私域专供高定款';
+    } else if (q.toLowerCase().indexOf('top') >= 0 || q.indexOf('最畅销') >= 0 || q.indexOf('爆款') >= 0 || q.indexOf('排行') >= 0) {
+      sql = 'SELECT product_name AS 商品, SUM(qty) AS 销量, SUM(amount) AS 销售额 FROM orders GROUP BY product_name ORDER BY 销售额 DESC LIMIT 5;';
+      chart = { type: 'bar', labels: ['碧玉平安扣', '莫桑六爪戒指', '珍珠项链', '竹节手串', '南红无事牌'], data: [186000, 152000, 141000, 96000, 88000] };
+      conclusion = '碧玉平安扣连续 3 个月销冠，是利润基本盘；莫桑戒指靠直播翻 2.4 倍但毛利偏低，定位引流款，不要占用核心玉石的推广预算。';
+      highlight = '天然和田碧玉平安扣';
+    } else if (q.indexOf('新客') >= 0 || q.indexOf('会员') >= 0 || q.indexOf('用户') >= 0) {
+      sql = "SELECT strftime('%Y-%m', first_order_date) AS 月份, COUNT(*) AS 新客数 FROM customers GROUP BY 1 ORDER BY 1 LIMIT 6;";
+      chart = { type: 'line', labels: ['5月', '6月', '7月', '8月', '9月', '10月'], data: [310, 345, 380, 412, 438, 465] };
+      conclusion = '新客月均增速 +8.4%，六成来自抖音直播间；会员复购贡献 41% GMV。建议把「新人 50 元券」与私域入会动作绑定，先入会再发券。';
+      highlight = '新人首单引流款';
+    } else if (q.indexOf('退货') >= 0 || q.indexOf('退款') >= 0 || q.indexOf('售后率') >= 0) {
+      sql = "SELECT category AS 品类, ROUND(SUM(CASE WHEN status='refunded' THEN 1 ELSE 0 END)*100.0/COUNT(*),2) AS 退款率 FROM orders GROUP BY category;";
+      chart = { type: 'bar', labels: ['莫桑钻饰品', '纯银手镯', '珍珠首饰', '天然玉石'], data: [8.2, 5.6, 4.1, 2.3] };
+      conclusion = '莫桑钻退款率 8.2% 最高，主因「火彩预期差」——详情页补实拍视频可压一半；玉石 2.3% 最低，品质信任度最高，可加大投放。';
+      highlight = '碧玉平安扣（低退款标杆）';
+    } else if (q.indexOf('环比') >= 0 || q.indexOf('增长') >= 0 || q.indexOf('趋势') >= 0) {
+      sql = "SELECT strftime('%Y-%m', order_date) AS 月份, SUM(amount) AS GMV, LAG(SUM(amount)) OVER (ORDER BY 1) AS 上月GMV FROM orders GROUP BY 1;";
+      chart = { type: 'line', labels: ['3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月'], data: [188000, 205000, 240000, 290000, 310000, 330000, 350000, 374200] };
+      conclusion = '环比连续 7 个月为正，Q3 月均环比 +9.7%；按当前斜率 Q4 首月可突破 ¥40 万。注意 10 月增速放缓到 +6.9%，需观察是否受大促透支影响。';
+      highlight = '天然和田玉青海老料吊坠';
     } else {
       sql = "SELECT strftime('%Y-%m', order_date) AS 月份, SUM(amount) AS GMV FROM orders GROUP BY 1 ORDER BY 1 LIMIT 6;";
       chart = { type: 'line', labels: ['5月', '6月', '7月', '8月', '9月', '10月'], data: [240000, 290000, 310000, 330000, 350000, 374200] };
-      conclusion = '近 6 个月业务呈现平稳增长态势，复合月环比增长率达到 9.2%，预计第四季度珠宝旺季有望突破 45 万月销大关。';
+      conclusion = '近 6 个月业务呈现平稳增长态势，复合月环比增长率达到 9.2%，预计第四季度珠宝旺季有望突破 45 万月销大关。试试问我：品类结构 / 渠道分布 / 客单价与复购 / 爆款排行 / 新客趋势 / 退款率 / 环比增长。';
       highlight = '天然和田玉青海老料吊坠';
     }
-    return Promise.resolve({ sql: sql, chart: chart, conclusion: conclusion, highlight_product: highlight, latency_ms: Math.round(performance.now() - t0) });
+    return Promise.resolve({ sql: sql, chart: chart, conclusion: conclusion, highlight_product: highlight, metrics_source: 'demo-sample', latency_ms: Math.round(performance.now() - t0) });
+  }
+
+  /* ---------- 网关容灾本地仿真：与 server.py FAILOVER_SCENARIOS 镜像，轮换逻辑一致 ---------- */
+  var FAILOVER_SCENARIOS = [
+    { scenario: 'upstream-timeout', event: 'CIRCUIT_BREAKER_TRIGGERED',
+      primary_status: '504 Gateway Timeout (Simulated)',
+      primary_detail: '上游主模型响应超时(>3000ms)，触发熔断阈值',
+      failover_model: '本地兜底规则引擎 (Mock Fallback)', failover_status: '200 OK',
+      switch_note: '热切至本地兜底规则引擎，业务无感重试成功' },
+    { scenario: 'rate-limit', event: 'RATE_LIMIT_SHIFT_TRIGGERED',
+      primary_status: '429 Too Many Requests (Simulated)',
+      primary_detail: '上游主模型触发 429 限流（令牌桶耗尽），进入冷却窗口',
+      failover_model: '备用线路 · 低配模型池 (Mock Backup Pool)', failover_status: '200 OK',
+      switch_note: '按预设权重把新请求分流至备用模型池，在途请求原样返回' },
+    { scenario: 'quality-degrade', event: 'QUALITY_DEGRADE_TRIGGERED',
+      primary_status: '200 OK but quality score < 0.6 (Simulated)',
+      primary_detail: '主模型返回 200 但输出质量评分跌破阈值（截断/乱码特征）',
+      failover_model: '备用线路 · 重试至主模型备份实例', failover_status: '200 OK (regenerated)',
+      switch_note: '静默重新生成一次并校验评分，通过后返回，用户端无感知' }
+  ];
+  var _failoverIdx = 0;
+
+  function localFailover() {
+    var t0 = performance.now();
+    var scen = FAILOVER_SCENARIOS[_failoverIdx % FAILOVER_SCENARIOS.length];
+    _failoverIdx += 1;
+    return Promise.resolve({
+      event: scen.event,
+      scenario: scen.scenario,
+      simulated: true,
+      primary_model: '上游主模型（仿真占位）',
+      primary_status: scen.primary_status,
+      primary_detail: scen.primary_detail,
+      failover_model: scen.failover_model,
+      failover_status: scen.failover_status,
+      switch_latency_ms: Math.max(40, Math.round(performance.now() - t0)),
+      token_usage: { prompt: 120, completion: 310, cost_usd: 0.00045 },
+      token_usage_note: '样例数值，非真实计费',
+      log_entry: '[FAILOVER-ALERT] ' + scen.primary_detail + '，' + scen.switch_note + '！'
+    });
   }
 
   /* ---------- 事件总线：真实 SSE 优先，失败降级为示例事件 ---------- */
@@ -151,7 +350,7 @@
     { tag: 'MASTER', level: 'info', msg: 'OmniAgent Platform 统一控制总线初始化完成。' },
     { tag: 'GATEWAY', level: 'info', msg: '流量总线接管，监听 127.0.0.1:8000。' },
     { tag: 'ECOM-AGENT', level: 'info', msg: '珠宝导购 LangGraph 状态机就绪，知识库向量切片预热。' },
-    { tag: 'MARKETING', level: 'warn', msg: 'Coze 工作流降级保护加载完成，违禁词库 114 词。' },
+    { tag: 'MARKETING', level: 'warn', msg: 'Coze 工作流降级保护加载完成，违禁词库 ' + BANNED_WORDS_DB.length + ' 词。' },
     { tag: 'ANALYTICS', level: 'info', msg: 'DuckDB 内存引擎就绪，挂载电商交易数据集 2,450 笔。' },
     { tag: 'HEALTH', level: 'ok', msg: '全局微服务健康巡检完成，核心业务全部响应。' }
   ];
@@ -267,6 +466,13 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query_text: queryText })
       }).catch(function () { return localAnalysis({ query_text: queryText }); });
+    },
+
+    /** 网关容灾仿真：优先走后端（三场景轮换），静态模式降级为本地仿真。
+     *  返回字段两种模式保持一致（scenario/event/primary_status/...）。 */
+    gatewayFailover: function () {
+      return apiCall('/api/v1/gateway/simulate_failover', { method: 'POST' })
+        .catch(function () { return localFailover(); });
     },
 
     /* ---------- 2.2 新增：服务起停管控 / 历史曲线 / 事件回放 ---------- */

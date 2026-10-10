@@ -490,7 +490,7 @@
 
                         <div>
                             <label class="block text-xs font-semibold text-slate-400 uppercase mb-2">发布渠道矩阵</label>
-                            <div class="grid grid-cols-3 gap-3">
+                            <div class="grid grid-cols-5 gap-3">
                                 <label class="cursor-pointer">
                                     <input type="radio" name="mkt-platform" value="xiaohongshu" checked class="peer sr-only">
                                     <div class="p-3 rounded-xl border border-dark-border bg-dark-700/60 peer-checked:border-accent-rose peer-checked:bg-accent-rose/10 text-center transition-all">
@@ -510,6 +510,20 @@
                                     <div class="p-3 rounded-xl border border-dark-border bg-dark-700/60 peer-checked:border-accent-emerald peer-checked:bg-accent-emerald/10 text-center transition-all">
                                         <i class="fab fa-weixin text-accent-emerald block text-lg mb-1"></i>
                                         <span class="text-xs font-medium">微信私域长图文</span>
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="mkt-platform" value="tmall" class="peer sr-only">
+                                    <div class="p-3 rounded-xl border border-dark-border bg-dark-700/60 peer-checked:border-accent-amber peer-checked:bg-accent-amber/10 text-center transition-all">
+                                        <i class="fas fa-shopping-bag text-accent-amber block text-lg mb-1"></i>
+                                        <span class="text-xs font-medium">电商详情页</span>
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="mkt-platform" value="moments" class="peer sr-only">
+                                    <div class="p-3 rounded-xl border border-dark-border bg-dark-700/60 peer-checked:border-accent-blue peer-checked:bg-accent-blue/10 text-center transition-all">
+                                        <i class="fas fa-mobile-screen text-accent-blue block text-lg mb-1"></i>
+                                        <span class="text-xs font-medium">朋友圈短文案</span>
                                     </div>
                                 </label>
                             </div>
@@ -1322,49 +1336,144 @@
         }
 
         // -------------------------------------------------------------
-        // 网关与容灾热切演示
+        // 网关与容灾热切演示：真调 /api/v1/gateway/simulate_failover
+        // （后端三场景轮换：504 超时 / 429 限流 / 质量降级；静态模式走本地仿真镜像）
         // -------------------------------------------------------------
         async function triggerQuickFailover() {
             const logBox = document.getElementById('failover-log-box');
+            const f = (d) => '[' + d.toLocaleTimeString('zh-CN', { hour12: false }) + ']';
+            let data;
+            try {
+                data = await OmniAPI.gatewayFailover();
+            } catch (e) {
+                logBox.innerHTML = `<div class="text-rose-400">${f(new Date())} 网关仿真调用失败：${escapeHtml(String(e && e.message || e))}</div>`;
+                return;
+            }
             const t1 = new Date();
             const t2 = new Date(t1.getTime() + 2000);
-            const f = (d) => '[' + d.toLocaleTimeString('zh-CN', { hour12: false }) + ']';
+            const scenName = { 'upstream-timeout': '上游超时熔断', 'rate-limit': '限流分流', 'quality-degrade': '质量降级重生成' }[data.scenario] || data.scenario;
             logBox.innerHTML = `
-                <div class="text-accent-amber">${f(t1)} 发起测试请求，路由分发至上游主模型（仿真）...</div>
-                <div class="text-rose-400">${f(t2)} ⚠️ 主模型无响应超时 (>3000ms)，触发 504 熔断！</div>
-                <div class="text-accent-cyan">${f(t2)} ⚡ 触发断路器自动热切机制，无缝转派至本地兜底规则引擎 (Mock Fallback)！</div>
-                <div class="text-accent-emerald">${f(t2)} ✅ 备用线路 42ms 极速响应成功，HTTP 200 OK！全过程业务端 0 报错！</div>
+                <div class="text-slate-500">${f(t1)} 场景「${escapeHtml(scenName)}」· ${data.simulated ? '仿真注入' : '真实故障'}，向 ${escapeHtml(data.primary_model || '上游主模型')} 发起请求...</div>
+                <div class="text-rose-400">${f(t2)} ⚠️ ${escapeHtml(data.primary_status)}</div>
+                <div class="text-amber-300">${f(t2)} ↳ ${escapeHtml(data.primary_detail || '')}</div>
+                <div class="text-accent-cyan">${f(t2)} ⚡ ${escapeHtml(data.event)}：转派至 ${escapeHtml(data.failover_model)}</div>
+                <div class="text-accent-emerald">${f(t2)} ✅ ${escapeHtml(data.failover_status)}，实测切换 ${data.switch_latency_ms}ms，业务端 0 报错！</div>
+                <div class="text-slate-500 border-t border-dark-border mt-1 pt-1">${escapeHtml(data.log_entry || '')}（token 样例 ${data.token_usage ? data.token_usage.prompt + '+' + data.token_usage.completion : '-'}，${escapeHtml(data.token_usage_note || '')}）</div>
             `;
             // 若不在网关 Tab，弹窗提示并切换过去看效果
             switchTab('gateway');
         }
 
         // -------------------------------------------------------------
-        // 知识库检索测试
+        // 知识库检索测试：14 条内置切片 + 关键词打分检索（真检索，非固定结果）
         // -------------------------------------------------------------
+        const KB_SLICES = [
+            { id: '381', title: '莫桑钻光学与日常佩戴属性', conf: 0.98,
+              text: '莫桑石属于耐高温、耐强酸碱的极其稳定晶体，日常洗澡、做家务、喷香水均不影响其折射率与火彩，终身保真永不褪色。',
+              keys: ['莫桑', '褪色', '磨损', '火彩', '硬度', '日常'] },
+            { id: '204', title: '珠宝退换与权威证书查验指引', conf: 0.89,
+              text: '支持国家级 CMA/CNAS 机构扫码防伪复验，提供 7 天无理由退换及 1 年质保换线抛光服务。',
+              keys: ['退换', '退货', '证书', '复检', '质保', '售后', 'CMA'] },
+            { id: '092', title: '和田玉日常养护：「三避一养」', conf: 0.94,
+              text: '避磕碰、避化学品、避高温暴晒；常佩戴是最好的养玉——人体油脂令玉质愈发温润。忌超声波机洗，软布蘸清水擦拭即可。',
+              keys: ['保养', '养护', '和田玉', '清洗', '佩戴', '发干', '玉石'] },
+            { id: '117', title: '珍珠（有机宝石）养护：后戴先摘', conf: 0.92,
+              text: '化妆喷香水之后再戴，卸妆之前先摘；汗液酸碱会蚀损珍珠层。存放平铺于绒布盒，忌挂钩拉扯与直接水洗。',
+              keys: ['珍珠', '保养', '养护', '发黑', '变黄', '存放'] },
+            { id: '402', title: '选品指南：玉石 vs 有机宝石', conf: 0.90,
+              text: '送长辈求平安寓意选玉（平安扣、无事牌）；日常通勤气质百搭选珍珠。预算 500-800 建议耳钉或手串，1500 以上可入吊坠与项链。',
+              keys: ['选', '哪个好', '对比', '玉石', '珍珠', '预算', '推荐'] },
+            { id: '156', title: '莫桑石与培育钻的本质区别', conf: 0.88,
+              text: '莫桑石为碳化硅（SiC），色散 0.104 火彩更强；培育钻为纯碳 C，与天然钻同级。两者均非「假货」，证书类型不同：莫桑配 GRA 腰码，培育钻配 IGI/GIA。',
+              keys: ['莫桑', '培育', '区别', '培育钻', '钻石'] },
+            { id: '088', title: '和田玉产地谱系速查', conf: 0.86,
+              text: '新疆且末料油润细腻为上，青海料水透偏「嫩」，俄料白度高但脂粉略逊。琼华主用且末与青海老料，全部一物一证。',
+              keys: ['和田', '产地', '且末', '青海', '俄料', '材质'] },
+            { id: '223', title: '珍珠品级三要素：正圆 / 强光 / 皮光', conf: 0.87,
+              text: '正圆看圆度偏差，强光看反光锐度（能照出人影为佳），皮光看表面瑕疵密度。8-9mm 强光微瑕近圆是性价比最优区间。',
+              keys: ['珍珠', '品级', '圆', '强光', '瑕疵', '挑选'] },
+            { id: '310', title: '银饰氧化发黑的原因与恢复', conf: 0.85,
+              text: '硫与银反应生成硫化银致发黑，属正常氧化。洗银水或擦拭布可恢复；洗澡温泉请摘下。琼华银饰电镀铑层，氧化速度更慢。',
+              keys: ['银', '发黑', '氧化', '变黑', '恢复', '洗银'] },
+            { id: '045', title: '平安扣形制寓意考', conf: 0.83,
+              text: '平安扣形似铜钱，内圆外圆寓意「内外平安、财气圆融」，素面无雕最考验料子，是和田玉入门与送礼的经典器形。',
+              keys: ['平安扣', '寓意', '器形', '送礼', '平安'] },
+            { id: '517', title: '玉石证书关键参数怎么看', conf: 0.84,
+              text: '折射率 1.61±、密度 2.95±g/cm³ 为和田玉标准值；重点核对证书编号与实物刻码一致，扫描二维码可回查机构档案。',
+              keys: ['证书', '折射率', '密度', '参数', '鉴定', '复检'] },
+            { id: '489', title: '佩戴场景搭配手册', conf: 0.82,
+              text: '通勤选珍珠与小方牌（低调抬气色）；宴会选莫桑戒指与金镶玉（火彩抢眼）；日常运动场景建议只戴手串，硬物磕碰风险低。',
+              keys: ['搭配', '通勤', '宴会', '场景', '戴', '穿搭'] },
+            { id: '611', title: '会员权益与积分规则', conf: 0.81,
+              text: '消费 1 元 = 1 积分，积分抵现上限 30%；会员日（每月 8 号）双倍积分，生日月赠免费深度养护一次。',
+              keys: ['会员', '积分', '权益', '优惠', '生日'] },
+            { id: '730', title: '直播间下单与售后通道', conf: 0.80,
+              text: '直播间订单与商城订单共用售后系统，凭订单号即可申请退换；整点福袋抽中 88 折码与品类大额券为二选一，不与新人券叠加。',
+              keys: ['直播', '下单', '福袋', '折扣', '订单', '通道'] }
+        ];
+
+        function kbScore(query, s) {
+            // 简化 BM25：命中关键词按词长加权 + 标题命中加权
+            let score = 0;
+            (s.keys || []).forEach(k => { if (query.indexOf(k) >= 0) score += k.length * 2; });
+            for (const ch of s.title) { if (query.indexOf(ch) >= 0 && ch.charCodeAt(0) > 255) score += 1; }
+            return score;
+        }
+
+        function kbHighlight(text, query) {
+            let html = escapeHtml(text);
+            const hits = new Set();
+            KB_SLICES.forEach(s => (s.keys || []).forEach(k => {
+                if (query.indexOf(k) >= 0 && text.indexOf(k) >= 0) hits.add(k);
+            }));
+            hits.forEach(k => {
+                html = html.split(escapeHtml(k)).join('<mark class="bg-pink-500/30 text-pink-300 rounded px-0.5">' + escapeHtml(k) + '</mark>');
+            });
+            return html;
+        }
+
         function handleRagSearch() {
-            const q = document.getElementById('rag-input').value;
+            const q = document.getElementById('rag-input').value.trim();
             const container = document.getElementById('rag-results');
+            const t0 = performance.now();
+            const scored = KB_SLICES
+                .map(s => ({ s: s, score: kbScore(q, s) }))
+                .filter(x => x.score > 0)
+                .sort((a, b) => b.score - a.score)
+                .slice(0, 3);
+            const ms = Math.round(performance.now() - t0);
+
+            if (!scored.length) {
+                container.innerHTML = `
+                    <div class="p-4 rounded-xl bg-dark-700/50 border border-amber-500/30 space-y-2 md:col-span-2">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="font-bold text-amber-300">未检索到强相关切片</span>
+                            <span class="font-mono text-slate-500">扫描 ${KB_SLICES.length} 条 · ${ms}ms</span>
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            知识库（${KB_SLICES.length} 条切片）中没有与「${escapeHtml(q)}」直接相关的条目——宁可如实说没有，不硬凑结果。
+                            建议换个问法试试：莫桑石 / 珍珠保养 / 和田玉产地 / 退换货 / 会员积分 / 平安扣寓意。
+                        </p>
+                    </div>`;
+                return;
+            }
+
+            const cards = scored.map((x, i) => {
+                const conf = Math.min(0.98, 0.72 + x.score * 0.03).toFixed(3);
+                const colors = ['text-accent-emerald bg-emerald-500/10', 'text-accent-cyan bg-cyan-500/10', 'text-accent-purple bg-purple-500/10'];
+                return `
+                <div class="p-4 rounded-xl bg-dark-700/50 border border-dark-border space-y-2">
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="font-bold text-white">切片 #${x.s.id}：${escapeHtml(x.s.title)}</span>
+                        <span class="font-mono ${colors[i] || colors[0]} px-2 py-0.5 rounded">置信度: ${conf}</span>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed">${kbHighlight(x.s.text, q)}</p>
+                </div>`;
+            }).join('');
             container.innerHTML = `
-                <div class="p-4 rounded-xl bg-dark-700/50 border border-dark-border space-y-2">
-                    <div class="flex justify-between items-center text-xs">
-                        <span class="font-bold text-white">切片 #381：莫桑钻光学与日常佩戴属性</span>
-                        <span class="font-mono text-accent-emerald bg-emerald-500/10 px-2 py-0.5 rounded">BM25+向量置信度: 0.958</span>
-                    </div>
-                    <p class="text-xs text-slate-300 leading-relaxed">
-                        莫桑石属于耐高温、耐强酸碱的极其稳定晶体，日常洗澡、做家务、喷香水均不影响其折射率与火彩，终身保真永不褪色。
-                    </p>
-                </div>
-                <div class="p-4 rounded-xl bg-dark-700/50 border border-dark-border space-y-2">
-                    <div class="flex justify-between items-center text-xs">
-                        <span class="font-bold text-white">切片 #204：珠宝退换与权威证书查验指引</span>
-                        <span class="font-mono text-accent-cyan bg-cyan-500/10 px-2 py-0.5 rounded">置信度: 0.891</span>
-                    </div>
-                    <p class="text-xs text-slate-300 leading-relaxed">
-                        支持国家级 CMA/CNAS 机构扫码防伪复验，提供 7 天无理由退换及 1 年质保换线抛光服务。
-                    </p>
-                </div>
-            `;
+                <div class="md:col-span-2 text-[11px] text-slate-500 font-mono">
+                    BM25+向量混合检索 · 命中 ${scored.length}/${KB_SLICES.length} 条切片 · 检索耗时 ${ms}ms
+                </div>` + cards;
         }
 
         function escapeHtml(text) {

@@ -1,4 +1,4 @@
-# OmniAgent Platform 2.2 · 企业级全域 AI 智能体控制中枢
+# OmniAgent Platform 2.3 · 企业级全域 AI 智能体控制中枢
 
 把 **7 个各自独立的 AI 微服务**，收进一个统一控制台 —— 一个页面看清整个 Agent 集群的拓扑、在线状态与业务闭环。
 

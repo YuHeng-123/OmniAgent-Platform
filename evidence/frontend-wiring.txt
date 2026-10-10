@@ -3,7 +3,7 @@
 ========================================================================
 
 [1] OmniAPI 调用 vs 实现
-    页面调用    : analysisQuery, controlService, fetchHistory, fetchRecentEvents, guideChat, marketingGenerate, probe, startEvents
+    页面调用    : analysisQuery, controlService, fetchHistory, fetchRecentEvents, gatewayFailover, guideChat, marketingGenerate, probe, startEvents
     缺失        : 无 ✅
 
 [2] getElementById 引用 vs 已定义 id（含动态创建）

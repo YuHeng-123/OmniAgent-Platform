@@ -5,12 +5,11 @@
 ![python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![frontend deps](https://img.shields.io/badge/frontend%20deps-100%25%20local-brightgreen)
 ![external CDN](https://img.shields.io/badge/external%20CDN-0-critical)
-![tests](https://img.shields.io/badge/pytest-51%20passed-brightgreen)
+![tests](https://img.shields.io/badge/pytest-65%20passed-brightgreen)
 ![license](https://img.shields.io/badge/license-MIT-blue)
 
-<!-- 推到 GitHub 后，把下面这行取消注释，并把 <你的用户名> 换成你的 GitHub 用户名，就有实时 CI 徽章了
-[![CI](https://github.com/<你的用户名>/OmniAgent-Platform/actions/workflows/ci.yml/badge.svg)](https://github.com/<你的用户名>/OmniAgent-Platform/actions/workflows/ci.yml)
--->
+[![CI](https://github.com/YuHeng-123/OmniAgent-Platform/actions/workflows/ci.yml/badge.svg)](https://github.com/YuHeng-123/OmniAgent-Platform/actions/workflows/ci.yml)
+<!-- ↑ 这个徽章在仓库推上 GitHub 后即显示真实 CI 状态；本地看 README 时它只是个占位图。 -->
 
 ![架构总览](assets/architecture.svg)
 
@@ -84,7 +83,7 @@ docker compose up --build      # 控制台起在 http://127.0.0.1:8888
 
 1. 把仓库推到 GitHub
 2. **Settings → Pages → Source: Deploy from a branch → Branch: `main` / 目录: `/docs`**
-3. 访问 `https://<你的用户名>.github.io/<仓库名>/`
+3. 访问 `https://YuHeng-123.github.io/OmniAgent-Platform/`
 
 > `docs/` 由 `build_docs.py` 生成，**不要手改**。改了 `templates/index.html` 或 `static/` 之后重跑：
 > ```bash
@@ -231,6 +230,38 @@ CI（`.github/workflows/ci.yml`）在每次 push / PR 上跑：ruff lint → pyt
 > 所以事件总线这块拆成两种测法：`build_initial_events` / `diff_events` 抽成纯函数直接断言；端到端则真起一个 uvicorn 线程（见 `tests/conftest.py`）。
 
 第 ② 层覆盖：主控台渲染 · 0 外部 CDN · 7 服务在线数 · 导购降级链路 · 自纠错链路 · 合规质检命中违禁词 · Text-to-SQL · 热切仿真 · docs 静态资源全部 200 · 静态化自检 · **SSE 事件总线首帧 8 条真实事件**。
+
+---
+
+## 现场演示：让「停服 → 3 秒内弹下线事件」真的跑起来
+
+这是全项目最有说服力的一个互动点。但 7 个微服务不在本仓库里 —— 不起它们时面板 7 张卡片全灰，
+按钮没有对象可按。仓库自带一个**明确标注为假**的监听工具专门解决这个：
+
+```bash
+# 1. 起控制台
+run.bat                                   # 或 ./run.sh
+
+# 2. 另开一个终端，用假监听占住 8002（素材工作台）
+.venv/Scripts/python tools/mock_service.py 8002
+
+# 3. 打开 http://127.0.0.1:8888 → 总览页「多平台爆款素材工作台」亮起绿点
+#    点那张卡片的「停止」→ 约 3 秒后右侧事件总线推出红色「状态变化：下线」
+#    再点「启动」→ 约 3 秒后推出绿色上线事件
+```
+
+> `tools/mock_service.py` 是个**真的 TCP 监听**（所以面板上的「端口在线」是真探测出来的），
+> 但它**不是业务服务** —— `/` 会如实返回 `{"mock": true}`。它存在的唯一目的，是让
+> 探测 → 状态翻转 → 差异事件广播 → 事件回放 这条链路可以完整演示一遍。
+
+想让「启动」按钮也能用（不必每次手动起监听），在 `services.yaml` 里给服务加上一行：
+
+```yaml
+start_cmd: ["python", "tools/mock_service.py", "8002", "--id", "coze-material-studio"]
+```
+
+`services.yaml` 里已经留了注释好的这一行，取消注释即可。没配 `start_cmd` 的服务，
+「启动」按钮会如实返回 `not-configured` —— 控制台不假装知道你没告诉过它的启动方式。
 
 ---
 

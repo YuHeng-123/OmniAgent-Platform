@@ -68,6 +68,13 @@ services:
     type: Business
     desc: Coze 工作流工程化封装，小红书/抖音营销图文生成与违禁词合规审查
     tech: Coze API + FastAPI + 正则分词
+    # 想让「启动」按钮有对象可按？取消下面两行注释即可启用一个演示目标
+    # （tools/mock_service.py 是【演示用假监听】，不是真实业务服务，
+    #   它只占住端口，好让起停联动与事件总线能完整演示）。
+    # 不配置时，启动按钮会如实返回 not-configured —— 控制台不假装知道
+    # 你没告诉过它的启动方式。
+    # start_cmd: ["python", "tools/mock_service.py", "8002", "--id", "coze-material-studio"]
+    # start_cwd: "."
 
   - id: ai-data-analysis-assistant
     name: AI 数据分析专家

@@ -4,7 +4,7 @@ FROM python:3.11-slim
 
 LABEL org.opencontainers.image.title="OmniAgent Platform Console"
 LABEL org.opencontainers.image.description="企业级全域 AI 智能体控制中枢（控制台 + 编排层）"
-LABEL org.opencontainers.image.source="https://github.com/<你的用户名>/OmniAgent-Platform"
+LABEL org.opencontainers.image.source="https://github.com/YuHeng-123/OmniAgent-Platform"
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \

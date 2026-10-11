@@ -1804,6 +1804,46 @@ async def control_capabilities():
     }
 
 
+@app.get("/api/v1/labs")
+async def labs_modules():
+    """返回从独立项目收编进中枢的 Labs 纵深模块列表与探测状态。"""
+    xhs_online = await is_port_online(8020, PROBE_TIMEOUT)
+    funclip_online = await is_port_online(7860, PROBE_TIMEOUT)
+    return {
+        "status": "ok",
+        "modules": [
+            {
+                "name": "labs/graph-xiaohongshu",
+                "title": "小红书营销流水线",
+                "probe_port": 8020,
+                "status": "online" if xhs_online else "offline",
+                "tech": ["LangGraph 1.0", "Postgres Checkpointer", "Vue3", "HITL人在环路"],
+                "highlights": [
+                    "基于 StateGraph 图编排的营销文案与图片全流程生成流水线",
+                    "内置 interrupt() 人在环路机制，支持人工审核修改与断点恢复",
+                    "生产级 PII 日志敏感信息脱敏与状态快照落库持久化",
+                ],
+                "note": "从独立小红书营销项目完整收编，支撑中枢的内容生产纵深",
+                "url": "https://github.com/YuHeng-123/OmniAgent-Platform/tree/main/labs/graph-xiaohongshu",
+            },
+            {
+                "name": "labs/funclip-studio",
+                "title": "多模态音视频智能体",
+                "probe_port": 7860,
+                "status": "online" if funclip_online else "offline",
+                "tech": ["FunASR", "PyTorch", "Gradio", "双语字幕"],
+                "highlights": [
+                    "阿里达摩院 FunASR 工业级语音识别与精准时间戳对齐",
+                    "热词感知、按说话人分段识别、视频智能自动化切片",
+                    "中枢统一工程化封装，Windows 跨进程稳定调度",
+                ],
+                "note": "从音视频裁剪独立项目收编，支撑中枢的多模态音视频纵深",
+                "url": "https://github.com/YuHeng-123/OmniAgent-Platform/tree/main/labs/funclip-studio",
+            },
+        ],
+    }
+
+
 def _service_or_404(service_id: str) -> Dict[str, Any]:
     meta = SERVICE_INDEX.get(service_id)
     if not meta:

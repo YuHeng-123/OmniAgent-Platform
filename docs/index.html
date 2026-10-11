@@ -325,6 +325,15 @@
                         <span class="ml-auto tag">SQLite</span>
                     </button>
                 </nav>
+
+                <div class="text-[10px] font-medium text-slate-600 px-3 mb-1.5 mt-6">纵深项目 (Labs)</div>
+                <nav class="space-y-0.5">
+                    <button onclick="switchTab('labs');closeSidebarOnMobile()" id="nav-labs" class="nav-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] text-slate-400 hover:text-slate-100 transition-colors">
+                        <i class="fas fa-flask w-4 text-center text-[12px] text-accent-gold"></i>
+                        <span>纵深收编矩阵</span>
+                        <span class="ml-auto tag tag-accent">2 项目</span>
+                    </button>
+                </nav>
             </div>
         </div>
 
@@ -738,7 +747,60 @@
                         <span class="tag">源码快照 · labs/</span>
                     </div>
                     <div id="labs-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                        <div class="text-[11px] text-slate-600">正在加载 Labs 模块索引…</div>
+                        <!-- Module 1: 小红书营销流水线 -->
+                        <div class="rounded-xl border border-dark-border bg-dark-900/50 p-4 hover:border-accent-emerald/40 transition-colors">
+                            <div class="flex items-center gap-2 mb-1.5">
+                                <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald flex-shrink-0"></span>
+                                <span class="text-[13px] text-slate-200 font-medium font-mono">labs/graph-xiaohongshu</span>
+                                <span class="tag flex-shrink-0">小红书营销流水线</span>
+                                <span class="ml-auto text-[11px] text-accent-emerald">冷备 · :8020</span>
+                            </div>
+                            <ul class="text-[11px] text-slate-400 leading-relaxed space-y-1 mt-2">
+                                <li class="flex gap-2"><span class="text-accent-gold mt-px">·</span><span>基于 LangGraph 1.0 StateGraph 营销文案与图片全流程生成</span></li>
+                                <li class="flex gap-2"><span class="text-accent-gold mt-px">·</span><span>内置 interrupt() 人在环路 (HITL) 人工审核修改与断点恢复</span></li>
+                                <li class="flex gap-2"><span class="text-accent-gold mt-px">·</span><span>生产级 PII 日志敏感信息脱敏与 Postgres Checkpointer 状态持久化</span></li>
+                            </ul>
+                            <div class="flex flex-wrap gap-1.5 mt-3">
+                                <span class="tag">LangGraph 1.0</span>
+                                <span class="tag">Postgres Checkpointer</span>
+                                <span class="tag">Vue3 SPA</span>
+                                <span class="tag">HITL人在环路</span>
+                            </div>
+                            <div class="flex items-center justify-between text-[10px] text-slate-500 mt-3 pt-2 border-t border-dark-border/60">
+                                <span>从独立小红书营销项目收编</span>
+                                <a href="https://github.com/YuHeng-123/OmniAgent-Platform/tree/main/labs/graph-xiaohongshu" target="_blank" class="text-accent-emerald hover:underline flex items-center gap-1 font-mono">
+                                    查看源码 <i class="fas fa-arrow-up-right-from-square text-[9px]"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Module 2: 多模态音视频智能体 -->
+                        <div class="rounded-xl border border-dark-border bg-dark-900/50 p-4 hover:border-accent-cyan/40 transition-colors">
+                            <div class="flex items-center gap-2 mb-1.5">
+                                <span class="w-1.5 h-1.5 rounded-full bg-accent-cyan flex-shrink-0"></span>
+                                <span class="text-[13px] text-slate-200 font-medium font-mono">labs/funclip-studio</span>
+                                <span class="tag flex-shrink-0">多模态音视频智能体</span>
+                                <span class="ml-auto text-[11px] text-accent-cyan">冷备 · :7860</span>
+                            </div>
+                            <ul class="text-[11px] text-slate-400 leading-relaxed space-y-1 mt-2">
+                                <li class="flex gap-2"><span class="text-accent-gold mt-px">·</span><span>阿里达摩院 FunASR 工业级语音识别与精准毫秒级时间戳对齐</span></li>
+                                <li class="flex gap-2"><span class="text-accent-gold mt-px">·</span><span>热词感知增强、按说话人分段识别、视频智能自动化切片</span></li>
+                                <li class="flex gap-2"><span class="text-accent-gold mt-px">·</span><span>中枢统一工程化封装，Windows 跨进程自动化调度与就绪探测</span></li>
+                            </ul>
+                            <div class="flex flex-wrap gap-1.5 mt-3">
+                                <span class="tag">FunASR</span>
+                                <span class="tag">PyTorch</span>
+                                <span class="tag">Gradio</span>
+                                <span class="tag">达摩院开源</span>
+                                <span class="tag">音视频切片</span>
+                            </div>
+                            <div class="flex items-center justify-between text-[10px] text-slate-500 mt-3 pt-2 border-t border-dark-border/60">
+                                <span>从音视频裁剪独立项目收编</span>
+                                <a href="https://github.com/YuHeng-123/OmniAgent-Platform/tree/main/labs/funclip-studio" target="_blank" class="text-accent-cyan hover:underline flex items-center gap-1 font-mono">
+                                    查看源码 <i class="fas fa-arrow-up-right-from-square text-[9px]"></i>
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1263,6 +1325,124 @@
                 </div>
             </div>
 
+            <!-- ------------------------------------------------------------- -->
+            <!-- TAB 8: Labs 纵深项目矩阵 (Deep Dive Modules) -->
+            <!-- ------------------------------------------------------------- -->
+            <div id="tab-labs" class="tab-content hidden space-y-6">
+                <div class="glass-card p-6">
+                    <div class="flex items-center justify-between pb-4 border-b border-dark-border mb-6">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl border border-accent-gold/40 bg-accent-gold/15 flex items-center justify-center text-accent-gold shadow-lg shadow-amber-950/30">
+                                <i class="fas fa-flask text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-white text-base">Labs · 收编进中枢的纵深项目矩阵</h3>
+                                <p class="text-[12px] text-slate-400 mt-0.5">中枢负责统一集群编排与全景监控，Labs 负责支撑垂直业务纵深的真实工业级 Agent 实现 —— 广度在控制台，深度在 Labs。</p>
+                            </div>
+                        </div>
+                        <span class="tag tag-accent text-xs">2 个完整独立项目收编</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Module 1: 小红书营销流水线 -->
+                        <div class="p-6 rounded-2xl border border-dark-border bg-dark-800/60 hover:border-accent-emerald/40 transition-colors flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center gap-2.5">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-accent-emerald animate-pulse"></span>
+                                        <span class="font-mono text-sm text-white font-semibold">labs/graph-xiaohongshu</span>
+                                    </div>
+                                    <span class="tag">端口 :8020 · Innovation</span>
+                                </div>
+                                <h4 class="text-base font-medium text-slate-100 mb-2">小红书全链路营销内容流水线</h4>
+                                <p class="text-[12px] text-slate-400 leading-relaxed mb-4">
+                                    从独立项目完整收编的现代多智能体内容工厂。基于 LangGraph 1.0 状态机编排，打通从「爆款选题」到「深度成文」再到「AI配图渲染」全流程。
+                                </p>
+                                <div class="space-y-2.5 mb-5 p-3.5 rounded-xl bg-dark-900/60 border border-dark-border/60">
+                                    <div class="text-[11px] font-mono text-slate-300 flex items-center gap-2">
+                                        <i class="fas fa-check text-accent-emerald"></i>
+                                        <span>StateGraph 图编排 + Subgraph 子图模块化分工</span>
+                                    </div>
+                                    <div class="text-[11px] font-mono text-slate-300 flex items-center gap-2">
+                                        <i class="fas fa-check text-accent-emerald"></i>
+                                        <span>内置 interrupt() 人在环路 (HITL)，支持运营人工审核与断点恢复</span>
+                                    </div>
+                                    <div class="text-[11px] font-mono text-slate-300 flex items-center gap-2">
+                                        <i class="fas fa-check text-accent-emerald"></i>
+                                        <span>Postgres Checkpointer 状态持久化 + PII 日志安全脱敏</span>
+                                    </div>
+                                    <div class="text-[11px] font-mono text-slate-300 flex items-center gap-2">
+                                        <i class="fas fa-check text-accent-emerald"></i>
+                                        <span>独立 Vue3 + Tailwind 前端工程与完整 JWT 认证体系</span>
+                                    </div>
+                                </div>
+                                <div class="flex flex-wrap gap-1.5 mb-4">
+                                    <span class="tag">LangGraph 1.0</span>
+                                    <span class="tag">Postgres Checkpointer</span>
+                                    <span class="tag">Vue3 SPA</span>
+                                    <span class="tag">FastAPI</span>
+                                    <span class="tag">HITL 人在环路</span>
+                                </div>
+                            </div>
+                            <div class="pt-4 border-t border-dark-border flex items-center justify-between text-[11px]">
+                                <span class="text-slate-500 font-mono">工作目录: labs/graph-xiaohongshu</span>
+                                <a href="https://github.com/YuHeng-123/OmniAgent-Platform/tree/main/labs/graph-xiaohongshu" target="_blank" class="text-accent-emerald hover:underline flex items-center gap-1.5 font-medium">
+                                    浏览源码仓库 <i class="fas fa-arrow-up-right-from-square text-[10px]"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Module 2: 多模态音视频智能体 -->
+                        <div class="p-6 rounded-2xl border border-dark-border bg-dark-800/60 hover:border-accent-cyan/40 transition-colors flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center gap-2.5">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-accent-cyan animate-pulse"></span>
+                                        <span class="font-mono text-sm text-white font-semibold">labs/funclip-studio</span>
+                                    </div>
+                                    <span class="tag">端口 :7860 · Innovation</span>
+                                </div>
+                                <h4 class="text-base font-medium text-slate-100 mb-2">多模态音视频智能体 (FunClip Studio)</h4>
+                                <p class="text-[12px] text-slate-400 leading-relaxed mb-4">
+                                    阿里达摩院 FunASR 工业级开源项目的 Windows 启停工程化深度封装。为电商珠宝直播提供音视频自动切片、热词识别与双语字幕合成。
+                                </p>
+                                <div class="space-y-2.5 mb-5 p-3.5 rounded-xl bg-dark-900/60 border border-dark-border/60">
+                                    <div class="text-[11px] font-mono text-slate-300 flex items-center gap-2">
+                                        <i class="fas fa-check text-accent-cyan"></i>
+                                        <span>达摩院 FunASR 工业级离线语音识别与精准毫秒级时间戳</span>
+                                    </div>
+                                    <div class="text-[11px] font-mono text-slate-300 flex items-center gap-2">
+                                        <i class="fas fa-check text-accent-cyan"></i>
+                                        <span>专业热词增强（珠宝专业术语识别率大幅提升）</span>
+                                    </div>
+                                    <div class="text-[11px] font-mono text-slate-300 flex items-center gap-2">
+                                        <i class="fas fa-check text-accent-cyan"></i>
+                                        <span>按说话人（Diarization）智能分段剪辑与 SRT/VTT 导出</span>
+                                    </div>
+                                    <div class="text-[11px] font-mono text-slate-300 flex items-center gap-2">
+                                        <i class="fas fa-check text-accent-cyan"></i>
+                                        <span>跨进程自动化拉起脚本（PowerShell/Batch）与健康探测</span>
+                                    </div>
+                                </div>
+                                <div class="flex flex-wrap gap-1.5 mb-4">
+                                    <span class="tag">FunASR</span>
+                                    <span class="tag">PyTorch</span>
+                                    <span class="tag">Gradio UI</span>
+                                    <span class="tag">达摩院开源</span>
+                                    <span class="tag">音视频切片</span>
+                                </div>
+                            </div>
+                            <div class="pt-4 border-t border-dark-border flex items-center justify-between text-[11px]">
+                                <span class="text-slate-500 font-mono">工作目录: labs/funclip-studio</span>
+                                <a href="https://github.com/YuHeng-123/OmniAgent-Platform/tree/main/labs/funclip-studio" target="_blank" class="text-accent-cyan hover:underline flex items-center gap-1.5 font-medium">
+                                    浏览源码仓库 <i class="fas fa-arrow-up-right-from-square text-[10px]"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </main>
 
@@ -1280,7 +1460,8 @@
             'analytics': '<i class="fas fa-chart-pie text-accent-emerald mr-2.5"></i> 智能数据分析与商业洞察',
             'gateway': '<i class="fas fa-shield-halved text-accent-cyan mr-2.5"></i> 模型调度网关与容灾中枢',
             'rag': '<i class="fas fa-database text-accent-cyan mr-2.5"></i> 企业级行业知识库与向量检索',
-            'history': '<i class="fas fa-clock-rotate-left text-accent-emerald mr-2.5"></i> 历史趋势与事件回放'
+            'history': '<i class="fas fa-clock-rotate-left text-accent-emerald mr-2.5"></i> 历史趋势与事件回放',
+            'labs': '<i class="fas fa-flask text-accent-gold mr-2.5"></i> Labs · 纵深项目收编矩阵'
         };
 
         function switchTab(tabId) {

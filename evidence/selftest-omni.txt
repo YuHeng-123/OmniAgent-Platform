@@ -10,7 +10,7 @@ docs/ 存在        = True
 ========================================================================
 == [1] GET /  主控台页面
 ========================================================================
-HTTP 200, 110826 bytes
+HTTP 200, 125390 bytes
 含 'OmniAgent'    = True
 含外部 CDN 引用   = False  (必须为 False，否则断网白屏)
 引用 ./static/    = True
@@ -21,7 +21,7 @@ HTTP 200, 110826 bytes
 {
   "status": "ok",
   "online_count": 0,
-  "total_count": 7,
+  "total_count": 8,
   "qps_24h": 3482,
   "total_tokens": "1.48M",
   "knowledge_hit_rate": "95.6%",
@@ -36,13 +36,14 @@ HTTP 200, 110826 bytes
   port 8501  offline   企业级智能知识库 (RAG)
   port 8765  offline   自动化情报抓取平台
   port 7860  offline   多模态音视频智能体 (FunClip)
+  port 8020  offline   小红书营销内容工厂 (Labs)
 
 ========================================================================
 == [3] POST /api/v1/guide/chat  导购：真上游优先，失败降级
 ========================================================================
 backend      = fallback:local-demo
 model        = 本地规则引擎 (离线降级)
-latency_ms   = 353   (实测，不是写死的常数)
+latency_ms   = 357   (实测，不是写死的常数)
 trace 节点数 = 3
 reply 前 120 字 = 收到您的咨询！小琼随时在为您服务。琼华珠宝坚持选用天然玉石、优质珍珠与切工宝石，支持 7 天无理由退换及终身免费清洗保养。请问您今天想挑选哪类饰品？
 
@@ -59,7 +60,7 @@ self_corrected = True
 == [5] POST /api/v1/marketing/generate  营销文案 + 合规质检
 ========================================================================
 title       = 一眼惊艳！被闺蜜追着要链接的【全网唯一顶级和田玉吊坠】到底有多绝✨
-compliance  = {"score": 80, "status": "WARNING", "violations": [{"word": "顶级", "reason": "违反《新广告法》绝对化极限词", "suggest": "高规格 / 典雅品质"}, {"word": "第一", "reason": "违反《新广告法》极限用语，禁止排他性宣传", "suggest": "名列前茅 / 匠心之选"}, {"word": "全网唯一", "reason": "不可证实的虚假陈述", "suggest": "独具匠心 / 原创设计"}], "suggestions": "注意避免使用绝对化形容词，建议采纳右侧替换建议。"}
+compliance  = {"score": 70, "status": "WARNING", "violations": [{"word": "顶级", "reason": "违反《新广告法》绝对化极限词", "suggest": "高规格 / 典雅品质"}, {"word": "第一", "reason": "违反《新广告法》极限用语，禁止排他性宣传", "suggest": "名列前茅 / 匠心之选"}, {"word": "全网唯一", "reason": "不可证实的虚假陈述", "suggest": "独具匠心 / 原创设计"}], "suggestions": "注意避免使用绝对化形容词，建议采纳右侧替换建议。"}
 latency_ms  = 0
 
 ========================================================================
@@ -74,7 +75,7 @@ Q: 各渠道成交额
    chart : pie
    耗时  : 0 ms
 Q: 近半年趋势
-   SQL   : SELECT strftime('%Y-%m', order_date) AS 月份, SUM(amount) AS GMV FROM orders GROUP BY 1 ORDER BY 1 LIMIT 6;
+   SQL   : SELECT strftime('%Y-%m', order_date) AS 月份, SUM(amount) AS GMV, LAG(SUM(amount)) OVER (ORDER BY 1) AS 上月GMV FROM orders GROUP BY 1;
    chart : line
    耗时  : 0 ms
 
@@ -83,9 +84,11 @@ Q: 近半年趋势
 ========================================================================
 {
   "event": "CIRCUIT_BREAKER_TRIGGERED",
+  "scenario": "upstream-timeout",
   "simulated": true,
   "primary_model": "上游主模型（仿真占位）",
   "primary_status": "504 Gateway Timeout (Simulated)",
+  "primary_detail": "上游主模型响应超时(>3000ms)，触发熔断阈值",
   "failover_model": "本地兜底规则引擎 (Mock Fallback)",
   "failover_status": "200 OK",
   "switch_latency_ms": 49,
@@ -101,9 +104,9 @@ Q: 近半年趋势
 ========================================================================
 == [8] docs/ 静态站 —— 模拟 GitHub Pages（后端不存在）
 ========================================================================
-HTTP 200    114754 B  /docs/
-HTTP 200    114754 B  /docs/index.html  含 'OmniAgent' = True
-HTTP 200     19989 B  /docs/static/omni-api.js  含 'OmniAPI' = True
+HTTP 200    128854 B  /docs/
+HTTP 200    128854 B  /docs/index.html  含 'OmniAgent' = True
+HTTP 200     37953 B  /docs/static/omni-api.js  含 'OmniAPI' = True
 HTTP 200    451131 B  /docs/static/vendor/tailwind.js
 HTTP 200    205475 B  /docs/static/vendor/chart.umd.js
 HTTP 200    102025 B  /docs/static/vendor/fontawesome/css/all.min.css
@@ -117,7 +120,7 @@ HTTP 200    150124 B  /docs/static/vendor/fontawesome/webfonts/fa-solid-900.woff
 ========================================================================
 == [10] docs/index.html 静态化自检
 ========================================================================
-bytes                = 114754
+bytes                = 128854
 残留 Jinja2 标记     = 0  (应为 0)
 残留绝对 /static/    = 0  (应为 0)
 含静态演示角标逻辑   = True
@@ -127,15 +130,16 @@ bytes                = 114754
 == [11] GET /api/v1/events/stream  中枢事件总线（SSE，真实端口探测驱动）
 ========================================================================
 HTTP 200   content-type = text/event-stream; charset=utf-8
-  [12:33:30] [MASTER     ] (info) 事件总线接入成功：本流由真实 TCP 端口探测驱动，每 3s 巡检一次，当前在线 0/7。
-  [12:33:30] [GATEWAY    ] (warn) 企业 AI 统一网关（:8000）未响应，标记为离线。
-  [12:33:30] [ECOM-AGENT ] (warn) 琼华珠宝 AI 智能导购（:8001）未响应，标记为离线。
-  [12:33:30] [MARKETING  ] (warn) 多平台爆款素材工作台（:8002）未响应，标记为离线。
-  [12:33:30] [ANALYTICS  ] (warn) AI 数据分析专家（:8510）未响应，标记为离线。
-  [12:33:30] [RAG        ] (warn) 企业级智能知识库 (RAG)（:8501）未响应，标记为离线。
-  [12:33:30] [COLLECTOR  ] (warn) 自动化情报抓取平台（:8765）未响应，标记为离线。
-  [12:33:30] [FUNCLIP    ] (warn) 多模态音视频智能体 (FunClip)（:7860）未响应，标记为离线。
-初始事件条数 = 8  (1 条接入说明 + 7 条服务就绪播报)
+  [13:28:16] [MASTER     ] (info) 事件总线接入成功：本流由真实 TCP 端口探测驱动，每 3s 巡检一次，当前在线 0/8。
+  [13:28:16] [GATEWAY    ] (warn) 企业 AI 统一网关（:8000）未响应，标记为离线。
+  [13:28:16] [ECOM-AGENT ] (warn) 琼华珠宝 AI 智能导购（:8001）未响应，标记为离线。
+  [13:28:16] [MARKETING  ] (warn) 多平台爆款素材工作台（:8002）未响应，标记为离线。
+  [13:28:16] [ANALYTICS  ] (warn) AI 数据分析专家（:8510）未响应，标记为离线。
+  [13:28:16] [RAG        ] (warn) 企业级智能知识库 (RAG)（:8501）未响应，标记为离线。
+  [13:28:16] [COLLECTOR  ] (warn) 自动化情报抓取平台（:8765）未响应，标记为离线。
+  [13:28:16] [FUNCLIP    ] (warn) 多模态音视频智能体 (FunClip)（:7860）未响应，标记为离线。
+  [13:28:16] [LABS-XHS   ] (warn) 小红书营销内容工厂 (Labs)（:8020）未响应，标记为离线。
+初始事件条数 = 9  (1 条接入说明 + 8 条服务就绪播报)
 docs 残留写死时间戳 19:15:02 = False  (应为 False)
 docs 含 startEvents 接线     = True  (应为 True)
 docs 的 omni-api.js 含 EventSource = True  (应为 True)
@@ -144,5 +148,5 @@ docs 的 omni-api.js 含示例降级      = True  (应为 True)
 ========================================================================
 == 收尾
 ========================================================================
-拓扑服务数 = 7
+拓扑服务数 = 8
 两个服务已关闭，进程退出

@@ -12,14 +12,15 @@
 [![Live Demo](https://img.shields.io/badge/%F0%9F%8C%90_Live_Demo-GitHub_Pages-2ea44f?style=for-the-badge)](https://yuheng-123.github.io/OmniAgent-Platform/)
 <!-- ↑ CI 徽章已激活：每次 push 自动跑 65 项测试 + ruff + docker build。 -->
 
+![OmniAgent Platform Hero Banner](assets/hero-banner.jpg)
+
 ![架构总览](assets/architecture.svg)
 
 ---
 
 ## 界面预览
 
-> 界面主题为「**翡翠 × 奶油 · Jade & Cream**」：深翡翠侧栏 / 顶栏 + 奶油白工作区 + 金渐变唯一点缀 +
-> 三状态色（在线绿 / 告警琥珀 / 故障红），为珠宝电商业务定制；图标全站单色，状态用圆点 + 文字表达。
+> 界面主题全新升级为「**曜石深空 × 霓虹翡翠 · Obsidian Cyber-Emerald**」：深邃暗夜黑底 (`#0B0F19`) + 霓虹翡翠绿 (`#10B981`) + 量子青 (`#06B6D4`) + 纳米级磨砂毛玻璃卡片与精密呼吸微动效，专为次世代全域 AI 智能体控制中枢打造。
 > 以下截图全部来自本机真实运行 —— 控制台起在 `:8899`，8 个业务端口用仓库自带的
 > `tools/mock_service.py` 占位，浏览器实际操作后截取，非设计稿。
 

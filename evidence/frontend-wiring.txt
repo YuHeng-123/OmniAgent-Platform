@@ -7,8 +7,8 @@
     缺失        : 无 ✅
 
 [2] getElementById 引用 vs 已定义 id（含动态创建）
-    已知 id 数  : 48
-    被引用 id 数: 29
+    已知 id 数  : 49
+    被引用 id 数: 30
     悬空引用    : 无 ✅
 
 [3] onclick 调用 vs 已定义函数

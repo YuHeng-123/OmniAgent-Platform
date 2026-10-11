@@ -118,7 +118,7 @@ services:
   # 启动命令：uvicorn app.main:app --port 8020（工作目录 labs/graph-xiaohongshu，
   # 需自备 .env 与 Postgres；未配置 start_cmd，控制台不假装知道它的启动方式）。
   - id: graph-xiaohongshu
-    name: 小红书营销内容工厂 (Labs)
+    name: 内容工厂 (Labs)
     role: 内容营销 Agent
     port: 8020
     url: http://127.0.0.1:8020

@@ -330,7 +330,7 @@
                 <nav class="space-y-0.5">
                     <button onclick="switchTab('xhs');closeSidebarOnMobile()" id="nav-xhs" class="nav-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] text-slate-400 hover:text-slate-100 transition-colors">
                         <i class="fas fa-feather-pointed w-4 text-center text-[12px] text-accent-emerald"></i>
-                        <span>小红书营销流水线</span>
+                        <span>内容工厂</span>
                         <span class="ml-auto tag">LangGraph</span>
                     </button>
                     <button onclick="switchTab('funclip');closeSidebarOnMobile()" id="nav-funclip" class="nav-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] text-slate-400 hover:text-slate-100 transition-colors">
@@ -700,7 +700,7 @@
 
                                 <div class="min-w-0 flex-1">
                                     <div class="flex items-center gap-2">
-                                        <span class="text-[13px] text-white font-medium truncate">小红书营销内容工厂 (Labs)</span>
+                                        <span class="text-[13px] text-white font-medium truncate">内容工厂 (Labs)</span>
                                         <span class="tag flex-shrink-0">Innovation</span>
                                     </div>
                                     <div class="text-[11px] text-slate-400 truncate mt-0.5">内容营销 Agent · LangGraph 1.0 多轮状态机营销流水线——选题→成文→配图，HITL 人工审核中断恢复</div>
@@ -757,8 +757,8 @@
                             <div>
                                 <div class="flex items-center gap-2 mb-1.5">
                                     <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald flex-shrink-0 animate-pulse"></span>
-                                    <span class="text-[13px] text-slate-200 font-medium font-mono">labs/graph-xiaohongshu</span>
-                                    <span class="tag flex-shrink-0">小红书营销流水线</span>
+                                    <span class="text-[13px] text-slate-200 font-medium font-mono">labs/graph-content</span>
+                                    <span class="tag flex-shrink-0">内容工厂</span>
                                     <span class="ml-auto text-[11px] text-accent-emerald">工作台就绪</span>
                                 </div>
                                 <ul class="text-[11px] text-slate-400 leading-relaxed space-y-1 mt-2">
@@ -1339,7 +1339,7 @@
             </div>
 
             <!-- ------------------------------------------------------------- -->
-            <!-- TAB 8: 小红书全链路营销流水线 (LangGraph 1.0) -->
+            <!-- TAB 8: 内容工厂 (LangGraph 1.0) -->
             <!-- ------------------------------------------------------------- -->
             <div id="tab-xhs" class="tab-content hidden space-y-5">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
@@ -1348,7 +1348,7 @@
                         <div class="flex items-center justify-between pb-3 border-b border-dark-border">
                             <div class="flex items-center gap-2">
                                 <i class="fas fa-feather-pointed text-accent-emerald text-sm"></i>
-                                <h3 class="font-semibold text-white text-sm">小红书全链路营销内容工厂</h3>
+                                <h3 class="font-semibold text-white text-sm">内容工厂</h3>
                             </div>
                             <span class="tag tag-accent text-[11px] font-mono">LangGraph 1.0</span>
                         </div>
@@ -1370,7 +1370,7 @@
                         </div>
 
                         <div>
-                            <label class="block text-[11px] text-slate-500 mb-1.5">主推产品 / 笔记主题</label>
+                            <label class="block text-[11px] text-slate-500 mb-1.5">主推产品 / 内容主题</label>
                             <input id="xhs-product-name" type="text" value="天然冰种和田碧玉平安扣吊坠" class="w-full bg-dark-900 border border-dark-border rounded-lg px-3.5 py-2 text-[13px] text-white focus:outline-none" />
                         </div>
 
@@ -1456,7 +1456,7 @@
                         </div>
                     </div>
 
-                    <!-- 右侧：真实小红书笔记卡片预览与生成成果 -->
+                    <!-- 右侧：真实多渠道图文卡片预览与生成成果 -->
                     <div class="lg:col-span-7 space-y-4">
                         <!-- 顶栏状态与复制操作 -->
                         <div class="glass-card p-4 flex items-center justify-between">
@@ -1470,13 +1470,13 @@
                             </div>
                             <button onclick="copyXhsNote()" class="btn-ghost px-3 py-1.5 rounded-lg text-[12px] flex items-center gap-1.5">
                                 <i class="fas fa-copy"></i>
-                                <span>复制图文笔记</span>
+                                <span>复制图文内容</span>
                             </button>
                         </div>
 
-                        <!-- 拟真小红书双列手机预览卡片 -->
+                        <!-- 拟真多端内容预览卡片 -->
                         <div id="xhs-preview-card" class="glass-card p-5 space-y-4 rounded-2xl border border-dark-border">
-                            <!-- 红书顶部博主栏 -->
+                            <!-- 顶部创作者栏 -->
                             <div class="flex items-center justify-between pb-3 border-b border-dark-border">
                                 <div class="flex items-center gap-2.5">
                                     <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-accent-emerald to-accent-cyan flex items-center justify-center text-dark-950 font-bold text-xs">
@@ -1487,7 +1487,7 @@
                                             <span>琼华东方美学主理人</span>
                                             <i class="fas fa-certificate text-accent-gold text-[10px]"></i>
                                         </div>
-                                        <div class="text-[10px] text-slate-500 font-mono">小红书官方认证珠宝鉴赏博主</div>
+                                        <div class="text-[10px] text-slate-500 font-mono">官方认证珠宝鉴赏创作者</div>
                                     </div>
                                 </div>
                                 <button type="button" class="px-2.5 py-1 rounded-full bg-accent-emerald/20 text-accent-emerald text-[11px] font-medium border border-accent-emerald/40">+ 关注</button>
@@ -1522,7 +1522,7 @@
                             <!-- 话题标签 -->
                             <div id="xhs-out-tags" class="flex flex-wrap gap-1.5">
                                 <span class="tag">#我的首饰分享</span>
-                                <span class="tag">#小红书好物推荐</span>
+                                <span class="tag">#好物推荐</span>
                                 <span class="tag">#新中式穿搭</span>
                                 <span class="tag">#天然玉石</span>
                             </div>
@@ -1534,7 +1534,7 @@
                                     <span class="flex items-center gap-1 hover:text-accent-gold transition-colors"><i class="fas fa-star text-accent-gold"></i> 1.8k</span>
                                     <span class="flex items-center gap-1"><i class="fas fa-comment-dots"></i> 368</span>
                                 </div>
-                                <span class="text-[10px] font-mono text-slate-600">小红书移动端渲染拟真</span>
+                                <span class="text-[10px] font-mono text-slate-600">移动端渲染拟真</span>
                             </div>
                         </div>
 
@@ -1713,7 +1713,7 @@
                                             <i class="fas fa-play text-[10px] mr-1"></i> 试听预览
                                         </button>
                                         <button onclick="pipeFunclipToXhs(1)" class="px-2.5 py-1 rounded bg-accent-emerald/20 border border-accent-emerald/40 text-accent-emerald hover:bg-accent-emerald/30 text-[11px] flex items-center gap-1">
-                                            <i class="fas fa-feather-pointed text-[10px]"></i> 推送小红书
+                                            <i class="fas fa-feather-pointed text-[10px]"></i> 推送到内容工厂
                                         </button>
                                     </div>
                                 </div>
@@ -1735,7 +1735,7 @@
                                             <i class="fas fa-play text-[10px] mr-1"></i> 试听预览
                                         </button>
                                         <button onclick="pipeFunclipToXhs(2)" class="px-2.5 py-1 rounded bg-accent-emerald/20 border border-accent-emerald/40 text-accent-emerald hover:bg-accent-emerald/30 text-[11px] flex items-center gap-1">
-                                            <i class="fas fa-feather-pointed text-[10px]"></i> 推送小红书
+                                            <i class="fas fa-feather-pointed text-[10px]"></i> 推送到内容工厂
                                         </button>
                                     </div>
                                 </div>
@@ -1757,7 +1757,7 @@
                                             <i class="fas fa-play text-[10px] mr-1"></i> 试听预览
                                         </button>
                                         <button onclick="pipeFunclipToXhs(3)" class="px-2.5 py-1 rounded bg-accent-emerald/20 border border-accent-emerald/40 text-accent-emerald hover:bg-accent-emerald/30 text-[11px] flex items-center gap-1">
-                                            <i class="fas fa-feather-pointed text-[10px]"></i> 推送小红书
+                                            <i class="fas fa-feather-pointed text-[10px]"></i> 推送到内容工厂
                                         </button>
                                     </div>
                                 </div>
@@ -1818,7 +1818,7 @@
             'gateway': '<i class="fas fa-shield-halved text-accent-cyan mr-2.5"></i> 模型调度网关与容灾中枢',
             'rag': '<i class="fas fa-database text-accent-cyan mr-2.5"></i> 企业级行业知识库与向量检索',
             'history': '<i class="fas fa-clock-rotate-left text-accent-emerald mr-2.5"></i> 历史趋势与事件回放',
-            'xhs': '<i class="fas fa-feather-pointed text-accent-emerald mr-2.5"></i> 小红书全链路营销工厂 · LangGraph 1.0',
+            'xhs': '<i class="fas fa-feather-pointed text-accent-emerald mr-2.5"></i> 内容工厂 · LangGraph 1.0',
             'funclip': '<i class="fas fa-film text-accent-cyan mr-2.5"></i> 达摩院 FunClip 多模态音视频智能切片'
         };
 
@@ -2449,7 +2449,7 @@
         }
 
         // -------------------------------------------------------------
-        // TAB 8: 小红书营销流水线 (LangGraph 1.0) 交互控制器
+        // TAB 8: 内容工厂 (LangGraph 1.0) 交互控制器
         // -------------------------------------------------------------
         function setXhsPreset(name, tone, keywords) {
             document.getElementById('xhs-product-name').value = name;
@@ -2571,7 +2571,7 @@
             const content = document.getElementById('xhs-out-content').innerText;
             const text = title + '\n\n' + content;
             navigator.clipboard.writeText(text).then(() => {
-                alert('小红书图文笔记已复制到剪贴板！');
+                alert('图文内容已复制到剪贴板！');
             }).catch(() => {
                 alert('复制失败，请手动选择复制。');
             });
@@ -2649,7 +2649,7 @@
                                 <i class="fas fa-play text-[10px] mr-1"></i> 试听预览
                             </button>
                             <button onclick="pipeFunclipToXhs(${c.id})" class="px-2.5 py-1 rounded bg-accent-emerald/20 border border-accent-emerald/40 text-accent-emerald hover:bg-accent-emerald/30 text-[11px] flex items-center gap-1">
-                                <i class="fas fa-feather-pointed text-[10px]"></i> 推送小红书
+                                <i class="fas fa-feather-pointed text-[10px]"></i> 推送到内容工厂
                             </button>
                         </div>
                     </div>

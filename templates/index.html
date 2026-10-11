@@ -1751,6 +1751,30 @@
                     '</div>';
                 }).join('');
             }).catch(() => {});
+
+            // URL 路由支持：允许通过 ?tab=xxx&action=demo 直接切换选项卡与预填状态
+            const urlParams = new URLSearchParams(window.location.search);
+            const initialTab = urlParams.get('tab') || (location.hash.startsWith('#tab-') ? location.hash.replace('#tab-', '') : null);
+            if (initialTab && TAB_TITLES[initialTab]) {
+                switchTab(initialTab);
+                const action = urlParams.get('action');
+                if (initialTab === 'guide' && action === 'demo') {
+                    setTimeout(() => sendQuickPrompt('帮我推荐一款 1000-2000 元送长辈的和田玉吊坠'), 300);
+                } else if (initialTab === 'marketing' && action === 'demo') {
+                    setTimeout(() => handleMarketingGenerate(), 300);
+                } else if (initialTab === 'analytics' && action === 'demo') {
+                    setTimeout(() => setQueryAndRun('各品类销售占比'), 300);
+                } else if (initialTab === 'gateway' && action === 'demo') {
+                    setTimeout(() => triggerQuickFailover(), 300);
+                } else if (initialTab === 'rag' && action === 'demo') {
+                    setTimeout(() => {
+                        const ragInput = document.getElementById('rag-input');
+                        if (ragInput) { ragInput.value = '莫桑石与培育钻区别保真'; handleRagSearch(); }
+                    }, 300);
+                } else if (initialTab === 'history') {
+                    setTimeout(() => loadHistory(), 300);
+                }
+            }
         });
     </script>
 </body>

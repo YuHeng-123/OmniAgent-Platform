@@ -3,16 +3,16 @@
 ========================================================================
 
 [1] OmniAPI 调用 vs 实现
-    页面调用    : analysisQuery, controlService, fetchHistory, fetchRecentEvents, gatewayFailover, guideChat, marketingGenerate, probe, startEvents
+    页面调用    : analysisQuery, controlService, fetchHistory, fetchRecentEvents, funclipSlice, gatewayFailover, guideChat, marketingGenerate, probe, startEvents, xhsGenerate
     缺失        : 无 ✅
 
 [2] getElementById 引用 vs 已定义 id（含动态创建）
-    已知 id 数  : 51
-    被引用 id 数: 30
+    已知 id 数  : 90
+    被引用 id 数: 57
     悬空引用    : 无 ✅
 
 [3] onclick 调用 vs 已定义函数
-    onclick 函数: clearGuideChat, closeSidebarOnMobile, copyMarketingContent, handleAnalyticsQuery, handleMarketingGenerate, handleRagSearch, loadHistory, pipeToMarketing, sendQuickPrompt, serviceControl, setHistoryRange, setQueryAndRun, switchTab, toggleSidebar, triggerQuickFailover
+    onclick 函数: clearGuideChat, closeSidebarOnMobile, copyFunclipSrt, copyMarketingContent, copyXhsNote, handleAnalyticsQuery, handleFunclipSlice, handleMarketingGenerate, handleRagSearch, handleXhsGenerate, handleXhsHitlApprove, loadHistory, pipeFunclipToXhs, pipeToMarketing, playFunclipSegment, sendQuickPrompt, serviceControl, setFunclipPreset, setHistoryRange, setQueryAndRun, setXhsPreset, switchTab, toggleSidebar, triggerQuickFailover
     未定义      : 无 ✅
 
 [4] templates/index.html 2.2 标记齐全 = ✅

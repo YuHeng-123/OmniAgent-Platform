@@ -109,8 +109,9 @@
         ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: 999px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(16, 185, 129, 0.4); }
 
-        /* ---- 卡片：高阶暗晶磨砂玻璃 (Glassmorphic) ---- */
+        /* ---- 卡片：高阶暗晶磨砂玻璃 (Glassmorphic & Radial Glow) ---- */
         .glass-card {
+            position: relative;
             background: rgba(17, 24, 39, 0.65);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
@@ -118,6 +119,28 @@
             border-radius: 14px;
             box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
             transition: all .2s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: var(--glow-y, -300px);
+            left: var(--glow-x, -300px);
+            width: 320px;
+            height: 320px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.14) 0%, rgba(6, 182, 212, 0.04) 50%, transparent 75%);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity .35s ease;
+            z-index: 0;
+        }
+        .glass-card:hover::before {
+            opacity: 1;
+        }
+        .glass-card > * {
+            position: relative;
+            z-index: 1;
         }
         .glass-card:hover {
             border-color: rgba(16, 185, 129, 0.35);
@@ -257,6 +280,34 @@
             OmniAgent 控制台是单页应用：界面样式与所有数据都依赖 JavaScript，请启用 JS 后刷新页面。
         </div>
     </noscript>
+
+    <!-- ================================================================= -->
+    <!-- 全局 Command Palette 极客指令中枢 (Ctrl+K / Cmd+K) -->
+    <!-- ================================================================= -->
+    <div id="command-palette-modal" class="hidden fixed inset-0 z-50 flex items-start justify-center pt-[15vh] px-4 bg-black/75 backdrop-blur-md">
+        <div id="command-palette-box" class="w-full max-w-xl rounded-2xl bg-dark-950/98 border border-dark-border shadow-2xl shadow-black/90 overflow-hidden flex flex-col text-[12px] animate-in fade-in zoom-in-95 duration-150">
+            <!-- 搜索框 -->
+            <div class="p-3.5 border-b border-dark-border/80 flex items-center gap-3 bg-dark-900/50">
+                <i class="fas fa-search text-slate-400 text-xs"></i>
+                <input id="cmd-palette-input" type="text" placeholder="输入指令或搜索工作台（如：小红书、热切、OpenAI、Trace、导购）..." class="flex-1 bg-transparent text-white placeholder-slate-500 text-[13px] focus:outline-none" autocomplete="off" />
+                <button type="button" onclick="toggleCommandPalette()" class="px-1.5 py-0.5 rounded bg-dark-950 border border-dark-border text-[10px] text-slate-400 hover:text-white font-mono transition-colors">ESC 关闭</button>
+            </div>
+
+            <!-- 结果列表 -->
+            <div id="cmd-palette-list" class="max-h-[380px] overflow-y-auto p-2 space-y-1">
+                <!-- 动态渲染命令项 -->
+            </div>
+
+            <!-- 底部快捷键提示 -->
+            <div class="p-2.5 px-4 bg-dark-900/50 border-t border-dark-border/60 flex items-center justify-between text-[11px] text-slate-500 font-mono">
+                <div class="flex items-center gap-3">
+                    <span><kbd class="px-1 py-0.5 bg-dark-950 rounded border border-dark-border text-[10px]">↑</kbd> <kbd class="px-1 py-0.5 bg-dark-950 rounded border border-dark-border text-[10px]">↓</kbd> 导航</span>
+                    <span><kbd class="px-1.5 py-0.5 bg-dark-950 rounded border border-dark-border text-[10px]">↵</kbd> 执行</span>
+                </div>
+                <span>OmniAgent Command OS</span>
+            </div>
+        </div>
+    </div>
 
     <!-- ================================================================= -->
     <!-- 统一侧边栏导航 (Sidebar) -->
@@ -484,8 +535,14 @@
                 </div>
             </div>
 
-            <!-- 右侧：容灾热切演示按钮 -->
+            <!-- 右侧：容灾热切演示按钮与指令中枢 -->
             <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                <button type="button" onclick="toggleCommandPalette()" class="btn-ghost px-2.5 py-1.5 rounded-md text-[11px] font-mono flex items-center gap-1.5 border border-dark-border text-slate-300 hover:text-white hover:border-accent-cyan/40" title="呼出全局指令中枢 (Ctrl + K / Cmd + K)">
+                    <i class="fas fa-terminal text-[10px] text-accent-cyan"></i>
+                    <span class="hidden md:inline text-slate-400">指令</span>
+                    <kbd class="px-1.5 py-0.5 rounded bg-dark-950 border border-dark-border text-[9px] text-slate-400 font-mono">⌘K</kbd>
+                </button>
+
                 <button onclick="triggerQuickFailover()" class="btn-ghost px-3 py-1.5 rounded-md text-[11px] whitespace-nowrap flex items-center gap-1.5 border border-accent-gold/40 text-accent-gold hover:bg-accent-gold/10">
                     <i class="fas fa-bolt text-[10px]"></i>
                     <span class="hidden sm:inline">容灾热切演示</span>
@@ -2773,11 +2830,172 @@
             });
         }
 
+        // -------------------------------------------------------------
+        // 全局极客指令中枢 (Command Palette · Ctrl+K / Cmd+K)
+        // -------------------------------------------------------------
+        let isCommandPaletteOpen = false;
+        let commandPaletteSelectedIndex = 0;
+
+        const PALETTE_COMMANDS = [
+            // 快捷动作
+            { id: 'act-failover', title: '执行网关毫秒级容灾热切演练', category: '快捷动作', icon: 'fas fa-bolt text-accent-gold', keywords: '热切 failover 容灾 网关 timeout 限流 熔断', action: () => triggerQuickFailover() },
+            { id: 'act-dynamic-island', title: '展开 / 收起灵动岛 HUD 状态诊断抽屉', category: '快捷动作', icon: 'fas fa-server text-accent-cyan', keywords: '灵动岛 hud 抽屉 状态 诊断 端口', action: () => toggleDynamicIsland() },
+            { id: 'act-openai', title: '演练统一 OpenAI 规范 Chat Completions 代理', category: '快捷动作', icon: 'fas fa-terminal text-accent-cyan', keywords: 'openai chat completions 代理 模型 api', action: () => openOpenaiRunner() },
+            { id: 'act-pipe-xhs', title: '工序协同：从小红书深度工场同步至营销矩阵', category: '快捷动作', icon: 'fas fa-share-nodes text-accent-gold', keywords: '流转 同步 协同 小红书 营销 闭环 派生', action: () => pipeXhsToMarketing() },
+            { id: 'act-copy-trace', title: '复制最近一条全链路高熵 Trace ID', category: '快捷动作', icon: 'fas fa-fingerprint text-accent-emerald', keywords: 'trace id 复制 审计 追踪 日志', action: () => copyLatestTraceId() },
+            { id: 'act-reset-waveform', title: '重置 FunClip 音频波形轨道指针至起点', category: '快捷动作', icon: 'fas fa-rotate-left text-accent-cyan', keywords: '波形 重置 funclip 音频 指针 daw', action: () => resetFunclipWaveform() },
+            { id: 'act-clear-guide', title: '清空电商智能导购会话历史', category: '快捷动作', icon: 'fas fa-trash-can text-slate-400', keywords: '清空 导购 对话 消息 聊天', action: () => clearGuideChat() },
+
+            // 工作台直达
+            { id: 'tab-overview', title: '跳转：全域智能体调度总览大盘', category: '工作台直达', icon: 'fas fa-layer-group text-accent-emerald', keywords: '大盘 监控 总览 overview 概览 集群', action: () => switchTab('overview') },
+            { id: 'tab-guide', title: '跳转：垂直电商智能导购工作站 (LangGraph)', category: '工作台直达', icon: 'fas fa-store text-accent-cyan', keywords: '导购 电商 珠宝 选品 guide 优惠券', action: () => switchTab('guide') },
+            { id: 'tab-marketing', title: '跳转：全渠道营销矩阵与合规风控 (Coze)', category: '工作台直达', icon: 'fas fa-wand-magic-sparkles text-accent-gold', keywords: '营销 矩阵 coze 广告法 违禁词 朋友圈 抖音', action: () => switchTab('marketing') },
+            { id: 'tab-analytics', title: '跳转：智能数据分析与商业洞察 (DuckDB)', category: '工作台直达', icon: 'fas fa-chart-pie text-accent-emerald', keywords: '数据分析 duckdb sql text to sql 图表 销量 gmv', action: () => switchTab('analytics') },
+            { id: 'tab-gateway', title: '跳转：模型调度网关与容灾中枢 (MCP)', category: '工作台直达', icon: 'fas fa-shield-halved text-accent-cyan', keywords: '网关 gateway 容灾 mcp 调度', action: () => switchTab('gateway') },
+            { id: 'tab-rag', title: '跳转：企业级行业知识库与向量检索 (RAG)', category: '工作台直达', icon: 'fas fa-database text-accent-cyan', keywords: '知识库 rag 向量 检索 相似度 莫桑钻 和田玉', action: () => switchTab('rag') },
+            { id: 'tab-history', title: '跳转：历史趋势与事件回放 (SQLite)', category: '工作台直达', icon: 'fas fa-clock-rotate-left text-accent-emerald', keywords: '历史 趋势 事件 回放 sqlite 探针 延迟', action: () => switchTab('history') },
+            { id: 'tab-xhs', title: '跳转：小红书深度工场 · LangGraph 1.0 (HITL)', category: '工作台直达', icon: 'fas fa-feather-pointed text-accent-emerald', keywords: '小红书 xhs langgraph 内容工厂 人在环路 状态机 深度', action: () => switchTab('xhs') },
+            { id: 'tab-funclip', title: '跳转：达摩院 FunClip 多模态音视频智能切片', category: '工作台直达', icon: 'fas fa-film text-accent-cyan', keywords: 'funclip 达摩院 funasr 剪辑 切片 视频 音频 字幕', action: () => switchTab('funclip') }
+        ];
+
+        let filteredPaletteCommands = [...PALETTE_COMMANDS];
+
+        function toggleCommandPalette() {
+            const modal = document.getElementById('command-palette-modal');
+            const input = document.getElementById('cmd-palette-input');
+            if (!modal) return;
+            isCommandPaletteOpen = !isCommandPaletteOpen;
+            if (isCommandPaletteOpen) {
+                modal.classList.remove('hidden');
+                if (input) {
+                    input.value = '';
+                    filterPaletteCommands('');
+                    setTimeout(() => input.focus(), 60);
+                }
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        function filterPaletteCommands(query) {
+            const q = (query || '').trim().toLowerCase();
+            if (!q) {
+                filteredPaletteCommands = [...PALETTE_COMMANDS];
+            } else {
+                filteredPaletteCommands = PALETTE_COMMANDS.filter(cmd => 
+                    cmd.title.toLowerCase().includes(q) ||
+                    cmd.keywords.toLowerCase().includes(q) ||
+                    cmd.category.toLowerCase().includes(q)
+                );
+            }
+            commandPaletteSelectedIndex = 0;
+            renderPaletteList();
+        }
+
+        function renderPaletteList() {
+            const list = document.getElementById('cmd-palette-list');
+            if (!list) return;
+            if (filteredPaletteCommands.length === 0) {
+                list.innerHTML = '<div class="p-6 text-center text-slate-500 text-[12px]"><i class="fas fa-ghost mr-1 text-slate-600"></i> 未找到匹配指令，试试“小红书”、“热切”或“OpenAI”</div>';
+                return;
+            }
+            let currentCat = '';
+            let html = '';
+            filteredPaletteCommands.forEach((cmd, idx) => {
+                if (cmd.category !== currentCat) {
+                    currentCat = cmd.category;
+                    html += `<div class="px-2 pt-2.5 pb-1 text-[10px] font-mono font-medium text-slate-500 uppercase tracking-wider">${currentCat}</div>`;
+                }
+                const isSelected = idx === commandPaletteSelectedIndex;
+                const activeCls = isSelected ? 'bg-accent-emerald/15 border-accent-emerald/40 text-white shadow-sm' : 'border-transparent text-slate-300 hover:bg-dark-900';
+                html += `
+                    <div onclick="executeCommand(${idx})" class="p-2.5 rounded-xl border ${activeCls} cursor-pointer flex items-center justify-between transition-colors text-[12px]">
+                        <div class="flex items-center gap-2.5">
+                            <i class="${cmd.icon} text-xs w-4 text-center"></i>
+                            <span class="font-medium">${cmd.title}</span>
+                        </div>
+                        <kbd class="px-1.5 py-0.5 rounded bg-dark-900 border border-dark-border text-[9px] text-slate-400 font-mono">↵ 回车</kbd>
+                    </div>
+                `;
+            });
+            list.innerHTML = html;
+        }
+
+        function executeCommand(idx) {
+            const cmd = filteredPaletteCommands[idx];
+            if (cmd && typeof cmd.action === 'function') {
+                toggleCommandPalette();
+                cmd.action();
+            }
+        }
+
+        function copyLatestTraceId() {
+            const badge = document.getElementById('hud-trace-badge');
+            const trId = badge ? badge.innerText : 'tr-8820-ok';
+            copyTraceId(trId);
+        }
+
+        function openOpenaiRunner() {
+            if (!isDynamicIslandOpen) toggleDynamicIsland();
+            const input = document.getElementById('hud-proxy-input');
+            if (input) {
+                setTimeout(() => input.focus(), 150);
+            }
+        }
+
+        // 光标次表面辉光监听器
+        function initCardGlowEffects() {
+            document.querySelectorAll('.glass-card').forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    card.style.setProperty('--glow-x', `${e.clientX - rect.left}px`);
+                    card.style.setProperty('--glow-y', `${e.clientY - rect.top}px`);
+                });
+            });
+        }
+
+        window.addEventListener('keydown', (e) => {
+            // Ctrl+K or Cmd+K
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+                e.preventDefault();
+                toggleCommandPalette();
+                return;
+            }
+
+            if (!isCommandPaletteOpen) return;
+
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                toggleCommandPalette();
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (filteredPaletteCommands.length > 0) {
+                    commandPaletteSelectedIndex = (commandPaletteSelectedIndex + 1) % filteredPaletteCommands.length;
+                    renderPaletteList();
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (filteredPaletteCommands.length > 0) {
+                    commandPaletteSelectedIndex = (commandPaletteSelectedIndex - 1 + filteredPaletteCommands.length) % filteredPaletteCommands.length;
+                    renderPaletteList();
+                }
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                executeCommand(commandPaletteSelectedIndex);
+            }
+        });
+
         window.addEventListener('click', (e) => {
             const island = document.getElementById('dynamic-island');
             const drawer = document.getElementById('dynamic-island-drawer');
             if (isDynamicIslandOpen && island && drawer && !island.contains(e.target) && !drawer.contains(e.target)) {
                 toggleDynamicIsland();
+            }
+
+            const modal = document.getElementById('command-palette-modal');
+            const box = document.getElementById('command-palette-box');
+            if (isCommandPaletteOpen && modal && box && e.target === modal) {
+                toggleCommandPalette();
             }
         });
 
@@ -2787,6 +3005,14 @@
             initFunclipCanvasInteractions();
             drawFunclipWaveform();
             refreshTraceLogs();
+            initCardGlowEffects();
+
+            const cmdInput = document.getElementById('cmd-palette-input');
+            if (cmdInput) {
+                cmdInput.addEventListener('input', (e) => {
+                    filterPaletteCommands(e.target.value);
+                });
+            }
 
             // 事件总线：优先真实 SSE（后端每 3s 真探测端口，只推状态变化与心跳）；
             // 拿不到后端（GitHub Pages / file:// / 服务未启）自动降级为示例事件并改标

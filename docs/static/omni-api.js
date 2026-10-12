@@ -666,6 +666,22 @@
       var n = limit || 60;
       return apiCall('/api/v1/events/recent?limit=' + n, { timeoutMs: 8000 })
         .catch(function () { return sampleRecentEvents(n); });
+    },
+
+    /** 全链路 Trace ID 审计流水线。静态模式返回内置样例 Trace，标 sample: true。 */
+    fetchTraces: function (limit) {
+      var n = limit || 15;
+      return apiCall('/api/v1/gateway/traces?limit=' + n, { timeoutMs: 5000 })
+        .catch(function () { return sampleTraces(n); });
+    },
+
+    /** 统一 OpenAI 规范 Chat Completions 代理调用 */
+    openaiChat: function (payload) {
+      return apiCall('/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).catch(function () { return localOpenaiChat(payload); });
     }
   };
 
@@ -716,6 +732,116 @@
       events.push(e);
     }
     return Promise.resolve({ status: 'ok', limit: limit, source: 'sample', events: events });
+  }
+
+  function sampleTraces(limit) {
+    var now = new Date();
+    var formatTime = function (d) {
+      return d.toTimeString().split(' ')[0];
+    };
+    var traces = [
+      {
+        trace_id: 'tr-' + Math.floor(Math.random() * 89999 + 10000) + '-ok',
+        timestamp: formatTime(now),
+        method: 'POST',
+        path: '/v1/chat/completions',
+        service: 'ai-gateway',
+        status_code: 200,
+        latency_ms: 38,
+        model: 'Qwen-Max',
+        tokens: 340
+      },
+      {
+        trace_id: 'tr-' + Math.floor(Math.random() * 89999 + 10000) + '-hit',
+        timestamp: formatTime(new Date(now.getTime() - 4000)),
+        method: 'POST',
+        path: '/api/v1/labs/xhs/generate',
+        service: 'content-factory',
+        status_code: 200,
+        latency_ms: 54,
+        model: 'LangGraph-1.0',
+        tokens: 580
+      },
+      {
+        trace_id: 'tr-' + Math.floor(Math.random() * 89999 + 10000) + '-asr',
+        timestamp: formatTime(new Date(now.getTime() - 9000)),
+        method: 'POST',
+        path: '/api/v1/labs/funclip/slice',
+        service: 'funclip-studio',
+        status_code: 200,
+        latency_ms: 45,
+        model: 'FunASR-Paraformer',
+        tokens: 290
+      },
+      {
+        trace_id: 'tr-' + Math.floor(Math.random() * 89999 + 10000) + '-rag',
+        timestamp: formatTime(new Date(now.getTime() - 14000)),
+        method: 'POST',
+        path: '/api/v1/rag/search',
+        service: 'rag-retrieval',
+        status_code: 200,
+        latency_ms: 32,
+        model: 'Hybrid-Engine',
+        tokens: 180
+      },
+      {
+        trace_id: 'tr-' + Math.floor(Math.random() * 89999 + 10000) + '-mon',
+        timestamp: formatTime(new Date(now.getTime() - 20000)),
+        method: 'GET',
+        path: '/api/v1/overview/stats',
+        service: 'core-hub',
+        status_code: 200,
+        latency_ms: 22,
+        model: 'Hybrid-Engine',
+        tokens: 95
+      }
+    ];
+    return Promise.resolve({
+      status: 'ok',
+      source: 'sample',
+      traces: traces.slice(0, limit || 5),
+      summary: {
+        total_recorded: traces.length,
+        p95_latency_ms: 42,
+        success_rate: 100.0,
+        active_protocol: 'OpenAI v1 / Anthropic MCP (Static Simulation)',
+        proxy_endpoint: '/v1/chat/completions'
+      }
+    });
+  }
+
+  function localOpenaiChat(payload) {
+    var userMsg = '你好';
+    if (payload && payload.messages && payload.messages.length > 0) {
+      userMsg = payload.messages[payload.messages.length - 1].content || userMsg;
+    }
+    var trId = 'tr-sim-' + Math.floor(Math.random() * 89999 + 10000);
+    return Promise.resolve({
+      id: 'chatcmpl-' + trId,
+      object: 'chat.completion',
+      created: Math.floor(Date.now() / 1000),
+      model: (payload && payload.model) || 'qwen-max',
+      system_fingerprint: 'fp_local_demo',
+      choices: [
+        {
+          index: 0,
+          message: {
+            role: 'assistant',
+            content: '【OmniAgent 统一模型代理】已通过智能网关调度响应：针对您的问题「' + userMsg + '」，系统已成功完成意图识别与工具编排，链路全程受 Trace ID [' + trId + '] 审计追踪。'
+          },
+          finish_reason: 'stop'
+        }
+      ],
+      usage: {
+        prompt_tokens: userMsg.length * 2 + 35,
+        completion_tokens: 160,
+        total_tokens: userMsg.length * 2 + 195,
+        cost_usd: 0.00039
+      },
+      trace_id: trId,
+      latency_ms: 42,
+      proxy_gateway: 'OmniAgent AI Gateway (Static Simulation)'
+    });
   }
 
   window.OmniAPI = OmniAPI;

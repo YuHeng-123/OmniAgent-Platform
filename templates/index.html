@@ -1126,587 +1126,12 @@
             <!-- ------------------------------------------------------------- -->
             <!-- TAB 8: 内容工厂 (LangGraph 1.0) -->
             <!-- ------------------------------------------------------------- -->
-            <div id="tab-xhs" class="tab-content hidden space-y-5">
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-                    <!-- 左侧：参数与 StateGraph 编排工作台 -->
-                    <div class="lg:col-span-5 glass-card p-5 space-y-4">
-                        <div class="flex items-center justify-between pb-3 border-b border-dark-border">
-                            <div class="flex items-center gap-2">
-                                <i class="fas fa-feather-pointed text-accent-emerald text-sm"></i>
-                                <h3 class="font-semibold text-white text-sm">内容工厂</h3>
-                            </div>
-                            <span class="tag tag-accent text-[11px] font-mono">LangGraph 1.0</span>
-                        </div>
-
-                        <!-- 快速预设模板 -->
-                        <div>
-                            <label class="block text-[11px] text-slate-500 mb-1.5">快速实操预设</label>
-                            <div class="flex flex-wrap gap-1.5">
-                                <button type="button" onclick="setXhsPreset('天然冰种和田碧玉平安扣', '闺蜜真实种草', '新疆且末老料，油脂感通透显白，附权威证书，新中式百搭')" class="btn-ghost px-2 py-1 rounded text-[11px]">
-                                    💎 碧玉平安扣 (闺蜜种草)
-                                </button>
-                                <button type="button" onclick="setXhsPreset('老坑冰飘花翡翠手镯', '专业博主深度评测', '缅甸天然A货，冰透水润起胶，带国检一石一证，假一赔十')" class="btn-ghost px-2 py-1 rounded text-[11px]">
-                                    📿 翡翠手镯 (专业评测)
-                                </button>
-                                <button type="button" onclick="setXhsPreset('国风异形珍珠锁骨链', '避坑教学与选购指南', '正圆无瑕与天然巴洛克对比，手工金丝镶嵌，法式复古小众设计')" class="btn-ghost px-2 py-1 rounded text-[11px]">
-                                    🌸 珍珠锁骨链 (避坑科普)
-                                </button>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-[11px] text-slate-500 mb-1.5">主推产品 / 内容主题</label>
-                            <input id="xhs-product-name" type="text" value="天然冰种和田碧玉平安扣吊坠" class="w-full bg-dark-900 border border-dark-border rounded-lg px-3.5 py-2 text-[13px] text-white focus:outline-none" />
-                        </div>
-
-                        <div>
-                            <label class="block text-[11px] text-slate-500 mb-1.5">叙事风格与受众调性</label>
-                            <select id="xhs-tone" class="w-full bg-dark-900 border border-dark-border rounded-lg px-3.5 py-2 text-[13px] text-white focus:outline-none">
-                                <option value="闺蜜真实种草">闺蜜真实种草（高共鸣、强情绪价值、高转化率）</option>
-                                <option value="专业博主深度评测">专业珠宝博主深度评测（微距实拍、硬核参数、高客单信任）</option>
-                                <option value="避坑教学与选购指南">避坑教学与选购指南（直击行业内幕、强收藏点赞率）</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-[11px] text-slate-500 mb-1.5">核心卖点与搜索热词</label>
-                            <textarea id="xhs-keywords" rows="2" class="w-full bg-dark-900 border border-dark-border rounded-lg px-3.5 py-2 text-[12px] text-white focus:outline-none resize-none">温润细腻, 原矿老料, 权威证书, 新中式穿搭, 闺蜜送礼</textarea>
-                        </div>
-
-                        <!-- 启动流水线按钮 -->
-                        <button id="btn-xhs-run" onclick="handleXhsGenerate()" class="w-full py-2.5 px-4 rounded-xl font-medium text-[13px] bg-gradient-to-r from-accent-emerald to-emerald-600 text-dark-950 hover:brightness-110 shadow-lg shadow-emerald-950/40 transition-all flex items-center justify-center gap-2">
-                            <i class="fas fa-play text-xs"></i>
-                            <span>启动 LangGraph 1.0 流水线</span>
-                        </button>
-
-                        <!-- StateGraph 状态机流转视窗 -->
-                        <div class="pt-3 border-t border-dark-border">
-                            <div class="flex items-center justify-between text-[11px] text-slate-500 mb-2">
-                                <span class="font-mono">StateGraph 节点执行流</span>
-                                <span id="xhs-graph-status" class="text-accent-emerald font-mono">就绪</span>
-                            </div>
-                            <div class="space-y-1.5">
-                                <div id="xhs-node-topic" class="p-2 rounded-lg bg-dark-900/60 border border-dark-border flex items-center justify-between text-[11px]">
-                                    <div class="flex items-center gap-2">
-                                        <span class="w-2 h-2 rounded-full bg-slate-600"></span>
-                                        <span class="text-slate-300">1. 爆款选题子图 (Topic Miner)</span>
-                                    </div>
-                                    <span class="text-slate-500 font-mono text-[10px]">IDLE</span>
-                                </div>
-                                <div id="xhs-node-hitl" class="p-2 rounded-lg bg-dark-900/60 border border-dark-border flex items-center justify-between text-[11px]">
-                                    <div class="flex items-center gap-2">
-                                        <span class="w-2 h-2 rounded-full bg-slate-600"></span>
-                                        <span class="text-slate-300">2. 人在环路中断 (HITL Interrupt)</span>
-                                    </div>
-                                    <span class="text-slate-500 font-mono text-[10px]">IDLE</span>
-                                </div>
-                                <div id="xhs-node-writer" class="p-2 rounded-lg bg-dark-900/60 border border-dark-border flex items-center justify-between text-[11px]">
-                                    <div class="flex items-center gap-2">
-                                        <span class="w-2 h-2 rounded-full bg-slate-600"></span>
-                                        <span class="text-slate-300">3. 深度成文子图 (Copywriter)</span>
-                                    </div>
-                                    <span class="text-slate-500 font-mono text-[10px]">IDLE</span>
-                                </div>
-                                <div id="xhs-node-visual" class="p-2 rounded-lg bg-dark-900/60 border border-dark-border flex items-center justify-between text-[11px]">
-                                    <div class="flex items-center gap-2">
-                                        <span class="w-2 h-2 rounded-full bg-slate-600"></span>
-                                        <span class="text-slate-300">4. AI 视觉排版 (Visual Prompts)</span>
-                                    </div>
-                                    <span class="text-slate-500 font-mono text-[10px]">IDLE</span>
-                                </div>
-                                <div id="xhs-node-checkpointer" class="p-2 rounded-lg bg-dark-900/60 border border-dark-border flex items-center justify-between text-[11px]">
-                                    <div class="flex items-center gap-2">
-                                        <span class="w-2 h-2 rounded-full bg-slate-600"></span>
-                                        <span class="text-slate-300">5. Postgres 快照持久化 & PII 脱敏</span>
-                                    </div>
-                                    <span class="text-slate-500 font-mono text-[10px]">IDLE</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 人在环路 (HITL) 动态审核干预面板 -->
-                        <div id="xhs-hitl-box" class="hidden p-3.5 rounded-xl border border-accent-amber/50 bg-accent-amber/10 space-y-2.5 transition-all">
-                            <div class="flex items-center gap-2 text-accent-amber text-[12px] font-medium">
-                                <span class="w-2 h-2 rounded-full bg-accent-amber animate-pulse"></span>
-                                <span>⏸️ 触发 interrupt() 中断 · 等待运营人员审核选题策略</span>
-                            </div>
-                            <p class="text-[11px] text-slate-300 leading-relaxed">
-                                StateGraph 状态已暂存至 Postgres Checkpointer。您可以在此修改爆款选题切入角度，点击批准后状态机将恢复继续向下流转：
-                            </p>
-                            <input id="xhs-hitl-topic" type="text" value="一眼沦陷！被闺蜜连环追问链接的【天然和田碧玉平安扣】到底有多绝✨" class="w-full bg-dark-900 border border-accent-amber/40 rounded-lg px-3 py-1.5 text-[12px] text-white focus:outline-none" />
-                            <button id="btn-xhs-hitl-approve" onclick="handleXhsHitlApprove()" class="w-full py-2 px-3 rounded-lg bg-accent-amber text-dark-950 font-medium text-[12px] hover:brightness-110 flex items-center justify-center gap-1.5">
-                                <i class="fas fa-check"></i>
-                                <span>批准选题并恢复流水线执行 (Resume Graph)</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- 右侧：真实多渠道图文卡片预览与生成成果 -->
-                    <div class="lg:col-span-7 space-y-4">
-                        <!-- 顶栏状态与多端生态视口切换器 -->
-                        <div class="glass-card p-3.5 flex items-center justify-between flex-wrap gap-2.5">
-                            <div class="flex items-center gap-1.5 p-1 rounded-xl bg-dark-900 border border-dark-border">
-                                <button type="button" id="channel-tab-xhs" onclick="switchChannel('xhs')" class="channel-btn px-3 py-1.5 rounded-lg text-[12px] font-medium flex items-center gap-1.5 transition-all bg-emerald-950/70 text-accent-emerald border border-accent-emerald/40">
-                                    <i class="fas fa-mobile-screen-button text-xs"></i>
-                                    <span>小红书图文</span>
-                                </button>
-                                <button type="button" id="channel-tab-wechat" onclick="switchChannel('wechat')" class="channel-btn px-3 py-1.5 rounded-lg text-[12px] font-medium text-slate-400 hover:text-white flex items-center gap-1.5 transition-all">
-                                    <i class="fab fa-weixin text-green-400 text-xs"></i>
-                                    <span>微信公众号</span>
-                                </button>
-                                <button type="button" id="channel-tab-video" onclick="switchChannel('video')" class="channel-btn px-3 py-1.5 rounded-lg text-[12px] font-medium text-slate-400 hover:text-white flex items-center gap-1.5 transition-all">
-                                    <i class="fas fa-clapperboard text-accent-cyan text-xs"></i>
-                                    <span>短视频分镜脚本</span>
-                                </button>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <div class="flex items-center gap-2 text-[12px] font-mono">
-                                    <span id="xhs-meta-status" class="flex items-center gap-1.5 text-accent-emerald">
-                                        <span class="w-2 h-2 rounded-full bg-accent-emerald"></span>
-                                        <span>就绪</span>
-                                    </span>
-                                    <span id="xhs-meta-latency" class="text-slate-400 text-[11px]">耗时: —</span>
-                                    <span id="xhs-meta-thread" class="text-slate-500 hidden sm:inline text-[11px]">Thread: idle</span>
-                                </div>
-                                <button type="button" onclick="copyXhsNote()" class="btn-ghost px-3 py-1.5 rounded-lg text-[12px] flex items-center gap-1.5">
-                                    <i class="fas fa-copy"></i>
-                                    <span>复制当前内容</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- 拟真多端内容预览卡片 -->
-                        <div id="xhs-preview-card" class="glass-card p-5 space-y-4 rounded-2xl border border-dark-border">
-                            <!-- 渠道 1: 小红书移动端拟真 -->
-                            <div id="view-channel-xhs" class="space-y-4">
-                                <!-- 顶部创作者栏 -->
-                                <div class="flex items-center justify-between pb-3 border-b border-dark-border">
-                                    <div class="flex items-center gap-2.5">
-                                        <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-accent-emerald to-accent-cyan flex items-center justify-center text-dark-950 font-bold text-xs">
-                                            琼
-                                        </div>
-                                        <div>
-                                            <div class="text-[12px] font-medium text-white flex items-center gap-1">
-                                                <span>琼华东方美学主理人</span>
-                                                <i class="fas fa-certificate text-accent-gold text-[10px]"></i>
-                                            </div>
-                                            <div class="text-[10px] text-slate-500 font-mono">官方认证珠宝鉴赏创作者</div>
-                                        </div>
-                                    </div>
-                                    <button type="button" class="px-2.5 py-1 rounded-full bg-accent-emerald/20 text-accent-emerald text-[11px] font-medium border border-accent-emerald/40">+ 关注</button>
-                                </div>
-
-                                <!-- 封面标语卡片 -->
-                                <div class="p-4 rounded-xl bg-gradient-to-r from-emerald-950/60 via-dark-900 to-teal-950/40 border border-accent-emerald/30">
-                                    <div class="text-[10px] text-accent-emerald font-mono uppercase tracking-wider mb-1">封面爆款大字标题</div>
-                                    <h3 id="xhs-out-cover" class="text-base font-bold text-white tracking-wide">
-                                        真正懂玉的女人，都在悄悄戴【天然和田碧玉平安扣】
-                                    </h3>
-                                </div>
-
-                                <!-- 笔记标题 -->
-                                <h4 id="xhs-out-title" class="text-sm font-semibold text-white leading-snug">
-                                    一眼沦陷！被闺蜜连环追问链接的【天然和田碧玉平安扣】到底有多绝✨
-                                </h4>
-
-                                <!-- 笔记正文 -->
-                                <div id="xhs-out-content" class="text-[12px] text-slate-300 leading-relaxed whitespace-pre-line bg-dark-900/60 p-4 rounded-xl border border-dark-border font-sans min-h-[140px]">
-                                    救命！真的没有人能拒绝天然玉石温润内敛的高级感吧，冷白皮拉满！
-
-                                    最近私信问得最多的就是这款【天然和田碧玉平安扣吊坠】，今天把实测感受和细节全部分享给大家：
-
-                                    🌿 选料与工艺：
-                                    精选原矿老坑料子，日光下泛着通透温润的油脂光泽。手工双面精抛光，佩戴在锁骨处极具呼吸感，不管是搭法式通勤衬衫还是新中式新茶服都温婉典雅！
-
-                                    💎 品质与证书保障：
-                                    一物一证，附带国家级宝玉石质检证书，支持全国权威机构终身复检。无胶无酸洗，佩戴更安心。
-                                </div>
-
-                                <!-- 话题标签 -->
-                                <div id="xhs-out-tags" class="flex flex-wrap gap-1.5">
-                                    <span class="tag">#我的首饰分享</span>
-                                    <span class="tag">#好物推荐</span>
-                                    <span class="tag">#新中式穿搭</span>
-                                    <span class="tag">#天然玉石</span>
-                                </div>
-
-                                <!-- 互动数据模拟栏 -->
-                                <div class="pt-3 border-t border-dark-border flex items-center justify-between text-[11px] text-slate-500">
-                                    <div class="flex items-center gap-4">
-                                        <span class="flex items-center gap-1 hover:text-red-400 transition-colors"><i class="fas fa-heart text-red-500"></i> 2.4k</span>
-                                        <span class="flex items-center gap-1 hover:text-accent-gold transition-colors"><i class="fas fa-star text-accent-gold"></i> 1.8k</span>
-                                        <span class="flex items-center gap-1"><i class="fas fa-comment-dots"></i> 368</span>
-                                    </div>
-                                    <span class="text-[10px] font-mono text-slate-600">小红书移动端拟真</span>
-                                </div>
-                            </div>
-
-                            <!-- 渠道 2: 微信公众号深度图文拟真 -->
-                            <div id="view-channel-wechat" class="hidden space-y-4">
-                                <!-- 公众号顶部信息 -->
-                                <div class="flex items-center justify-between pb-3 border-b border-dark-border text-[11px]">
-                                    <div class="flex items-center gap-2">
-                                        <span class="px-1.5 py-0.5 rounded bg-green-950/60 border border-green-500/30 text-green-400 text-[10px] font-medium">原创</span>
-                                        <span class="text-white font-medium">东方雅物志</span>
-                                        <span class="text-slate-500">· 3分钟阅读</span>
-                                    </div>
-                                    <span class="text-slate-500 font-mono text-[10px]">微信公众平台规范</span>
-                                </div>
-
-                                <!-- 文章大标题 -->
-                                <h3 id="wechat-out-title" class="text-base font-bold text-white tracking-wide leading-snug">
-                                    真正懂玉的女人，都在悄悄佩戴【天然和田碧玉】
-                                </h3>
-
-                                <div class="flex items-center gap-2 text-[11px] text-slate-500 pb-1">
-                                    <span id="wechat-out-author">作者: 琼华东方美学</span>
-                                    <span>·</span>
-                                    <span>发布于 专栏 · 东方珠宝美学</span>
-                                </div>
-
-                                <!-- 经典公众号金句引用框 -->
-                                <div class="p-3.5 rounded-lg bg-emerald-950/30 border-l-4 border-accent-emerald text-[12px] text-emerald-200/90 italic">
-                                    <p id="wechat-out-quote">「玉之美，有如君子之德；温润内敛，胜过一切繁复堆叠。」</p>
-                                </div>
-
-                                <!-- 公众号正文 -->
-                                <div id="wechat-out-content" class="text-[12px] text-slate-300 leading-relaxed whitespace-pre-line bg-dark-900/60 p-4 rounded-xl border border-dark-border min-h-[140px]">
-                                    【导语】
-                                    很多朋友私信问我，预算有限的前提下，想要一件既有东方气韵又耐看百搭的珠宝，到底该选什么？我的答案始终如一：选一块老坑天然玉料制作的经典平安扣。
-
-                                    一、辨料之妙：什么是真正的“老坑温润”？
-                                    精选新疆原矿老料，日光下泛着油脂般内敛的光泽。它不靠火彩夺目，而靠时间沉淀出的水润肌理。手工双面精抛，贴近肌肤处温润如凝脂。
-
-                                    二、搭配之道：新中式美学的画龙点睛
-                                    无论是搭法式通勤衬衫的随性利落，还是新中式茶服的清冷淡雅，一枚平安扣在锁骨之间，恰到好处地点亮了整个人的温婉气场。
-
-                                    三、品质承诺：一物一证，假一赔十
-                                    每一件均附带国家级珠宝玉石质检证书，支持全国权威机构复检。岁月赠礼，长久相伴。
-                                </div>
-
-                                <!-- 公众号底部互动数据 -->
-                                <div class="pt-3 border-t border-dark-border flex items-center justify-between text-[11px] text-slate-500">
-                                    <div class="flex items-center gap-4">
-                                        <span>阅读 <strong class="text-slate-300">10万+</strong></span>
-                                        <span>在看 <strong class="text-slate-300">890</strong></span>
-                                        <span>点赞 <strong class="text-slate-300">1.2k</strong></span>
-                                    </div>
-                                    <span class="text-[10px] font-mono text-slate-600">公众号文章拟真</span>
-                                </div>
-                            </div>
-
-                            <!-- 渠道 3: 短视频分镜脚本拟真 -->
-                            <div id="view-channel-video" class="hidden space-y-4">
-                                <!-- 分镜脚本参数栏 -->
-                                <div class="p-3 rounded-xl bg-dark-900 border border-dark-border flex items-center justify-between text-[11px]">
-                                    <div class="flex items-center gap-2">
-                                        <i class="fas fa-video text-accent-cyan"></i>
-                                        <span id="video-out-title" class="text-white font-medium">【爆款短视频带货分镜】30秒讲透天然和田碧玉平安扣</span>
-                                    </div>
-                                    <span id="video-out-meta" class="tag text-[10px]">30s · 黄金3s留人</span>
-                                </div>
-
-                                <!-- 分镜列表 -->
-                                <div id="video-out-shots" class="space-y-2.5 text-[11px]">
-                                    <div class="p-3 rounded-xl bg-dark-900/60 border border-dark-border/80 space-y-1.5">
-                                        <div class="flex items-center justify-between text-[11px] text-accent-cyan font-mono font-medium">
-                                            <span>分镜 01 · 【大特写】 (0-3s 黄金开头)</span>
-                                            <span class="text-slate-500">音效: 玉石轻叩声</span>
-                                        </div>
-                                        <div class="text-slate-400"><strong class="text-slate-300">画面:</strong> 45度角强光微距照射平安扣，展示透光油脂感与胶质感，镜头慢速推入。</div>
-                                        <div class="text-emerald-300 font-mono"><strong class="text-slate-300">台词:</strong> “姐妹们，别再花冤枉钱买酸洗注胶了！真正懂玉的行家，只看这一抹老料油脂光…”</div>
-                                    </div>
-
-                                    <div class="p-3 rounded-xl bg-dark-900/60 border border-dark-border/80 space-y-1.5">
-                                        <div class="flex items-center justify-between text-[11px] text-accent-cyan font-mono font-medium">
-                                            <span>分镜 02 · 【对比中景】 (3-10s 信任击穿)</span>
-                                            <span class="text-slate-500">音效: 证书盖章音</span>
-                                        </div>
-                                        <div class="text-slate-400"><strong class="text-slate-300">画面:</strong> 主播双手对比：左手市场普通染色料，右手且末老矿天然A料，展示证书防伪钢印与一石一码。</div>
-                                        <div class="text-emerald-300 font-mono"><strong class="text-slate-300">台词:</strong> “很多人以为玉石水深，其实认准一石一证一码，全国终身复检，假一赔十！”</div>
-                                    </div>
-
-                                    <div class="p-3 rounded-xl bg-dark-900/60 border border-dark-border/80 space-y-1.5">
-                                        <div class="flex items-center justify-between text-[11px] text-accent-cyan font-mono font-medium">
-                                            <span>分镜 03 · 【近景上身】 (10-22s 种草赋能)</span>
-                                            <span class="text-slate-500">音效: 舒缓国风琵琶</span>
-                                        </div>
-                                        <div class="text-slate-400"><strong class="text-slate-300">画面:</strong> 模特佩戴在锁骨处，搭配白色棉麻新中式上衣，窗边自然光慢动作展示。</div>
-                                        <div class="text-emerald-300 font-mono"><strong class="text-slate-300">台词:</strong> “不挑肤色不挑年龄，戴在颈间是说不出的温润高级。不管是日常通勤还是见长辈，贵气由内而外。”</div>
-                                    </div>
-
-                                    <div class="p-3 rounded-xl bg-dark-900/60 border border-dark-border/80 space-y-1.5">
-                                        <div class="flex items-center justify-between text-[11px] text-accent-cyan font-mono font-medium">
-                                            <span>分镜 04 · 【促单特写】 (22-30s 极速转化)</span>
-                                            <span class="text-slate-500">音效: 倒计时心跳声</span>
-                                        </div>
-                                        <div class="text-slate-400"><strong class="text-slate-300">画面:</strong> 精装国风锦盒包装展示，附赠擦玉布与证书，左下角购物车手势指引。</div>
-                                        <div class="text-emerald-300 font-mono"><strong class="text-slate-300">台词:</strong> “今天专场特惠仅放20条，抢完立即下架。点击左下角小黄车，直接结缘带回家！”</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 视觉配图方案建议 -->
-                        <div class="glass-card p-4 space-y-2">
-                            <div class="flex items-center gap-2 text-xs font-medium text-slate-300">
-                                <i class="fas fa-images text-accent-cyan"></i>
-                                <span>AI 视觉排版方案与拍摄机位建议</span>
-                            </div>
-                            <div id="xhs-out-visuals" class="text-[11px] text-slate-400 space-y-1 font-mono leading-relaxed">
-                                <div>· 首图方案：自然窗边柔光拍摄，手持平安扣特写，背景搭配淡青色茶席，打大字标语</div>
-                                <div>· 图2：强光手电45度角打灯微距，展示内部细腻无杂质的胶质感</div>
-                                <div>· 图3：新中式棉麻衬衫佩戴全身效果，展示锁骨与颈部线条</div>
-                                <div>· 图4：国家级权威珠宝质检证书特写与钢印防伪码</div>
-                            </div>
-                        </div>
-
-                        <!-- 底层 Checkpointer 信息 -->
-                        <div id="xhs-out-checkpointer" class="p-3 rounded-lg bg-dark-900 border border-dark-border text-[11px] font-mono text-slate-500 flex items-center justify-between">
-                            <span>Postgres Checkpointer: thread_id=xhs_langgraph_8820 · Snapshot Ready</span>
-                            <span class="text-accent-emerald flex items-center gap-1"><i class="fas fa-shield-halved"></i> PII 脱敏已通过</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {% include "partials/tab_xhs.html" %}
 
             <!-- ------------------------------------------------------------- -->
             <!-- TAB 9: 达摩院 FunClip 多模态音视频智能切片 (FunASR) -->
             <!-- ------------------------------------------------------------- -->
-            <div id="tab-funclip" class="tab-content hidden space-y-5">
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-                    <!-- 左侧：样本选择与切片参数 -->
-                    <div class="lg:col-span-5 glass-card p-5 space-y-4">
-                        <div class="flex items-center justify-between pb-3 border-b border-dark-border">
-                            <div class="flex items-center gap-2">
-                                <i class="fas fa-film text-accent-cyan text-sm"></i>
-                                <h3 class="font-semibold text-white text-sm">多模态音视频智能切片工作站</h3>
-                            </div>
-                            <span class="tag tag-accent text-[11px] font-mono">FunASR 工业级</span>
-                        </div>
-
-                        <!-- 演示样本选择 -->
-                        <div>
-                            <label class="block text-[11px] text-slate-500 mb-1.5">选择珠宝直播/录像样本</label>
-                            <div class="space-y-1.5">
-                                <button type="button" onclick="setFunclipPreset('sample-1')" class="w-full text-left p-2.5 rounded-lg border border-dark-border hover:border-accent-cyan/50 bg-dark-900/60 transition-colors flex items-center justify-between text-[12px]">
-                                    <div>
-                                        <div class="text-slate-200 font-medium">📹 样本 1: 珠宝原石砍价开石现场</div>
-                                        <div class="text-[10px] text-slate-500 font-mono mt-0.5">3小时原声直播 · 主播与货主极限拉扯</div>
-                                    </div>
-                                    <span class="tag">03:12:48</span>
-                                </button>
-                                <button type="button" onclick="setFunclipPreset('sample-2')" class="w-full text-left p-2.5 rounded-lg border border-dark-border hover:border-accent-cyan/50 bg-dark-900/60 transition-colors flex items-center justify-between text-[12px]">
-                                    <div>
-                                        <div class="text-slate-200 font-medium">🎙️ 样本 2: 老坑冰种辨伪专家解说</div>
-                                        <div class="text-[10px] text-slate-500 font-mono mt-0.5">微距荧光反应实测 · 专家科普干货</div>
-                                    </div>
-                                    <span class="tag">01:18:45</span>
-                                </button>
-                                <button type="button" onclick="setFunclipPreset('sample-3')" class="w-full text-left p-2.5 rounded-lg border border-dark-border hover:border-accent-cyan/50 bg-dark-900/60 transition-colors flex items-center justify-between text-[12px]">
-                                    <div>
-                                        <div class="text-slate-200 font-medium">🎬 样本 3: 非遗金丝镶嵌工序微距</div>
-                                        <div class="text-[10px] text-slate-500 font-mono mt-0.5">古法手工错金银 · 匠人高精度制作</div>
-                                    </div>
-                                    <span class="tag">00:54:20</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- 当前样本信息卡片 -->
-                        <div class="p-3 rounded-lg bg-dark-900 border border-dark-border space-y-1 text-[11px]">
-                            <div class="flex justify-between">
-                                <span class="text-slate-500">当前文件：</span>
-                                <span id="funclip-video-name" class="text-slate-200 font-medium truncate max-w-[220px]">【直播高光】珠宝原石砍价开石现场</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-slate-500">流媒体规格：</span>
-                                <span id="funclip-video-meta" class="text-slate-400 font-mono">1080P · 16kHz PCM · H.264</span>
-                            </div>
-                        </div>
-
-                        <!-- 达摩院热词增强词典 -->
-                        <div>
-                            <div class="flex items-center justify-between mb-1.5">
-                                <label class="text-[11px] text-slate-500">达摩院专业热词增强词典 (Hotwords)</label>
-                                <span class="text-[10px] text-accent-cyan font-mono">提升珠宝术语召回率</span>
-                            </div>
-                            <textarea id="funclip-hotwords" rows="2" class="w-full bg-dark-900 border border-dark-border rounded-lg px-3.5 py-2 text-[12px] text-white focus:outline-none resize-none">冰种, 玻璃种, 帝王绿, 极品阳绿, 缅甸老坑, 和田碧玉, 起胶起莹</textarea>
-                        </div>
-
-                        <!-- 说话人分离 (Diarization) -->
-                        <div class="flex items-center justify-between p-2.5 rounded-lg bg-dark-900 border border-dark-border text-[12px]">
-                            <div class="flex items-center gap-2">
-                                <i class="fas fa-users text-accent-cyan text-xs"></i>
-                                <span class="text-slate-200">启用说话人分离 (Diarization)</span>
-                            </div>
-                            <input id="funclip-diarization" type="checkbox" checked class="w-4 h-4 accent-emerald-500" />
-                        </div>
-
-                        <!-- 执行切片按钮 -->
-                        <button id="btn-funclip-run" onclick="handleFunclipSlice()" class="w-full py-2.5 px-4 rounded-xl font-medium text-[13px] bg-gradient-to-r from-accent-cyan to-teal-500 text-dark-950 hover:brightness-110 shadow-lg shadow-cyan-950/40 transition-all flex items-center justify-center gap-2">
-                            <i class="fas fa-scissors text-xs"></i>
-                            <span>执行 FunASR 识别与精准切片</span>
-                        </button>
-
-                        <!-- 技术特性背书 -->
-                        <div class="p-3 rounded-lg bg-dark-900 border border-dark-border text-[11px] text-slate-500 space-y-1">
-                            <div class="flex justify-between">
-                                <span>语音识别底座：</span><span class="text-slate-300">达摩院 FunASR Paraformer</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span>时间戳精度：</span><span class="text-accent-cyan font-mono">毫秒级逐字对齐 (Timestamp)</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span>切片导出格式：</span><span class="text-slate-300">MP4 / WAV / SRT / VTT</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 右侧：切片时间轴轨道与字幕展示 -->
-                    <div class="lg:col-span-7 space-y-4">
-                        <!-- 顶栏状态 -->
-                        <div class="glass-card p-4 flex items-center justify-between">
-                            <div class="flex items-center gap-3 text-[12px] font-mono">
-                                <span id="funclip-meta-status" class="flex items-center gap-1.5 text-accent-cyan">
-                                    <span class="w-2 h-2 rounded-full bg-accent-cyan"></span>
-                                    <span>就绪 (已识别 3 段高光切片)</span>
-                                </span>
-                                <span id="funclip-meta-latency" class="text-slate-400">耗时: —</span>
-                            </div>
-                            <button onclick="copyFunclipSrt()" class="btn-ghost px-3 py-1.5 rounded-lg text-[12px] flex items-center gap-1.5">
-                                <i class="fas fa-file-lines"></i>
-                                <span>复制 SRT 字幕</span>
-                            </button>
-                        </div>
-
-                        <!-- 播放器模拟预览条 -->
-                        <div id="funclip-player-bar" class="glass-card p-4 rounded-2xl border border-dark-border space-y-2">
-                            <div class="flex items-center justify-between text-xs text-slate-400">
-                                <div class="flex items-center gap-2">
-                                    <i class="fas fa-circle-play text-accent-cyan text-base"></i>
-                                    <span id="funclip-now-playing" class="text-white font-medium">片段预览: 00:00:15 - 00:01:42【原石切开爆出极品阳绿高光解说】</span>
-                                </div>
-                                <span class="font-mono text-accent-cyan">PLAYING</span>
-                            </div>
-                            <div class="w-full bg-dark-900 h-2 rounded-full overflow-hidden border border-dark-border/80">
-                                <div class="bg-gradient-to-r from-accent-cyan to-accent-emerald h-full w-2/3 rounded-full animate-pulse"></div>
-                            </div>
-                        </div>
-
-                        <!-- 智能切片轨道时间轴卡片 -->
-                        <div class="glass-card p-5 space-y-3 rounded-2xl border border-dark-border">
-                            <div class="flex items-center justify-between pb-2 border-b border-dark-border">
-                                <div class="flex items-center gap-2">
-                                    <i class="fas fa-layer-group text-accent-cyan text-xs"></i>
-                                    <h4 class="text-sm font-semibold text-white">智能切片轨道 (Timeline Segments)</h4>
-                                </div>
-                                <span class="tag">置信度评分 > 98%</span>
-                            </div>
-
-                            <div id="funclip-timeline" class="space-y-2.5">
-                                <!-- Segment 1 -->
-                                <div class="p-3.5 rounded-xl bg-dark-900/70 border border-dark-border hover:border-accent-cyan/40 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                                    <div>
-                                        <div class="flex items-center gap-2">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-accent-cyan"></span>
-                                            <span class="text-[13px] font-medium text-white">切片 1 · 原石切开爆出极品阳绿高光解说</span>
-                                            <span class="tag">置信度 99.4%</span>
-                                        </div>
-                                        <div class="text-[11px] text-slate-400 font-mono mt-1">
-                                            区间: 00:00:15 - 00:01:42 · 时长: 01:27 · 命中热词: 极品阳绿, 帝王绿, 冰种
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center gap-2 flex-shrink-0">
-                                        <button onclick="playFunclipSegment(1)" class="btn-ghost px-2.5 py-1 rounded text-[11px]">
-                                            <i class="fas fa-play text-[10px] mr-1"></i> 试听预览
-                                        </button>
-                                        <button onclick="pipeFunclipToXhs(1)" class="px-2.5 py-1 rounded bg-accent-emerald/20 border border-accent-emerald/40 text-accent-emerald hover:bg-accent-emerald/30 text-[11px] flex items-center gap-1">
-                                            <i class="fas fa-feather-pointed text-[10px]"></i> 推送到内容工厂
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <!-- Segment 2 -->
-                                <div class="p-3.5 rounded-xl bg-dark-900/70 border border-dark-border hover:border-accent-cyan/40 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                                    <div>
-                                        <div class="flex items-center gap-2">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-accent-cyan"></span>
-                                            <span class="text-[13px] font-medium text-white">切片 2 · 主播与货主封箱砍价极限拉扯</span>
-                                            <span class="tag">置信度 98.9%</span>
-                                        </div>
-                                        <div class="text-[11px] text-slate-400 font-mono mt-1">
-                                            区间: 00:03:10 - 00:04:25 · 时长: 01:15 · 命中热词: 缅甸老坑, 放漏
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center gap-2 flex-shrink-0">
-                                        <button onclick="playFunclipSegment(2)" class="btn-ghost px-2.5 py-1 rounded text-[11px]">
-                                            <i class="fas fa-play text-[10px] mr-1"></i> 试听预览
-                                        </button>
-                                        <button onclick="pipeFunclipToXhs(2)" class="px-2.5 py-1 rounded bg-accent-emerald/20 border border-accent-emerald/40 text-accent-emerald hover:bg-accent-emerald/30 text-[11px] flex items-center gap-1">
-                                            <i class="fas fa-feather-pointed text-[10px]"></i> 推送到内容工厂
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <!-- Segment 3 -->
-                                <div class="p-3.5 rounded-xl bg-dark-900/70 border border-dark-border hover:border-accent-cyan/40 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                                    <div>
-                                        <div class="flex items-center gap-2">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-accent-cyan"></span>
-                                            <span class="text-[13px] font-medium text-white">切片 3 · 一石一卡国检防伪证书展示</span>
-                                            <span class="tag">置信度 98.1%</span>
-                                        </div>
-                                        <div class="text-[11px] text-slate-400 font-mono mt-1">
-                                            区间: 00:07:05 - 00:08:18 · 时长: 01:13 · 命中热词: 国检证书, 一石一证
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center gap-2 flex-shrink-0">
-                                        <button onclick="playFunclipSegment(3)" class="btn-ghost px-2.5 py-1 rounded text-[11px]">
-                                            <i class="fas fa-play text-[10px] mr-1"></i> 试听预览
-                                        </button>
-                                        <button onclick="pipeFunclipToXhs(3)" class="px-2.5 py-1 rounded bg-accent-emerald/20 border border-accent-emerald/40 text-accent-emerald hover:bg-accent-emerald/30 text-[11px] flex items-center gap-1">
-                                            <i class="fas fa-feather-pointed text-[10px]"></i> 推送到内容工厂
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 毫秒级时间戳与说话人识别结果 -->
-                        <div class="glass-card p-4 space-y-2.5">
-                            <div class="flex items-center justify-between text-xs font-medium text-slate-300">
-                                <span class="flex items-center gap-1.5"><i class="fas fa-comments text-accent-gold"></i> FunASR 毫秒级时间戳与说话人识别</span>
-                                <span class="text-slate-500 font-mono text-[11px]">Diarization 2 角色</span>
-                            </div>
-                            <div id="funclip-transcript" class="space-y-2 text-[12px] bg-dark-900/60 p-3.5 rounded-xl border border-dark-border font-mono leading-relaxed max-h-48 overflow-y-auto">
-                                <div class="text-slate-400"><span class="text-accent-cyan">[00:00:15.240 -> 00:00:23.810]</span> <span class="text-emerald-400">Spk 1 (主讲主播)</span>: 家人们注意看打灯后的表现！荧光非常强，整块老坑料子已经完全化开了，是难得的极品阳绿！</div>
-                                <div class="text-slate-400"><span class="text-accent-cyan">[00:00:24.100 -> 00:00:31.500]</span> <span class="text-amber-400">Spk 2 (带货助播)</span>: 公屏扣 1 的粉丝直接锁单，今天只有这一块老坑料，中间商差价全部砍到底！</div>
-                                <div class="text-slate-400"><span class="text-accent-cyan">[00:00:31.900 -> 00:00:39.400]</span> <span class="text-emerald-400">Spk 1 (主讲主播)</span>: 附带国家级质检证书，支持全国终身复检，假一赔十！3、2、1，直接上链接！</div>
-                            </div>
-                        </div>
-
-                        <!-- 标准 SRT 字幕代码块 -->
-                        <div class="glass-card p-4 space-y-2">
-                            <div class="flex items-center justify-between text-xs font-medium text-slate-300">
-                                <span class="flex items-center gap-1.5"><i class="fas fa-code text-accent-cyan"></i> 实时 SRT 字幕预览</span>
-                                <span class="text-[10px] text-slate-500 font-mono">标准 SubRip 格式</span>
-                            </div>
-                            <pre id="funclip-srt-content" class="text-[11px] text-slate-400 bg-dark-900 p-3 rounded-lg border border-dark-border font-mono overflow-x-auto max-h-36 overflow-y-auto leading-relaxed">1
-00:00:15,240 --> 00:00:23,810
-[Spk 1] 家人们注意看打灯后的表现！荧光非常强，整块老坑料子已经完全化开了，是难得的极品阳绿！
-
-2
-00:00:24,100 --> 00:00:31,500
-[Spk 2] 公屏扣 1 的粉丝直接锁单，今天只有这一块老坑料，中间商差价全部砍到底！
-
-3
-00:00:31,900 --> 00:00:39,400
-[Spk 1] 附带国家级质检证书，支持全国终身复检，假一赔十！3、2、1，直接上链接！</pre>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {% include "partials/tab_funclip.html" %}
 
             <!-- ------------------------------------------------------------- -->
         </div>
@@ -2613,39 +2038,349 @@
         }
 
         // -------------------------------------------------------------
-        // TAB 9: 达摩院 FunClip 多模态音视频智能切片交互控制器
+        // TAB 9: 达摩院 FunClip 多模态音视频智能切片交互控制器 (Canvas 波形引擎)
         // -------------------------------------------------------------
         const FUNCLIP_SAMPLES = {
             'sample-1': {
                 name: '【直播高光】珠宝原石砍价开石现场',
                 meta: '03:12:48 · 1080P · 16kHz PCM · H.264',
+                totalTimeStr: '03:12:48',
+                durationSec: 600, // 10分钟精选展示轴 (秒)
                 hotwords: '冰种, 玻璃种, 帝王绿, 极品阳绿, 缅甸老坑, 和田碧玉, 起胶起莹',
-                pName: '老坑冰种极品阳绿吊坠'
+                pName: '老坑冰种极品阳绿吊坠',
+                clips: [
+                    { id: 1, title: '原石切开爆出极品阳绿高光解说', start: '00:00:15', end: '00:01:42', startSec: 15, endSec: 102, duration: '01:27', confidence: 0.994, color: '#06b6d4', hotwords: ['极品阳绿', '帝王绿', '冰种'] },
+                    { id: 2, title: '主播与货主封箱砍价极限拉扯', start: '00:03:10', end: '00:04:25', startSec: 190, endSec: 265, duration: '01:15', confidence: 0.989, color: '#f59e0b', hotwords: ['缅甸老坑', '放漏'] },
+                    { id: 3, title: '一石一卡国检防伪证书展示', start: '00:07:05', end: '00:08:18', startSec: 425, endSec: 498, duration: '01:13', confidence: 0.981, color: '#10b981', hotwords: ['国检证书', '一石一证'] }
+                ]
             },
             'sample-2': {
                 name: '【专业鉴宝】缅甸老坑冰种辨伪专家解说',
                 meta: '01:18:45 · 1080P · 16kHz PCM · H.264',
+                totalTimeStr: '01:18:45',
+                durationSec: 1800, // 30分钟展示轴 (秒)
                 hotwords: '冰种, 起胶, 荧光反应, 天然A货, 一石一证, 权威证书',
-                pName: '天然老坑冰种手镯'
+                pName: '天然老坑冰种手镯',
+                clips: [
+                    { id: 1, title: '老坑料起胶与注胶酸洗鉴别要点', start: '00:04:12', end: '00:05:30', startSec: 252, endSec: 330, duration: '01:18', confidence: 0.988, color: '#06b6d4', hotwords: ['冰种', '起胶', '老坑'] },
+                    { id: 2, title: '紫外荧光灯下荧光反应实测对比', start: '00:12:05', end: '00:13:40', startSec: 725, endSec: 820, duration: '01:35', confidence: 0.992, color: '#f59e0b', hotwords: ['荧光反应', '天然A货'] },
+                    { id: 3, title: '国检证书钢印与防伪查询全流程', start: '00:25:30', end: '00:26:45', startSec: 1530, endSec: 1605, duration: '01:15', confidence: 0.985, color: '#10b981', hotwords: ['一石一证', '质检证书'] }
+                ]
             },
             'sample-3': {
                 name: '【工艺微距】非遗手工金丝镶嵌工序微距',
                 meta: '00:54:20 · 4K · 16kHz PCM · H.264',
+                totalTimeStr: '00:54:20',
+                durationSec: 2100, // 35分钟展示轴 (秒)
                 hotwords: '金丝镶嵌, 非遗手工, 和田碧玉, 金玉良缘, 错金银, 宫廷古法',
-                pName: '非遗金丝镶嵌和田玉锁骨链'
+                pName: '非遗金丝镶嵌和田玉锁骨链',
+                clips: [
+                    { id: 1, title: '0.1mm极细纯金丝手工压嵌凹槽工序', start: '00:02:10', end: '00:03:35', startSec: 130, endSec: 215, duration: '01:25', confidence: 0.986, color: '#06b6d4', hotwords: ['金丝镶嵌', '非遗手工'] },
+                    { id: 2, title: '和田碧玉打磨抛光与金玉生辉特写', start: '00:15:20', end: '00:16:45', startSec: 920, endSec: 1005, duration: '01:25', confidence: 0.995, color: '#f59e0b', hotwords: ['和田碧玉', '金玉良缘'] },
+                    { id: 3, title: '匠人解说中国传统宫廷错金银技艺传承', start: '00:31:00', end: '00:32:15', startSec: 1860, endSec: 1935, duration: '01:15', confidence: 0.978, color: '#10b981', hotwords: ['错金银', '宫廷古法'] }
+                ]
             }
         };
 
         let currentFunclipSample = 'sample-1';
         let currentFunclipData = null;
+        let funclipCurrentTime = 15; // 当前播放指针秒数
+        let funclipIsPlaying = false;
+        let funclipAnimId = null;
+        let funclipLastFrameTs = 0;
+        let funclipActiveClipId = 1;
+        let funclipWaveZoom = 1.0;
+        let isScrubbingWaveform = false;
+
+        function secToTimeString(sec) {
+            sec = Math.max(0, Math.floor(sec));
+            const h = Math.floor(sec / 3600);
+            const m = Math.floor((sec % 3600) / 60);
+            const s = sec % 60;
+            return (h < 10 ? '0' + h : h) + ':' + (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+        }
+
+        function parseTimeStringToSec(str) {
+            if (!str) return 0;
+            const parts = str.split(':').map(Number);
+            if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+            if (parts.length === 2) return parts[0] * 60 + parts[1];
+            return Number(str) || 0;
+        }
+
+        // 依据样本与时间戳区间生成拟真音频波形幅度数组 (140条)
+        function generateWaveformAmps(sampleKey) {
+            const sample = FUNCLIP_SAMPLES[sampleKey] || FUNCLIP_SAMPLES['sample-1'];
+            const totalSec = sample.durationSec || 600;
+            const barCount = 140;
+            const bars = [];
+            let seed = 0;
+            for (let i = 0; i < sample.name.length; i++) seed += sample.name.charCodeAt(i);
+
+            for (let i = 0; i < barCount; i++) {
+                const barSec = (i / barCount) * totalSec;
+                const inClip = sample.clips.find(c => barSec >= c.startSec && barSec <= c.endSec);
+                let baseAmp = 0.18 + 0.12 * Math.sin(i * 0.35 + seed);
+                if (inClip) {
+                    const speechPulse = 0.55 + 0.35 * Math.abs(Math.sin(i * 1.2 + seed * 0.5));
+                    baseAmp = Math.max(baseAmp, speechPulse);
+                } else if (i % 7 === 0) {
+                    baseAmp = 0.06;
+                }
+                bars.push(Math.min(1.0, Math.max(0.08, baseAmp)));
+            }
+            return bars;
+        }
+
+        // 绘制 Canvas 专业音频波形轨道与高光切片区域
+        function drawFunclipWaveform() {
+            const canvas = document.getElementById('funclip-waveform-canvas');
+            if (!canvas) return;
+            const rect = canvas.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            const w = rect.width || canvas.offsetWidth || 640;
+            const h = rect.height || 112;
+
+            canvas.width = Math.floor(w * dpr);
+            canvas.height = Math.floor(h * dpr);
+            const ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+
+            const sample = FUNCLIP_SAMPLES[currentFunclipSample] || FUNCLIP_SAMPLES['sample-1'];
+            const totalSec = (sample.durationSec || 600) / funclipWaveZoom;
+            const activeClips = (currentFunclipData && currentFunclipData.clips) ? currentFunclipData.clips.map(c => ({
+                id: c.id,
+                title: c.title,
+                startSec: parseTimeStringToSec(c.start),
+                endSec: parseTimeStringToSec(c.end),
+                color: c.id === 1 ? '#06b6d4' : (c.id === 2 ? '#f59e0b' : '#10b981')
+            })) : sample.clips;
+
+            // 1. 背景色与网格线
+            ctx.fillStyle = '#080d1a';
+            ctx.fillRect(0, 0, w, h);
+
+            // 标尺区域 (顶部 20px)
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+            ctx.fillRect(0, 0, w, 20);
+            ctx.strokeStyle = 'rgba(51, 65, 85, 0.5)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(0, 20);
+            ctx.lineTo(w, 20);
+            ctx.stroke();
+
+            // 标尺时间刻度
+            ctx.font = '9px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
+            ctx.fillStyle = '#64748b';
+            const tickIntervalSec = totalSec <= 300 ? 30 : (totalSec <= 900 ? 60 : 180);
+            for (let sec = 0; sec <= totalSec; sec += tickIntervalSec) {
+                const tickX = (sec / totalSec) * w;
+                if (tickX > w) break;
+                ctx.beginPath();
+                ctx.moveTo(tickX, 12);
+                ctx.lineTo(tickX, 20);
+                ctx.stroke();
+                const label = secToTimeString(sec).substring(3);
+                ctx.fillText(label, Math.min(w - 28, Math.max(2, tickX - 12)), 10);
+            }
+
+            // 水平分贝电平基准线
+            const centerY = 20 + (h - 20) / 2;
+            ctx.strokeStyle = 'rgba(51, 65, 85, 0.25)';
+            ctx.setLineDash([3, 4]);
+            ctx.beginPath();
+            ctx.moveTo(0, centerY);
+            ctx.lineTo(w, centerY);
+            ctx.moveTo(0, centerY - (h - 20) * 0.35);
+            ctx.lineTo(w, centerY - (h - 20) * 0.35);
+            ctx.moveTo(0, centerY + (h - 20) * 0.35);
+            ctx.lineTo(w, centerY + (h - 20) * 0.35);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // 2. 绘制 3 段高光切片置信度区间背板
+            activeClips.forEach(c => {
+                const x1 = (c.startSec / totalSec) * w;
+                const x2 = (c.endSec / totalSec) * w;
+                const regionW = Math.max(6, x2 - x1);
+                const isActive = (c.id === funclipActiveClipId);
+
+                ctx.fillStyle = isActive ? (c.color === '#06b6d4' ? 'rgba(6, 182, 212, 0.22)' : (c.color === '#f59e0b' ? 'rgba(245, 158, 11, 0.22)' : 'rgba(16, 185, 129, 0.22)')) : 'rgba(51, 65, 85, 0.2)';
+                ctx.fillRect(x1, 20, regionW, h - 20);
+
+                ctx.strokeStyle = c.color;
+                ctx.lineWidth = isActive ? 2 : 1;
+                ctx.beginPath();
+                ctx.moveTo(x1, 20);
+                ctx.lineTo(x1, h);
+                ctx.moveTo(x2, 20);
+                ctx.lineTo(x2, h);
+                ctx.stroke();
+
+                if (regionW > 50) {
+                    ctx.fillStyle = c.color;
+                    ctx.globalAlpha = 0.85;
+                    ctx.fillRect(x1, 21, Math.min(regionW, 115), 14);
+                    ctx.globalAlpha = 1.0;
+                    ctx.fillStyle = '#02101a';
+                    ctx.font = 'bold 9px sans-serif';
+                    ctx.fillText('切片 ' + c.id + ' · ' + c.title.substring(0, 6), x1 + 4, 32);
+                }
+            });
+
+            // 3. 绘制 140 根音频频谱柱
+            const amps = generateWaveformAmps(currentFunclipSample);
+            const barCount = amps.length;
+            const barW = Math.max(1.8, (w / barCount) * 0.75);
+            const stepW = w / barCount;
+            const maxBarH = (h - 28) * 0.46;
+
+            for (let i = 0; i < barCount; i++) {
+                const bx = i * stepW + (stepW - barW) / 2;
+                const barSec = (i / barCount) * totalSec;
+                const amp = amps[i];
+                const barH = Math.max(2, amp * maxBarH);
+
+                const isPlayed = barSec <= funclipCurrentTime;
+                const inClip = activeClips.find(c => barSec >= c.startSec && barSec <= c.endSec);
+
+                if (isPlayed) {
+                    const grad = ctx.createLinearGradient(0, centerY - barH, 0, centerY + barH);
+                    grad.addColorStop(0, '#38bdf8');
+                    grad.addColorStop(0.5, '#34d399');
+                    grad.addColorStop(1, '#06b6d4');
+                    ctx.fillStyle = grad;
+                } else if (inClip) {
+                    ctx.fillStyle = inClip.color;
+                } else {
+                    ctx.fillStyle = '#334155';
+                }
+
+                ctx.beginPath();
+                if (ctx.roundRect) {
+                    ctx.roundRect(bx, centerY - barH, barW, barH * 2, 1.5);
+                } else {
+                    ctx.rect(bx, centerY - barH, barW, barH * 2);
+                }
+                ctx.fill();
+            }
+
+            // 4. 绘制当前播放游标 (Playhead Scrubber)
+            const playheadX = Math.min(w, Math.max(0, (funclipCurrentTime / totalSec) * w));
+            ctx.shadowColor = '#06b6d4';
+            ctx.shadowBlur = 8;
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(playheadX, 10);
+            ctx.lineTo(playheadX, h);
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            ctx.fillStyle = '#06b6d4';
+            ctx.beginPath();
+            ctx.moveTo(playheadX - 5, 10);
+            ctx.lineTo(playheadX + 5, 10);
+            ctx.lineTo(playheadX, 18);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.moveTo(playheadX, h - 8);
+            ctx.lineTo(playheadX + 4, h - 4);
+            ctx.lineTo(playheadX, h);
+            ctx.lineTo(playheadX - 4, h - 4);
+            ctx.closePath();
+            ctx.fill();
+        }
 
         function setFunclipPreset(sampleId) {
             const sample = FUNCLIP_SAMPLES[sampleId];
             if (!sample) return;
             currentFunclipSample = sampleId;
+            currentFunclipData = null;
+            funclipActiveClipId = 1;
+            funclipCurrentTime = sample.clips[0] ? sample.clips[0].startSec : 15;
+            if (funclipIsPlaying) toggleFunclipPlayback();
+
             document.getElementById('funclip-video-name').innerText = sample.name;
             document.getElementById('funclip-video-meta').innerText = sample.meta;
             document.getElementById('funclip-hotwords').value = sample.hotwords;
+            document.getElementById('funclip-total-time').innerText = sample.totalTimeStr || '03:12:48';
+            document.getElementById('funclip-cur-time').innerText = secToTimeString(funclipCurrentTime);
+            document.getElementById('funclip-now-playing').innerText = '片段预览: ' + (sample.clips[0] ? (sample.clips[0].start + ' - ' + sample.clips[0].end + '【' + sample.clips[0].title + '】') : sample.name);
+            drawFunclipWaveform();
+        }
+
+        function toggleFunclipPlayback() {
+            const btn = document.getElementById('btn-funclip-play-toggle');
+            const icon = document.getElementById('funclip-play-icon');
+            const badge = document.getElementById('funclip-play-badge');
+
+            funclipIsPlaying = !funclipIsPlaying;
+            if (funclipIsPlaying) {
+                if (icon) { icon.classList.remove('fa-play'); icon.classList.add('fa-pause'); }
+                if (badge) {
+                    badge.innerText = 'PLAYING';
+                    badge.className = 'px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 animate-pulse';
+                }
+                funclipLastFrameTs = performance.now();
+                const step = (now) => {
+                    if (!funclipIsPlaying) return;
+                    const dt = (now - funclipLastFrameTs) / 1000;
+                    funclipLastFrameTs = now;
+                    funclipCurrentTime += dt * 1.5;
+
+                    const sample = FUNCLIP_SAMPLES[currentFunclipSample] || FUNCLIP_SAMPLES['sample-1'];
+                    const activeClip = sample.clips.find(c => c.id === funclipActiveClipId);
+                    if (activeClip && funclipCurrentTime >= activeClip.endSec) {
+                        funclipCurrentTime = activeClip.startSec;
+                    } else if (funclipCurrentTime >= sample.durationSec) {
+                        funclipCurrentTime = 0;
+                    }
+
+                    const timeEl = document.getElementById('funclip-cur-time');
+                    if (timeEl) timeEl.innerText = secToTimeString(funclipCurrentTime);
+                    drawFunclipWaveform();
+                    funclipAnimId = requestAnimationFrame(step);
+                };
+                funclipAnimId = requestAnimationFrame(step);
+            } else {
+                if (icon) { icon.classList.remove('fa-pause'); icon.classList.add('fa-play'); }
+                if (badge) {
+                    badge.innerText = 'PAUSED';
+                    badge.className = 'px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-accent-cyan/20 text-accent-cyan border border-accent-cyan/30';
+                }
+                if (funclipAnimId) cancelAnimationFrame(funclipAnimId);
+                drawFunclipWaveform();
+            }
+        }
+
+        function playFunclipSegment(segId) {
+            funclipActiveClipId = segId;
+            const sample = FUNCLIP_SAMPLES[currentFunclipSample] || FUNCLIP_SAMPLES['sample-1'];
+            const clip = ((currentFunclipData && currentFunclipData.clips) ? currentFunclipData.clips.find(c => c.id === segId) : null) || sample.clips.find(c => c.id === segId) || sample.clips[0];
+
+            funclipCurrentTime = clip.startSec || parseTimeStringToSec(clip.start);
+            const timeEl = document.getElementById('funclip-cur-time');
+            if (timeEl) timeEl.innerText = secToTimeString(funclipCurrentTime);
+
+            const bar = document.getElementById('funclip-now-playing');
+            if (bar) bar.innerText = '片段预览: ' + clip.start + ' - ' + clip.end + '【' + clip.title + '】';
+
+            if (!funclipIsPlaying) toggleFunclipPlayback();
+            else drawFunclipWaveform();
+        }
+
+        function zoomFunclipWaveform(factor) {
+            funclipWaveZoom = Math.min(3.0, Math.max(0.6, funclipWaveZoom * factor));
+            drawFunclipWaveform();
+        }
+
+        function resetFunclipWaveform() {
+            funclipWaveZoom = 1.0;
+            drawFunclipWaveform();
         }
 
         async function handleFunclipSlice() {
@@ -2699,25 +2434,17 @@
 
                 // 渲染 SRT
                 document.getElementById('funclip-srt-content').innerText = data.srt_content || '';
-
                 document.getElementById('funclip-meta-latency').innerText = '耗时: ' + (data.latency_ms || 240) + 'ms';
                 document.getElementById('funclip-meta-status').innerHTML = '<span class="w-2 h-2 rounded-full bg-accent-cyan"></span><span>切片就绪 (' + (data.clips ? data.clips.length : 3) + ' 段高光)</span>';
+
+                // 刷新 Canvas 波形
+                drawFunclipWaveform();
             } catch (e) {
                 console.error(e);
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-scissors text-xs"></i> <span>执行 FunASR 识别与精准切片</span>';
             }
-        }
-
-        function playFunclipSegment(segId) {
-            const bar = document.getElementById('funclip-now-playing');
-            if (!currentFunclipData || !currentFunclipData.clips) {
-                bar.innerText = '片段预览: 切片 ' + segId + ' 正在模拟播放...';
-                return;
-            }
-            const clip = currentFunclipData.clips.find(c => c.id === segId) || currentFunclipData.clips[0];
-            bar.innerText = '片段预览: ' + clip.start + ' - ' + clip.end + '【' + clip.title + '】';
         }
 
         function pipeFunclipToXhs(segId) {
@@ -2738,9 +2465,68 @@
             });
         }
 
+        // 初始化 Canvas 交互拖拽与提示监听
+        function initFunclipCanvasInteractions() {
+            const canvas = document.getElementById('funclip-waveform-canvas');
+            const tooltip = document.getElementById('funclip-canvas-tooltip');
+            if (!canvas) return;
+
+            const handleScrub = (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const clickX = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
+                const sample = FUNCLIP_SAMPLES[currentFunclipSample] || FUNCLIP_SAMPLES['sample-1'];
+                const totalSec = (sample.durationSec || 600) / funclipWaveZoom;
+                funclipCurrentTime = (clickX / rect.width) * totalSec;
+
+                const timeEl = document.getElementById('funclip-cur-time');
+                if (timeEl) timeEl.innerText = secToTimeString(funclipCurrentTime);
+
+                const bar = document.getElementById('funclip-now-playing');
+                if (bar) bar.innerText = '指针定位: ' + secToTimeString(funclipCurrentTime) + ' · 采样点精准对齐';
+
+                drawFunclipWaveform();
+            };
+
+            canvas.addEventListener('click', handleScrub);
+
+            canvas.addEventListener('mousedown', (e) => {
+                isScrubbingWaveform = true;
+                handleScrub(e);
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (isScrubbingWaveform) handleScrub(e);
+                if (canvas && tooltip) {
+                    const rect = canvas.getBoundingClientRect();
+                    if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
+                        const hoverX = e.clientX - rect.left;
+                        const sample = FUNCLIP_SAMPLES[currentFunclipSample] || FUNCLIP_SAMPLES['sample-1'];
+                        const totalSec = (sample.durationSec || 600) / funclipWaveZoom;
+                        const hoverSec = (hoverX / rect.width) * totalSec;
+                        tooltip.style.left = Math.min(rect.width - 60, Math.max(10, hoverX - 25)) + 'px';
+                        tooltip.style.top = '6px';
+                        tooltip.innerText = secToTimeString(hoverSec);
+                        tooltip.classList.remove('hidden');
+                    } else if (!isScrubbingWaveform) {
+                        tooltip.classList.add('hidden');
+                    }
+                }
+            });
+
+            window.addEventListener('mouseup', () => {
+                isScrubbingWaveform = false;
+            });
+
+            window.addEventListener('resize', () => {
+                drawFunclipWaveform();
+            });
+        }
+
         // 页面初始化
         window.addEventListener('DOMContentLoaded', () => {
             renderAnalyticsChart();
+            initFunclipCanvasInteractions();
+            drawFunclipWaveform();
 
             // 事件总线：优先真实 SSE（后端每 3s 真探测端口，只推状态变化与心跳）；
             // 拿不到后端（GitHub Pages / file:// / 服务未启）自动降级为示例事件并改标

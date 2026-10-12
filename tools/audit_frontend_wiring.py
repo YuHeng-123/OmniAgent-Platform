@@ -19,7 +19,21 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUT = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "evidence" / "frontend-wiring.txt"
 
-tpl = (ROOT / "templates" / "index.html").read_text(encoding="utf-8")
+def load_template_with_includes(path: pathlib.Path) -> str:
+    """读取模板并递归展开 {% include '...' %} 子组件，保持静态审计覆盖率。"""
+    text = path.read_text(encoding="utf-8")
+
+    def repl(m):
+        inc_name = m.group(1).strip()
+        inc_path = ROOT / "templates" / inc_name
+        if inc_path.exists():
+            return load_template_with_includes(inc_path)
+        return m.group(0)
+
+    return re.sub(r'\{%\s*include\s+["\']([^"\']+)["\']\s*%\}', repl, text)
+
+
+tpl = load_template_with_includes(ROOT / "templates" / "index.html")
 docs = (ROOT / "docs" / "index.html").read_text(encoding="utf-8")
 api = (ROOT / "static" / "omni-api.js").read_text(encoding="utf-8")
 docs_api = (ROOT / "docs" / "static" / "omni-api.js").read_text(encoding="utf-8")

@@ -1,0 +1,281 @@
+            <!-- ------------------------------------------------------------- -->
+            <!-- TAB 9: 达摩院 FunClip 多模态音视频智能切片 (FunASR) -->
+            <!-- ------------------------------------------------------------- -->
+            <div id="tab-funclip" class="tab-content hidden space-y-5">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                    <!-- 左侧：样本选择与切片参数 -->
+                    <div class="lg:col-span-5 glass-card p-5 space-y-4">
+                        <div class="flex items-center justify-between pb-3 border-b border-dark-border">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-film text-accent-cyan text-sm"></i>
+                                <h3 class="font-semibold text-white text-sm">多模态音视频智能切片工作站</h3>
+                            </div>
+                            <span class="tag tag-accent text-[11px] font-mono">FunASR 工业级</span>
+                        </div>
+
+                        <!-- 演示样本选择 -->
+                        <div>
+                            <label class="block text-[11px] text-slate-500 mb-1.5">选择珠宝直播/录像样本</label>
+                            <div class="space-y-1.5">
+                                <button type="button" onclick="setFunclipPreset('sample-1')" class="w-full text-left p-2.5 rounded-lg border border-dark-border hover:border-accent-cyan/50 bg-dark-900/60 transition-colors flex items-center justify-between text-[12px]">
+                                    <div>
+                                        <div class="text-slate-200 font-medium">📹 样本 1: 珠宝原石砍价开石现场</div>
+                                        <div class="text-[10px] text-slate-500 font-mono mt-0.5">3小时原声直播 · 主播与货主极限拉扯</div>
+                                    </div>
+                                    <span class="tag font-mono">03:12:48</span>
+                                </button>
+                                <button type="button" onclick="setFunclipPreset('sample-2')" class="w-full text-left p-2.5 rounded-lg border border-dark-border hover:border-accent-cyan/50 bg-dark-900/60 transition-colors flex items-center justify-between text-[12px]">
+                                    <div>
+                                        <div class="text-slate-200 font-medium">🎙️ 样本 2: 老坑冰种辨伪专家解说</div>
+                                        <div class="text-[10px] text-slate-500 font-mono mt-0.5">微距荧光反应实测 · 专家科普干货</div>
+                                    </div>
+                                    <span class="tag font-mono">01:18:45</span>
+                                </button>
+                                <button type="button" onclick="setFunclipPreset('sample-3')" class="w-full text-left p-2.5 rounded-lg border border-dark-border hover:border-accent-cyan/50 bg-dark-900/60 transition-colors flex items-center justify-between text-[12px]">
+                                    <div>
+                                        <div class="text-slate-200 font-medium">🎬 样本 3: 非遗金丝镶嵌工序微距</div>
+                                        <div class="text-[10px] text-slate-500 font-mono mt-0.5">古法手工错金银 · 匠人高精度制作</div>
+                                    </div>
+                                    <span class="tag font-mono">00:54:20</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 当前样本信息卡片 -->
+                        <div class="p-3 rounded-lg bg-dark-900 border border-dark-border space-y-1 text-[11px]">
+                            <div class="flex justify-between">
+                                <span class="text-slate-500">当前文件：</span>
+                                <span id="funclip-video-name" class="text-slate-200 font-medium truncate max-w-[220px]">【直播高光】珠宝原石砍价开石现场</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-500">流媒体规格：</span>
+                                <span id="funclip-video-meta" class="text-slate-400 font-mono">1080P · 16kHz PCM · H.264</span>
+                            </div>
+                        </div>
+
+                        <!-- 达摩院热词增强词典 -->
+                        <div>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <label class="text-[11px] text-slate-500">达摩院专业热词增强词典 (Hotwords)</label>
+                                <span class="text-[10px] text-accent-cyan font-mono">提升珠宝术语召回率</span>
+                            </div>
+                            <textarea id="funclip-hotwords" rows="2" class="w-full bg-dark-900 border border-dark-border rounded-lg px-3.5 py-2 text-[12px] text-white focus:outline-none resize-none">冰种, 玻璃种, 帝王绿, 极品阳绿, 缅甸老坑, 和田碧玉, 起胶起莹</textarea>
+                        </div>
+
+                        <!-- 说话人分离 (Diarization) -->
+                        <div class="flex items-center justify-between p-2.5 rounded-lg bg-dark-900 border border-dark-border text-[12px]">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-users text-accent-cyan text-xs"></i>
+                                <span class="text-slate-200">启用说话人分离 (Diarization)</span>
+                            </div>
+                            <input id="funclip-diarization" type="checkbox" checked class="w-4 h-4 accent-emerald-500" />
+                        </div>
+
+                        <!-- 执行切片按钮 -->
+                        <button id="btn-funclip-run" onclick="handleFunclipSlice()" class="w-full py-2.5 px-4 rounded-xl font-medium text-[13px] bg-gradient-to-r from-accent-cyan to-teal-500 text-dark-950 hover:brightness-110 shadow-lg shadow-cyan-950/40 transition-all flex items-center justify-center gap-2">
+                            <i class="fas fa-scissors text-xs"></i>
+                            <span>执行 FunASR 识别与精准切片</span>
+                        </button>
+
+                        <!-- 技术特性背书 -->
+                        <div class="p-3 rounded-lg bg-dark-900 border border-dark-border text-[11px] text-slate-500 space-y-1">
+                            <div class="flex justify-between">
+                                <span>语音识别底座：</span><span class="text-slate-300">达摩院 FunASR Paraformer</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>时间戳精度：</span><span class="text-accent-cyan font-mono">毫秒级逐字对齐 (Timestamp)</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>切片导出格式：</span><span class="text-slate-300">MP4 / WAV / SRT / VTT</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 右侧：切片时间轴轨道与字幕展示 -->
+                    <div class="lg:col-span-7 space-y-4">
+                        <!-- 顶栏状态 -->
+                        <div class="glass-card p-4 flex items-center justify-between">
+                            <div class="flex items-center gap-3 text-[12px] font-mono">
+                                <span id="funclip-meta-status" class="flex items-center gap-1.5 text-accent-cyan">
+                                    <span class="w-2 h-2 rounded-full bg-accent-cyan"></span>
+                                    <span>就绪 (已识别 3 段高光切片)</span>
+                                </span>
+                                <span id="funclip-meta-latency" class="text-slate-400">耗时: —</span>
+                            </div>
+                            <button onclick="copyFunclipSrt()" class="btn-ghost px-3 py-1.5 rounded-lg text-[12px] flex items-center gap-1.5">
+                                <i class="fas fa-file-lines"></i>
+                                <span>复制 SRT 字幕</span>
+                            </button>
+                        </div>
+
+                        <!-- 专业级交互式音频波形轨道 (DAW-grade Interactive Audio Waveform Canvas) -->
+                        <div id="funclip-player-bar" class="glass-card p-4 rounded-2xl border border-dark-border space-y-3">
+                            <!-- 顶部轨道控制与时间指示器 -->
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2.5 border-b border-dark-border/60">
+                                <div class="flex items-center gap-2.5 min-w-0">
+                                    <button id="btn-funclip-play-toggle" onclick="toggleFunclipPlayback()" class="w-8 h-8 rounded-lg bg-accent-cyan/15 hover:bg-accent-cyan/25 border border-accent-cyan/30 text-accent-cyan flex items-center justify-center transition-colors flex-shrink-0" title="播放 / 暂停 (空格键)">
+                                        <i id="funclip-play-icon" class="fas fa-play text-xs"></i>
+                                    </button>
+                                    <div class="min-w-0">
+                                        <div class="flex items-center gap-2">
+                                            <span id="funclip-play-badge" class="px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-accent-cyan/20 text-accent-cyan border border-accent-cyan/30">IDLE</span>
+                                            <span id="funclip-now-playing" class="text-white font-medium text-[12px] truncate">片段预览: 00:00:15 - 00:01:42【原石切开爆出极品阳绿高光解说】</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3 text-xs font-mono flex-shrink-0">
+                                    <div class="text-right">
+                                        <span id="funclip-cur-time" class="text-accent-cyan font-semibold">00:00:15</span>
+                                        <span class="text-slate-500"> / </span>
+                                        <span id="funclip-total-time" class="text-slate-400">03:12:48</span>
+                                    </div>
+                                    <div class="flex items-center gap-1 border-l border-dark-border/80 pl-2.5">
+                                        <button type="button" onclick="zoomFunclipWaveform(1.25)" class="w-6 h-6 rounded bg-dark-900 hover:bg-dark-800 border border-dark-border text-slate-300 hover:text-white flex items-center justify-center text-[10px] transition-colors" title="波形放大">
+                                            <i class="fas fa-magnifying-glass-plus"></i>
+                                        </button>
+                                        <button type="button" onclick="zoomFunclipWaveform(0.8)" class="w-6 h-6 rounded bg-dark-900 hover:bg-dark-800 border border-dark-border text-slate-300 hover:text-white flex items-center justify-center text-[10px] transition-colors" title="波形缩小">
+                                            <i class="fas fa-magnifying-glass-minus"></i>
+                                        </button>
+                                        <button type="button" onclick="resetFunclipWaveform()" class="w-6 h-6 rounded bg-dark-900 hover:bg-dark-800 border border-dark-border text-slate-300 hover:text-white flex items-center justify-center text-[10px] transition-colors" title="重置缩放">
+                                            <i class="fas fa-arrows-rotate"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 交互式 Canvas 波形轨道区域 -->
+                            <div class="relative group select-none">
+                                <canvas id="funclip-waveform-canvas" class="w-full h-28 rounded-xl bg-dark-950 border border-dark-border/80 cursor-crosshair block shadow-inner"></canvas>
+                                <div id="funclip-canvas-tooltip" class="pointer-events-none absolute top-2 left-2 hidden px-2 py-1 rounded bg-dark-900/95 border border-accent-cyan/40 text-[10px] font-mono text-cyan-300 backdrop-blur shadow-lg z-10">
+                                    00:00:00
+                                </div>
+                            </div>
+
+                            <!-- 底部音轨规格与提示 -->
+                            <div class="flex flex-wrap items-center justify-between text-[11px] text-slate-500 font-mono pt-0.5">
+                                <div class="flex items-center gap-3">
+                                    <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-sm bg-cyan-400"></span><span class="text-slate-400">切片1: 高光解说</span></span>
+                                    <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-sm bg-amber-400"></span><span class="text-slate-400">切片2: 极限拉扯</span></span>
+                                    <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-sm bg-emerald-400"></span><span class="text-slate-400">切片3: 防伪证书</span></span>
+                                </div>
+                                <div class="flex items-center gap-2 text-[10px] text-slate-400">
+                                    <span><i class="fas fa-hand-pointer text-accent-cyan mr-1"></i>单击或拖拽指针精准定位</span>
+                                    <span class="text-slate-600">|</span>
+                                    <span>16kHz PCM · 峰值 -3.2 dBFS</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 智能切片轨道时间轴卡片 -->
+                        <div class="glass-card p-5 space-y-3 rounded-2xl border border-dark-border">
+                            <div class="flex items-center justify-between pb-2 border-b border-dark-border">
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-layer-group text-accent-cyan text-xs"></i>
+                                    <h4 class="text-sm font-semibold text-white">智能切片轨道 (Timeline Segments)</h4>
+                                </div>
+                                <span class="tag">置信度评分 > 98%</span>
+                            </div>
+
+                            <div id="funclip-timeline" class="space-y-2.5">
+                                <!-- Segment 1 -->
+                                <div class="p-3.5 rounded-xl bg-dark-900/70 border border-dark-border hover:border-accent-cyan/40 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-accent-cyan"></span>
+                                            <span class="text-[13px] font-medium text-white">切片 1 · 原石切开爆出极品阳绿高光解说</span>
+                                            <span class="tag">置信度 99.4%</span>
+                                        </div>
+                                        <div class="text-[11px] text-slate-400 font-mono mt-1">
+                                            区间: 00:00:15 - 00:01:42 · 时长: 01:27 · 命中热词: 极品阳绿, 帝王绿, 冰种
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2 flex-shrink-0">
+                                        <button onclick="playFunclipSegment(1)" class="btn-ghost px-2.5 py-1 rounded text-[11px]">
+                                            <i class="fas fa-play text-[10px] mr-1"></i> 试听预览
+                                        </button>
+                                        <button onclick="pipeFunclipToXhs(1)" class="px-2.5 py-1 rounded bg-accent-emerald/20 border border-accent-emerald/40 text-accent-emerald hover:bg-accent-emerald/30 text-[11px] flex items-center gap-1">
+                                            <i class="fas fa-feather-pointed text-[10px]"></i> 推送到内容工厂
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Segment 2 -->
+                                <div class="p-3.5 rounded-xl bg-dark-900/70 border border-dark-border hover:border-accent-cyan/40 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-accent-cyan"></span>
+                                            <span class="text-[13px] font-medium text-white">切片 2 · 主播与货主封箱砍价极限拉扯</span>
+                                            <span class="tag">置信度 98.9%</span>
+                                        </div>
+                                        <div class="text-[11px] text-slate-400 font-mono mt-1">
+                                            区间: 00:03:10 - 00:04:25 · 时长: 01:15 · 命中热词: 缅甸老坑, 放漏
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2 flex-shrink-0">
+                                        <button onclick="playFunclipSegment(2)" class="btn-ghost px-2.5 py-1 rounded text-[11px]">
+                                            <i class="fas fa-play text-[10px] mr-1"></i> 试听预览
+                                        </button>
+                                        <button onclick="pipeFunclipToXhs(2)" class="px-2.5 py-1 rounded bg-accent-emerald/20 border border-accent-emerald/40 text-accent-emerald hover:bg-accent-emerald/30 text-[11px] flex items-center gap-1">
+                                            <i class="fas fa-feather-pointed text-[10px]"></i> 推送到内容工厂
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Segment 3 -->
+                                <div class="p-3.5 rounded-xl bg-dark-900/70 border border-dark-border hover:border-accent-cyan/40 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-accent-cyan"></span>
+                                            <span class="text-[13px] font-medium text-white">切片 3 · 一石一卡国检防伪证书展示</span>
+                                            <span class="tag">置信度 98.1%</span>
+                                        </div>
+                                        <div class="text-[11px] text-slate-400 font-mono mt-1">
+                                            区间: 00:07:05 - 00:08:18 · 时长: 01:13 · 命中热词: 国检证书, 一石一证
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2 flex-shrink-0">
+                                        <button onclick="playFunclipSegment(3)" class="btn-ghost px-2.5 py-1 rounded text-[11px]">
+                                            <i class="fas fa-play text-[10px] mr-1"></i> 试听预览
+                                        </button>
+                                        <button onclick="pipeFunclipToXhs(3)" class="px-2.5 py-1 rounded bg-accent-emerald/20 border border-accent-emerald/40 text-accent-emerald hover:bg-accent-emerald/30 text-[11px] flex items-center gap-1">
+                                            <i class="fas fa-feather-pointed text-[10px]"></i> 推送到内容工厂
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 毫秒级时间戳与说话人识别结果 -->
+                        <div class="glass-card p-4 space-y-2.5">
+                            <div class="flex items-center justify-between text-xs font-medium text-slate-300">
+                                <span class="flex items-center gap-1.5"><i class="fas fa-comments text-accent-gold"></i> FunASR 毫秒级时间戳与说话人识别</span>
+                                <span class="text-slate-500 font-mono text-[11px]">Diarization 2 角色</span>
+                            </div>
+                            <div id="funclip-transcript" class="space-y-2 text-[12px] bg-dark-900/60 p-3.5 rounded-xl border border-dark-border font-mono leading-relaxed max-h-48 overflow-y-auto">
+                                <div class="text-slate-400"><span class="text-accent-cyan">[00:00:15.240 -> 00:00:23.810]</span> <span class="text-emerald-400">Spk 1 (主讲主播)</span>: 家人们注意看打灯后的表现！荧光非常强，整块老坑料子已经完全化开了，是难得的极品阳绿！</div>
+                                <div class="text-slate-400"><span class="text-accent-cyan">[00:00:24.100 -> 00:00:31.500]</span> <span class="text-amber-400">Spk 2 (带货助播)</span>: 公屏扣 1 的粉丝直接锁单，今天只有这一块老坑料，中间商差价全部砍到底！</div>
+                                <div class="text-slate-400"><span class="text-accent-cyan">[00:00:31.900 -> 00:00:39.400]</span> <span class="text-emerald-400">Spk 1 (主讲主播)</span>: 附带国家级质检证书，支持全国终身复检，假一赔十！3、2、1，直接上链接！</div>
+                            </div>
+                        </div>
+
+                        <!-- 标准 SRT 字幕代码块 -->
+                        <div class="glass-card p-4 space-y-2">
+                            <div class="flex items-center justify-between text-xs font-medium text-slate-300">
+                                <span class="flex items-center gap-1.5"><i class="fas fa-code text-accent-cyan"></i> 实时 SRT 字幕预览</span>
+                                <span class="text-[10px] text-slate-500 font-mono">标准 SubRip 格式</span>
+                            </div>
+                            <pre id="funclip-srt-content" class="text-[11px] text-slate-400 bg-dark-900 p-3 rounded-lg border border-dark-border font-mono overflow-x-auto max-h-36 overflow-y-auto leading-relaxed">1
+00:00:15,240 --> 00:00:23,810
+[Spk 1] 家人们注意看打灯后的表现！荧光非常强，整块老坑料子已经完全化开了，是难得的极品阳绿！
+
+2
+00:00:24,100 --> 00:00:31,500
+[Spk 2] 公屏扣 1 的粉丝直接锁单，今天只有这一块老坑料，中间商差价全部砍到底！
+
+3
+00:00:31,900 --> 00:00:39,400
+[Spk 1] 附带国家级质检证书，支持全国终身复检，假一赔十！3、2、1，直接上链接！</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>

@@ -1341,6 +1341,9 @@
             <!-- ------------------------------------------------------------- -->
             <!-- TAB 8: 内容工厂 (LangGraph 1.0) -->
             <!-- ------------------------------------------------------------- -->
+                        <!-- ------------------------------------------------------------- -->
+            <!-- TAB 8: 内容工厂 (LangGraph 1.0) -->
+            <!-- ------------------------------------------------------------- -->
             <div id="tab-xhs" class="tab-content hidden space-y-5">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
                     <!-- 左侧：参数与 StateGraph 编排工作台 -->
@@ -1688,6 +1691,9 @@
             <!-- ------------------------------------------------------------- -->
             <!-- TAB 9: 达摩院 FunClip 多模态音视频智能切片 (FunASR) -->
             <!-- ------------------------------------------------------------- -->
+                        <!-- ------------------------------------------------------------- -->
+            <!-- TAB 9: 达摩院 FunClip 多模态音视频智能切片 (FunASR) -->
+            <!-- ------------------------------------------------------------- -->
             <div id="tab-funclip" class="tab-content hidden space-y-5">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
                     <!-- 左侧：样本选择与切片参数 -->
@@ -1709,21 +1715,21 @@
                                         <div class="text-slate-200 font-medium">📹 样本 1: 珠宝原石砍价开石现场</div>
                                         <div class="text-[10px] text-slate-500 font-mono mt-0.5">3小时原声直播 · 主播与货主极限拉扯</div>
                                     </div>
-                                    <span class="tag">03:12:48</span>
+                                    <span class="tag font-mono">03:12:48</span>
                                 </button>
                                 <button type="button" onclick="setFunclipPreset('sample-2')" class="w-full text-left p-2.5 rounded-lg border border-dark-border hover:border-accent-cyan/50 bg-dark-900/60 transition-colors flex items-center justify-between text-[12px]">
                                     <div>
                                         <div class="text-slate-200 font-medium">🎙️ 样本 2: 老坑冰种辨伪专家解说</div>
                                         <div class="text-[10px] text-slate-500 font-mono mt-0.5">微距荧光反应实测 · 专家科普干货</div>
                                     </div>
-                                    <span class="tag">01:18:45</span>
+                                    <span class="tag font-mono">01:18:45</span>
                                 </button>
                                 <button type="button" onclick="setFunclipPreset('sample-3')" class="w-full text-left p-2.5 rounded-lg border border-dark-border hover:border-accent-cyan/50 bg-dark-900/60 transition-colors flex items-center justify-between text-[12px]">
                                     <div>
                                         <div class="text-slate-200 font-medium">🎬 样本 3: 非遗金丝镶嵌工序微距</div>
                                         <div class="text-[10px] text-slate-500 font-mono mt-0.5">古法手工错金银 · 匠人高精度制作</div>
                                     </div>
-                                    <span class="tag">00:54:20</span>
+                                    <span class="tag font-mono">00:54:20</span>
                                 </button>
                             </div>
                         </div>
@@ -1795,17 +1801,61 @@
                             </button>
                         </div>
 
-                        <!-- 播放器模拟预览条 -->
-                        <div id="funclip-player-bar" class="glass-card p-4 rounded-2xl border border-dark-border space-y-2">
-                            <div class="flex items-center justify-between text-xs text-slate-400">
-                                <div class="flex items-center gap-2">
-                                    <i class="fas fa-circle-play text-accent-cyan text-base"></i>
-                                    <span id="funclip-now-playing" class="text-white font-medium">片段预览: 00:00:15 - 00:01:42【原石切开爆出极品阳绿高光解说】</span>
+                        <!-- 专业级交互式音频波形轨道 (DAW-grade Interactive Audio Waveform Canvas) -->
+                        <div id="funclip-player-bar" class="glass-card p-4 rounded-2xl border border-dark-border space-y-3">
+                            <!-- 顶部轨道控制与时间指示器 -->
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2.5 border-b border-dark-border/60">
+                                <div class="flex items-center gap-2.5 min-w-0">
+                                    <button id="btn-funclip-play-toggle" onclick="toggleFunclipPlayback()" class="w-8 h-8 rounded-lg bg-accent-cyan/15 hover:bg-accent-cyan/25 border border-accent-cyan/30 text-accent-cyan flex items-center justify-center transition-colors flex-shrink-0" title="播放 / 暂停 (空格键)">
+                                        <i id="funclip-play-icon" class="fas fa-play text-xs"></i>
+                                    </button>
+                                    <div class="min-w-0">
+                                        <div class="flex items-center gap-2">
+                                            <span id="funclip-play-badge" class="px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-accent-cyan/20 text-accent-cyan border border-accent-cyan/30">IDLE</span>
+                                            <span id="funclip-now-playing" class="text-white font-medium text-[12px] truncate">片段预览: 00:00:15 - 00:01:42【原石切开爆出极品阳绿高光解说】</span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <span class="font-mono text-accent-cyan">PLAYING</span>
+                                <div class="flex items-center gap-3 text-xs font-mono flex-shrink-0">
+                                    <div class="text-right">
+                                        <span id="funclip-cur-time" class="text-accent-cyan font-semibold">00:00:15</span>
+                                        <span class="text-slate-500"> / </span>
+                                        <span id="funclip-total-time" class="text-slate-400">03:12:48</span>
+                                    </div>
+                                    <div class="flex items-center gap-1 border-l border-dark-border/80 pl-2.5">
+                                        <button type="button" onclick="zoomFunclipWaveform(1.25)" class="w-6 h-6 rounded bg-dark-900 hover:bg-dark-800 border border-dark-border text-slate-300 hover:text-white flex items-center justify-center text-[10px] transition-colors" title="波形放大">
+                                            <i class="fas fa-magnifying-glass-plus"></i>
+                                        </button>
+                                        <button type="button" onclick="zoomFunclipWaveform(0.8)" class="w-6 h-6 rounded bg-dark-900 hover:bg-dark-800 border border-dark-border text-slate-300 hover:text-white flex items-center justify-center text-[10px] transition-colors" title="波形缩小">
+                                            <i class="fas fa-magnifying-glass-minus"></i>
+                                        </button>
+                                        <button type="button" onclick="resetFunclipWaveform()" class="w-6 h-6 rounded bg-dark-900 hover:bg-dark-800 border border-dark-border text-slate-300 hover:text-white flex items-center justify-center text-[10px] transition-colors" title="重置缩放">
+                                            <i class="fas fa-arrows-rotate"></i>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="w-full bg-dark-900 h-2 rounded-full overflow-hidden border border-dark-border/80">
-                                <div class="bg-gradient-to-r from-accent-cyan to-accent-emerald h-full w-2/3 rounded-full animate-pulse"></div>
+
+                            <!-- 交互式 Canvas 波形轨道区域 -->
+                            <div class="relative group select-none">
+                                <canvas id="funclip-waveform-canvas" class="w-full h-28 rounded-xl bg-dark-950 border border-dark-border/80 cursor-crosshair block shadow-inner"></canvas>
+                                <div id="funclip-canvas-tooltip" class="pointer-events-none absolute top-2 left-2 hidden px-2 py-1 rounded bg-dark-900/95 border border-accent-cyan/40 text-[10px] font-mono text-cyan-300 backdrop-blur shadow-lg z-10">
+                                    00:00:00
+                                </div>
+                            </div>
+
+                            <!-- 底部音轨规格与提示 -->
+                            <div class="flex flex-wrap items-center justify-between text-[11px] text-slate-500 font-mono pt-0.5">
+                                <div class="flex items-center gap-3">
+                                    <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-sm bg-cyan-400"></span><span class="text-slate-400">切片1: 高光解说</span></span>
+                                    <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-sm bg-amber-400"></span><span class="text-slate-400">切片2: 极限拉扯</span></span>
+                                    <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-sm bg-emerald-400"></span><span class="text-slate-400">切片3: 防伪证书</span></span>
+                                </div>
+                                <div class="flex items-center gap-2 text-[10px] text-slate-400">
+                                    <span><i class="fas fa-hand-pointer text-accent-cyan mr-1"></i>单击或拖拽指针精准定位</span>
+                                    <span class="text-slate-600">|</span>
+                                    <span>16kHz PCM · 峰值 -3.2 dBFS</span>
+                                </div>
                             </div>
                         </div>
 
@@ -2828,39 +2878,349 @@
         }
 
         // -------------------------------------------------------------
-        // TAB 9: 达摩院 FunClip 多模态音视频智能切片交互控制器
+        // TAB 9: 达摩院 FunClip 多模态音视频智能切片交互控制器 (Canvas 波形引擎)
         // -------------------------------------------------------------
         const FUNCLIP_SAMPLES = {
             'sample-1': {
                 name: '【直播高光】珠宝原石砍价开石现场',
                 meta: '03:12:48 · 1080P · 16kHz PCM · H.264',
+                totalTimeStr: '03:12:48',
+                durationSec: 600, // 10分钟精选展示轴 (秒)
                 hotwords: '冰种, 玻璃种, 帝王绿, 极品阳绿, 缅甸老坑, 和田碧玉, 起胶起莹',
-                pName: '老坑冰种极品阳绿吊坠'
+                pName: '老坑冰种极品阳绿吊坠',
+                clips: [
+                    { id: 1, title: '原石切开爆出极品阳绿高光解说', start: '00:00:15', end: '00:01:42', startSec: 15, endSec: 102, duration: '01:27', confidence: 0.994, color: '#06b6d4', hotwords: ['极品阳绿', '帝王绿', '冰种'] },
+                    { id: 2, title: '主播与货主封箱砍价极限拉扯', start: '00:03:10', end: '00:04:25', startSec: 190, endSec: 265, duration: '01:15', confidence: 0.989, color: '#f59e0b', hotwords: ['缅甸老坑', '放漏'] },
+                    { id: 3, title: '一石一卡国检防伪证书展示', start: '00:07:05', end: '00:08:18', startSec: 425, endSec: 498, duration: '01:13', confidence: 0.981, color: '#10b981', hotwords: ['国检证书', '一石一证'] }
+                ]
             },
             'sample-2': {
                 name: '【专业鉴宝】缅甸老坑冰种辨伪专家解说',
                 meta: '01:18:45 · 1080P · 16kHz PCM · H.264',
+                totalTimeStr: '01:18:45',
+                durationSec: 1800, // 30分钟展示轴 (秒)
                 hotwords: '冰种, 起胶, 荧光反应, 天然A货, 一石一证, 权威证书',
-                pName: '天然老坑冰种手镯'
+                pName: '天然老坑冰种手镯',
+                clips: [
+                    { id: 1, title: '老坑料起胶与注胶酸洗鉴别要点', start: '00:04:12', end: '00:05:30', startSec: 252, endSec: 330, duration: '01:18', confidence: 0.988, color: '#06b6d4', hotwords: ['冰种', '起胶', '老坑'] },
+                    { id: 2, title: '紫外荧光灯下荧光反应实测对比', start: '00:12:05', end: '00:13:40', startSec: 725, endSec: 820, duration: '01:35', confidence: 0.992, color: '#f59e0b', hotwords: ['荧光反应', '天然A货'] },
+                    { id: 3, title: '国检证书钢印与防伪查询全流程', start: '00:25:30', end: '00:26:45', startSec: 1530, endSec: 1605, duration: '01:15', confidence: 0.985, color: '#10b981', hotwords: ['一石一证', '质检证书'] }
+                ]
             },
             'sample-3': {
                 name: '【工艺微距】非遗手工金丝镶嵌工序微距',
                 meta: '00:54:20 · 4K · 16kHz PCM · H.264',
+                totalTimeStr: '00:54:20',
+                durationSec: 2100, // 35分钟展示轴 (秒)
                 hotwords: '金丝镶嵌, 非遗手工, 和田碧玉, 金玉良缘, 错金银, 宫廷古法',
-                pName: '非遗金丝镶嵌和田玉锁骨链'
+                pName: '非遗金丝镶嵌和田玉锁骨链',
+                clips: [
+                    { id: 1, title: '0.1mm极细纯金丝手工压嵌凹槽工序', start: '00:02:10', end: '00:03:35', startSec: 130, endSec: 215, duration: '01:25', confidence: 0.986, color: '#06b6d4', hotwords: ['金丝镶嵌', '非遗手工'] },
+                    { id: 2, title: '和田碧玉打磨抛光与金玉生辉特写', start: '00:15:20', end: '00:16:45', startSec: 920, endSec: 1005, duration: '01:25', confidence: 0.995, color: '#f59e0b', hotwords: ['和田碧玉', '金玉良缘'] },
+                    { id: 3, title: '匠人解说中国传统宫廷错金银技艺传承', start: '00:31:00', end: '00:32:15', startSec: 1860, endSec: 1935, duration: '01:15', confidence: 0.978, color: '#10b981', hotwords: ['错金银', '宫廷古法'] }
+                ]
             }
         };
 
         let currentFunclipSample = 'sample-1';
         let currentFunclipData = null;
+        let funclipCurrentTime = 15; // 当前播放指针秒数
+        let funclipIsPlaying = false;
+        let funclipAnimId = null;
+        let funclipLastFrameTs = 0;
+        let funclipActiveClipId = 1;
+        let funclipWaveZoom = 1.0;
+        let isScrubbingWaveform = false;
+
+        function secToTimeString(sec) {
+            sec = Math.max(0, Math.floor(sec));
+            const h = Math.floor(sec / 3600);
+            const m = Math.floor((sec % 3600) / 60);
+            const s = sec % 60;
+            return (h < 10 ? '0' + h : h) + ':' + (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+        }
+
+        function parseTimeStringToSec(str) {
+            if (!str) return 0;
+            const parts = str.split(':').map(Number);
+            if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+            if (parts.length === 2) return parts[0] * 60 + parts[1];
+            return Number(str) || 0;
+        }
+
+        // 依据样本与时间戳区间生成拟真音频波形幅度数组 (140条)
+        function generateWaveformAmps(sampleKey) {
+            const sample = FUNCLIP_SAMPLES[sampleKey] || FUNCLIP_SAMPLES['sample-1'];
+            const totalSec = sample.durationSec || 600;
+            const barCount = 140;
+            const bars = [];
+            let seed = 0;
+            for (let i = 0; i < sample.name.length; i++) seed += sample.name.charCodeAt(i);
+
+            for (let i = 0; i < barCount; i++) {
+                const barSec = (i / barCount) * totalSec;
+                const inClip = sample.clips.find(c => barSec >= c.startSec && barSec <= c.endSec);
+                let baseAmp = 0.18 + 0.12 * Math.sin(i * 0.35 + seed);
+                if (inClip) {
+                    const speechPulse = 0.55 + 0.35 * Math.abs(Math.sin(i * 1.2 + seed * 0.5));
+                    baseAmp = Math.max(baseAmp, speechPulse);
+                } else if (i % 7 === 0) {
+                    baseAmp = 0.06;
+                }
+                bars.push(Math.min(1.0, Math.max(0.08, baseAmp)));
+            }
+            return bars;
+        }
+
+        // 绘制 Canvas 专业音频波形轨道与高光切片区域
+        function drawFunclipWaveform() {
+            const canvas = document.getElementById('funclip-waveform-canvas');
+            if (!canvas) return;
+            const rect = canvas.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            const w = rect.width || canvas.offsetWidth || 640;
+            const h = rect.height || 112;
+
+            canvas.width = Math.floor(w * dpr);
+            canvas.height = Math.floor(h * dpr);
+            const ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+
+            const sample = FUNCLIP_SAMPLES[currentFunclipSample] || FUNCLIP_SAMPLES['sample-1'];
+            const totalSec = (sample.durationSec || 600) / funclipWaveZoom;
+            const activeClips = (currentFunclipData && currentFunclipData.clips) ? currentFunclipData.clips.map(c => ({
+                id: c.id,
+                title: c.title,
+                startSec: parseTimeStringToSec(c.start),
+                endSec: parseTimeStringToSec(c.end),
+                color: c.id === 1 ? '#06b6d4' : (c.id === 2 ? '#f59e0b' : '#10b981')
+            })) : sample.clips;
+
+            // 1. 背景色与网格线
+            ctx.fillStyle = '#080d1a';
+            ctx.fillRect(0, 0, w, h);
+
+            // 标尺区域 (顶部 20px)
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+            ctx.fillRect(0, 0, w, 20);
+            ctx.strokeStyle = 'rgba(51, 65, 85, 0.5)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(0, 20);
+            ctx.lineTo(w, 20);
+            ctx.stroke();
+
+            // 标尺时间刻度
+            ctx.font = '9px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
+            ctx.fillStyle = '#64748b';
+            const tickIntervalSec = totalSec <= 300 ? 30 : (totalSec <= 900 ? 60 : 180);
+            for (let sec = 0; sec <= totalSec; sec += tickIntervalSec) {
+                const tickX = (sec / totalSec) * w;
+                if (tickX > w) break;
+                ctx.beginPath();
+                ctx.moveTo(tickX, 12);
+                ctx.lineTo(tickX, 20);
+                ctx.stroke();
+                const label = secToTimeString(sec).substring(3);
+                ctx.fillText(label, Math.min(w - 28, Math.max(2, tickX - 12)), 10);
+            }
+
+            // 水平分贝电平基准线
+            const centerY = 20 + (h - 20) / 2;
+            ctx.strokeStyle = 'rgba(51, 65, 85, 0.25)';
+            ctx.setLineDash([3, 4]);
+            ctx.beginPath();
+            ctx.moveTo(0, centerY);
+            ctx.lineTo(w, centerY);
+            ctx.moveTo(0, centerY - (h - 20) * 0.35);
+            ctx.lineTo(w, centerY - (h - 20) * 0.35);
+            ctx.moveTo(0, centerY + (h - 20) * 0.35);
+            ctx.lineTo(w, centerY + (h - 20) * 0.35);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // 2. 绘制 3 段高光切片置信度区间背板
+            activeClips.forEach(c => {
+                const x1 = (c.startSec / totalSec) * w;
+                const x2 = (c.endSec / totalSec) * w;
+                const regionW = Math.max(6, x2 - x1);
+                const isActive = (c.id === funclipActiveClipId);
+
+                ctx.fillStyle = isActive ? (c.color === '#06b6d4' ? 'rgba(6, 182, 212, 0.22)' : (c.color === '#f59e0b' ? 'rgba(245, 158, 11, 0.22)' : 'rgba(16, 185, 129, 0.22)')) : 'rgba(51, 65, 85, 0.2)';
+                ctx.fillRect(x1, 20, regionW, h - 20);
+
+                ctx.strokeStyle = c.color;
+                ctx.lineWidth = isActive ? 2 : 1;
+                ctx.beginPath();
+                ctx.moveTo(x1, 20);
+                ctx.lineTo(x1, h);
+                ctx.moveTo(x2, 20);
+                ctx.lineTo(x2, h);
+                ctx.stroke();
+
+                if (regionW > 50) {
+                    ctx.fillStyle = c.color;
+                    ctx.globalAlpha = 0.85;
+                    ctx.fillRect(x1, 21, Math.min(regionW, 115), 14);
+                    ctx.globalAlpha = 1.0;
+                    ctx.fillStyle = '#02101a';
+                    ctx.font = 'bold 9px sans-serif';
+                    ctx.fillText('切片 ' + c.id + ' · ' + c.title.substring(0, 6), x1 + 4, 32);
+                }
+            });
+
+            // 3. 绘制 140 根音频频谱柱
+            const amps = generateWaveformAmps(currentFunclipSample);
+            const barCount = amps.length;
+            const barW = Math.max(1.8, (w / barCount) * 0.75);
+            const stepW = w / barCount;
+            const maxBarH = (h - 28) * 0.46;
+
+            for (let i = 0; i < barCount; i++) {
+                const bx = i * stepW + (stepW - barW) / 2;
+                const barSec = (i / barCount) * totalSec;
+                const amp = amps[i];
+                const barH = Math.max(2, amp * maxBarH);
+
+                const isPlayed = barSec <= funclipCurrentTime;
+                const inClip = activeClips.find(c => barSec >= c.startSec && barSec <= c.endSec);
+
+                if (isPlayed) {
+                    const grad = ctx.createLinearGradient(0, centerY - barH, 0, centerY + barH);
+                    grad.addColorStop(0, '#38bdf8');
+                    grad.addColorStop(0.5, '#34d399');
+                    grad.addColorStop(1, '#06b6d4');
+                    ctx.fillStyle = grad;
+                } else if (inClip) {
+                    ctx.fillStyle = inClip.color;
+                } else {
+                    ctx.fillStyle = '#334155';
+                }
+
+                ctx.beginPath();
+                if (ctx.roundRect) {
+                    ctx.roundRect(bx, centerY - barH, barW, barH * 2, 1.5);
+                } else {
+                    ctx.rect(bx, centerY - barH, barW, barH * 2);
+                }
+                ctx.fill();
+            }
+
+            // 4. 绘制当前播放游标 (Playhead Scrubber)
+            const playheadX = Math.min(w, Math.max(0, (funclipCurrentTime / totalSec) * w));
+            ctx.shadowColor = '#06b6d4';
+            ctx.shadowBlur = 8;
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(playheadX, 10);
+            ctx.lineTo(playheadX, h);
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            ctx.fillStyle = '#06b6d4';
+            ctx.beginPath();
+            ctx.moveTo(playheadX - 5, 10);
+            ctx.lineTo(playheadX + 5, 10);
+            ctx.lineTo(playheadX, 18);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.moveTo(playheadX, h - 8);
+            ctx.lineTo(playheadX + 4, h - 4);
+            ctx.lineTo(playheadX, h);
+            ctx.lineTo(playheadX - 4, h - 4);
+            ctx.closePath();
+            ctx.fill();
+        }
 
         function setFunclipPreset(sampleId) {
             const sample = FUNCLIP_SAMPLES[sampleId];
             if (!sample) return;
             currentFunclipSample = sampleId;
+            currentFunclipData = null;
+            funclipActiveClipId = 1;
+            funclipCurrentTime = sample.clips[0] ? sample.clips[0].startSec : 15;
+            if (funclipIsPlaying) toggleFunclipPlayback();
+
             document.getElementById('funclip-video-name').innerText = sample.name;
             document.getElementById('funclip-video-meta').innerText = sample.meta;
             document.getElementById('funclip-hotwords').value = sample.hotwords;
+            document.getElementById('funclip-total-time').innerText = sample.totalTimeStr || '03:12:48';
+            document.getElementById('funclip-cur-time').innerText = secToTimeString(funclipCurrentTime);
+            document.getElementById('funclip-now-playing').innerText = '片段预览: ' + (sample.clips[0] ? (sample.clips[0].start + ' - ' + sample.clips[0].end + '【' + sample.clips[0].title + '】') : sample.name);
+            drawFunclipWaveform();
+        }
+
+        function toggleFunclipPlayback() {
+            const btn = document.getElementById('btn-funclip-play-toggle');
+            const icon = document.getElementById('funclip-play-icon');
+            const badge = document.getElementById('funclip-play-badge');
+
+            funclipIsPlaying = !funclipIsPlaying;
+            if (funclipIsPlaying) {
+                if (icon) { icon.classList.remove('fa-play'); icon.classList.add('fa-pause'); }
+                if (badge) {
+                    badge.innerText = 'PLAYING';
+                    badge.className = 'px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 animate-pulse';
+                }
+                funclipLastFrameTs = performance.now();
+                const step = (now) => {
+                    if (!funclipIsPlaying) return;
+                    const dt = (now - funclipLastFrameTs) / 1000;
+                    funclipLastFrameTs = now;
+                    funclipCurrentTime += dt * 1.5;
+
+                    const sample = FUNCLIP_SAMPLES[currentFunclipSample] || FUNCLIP_SAMPLES['sample-1'];
+                    const activeClip = sample.clips.find(c => c.id === funclipActiveClipId);
+                    if (activeClip && funclipCurrentTime >= activeClip.endSec) {
+                        funclipCurrentTime = activeClip.startSec;
+                    } else if (funclipCurrentTime >= sample.durationSec) {
+                        funclipCurrentTime = 0;
+                    }
+
+                    const timeEl = document.getElementById('funclip-cur-time');
+                    if (timeEl) timeEl.innerText = secToTimeString(funclipCurrentTime);
+                    drawFunclipWaveform();
+                    funclipAnimId = requestAnimationFrame(step);
+                };
+                funclipAnimId = requestAnimationFrame(step);
+            } else {
+                if (icon) { icon.classList.remove('fa-pause'); icon.classList.add('fa-play'); }
+                if (badge) {
+                    badge.innerText = 'PAUSED';
+                    badge.className = 'px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-accent-cyan/20 text-accent-cyan border border-accent-cyan/30';
+                }
+                if (funclipAnimId) cancelAnimationFrame(funclipAnimId);
+                drawFunclipWaveform();
+            }
+        }
+
+        function playFunclipSegment(segId) {
+            funclipActiveClipId = segId;
+            const sample = FUNCLIP_SAMPLES[currentFunclipSample] || FUNCLIP_SAMPLES['sample-1'];
+            const clip = ((currentFunclipData && currentFunclipData.clips) ? currentFunclipData.clips.find(c => c.id === segId) : null) || sample.clips.find(c => c.id === segId) || sample.clips[0];
+
+            funclipCurrentTime = clip.startSec || parseTimeStringToSec(clip.start);
+            const timeEl = document.getElementById('funclip-cur-time');
+            if (timeEl) timeEl.innerText = secToTimeString(funclipCurrentTime);
+
+            const bar = document.getElementById('funclip-now-playing');
+            if (bar) bar.innerText = '片段预览: ' + clip.start + ' - ' + clip.end + '【' + clip.title + '】';
+
+            if (!funclipIsPlaying) toggleFunclipPlayback();
+            else drawFunclipWaveform();
+        }
+
+        function zoomFunclipWaveform(factor) {
+            funclipWaveZoom = Math.min(3.0, Math.max(0.6, funclipWaveZoom * factor));
+            drawFunclipWaveform();
+        }
+
+        function resetFunclipWaveform() {
+            funclipWaveZoom = 1.0;
+            drawFunclipWaveform();
         }
 
         async function handleFunclipSlice() {
@@ -2914,25 +3274,17 @@
 
                 // 渲染 SRT
                 document.getElementById('funclip-srt-content').innerText = data.srt_content || '';
-
                 document.getElementById('funclip-meta-latency').innerText = '耗时: ' + (data.latency_ms || 240) + 'ms';
                 document.getElementById('funclip-meta-status').innerHTML = '<span class="w-2 h-2 rounded-full bg-accent-cyan"></span><span>切片就绪 (' + (data.clips ? data.clips.length : 3) + ' 段高光)</span>';
+
+                // 刷新 Canvas 波形
+                drawFunclipWaveform();
             } catch (e) {
                 console.error(e);
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-scissors text-xs"></i> <span>执行 FunASR 识别与精准切片</span>';
             }
-        }
-
-        function playFunclipSegment(segId) {
-            const bar = document.getElementById('funclip-now-playing');
-            if (!currentFunclipData || !currentFunclipData.clips) {
-                bar.innerText = '片段预览: 切片 ' + segId + ' 正在模拟播放...';
-                return;
-            }
-            const clip = currentFunclipData.clips.find(c => c.id === segId) || currentFunclipData.clips[0];
-            bar.innerText = '片段预览: ' + clip.start + ' - ' + clip.end + '【' + clip.title + '】';
         }
 
         function pipeFunclipToXhs(segId) {
@@ -2953,9 +3305,68 @@
             });
         }
 
+        // 初始化 Canvas 交互拖拽与提示监听
+        function initFunclipCanvasInteractions() {
+            const canvas = document.getElementById('funclip-waveform-canvas');
+            const tooltip = document.getElementById('funclip-canvas-tooltip');
+            if (!canvas) return;
+
+            const handleScrub = (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const clickX = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
+                const sample = FUNCLIP_SAMPLES[currentFunclipSample] || FUNCLIP_SAMPLES['sample-1'];
+                const totalSec = (sample.durationSec || 600) / funclipWaveZoom;
+                funclipCurrentTime = (clickX / rect.width) * totalSec;
+
+                const timeEl = document.getElementById('funclip-cur-time');
+                if (timeEl) timeEl.innerText = secToTimeString(funclipCurrentTime);
+
+                const bar = document.getElementById('funclip-now-playing');
+                if (bar) bar.innerText = '指针定位: ' + secToTimeString(funclipCurrentTime) + ' · 采样点精准对齐';
+
+                drawFunclipWaveform();
+            };
+
+            canvas.addEventListener('click', handleScrub);
+
+            canvas.addEventListener('mousedown', (e) => {
+                isScrubbingWaveform = true;
+                handleScrub(e);
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (isScrubbingWaveform) handleScrub(e);
+                if (canvas && tooltip) {
+                    const rect = canvas.getBoundingClientRect();
+                    if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
+                        const hoverX = e.clientX - rect.left;
+                        const sample = FUNCLIP_SAMPLES[currentFunclipSample] || FUNCLIP_SAMPLES['sample-1'];
+                        const totalSec = (sample.durationSec || 600) / funclipWaveZoom;
+                        const hoverSec = (hoverX / rect.width) * totalSec;
+                        tooltip.style.left = Math.min(rect.width - 60, Math.max(10, hoverX - 25)) + 'px';
+                        tooltip.style.top = '6px';
+                        tooltip.innerText = secToTimeString(hoverSec);
+                        tooltip.classList.remove('hidden');
+                    } else if (!isScrubbingWaveform) {
+                        tooltip.classList.add('hidden');
+                    }
+                }
+            });
+
+            window.addEventListener('mouseup', () => {
+                isScrubbingWaveform = false;
+            });
+
+            window.addEventListener('resize', () => {
+                drawFunclipWaveform();
+            });
+        }
+
         // 页面初始化
         window.addEventListener('DOMContentLoaded', () => {
             renderAnalyticsChart();
+            initFunclipCanvasInteractions();
+            drawFunclipWaveform();
 
             // 事件总线：优先真实 SSE（后端每 3s 真探测端口，只推状态变化与心跳）；
             // 拿不到后端（GitHub Pages / file:// / 服务未启）自动降级为示例事件并改标

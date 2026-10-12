@@ -33,3 +33,4 @@ labs/graph-xiaohongshu/static/images/generated/*
 !labs/graph-xiaohongshu/static/images/generated/.gitkeep
 labs/graph-xiaohongshu/frontend/dist/
 labs/graph-xiaohongshu/frontend/node_modules/
+.pytest_tmp/

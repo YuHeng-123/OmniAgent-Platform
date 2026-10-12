@@ -722,6 +722,12 @@
 
             <!-- 右侧：音效触感、RBAC 角色、指令中枢与容灾热切演示 -->
             <div class="flex items-center gap-2 sm:gap-2.5 flex-shrink-0">
+                <!-- 中英文双语语言切换器 (i18n Language Switcher) -->
+                <button id="btn-lang-toggle" onclick="toggleLanguage()" class="btn-ghost px-2.5 py-1.5 rounded-md text-[11px] font-mono flex items-center gap-1.5 border border-dark-border text-slate-300 hover:text-white hover:border-accent-cyan/40" title="Switch Language / 切换中英文">
+                    <i class="fas fa-globe text-[11px] text-accent-cyan"></i>
+                    <span id="label-lang-toggle" class="text-slate-300 font-semibold">EN</span>
+                </button>
+
                 <!-- UI 拟真音频交互反馈 (Web Audio Synthesizer) -->
                 <button id="btn-sound-toggle" onclick="toggleAudioSound()" class="btn-ghost px-2.5 py-1.5 rounded-md text-[11px] font-mono flex items-center gap-1.5 border border-dark-border text-slate-300 hover:text-white hover:border-accent-emerald/40" title="切换 UI 拟真音频交互反馈">
                     <i id="icon-sound-toggle" class="fas fa-volume-high text-[11px] text-accent-emerald"></i>
@@ -802,6 +808,11 @@
                 tenant: 'tenant-hq',
                 role: 'admin',
                 soundEnabled: true,
+                lang: (function() {
+                    try {
+                        return (typeof localStorage !== 'undefined' && localStorage.getItem('omni_lang')) || 'zh';
+                    } catch(e) { return 'zh'; }
+                })(),
                 subscribers: []
             };
 
@@ -812,17 +823,30 @@
                 auditor: ['read', 'audit']
             };
 
-            const ROLE_LABELS = {
+            const ROLE_LABELS_ZH = {
                 admin: '系统总管 (Admin · 全权管控)',
                 operator: '运营专家 (Operator · 业务流转)',
                 analyst: '数据分析师 (Analyst · 只读决策)',
                 auditor: '合规审计员 (Auditor · 审查归档)'
             };
 
-            const TENANT_LABELS = {
+            const ROLE_LABELS_EN = {
+                admin: 'System Admin (Full Access)',
+                operator: 'Operations Lead (Workflows)',
+                analyst: 'Data Analyst (Read-Only)',
+                auditor: 'Compliance Auditor (Audit Log)'
+            };
+
+            const TENANT_LABELS_ZH = {
                 'tenant-hq': 'Shopify 北美独立站 · 旗舰中枢',
                 'tenant-tiktok': 'TikTok Shop 全球出海矩阵',
                 'tenant-embroidery': 'Instagram 欧美轻奢独立站'
+            };
+
+            const TENANT_LABELS_EN = {
+                'tenant-hq': 'Shopify North America DTC · Flagship HQ',
+                'tenant-tiktok': 'TikTok Shop Global Matrix',
+                'tenant-embroidery': 'Instagram Luxury Boutique DTC'
             };
 
             return {
@@ -843,8 +867,16 @@
                     const allowed = ROLE_PERMISSIONS[_state.role] || [];
                     return allowed.includes(action);
                 },
-                getRoleLabel: function(role) { return ROLE_LABELS[role || _state.role] || (role || _state.role); },
-                getTenantLabel: function(tenant) { return TENANT_LABELS[tenant || _state.tenant] || (tenant || _state.tenant); }
+                getRoleLabel: function(role) {
+                    const isEn = _state.lang === 'en';
+                    const dict = isEn ? ROLE_LABELS_EN : ROLE_LABELS_ZH;
+                    return dict[role || _state.role] || (role || _state.role);
+                },
+                getTenantLabel: function(tenant) {
+                    const isEn = _state.lang === 'en';
+                    const dict = isEn ? TENANT_LABELS_EN : TENANT_LABELS_ZH;
+                    return dict[tenant || _state.tenant] || (tenant || _state.tenant);
+                }
             };
         })();
         window.OmniStore = OmniStore;
@@ -989,6 +1021,465 @@
             const label = OmniStore.getTenantLabel(tenantId);
             showToast(`<b>工作空间已挂载</b>: ${label}<br><span class="text-slate-400 font-mono text-[11px]">向量数据库与私域模型路由隔离生效</span>`, 'ok');
             syncAuthTokenAndRefreshJobs();
+        }
+
+        // =============================================================
+        // 中英文国际化双语系统 (Internationalization · i18n Core)
+        // =============================================================
+        function toggleLanguage() {
+            const cur = OmniStore.get('lang') || 'zh';
+            const next = cur === 'zh' ? 'en' : 'zh';
+            OmniAudio.click();
+            applyLanguage(next);
+            const msg = next === 'en'
+                ? '<b>Switched to English</b>: Full UI & AI Dialogs Ready'
+                : '<b>语言已切换至中文</b>：全域界面与小窗口对话已就绪';
+            showToast(msg, 'ok');
+        }
+
+        const I18N_PACK = {
+            zh: {
+                'label-lang-toggle': '<span class="text-slate-400 font-medium">EN/</span><span class="text-accent-emerald font-bold">中</span>',
+                'btn-lang-toggle-title': 'Switch Language / 切换中英文',
+                'btn-sound-toggle-title': '切换 UI 拟真音频交互反馈',
+                'label-sound-on': '音效:开',
+                'label-sound-off': '音效:关',
+                'btn-job-center-text': '任务中心',
+                'btn-job-center-title': '打开企业后台分布式任务中心',
+                'btn-cmd-palette-text': '指令',
+                'btn-cmd-palette-title': '呼出全局指令中枢 (Ctrl + K / Cmd + K)',
+                'btn-failover-demo-text': '容灾热切演示',
+                'sidebar-sec-core': '核心业务',
+                'sidebar-sec-engine': '底层引擎',
+                'sidebar-sec-labs': '纵深业务 (Labs)',
+                'sidebar-ready-status': '中枢就绪',
+                'nav-overview-text': '全局监控大盘',
+                'nav-guide-text': '电商智能导购',
+                'nav-marketing-text': '全渠道营销矩阵',
+                'nav-analytics-text': '数据分析决策',
+                'nav-gateway-text': '模型调度网关',
+                'nav-rag-text': '企业知识库检索',
+                'nav-history-text': '历史趋势与回放',
+                'nav-xhs-text': 'Instagram & TikTok 出海工场',
+                'nav-funclip-text': 'Reels 短视频分镜切片',
+                'btn-persona-all-text': '全域综合视窗',
+                'btn-persona-executive-text': '经营决策大盘',
+                'btn-persona-ops-text': '出海运营工场',
+                'btn-persona-devops-text': '架构运维拓扑',
+                'kpi-gmv-title': 'Brand / DTC 累计全域 GMV',
+                'kpi-gmv-sub': '折合 $342,800 USD',
+                'kpi-rev-title': 'Real-time Sales Revenue (今日)',
+                'kpi-rev-sub': '实时成单入账',
+                'kpi-roi-title': 'AI Content ROI Ratio',
+                'kpi-roi-sub': '人效综合放大倍数',
+                'kpi-orders-title': 'Total AI Orders (智能接单)',
+                'kpi-orders-sub': '零人工干预直通单',
+                'funnel-tag': 'DTC 漏斗',
+                'funnel-order-note': '成单转化率 13.8% (行业基线 2.8%)',
+                'funnel-bottom-note': '出海全链路转化增益',
+                'guide-subtitle': '<span class="w-1 h-1 rounded-full bg-accent-emerald"></span>多语言多轮会话 + 全球直邮/货币换算与工具自纠错',
+                'guide-clear-btn': '清空',
+                'guide-chip-1': '送礼天然玉石 ($200-$500)',
+                'guide-chip-2': '测试券超出自纠错',
+                'guide-chip-3': '莫桑钻与 GIA 国际认证',
+                'guide-input-placeholder': '输入您对珠宝的需求，如“想买个两千元左右显气质的珍珠项链”…',
+                'guide-send-btn': '发送',
+                'guide-trace-title': 'Agent 推理时序与自纠错跟踪',
+                'guide-self-correct-badge': '触发纠错机制',
+                'mkt-banner-step': '工序定位：第二道 · 全渠道矩阵分发与合规风控 (Coze)',
+                'mkt-banner-desc': '接收来自「出海社媒工场 (LangGraph)」或「短视频切片 (FunASR)」的母版内容进行 5 大海外渠道派生',
+                'mkt-banner-back': '<i class="fas fa-arrow-left text-[10px]"></i> 返回深度创作工场',
+                'mkt-form-title': '全渠道爆款营销与合规风控',
+                'mkt-label-pname': '主推产品 / 主题名称',
+                'mkt-label-platform': '发布渠道矩阵',
+                'mkt-plat-insta': 'Instagram 视觉帖',
+                'mkt-plat-tiktok': 'TikTok 爆款脚本',
+                'mkt-plat-wa': 'WhatsApp / 私域',
+                'mkt-plat-shopify': 'Shopify 详情页',
+                'mkt-plat-x': 'X / 跨境短推',
+                'mkt-label-kw': '核心卖点关键词',
+                'mkt-btn-run': '一键生成爆款内容并质检',
+                'mkt-btn-copy': '复制文案',
+                'kpi-orders-metric': '挂载样本量',
+                'kpi-orders-note': '电商真实交易沉淀',
+                'kpi-gmv-metric': '累计成交 GMV',
+                'kpi-gmv-note': '月复合增长 9.2%',
+                'kpi-aov-metric': '平均客单价',
+                'kpi-aov-note': '私域客单 ¥920',
+                'kpi-fulfill-metric': '完单履约率',
+                'kpi-fulfill-note': '退款率低于行业均值',
+                'analytics-sql-title': 'Text-to-SQL 自然语言数据探索',
+                'analytics-btn-run': '执行查询',
+                'analytics-quick-title': '快速洞察',
+                'analytics-chip-1': '各品类销售占比',
+                'analytics-chip-2': '获客渠道构成',
+                'analytics-chip-3': '月度趋势走势',
+                'analytics-sql-heading': '生成并执行的 SQL',
+                'analytics-ai-insight-heading': 'AI 商业洞察',
+                'analytics-potential-label': '发现潜力品：',
+                'analytics-btn-pipe': '推送营销工场',
+                'gw-matrix-title': '企业统一模型池与权重路由',
+                'gw-primary-name': '上游主模型（仿真占位）',
+                'gw-primary-desc': '未接入真实模型 API · 仅演示主备形态',
+                'gw-primary-weight': '权重 70% ｜ 熔断阈值 3000ms',
+                'gw-backup-name': '本地兜底引擎',
+                'gw-backup-desc': '极速低延迟与多模态灾备模型',
+                'gw-backup-weight': '权重 30% ｜ 热切待命 42ms',
+                'gw-drill-title': '高可用容灾演练控制器',
+                'gw-drill-desc': '模拟主节点故障，触发网关断路器（Circuit Breaker）毫秒级自动热切',
+                'gw-drill-btn': '注入主线路故障',
+                'gw-vkey-title': '虚拟 API Key 配额池',
+                'gw-mcp-title': 'MCP 工具协议挂载',
+                'rag-tab-title': '行业知识切片与双路检索',
+                'rag-tab-tag': 'BM25 + 向量重排 RRF',
+                'rag-tab-btn': '检索切片',
+                'hist-tab-title': '服务可用性与延迟趋势',
+                'hist-tab-desc': '共享巡检器每 3s 探测并落盘 SQLite',
+                'hist-range-30': '30 分钟',
+                'hist-range-120': '2 小时',
+                'hist-range-480': '8 小时',
+                'hist-uptime-title': '各服务在线率（窗口内聚合 %）',
+                'hist-latency-title': 'TCP 探测延迟（ms 本机回环）',
+                'hist-events-title': '历史事件回放（最近 60 条，倒序）',
+                'hist-refresh-btn': '刷新',
+                'job-modal-title': '企业分布式异步任务中枢',
+                'job-tab-all': '全部任务',
+                'job-tab-running': '运行中',
+                'job-tab-completed': '已完成',
+                'job-tab-failed': '失败/告警',
+                'job-clear-btn': '清理视图',
+                'job-footer-note': 'HMAC-SHA256 JWT 多租户数据隔离 · 幂等执行保障',
+                'cmd-input-placeholder': '输入指令或搜索功能 (如: 导购, 容灾, 营销, 分析, 指令)...'
+            },
+            en: {
+                'label-lang-toggle': '<span class="text-accent-cyan font-bold">EN</span><span class="text-slate-500 text-[10px]">/中文</span>',
+                'btn-lang-toggle-title': 'Switch to Chinese / 切换至中文',
+                'btn-sound-toggle-title': 'Toggle Web Audio Sound Feedback',
+                'label-sound-on': 'Sound: ON',
+                'label-sound-off': 'Sound: OFF',
+                'btn-job-center-text': 'Jobs',
+                'btn-job-center-title': 'Open Distributed Job Center Drawer',
+                'btn-cmd-palette-text': 'Commands',
+                'btn-cmd-palette-title': 'Global Command Palette (Ctrl + K / Cmd + K)',
+                'btn-failover-demo-text': 'Failover Demo',
+                'sidebar-sec-core': 'Core Business',
+                'sidebar-sec-engine': 'Core Engines',
+                'sidebar-sec-labs': 'Advanced Labs',
+                'sidebar-ready-status': 'Core Ready',
+                'nav-overview-text': 'Global Overview Hub',
+                'nav-guide-text': 'E-Commerce Concierge',
+                'nav-marketing-text': 'Omnichannel Marketing',
+                'nav-analytics-text': 'Analytics & Insights',
+                'nav-gateway-text': 'Model Gateway',
+                'nav-rag-text': 'Enterprise RAG KB',
+                'nav-history-text': 'History & Replay',
+                'nav-xhs-text': 'Instagram & TikTok Studio',
+                'nav-funclip-text': 'Reels Video Clipper',
+                'btn-persona-all-text': 'All-in-One View',
+                'btn-persona-executive-text': 'Executive Decision',
+                'btn-persona-ops-text': 'Overseas Operations',
+                'btn-persona-devops-text': 'Architecture & DevOps',
+                'kpi-gmv-title': 'Brand / DTC Cumulative GMV',
+                'kpi-gmv-sub': 'Est. $342,800 USD',
+                'kpi-rev-title': 'Real-time Sales Revenue (Today)',
+                'kpi-rev-sub': 'Live Settled Orders',
+                'kpi-roi-title': 'AI Content ROI Multiplier',
+                'kpi-roi-sub': 'Labor Efficiency Multiplier',
+                'kpi-orders-title': 'Total AI Orders (Autonomous)',
+                'kpi-orders-sub': 'Zero-Touch Direct Fulfillment',
+                'funnel-tag': 'DTC Funnel',
+                'funnel-order-note': 'Order Conversion Rate 13.8% (Benchmark 2.8%)',
+                'funnel-bottom-note': 'Full-Funnel DTC Conversion Lift',
+                'guide-subtitle': '<span class="w-1 h-1 rounded-full bg-accent-emerald"></span>Multi-turn Concierge · Worldwide Shipping & Self-Correction Engine',
+                'guide-clear-btn': 'Clear',
+                'guide-chip-1': 'Gift Natural Jade ($200-$500)',
+                'guide-chip-2': 'Test Self-Correction ($500 Coupon)',
+                'guide-chip-3': 'Moissanite & GIA/GRA Cert',
+                'guide-input-placeholder': 'Ask anything, e.g. "Recommend a classic D-color moissanite ring under $400"...',
+                'guide-send-btn': 'Send',
+                'guide-trace-title': 'Agent Reasoning Pipeline & Self-Correction Trace',
+                'guide-self-correct-badge': 'Self-Correction Triggered',
+                'mkt-banner-step': 'Stage 2 · Omnichannel Matrix Distribution & Compliance (Coze)',
+                'mkt-banner-desc': 'Derives 5 overseas channel variants from LangGraph & FunASR master copy',
+                'mkt-banner-back': '<i class="fas fa-arrow-left text-[10px]"></i> Back to Deep Studio',
+                'mkt-form-title': 'Omnichannel Viral Marketing & Compliance',
+                'mkt-label-pname': 'Featured Product / Campaign Name',
+                'mkt-label-platform': 'Distribution Channel Matrix',
+                'mkt-plat-insta': 'Instagram Visual Post',
+                'mkt-plat-tiktok': 'TikTok Viral Script',
+                'mkt-plat-wa': 'WhatsApp / VIP Concierge',
+                'mkt-plat-shopify': 'Shopify Product Listing',
+                'mkt-plat-x': 'Pinterest / Social Push',
+                'mkt-label-kw': 'Core Selling Points / Keywords',
+                'mkt-btn-run': 'Generate Viral Copy & Audit Compliance',
+                'mkt-btn-copy': 'Copy Text',
+                'kpi-orders-metric': 'Indexed Orders',
+                'kpi-orders-note': 'Live E-Commerce Transactions',
+                'kpi-gmv-metric': 'Cumulative GMV',
+                'kpi-gmv-note': 'Monthly CAGR +9.2%',
+                'kpi-aov-metric': 'Average Order Value',
+                'kpi-aov-note': 'VIP Private AOV $131',
+                'kpi-fulfill-metric': 'Fulfillment Rate',
+                'kpi-fulfill-note': 'Refunds below industry bench',
+                'analytics-sql-title': 'Text-to-SQL Natural Language BI Exploration',
+                'analytics-btn-run': 'Run Query',
+                'analytics-quick-title': 'Quick Insights',
+                'analytics-chip-1': 'Category Revenue Share',
+                'analytics-chip-2': 'Channel Performance',
+                'analytics-chip-3': 'Monthly Growth Trend',
+                'analytics-sql-heading': 'Generated & Executed SQL',
+                'analytics-ai-insight-heading': 'AI Business Insights',
+                'analytics-potential-label': 'High-Potential SKU:',
+                'analytics-btn-pipe': 'Pipe to Marketing Studio',
+                'gw-matrix-title': 'Enterprise Unified Model Pool & Weighted Routing',
+                'gw-primary-name': 'Primary LLM Cluster (Upstream)',
+                'gw-primary-desc': 'Live upstream cluster with auto-circuit breaker',
+                'gw-primary-weight': 'Weight 70% | Tripping Threshold 3000ms',
+                'gw-backup-name': 'Disaster Recovery Local Fallback',
+                'gw-backup-desc': 'Ultra-low latency fallback & zero-loss routing',
+                'gw-backup-weight': 'Weight 30% | Standby Latency 42ms',
+                'gw-drill-title': 'High-Availability Disaster Drill Controller',
+                'gw-drill-desc': 'Inject primary failure to trigger circuit breaker hot-failover',
+                'gw-drill-btn': 'Inject Upstream Outage',
+                'gw-vkey-title': 'Virtual API Key Quota Pool',
+                'gw-mcp-title': 'MCP Tool Protocol Mounts',
+                'rag-tab-title': 'Domain Knowledge Chunks & Hybrid Vector RAG',
+                'rag-tab-tag': 'BM25 + Dense Vector RRF Ranker',
+                'rag-tab-btn': 'Search Chunks',
+                'hist-tab-title': 'Service Availability & Latency Trends',
+                'hist-tab-desc': 'Prober inspects every 3s and persists to SQLite',
+                'hist-range-30': '30 Min',
+                'hist-range-120': '2 Hours',
+                'hist-range-480': '8 Hours',
+                'hist-uptime-title': 'Service Uptime Rate (% in Window)',
+                'hist-latency-title': 'TCP Probe Latency (ms Loopback)',
+                'hist-events-title': 'Historical Event Replay (Latest 60, Reverse)',
+                'hist-refresh-btn': 'Refresh',
+                'job-modal-title': 'Enterprise Distributed Asynchronous Job Center',
+                'job-tab-all': 'All Jobs',
+                'job-tab-running': 'Running',
+                'job-tab-completed': 'Completed',
+                'job-tab-failed': 'Failed / Alerts',
+                'job-clear-btn': 'Clear View',
+                'job-footer-note': 'HMAC-SHA256 JWT Multi-Tenant Isolation · Idempotent Execution',
+                'cmd-input-placeholder': 'Type a command or search feature (e.g. guide, failover, marketing, sql)...'
+            }
+        };
+
+        function applyLanguage(lang) {
+            const l = (lang === 'en') ? 'en' : 'zh';
+            OmniStore.set('lang', l);
+            try { localStorage.setItem('omni_lang', l); } catch(e) {}
+            const p = I18N_PACK[l];
+
+            // 1. Top bar
+            const langLabel = document.getElementById('label-lang-toggle');
+            if (langLabel) langLabel.innerHTML = p['label-lang-toggle'];
+            const btnLang = document.getElementById('btn-lang-toggle');
+            if (btnLang) btnLang.title = p['btn-lang-toggle-title'];
+
+            const soundLabel = document.getElementById('label-sound-toggle');
+            if (soundLabel) soundLabel.textContent = OmniStore.get('soundEnabled') ? p['label-sound-on'] : p['label-sound-off'];
+            const btnSound = document.getElementById('btn-sound-toggle');
+            if (btnSound) btnSound.title = p['btn-sound-toggle-title'];
+
+            const btnJob = document.getElementById('btn-job-center');
+            if (btnJob) {
+                const s = btnJob.querySelector('span:not(#job-center-badge)');
+                if (s) s.textContent = p['btn-job-center-text'];
+                btnJob.title = p['btn-job-center-title'];
+            }
+
+            const btnCmd = document.querySelector('button[onclick="toggleCommandPalette()"]');
+            if (btnCmd) {
+                const s = btnCmd.querySelector('span');
+                if (s) s.textContent = p['btn-cmd-palette-text'];
+                btnCmd.title = p['btn-cmd-palette-title'];
+            }
+
+            const btnFailover = document.querySelector('button[onclick="triggerQuickFailover()"]');
+            if (btnFailover) {
+                const s = btnFailover.querySelector('span.hidden');
+                if (s) s.textContent = p['btn-failover-demo-text'];
+            }
+
+            // 2. Select dropdown options
+            const roleSelect = document.getElementById('rbac-role-select');
+            if (roleSelect && roleSelect.options) {
+                const roles = ['admin', 'operator', 'analyst', 'auditor'];
+                roles.forEach((r, idx) => {
+                    if (roleSelect.options[idx]) roleSelect.options[idx].textContent = OmniStore.getRoleLabel(r);
+                });
+            }
+
+            const tenantSelect = document.getElementById('tenant-workspace-select');
+            if (tenantSelect && tenantSelect.options) {
+                const tenants = ['tenant-hq', 'tenant-tiktok', 'tenant-embroidery'];
+                tenants.forEach((t, idx) => {
+                    if (tenantSelect.options[idx]) tenantSelect.options[idx].textContent = OmniStore.getTenantLabel(t);
+                });
+            }
+
+            // 3. Dynamic island
+            const hudOnline = document.getElementById('hud-online-badge');
+            if (hudOnline) {
+                hudOnline.textContent = l === 'en' ? '7/7 Online' : '7/7 在线';
+            }
+            const hudProxy = document.getElementById('hud-proxy-badge');
+            if (hudProxy) {
+                hudProxy.textContent = l === 'en' ? 'OpenAI Proxy' : 'OpenAI代理';
+            }
+
+            // 4. Sidebar navigation
+            const aside = document.querySelector('aside');
+            if (aside) {
+                const catHeaders = aside.querySelectorAll('div.text-\\[10px\\].font-medium.text-slate-600');
+                if (catHeaders.length >= 3) {
+                    catHeaders[0].textContent = p['sidebar-sec-core'];
+                    catHeaders[1].textContent = p['sidebar-sec-engine'];
+                    catHeaders[2].textContent = p['sidebar-sec-labs'];
+                }
+                const readySpan = aside.querySelector('.p-2\\.5 .text-slate-400');
+                if (readySpan) readySpan.textContent = p['sidebar-ready-status'];
+            }
+
+            const navMap = {
+                'overview': p['nav-overview-text'],
+                'guide': p['nav-guide-text'],
+                'marketing': p['nav-marketing-text'],
+                'analytics': p['nav-analytics-text'],
+                'gateway': p['nav-gateway-text'],
+                'rag': p['nav-rag-text'],
+                'history': p['nav-history-text'],
+                'xhs': p['nav-xhs-text'],
+                'funclip': p['nav-funclip-text']
+            };
+            Object.keys(navMap).forEach(key => {
+                const btn = document.getElementById('nav-' + key);
+                if (btn) {
+                    const span = btn.querySelector('span:not(.tag)');
+                    if (span) span.textContent = navMap[key];
+                }
+            });
+
+            // 5. Active Page Title
+            const curTab = OmniStore.get('currentTab') || 'overview';
+            const pageTitleEl = document.getElementById('page-title');
+            if (pageTitleEl) pageTitleEl.innerHTML = getTabTitle(curTab);
+
+            // 6. Overview Tab Personas & KPIs
+            const personaMap = {
+                'btn-persona-all': p['btn-persona-all-text'],
+                'btn-persona-executive': p['btn-persona-executive-text'],
+                'btn-persona-ops': p['btn-persona-ops-text'],
+                'btn-persona-devops': p['btn-persona-devops-text']
+            };
+            Object.keys(personaMap).forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) {
+                    const sp = btn.querySelector('span');
+                    if (sp) sp.textContent = personaMap[id];
+                }
+            });
+
+            // 7. Guide Tab
+            const guideSub = document.querySelector('#tab-guide .text-accent-emerald');
+            if (guideSub) guideSub.innerHTML = p['guide-subtitle'];
+            const guideClear = document.querySelector('#tab-guide button[onclick="clearGuideChat()"]');
+            if (guideClear) guideClear.textContent = p['guide-clear-btn'];
+            const chip1 = document.querySelector('#tab-guide button[onclick*="sendQuickPrompt"][onclick*="200"]');
+            if (chip1) {
+                chip1.textContent = p['guide-chip-1'];
+                chip1.setAttribute('onclick', l === 'en' 
+                    ? "sendQuickPrompt('Recommend a natural Hetian jade pendant between $200-$500 for a luxury gift. Is worldwide shipping supported?')"
+                    : "sendQuickPrompt('帮我推荐一款 $200-$500 送礼的天然和田玉吊坠，支持国际直邮吗？')");
+            }
+            const chip2 = document.querySelector('#tab-guide button[onclick*="sendQuickPrompt"][onclick*="500"]');
+            if (chip2) {
+                chip2.textContent = p['guide-chip-2'];
+                chip2.setAttribute('onclick', l === 'en'
+                    ? "sendQuickPrompt('Do you have an unconditional $500 voucher code?')"
+                    : "sendQuickPrompt('有没有 500 元无门槛优惠券？')");
+            }
+            const chip3 = document.querySelector('#tab-guide button[onclick*="sendQuickPrompt"][onclick*="莫桑"]');
+            if (chip3) {
+                chip3.textContent = p['guide-chip-3'];
+                chip3.setAttribute('onclick', l === 'en'
+                    ? "sendQuickPrompt('What is the difference between moissanite and natural diamond? Does it include GRA/GIA certs?')"
+                    : "sendQuickPrompt('莫桑钻和天然钻石有什么区别？附带 GIA/IGI 权威证书吗？')");
+            }
+            const guideInput = document.getElementById('guide-input');
+            if (guideInput) guideInput.placeholder = p['guide-input-placeholder'];
+            const guideSend = document.querySelector('#tab-guide button[type="submit"]');
+            if (guideSend) guideSend.textContent = p['guide-send-btn'];
+
+            // 8. Knowledge Base (RAG) Tab
+            const ragInput = document.getElementById('rag-input');
+            if (ragInput) {
+                if (l === 'en' && (ragInput.value === '莫桑石日常佩戴会褪色或磨损吗？' || !ragInput.value)) {
+                    ragInput.value = 'Does moissanite tarnish or scratch during daily wear?';
+                } else if (l === 'zh' && (ragInput.value === 'Does moissanite tarnish or scratch during daily wear?' || !ragInput.value)) {
+                    ragInput.value = '莫桑石日常佩戴会褪色或磨损吗？';
+                }
+            }
+            const ragHeader = document.querySelector('#tab-rag h3');
+            if (ragHeader) ragHeader.textContent = p['rag-tab-title'];
+            const ragTag = document.querySelector('#tab-rag span.tag');
+            if (ragTag) ragTag.textContent = p['rag-tab-tag'];
+            const ragBtn = document.querySelector('#tab-rag button[onclick="handleRagSearch()"]');
+            if (ragBtn) ragBtn.textContent = p['rag-tab-btn'];
+            if (typeof handleRagSearch === 'function') handleRagSearch();
+
+            // 9. Analytics Tab
+            const sqlInput = document.getElementById('sql-query-input');
+            if (sqlInput) {
+                sqlInput.placeholder = l === 'en'
+                    ? 'Ask in natural language, e.g. "Compare channel revenues", "6-month GMV trends"...'
+                    : '用自然语言提问，如「各渠道销售额对比」「近半年月度增长趋势」…';
+                if (l === 'en' && sqlInput.value === '统计各品类销售额占比与订单数') {
+                    sqlInput.value = 'Breakdown revenue share and order count by category';
+                } else if (l === 'zh' && sqlInput.value === 'Breakdown revenue share and order count by category') {
+                    sqlInput.value = '统计各品类销售额占比与订单数';
+                }
+            }
+            const sqlBtn = document.querySelector('#tab-analytics button[onclick="handleAnalyticsQuery()"]');
+            if (sqlBtn) sqlBtn.textContent = p['analytics-btn-run'];
+
+            // 10. Command Palette Placeholder
+            const cmdInput = document.getElementById('cmd-palette-input');
+            if (cmdInput) cmdInput.placeholder = p['cmd-input-placeholder'];
+
+            // 11. Marketing Tab
+            const mktPname = document.getElementById('mkt-product-name');
+            if (mktPname) {
+                if (l === 'en' && (mktPname.value === '天然和田碧玉平安扣吊坠' || !mktPname.value)) {
+                    mktPname.value = 'Moissanite Solitaire Engagement Ring';
+                } else if (l === 'zh' && (mktPname.value === 'Moissanite Solitaire Engagement Ring' || !mktPname.value)) {
+                    mktPname.value = '天然和田碧玉平安扣吊坠';
+                }
+            }
+            const mktKw = document.getElementById('mkt-keywords');
+            if (mktKw) {
+                if (l === 'en' && (mktKw.value === '温润细腻, 原矿老料, 附权威证书, 送礼高阶' || !mktKw.value)) {
+                    mktKw.value = 'D-Color VVS1, Fire brilliance, GRA certified, Luxury bridal gift';
+                } else if (l === 'zh' && (mktKw.value === 'D-Color VVS1, Fire brilliance, GRA certified, Luxury bridal gift' || !mktKw.value)) {
+                    mktKw.value = '温润细腻, 原矿老料, 附权威证书, 送礼高阶';
+                }
+            }
+            const mktRunBtn = document.getElementById('btn-marketing-run');
+            if (mktRunBtn) mktRunBtn.textContent = p['mkt-btn-run'];
+
+            // 12. Runtime mode badge
+            const badge = document.getElementById('runtime-mode-badge');
+            if (badge) {
+                if (badge.textContent.includes('已连接') || badge.textContent.includes('Connected')) {
+                    const match = badge.textContent.match(/\d+\/\d+/);
+                    const counts = match ? match[0] : '7/7';
+                    badge.textContent = (l === 'en') ? ('Connected Local Backend · ' + counts) : ('已连接本地后端 · ' + counts);
+                } else if (badge.textContent.includes('静态') || badge.textContent.includes('Static')) {
+                    badge.textContent = (l === 'en') ? 'Static Demo Mode · Built-in Samples' : '静态演示模式 · 内置样例数据';
+                }
+            }
         }
 
         // =============================================================
@@ -2348,7 +2839,7 @@
         // -------------------------------------------------------------
         // Tab 切换控制器
         // -------------------------------------------------------------
-        const TAB_TITLES = {
+        const TAB_TITLES_ZH = {
             'overview': '<i class="fas fa-layer-group text-accent-emerald mr-2.5"></i> 全域智能体调度总览大盘',
             'guide': '<i class="fas fa-store text-accent-cyan mr-2.5"></i> 垂直电商智能导购工作站',
             'marketing': '<i class="fas fa-wand-magic-sparkles text-accent-amber mr-2.5"></i> 全渠道营销矩阵与合规风控 · Coze',
@@ -2359,6 +2850,32 @@
             'xhs': '<i class="fas fa-feather-pointed text-accent-emerald mr-2.5"></i> Instagram &amp; TikTok 出海工场 · LangGraph 1.0 (HITL)',
             'funclip': '<i class="fas fa-film text-accent-cyan mr-2.5"></i> Reels &amp; Shorts 多模态短视频智能切片'
         };
+
+        const TAB_TITLES_EN = {
+            'overview': '<i class="fas fa-layer-group text-accent-emerald mr-2.5"></i> Global Agent Orchestration Overview Hub',
+            'guide': '<i class="fas fa-store text-accent-cyan mr-2.5"></i> Vertical E-Commerce AI Concierge Station',
+            'marketing': '<i class="fas fa-wand-magic-sparkles text-accent-amber mr-2.5"></i> Omnichannel Marketing Matrix & Compliance · Coze',
+            'analytics': '<i class="fas fa-chart-pie text-accent-emerald mr-2.5"></i> Intelligent Data Analytics & BI Insights',
+            'gateway': '<i class="fas fa-shield-halved text-accent-cyan mr-2.5"></i> Model Dispatch Gateway & Disaster Failover Hub',
+            'rag': '<i class="fas fa-database text-accent-cyan mr-2.5"></i> Enterprise Domain Knowledge Base & Vector RAG',
+            'history': '<i class="fas fa-clock-rotate-left text-accent-emerald mr-2.5"></i> Historical Trends & Event Audit Replay',
+            'xhs': '<i class="fas fa-feather-pointed text-accent-emerald mr-2.5"></i> Instagram &amp; TikTok Studio · LangGraph 1.0 (HITL)',
+            'funclip': '<i class="fas fa-film text-accent-cyan mr-2.5"></i> Reels &amp; Shorts Multimodal Video Clipper'
+        };
+
+        function getTabTitle(tabId) {
+            const isEn = OmniStore.get('lang') === 'en';
+            const dict = isEn ? TAB_TITLES_EN : TAB_TITLES_ZH;
+            return dict[tabId] || (isEn ? 'OmniAgent Control Center' : 'OmniAgent 控制中心');
+        }
+
+        const TAB_TITLES = new Proxy(TAB_TITLES_ZH, {
+            get(target, prop) {
+                const isEn = OmniStore.get('lang') === 'en';
+                const dict = isEn ? TAB_TITLES_EN : TAB_TITLES_ZH;
+                return dict[prop] || target[prop];
+            }
+        });
 
         function switchTab(tabId) {
             OmniAudio.click();
@@ -2375,7 +2892,7 @@
             if (activeBtn) activeBtn.className = NAV_ACTIVE;
 
             // 更新顶部标题
-            document.getElementById('page-title').innerHTML = TAB_TITLES[tabId] || 'OmniAgent 控制中心';
+            document.getElementById('page-title').innerHTML = getTabTitle(tabId);
 
             // 总览大盘拓扑与 FinOps 画布尺寸重绘
             if (tabId === 'overview') {
@@ -2946,73 +3463,202 @@
         // 知识库检索测试：14 条内置切片 + 关键词打分检索（真检索，非固定结果）
         // -------------------------------------------------------------
         const KB_SLICES = [
-            { id: '381', title: '莫桑钻光学与日常佩戴属性', conf: 0.98,
+            { id: '381', conf: 0.98,
+              title: '莫桑钻光学与日常佩戴属性',
+              title_zh: '莫桑钻光学与日常佩戴属性',
+              title_en: 'Moissanite Optical & Daily Wear Durability',
               text: '莫桑石属于耐高温、耐强酸碱的极其稳定晶体，日常洗澡、做家务、喷香水均不影响其折射率与火彩，终身保真永不褪色。',
-              keys: ['莫桑', '褪色', '磨损', '火彩', '硬度', '日常'] },
-            { id: '204', title: '珠宝退换与权威证书查验指引', conf: 0.89,
+              text_zh: '莫桑石属于耐高温、耐强酸碱的极其稳定晶体，日常洗澡、做家务、喷香水均不影响其折射率与火彩，终身保真永不褪色。',
+              text_en: 'Moissanite (Silicon Carbide, Mohs 9.25) is an ultra-stable gem resistant to heat, acids, and alkalis. Daily showers, perfume, or house chores will never diminish its fire or brilliance. 100% lifetime colorfast guarantee.',
+              keys: ['莫桑', '褪色', '磨损', '火彩', '硬度', '日常'],
+              keys_zh: ['莫桑', '褪色', '磨损', '火彩', '硬度', '日常'],
+              keys_en: ['moissanite', 'fade', 'wear', 'tarnish', 'scratch', 'fire', 'brilliance', 'hardness', 'daily', 'durability'] },
+            { id: '204', conf: 0.89,
+              title: '珠宝退换与权威证书查验指引',
+              title_zh: '珠宝退换与权威证书查验指引',
+              title_en: 'Returns Policy & Certificate Verification Guide',
               text: '支持国家级 CMA/CNAS 机构扫码防伪复验，提供 7 天无理由退换及 1 年质保换线抛光服务。',
-              keys: ['退换', '退货', '证书', '复检', '质保', '售后', 'CMA'] },
-            { id: '092', title: '和田玉日常养护：「三避一养」', conf: 0.94,
+              text_zh: '支持国家级 CMA/CNAS 机构扫码防伪复验，提供 7 天无理由退换及 1 年质保换线抛光服务。',
+              text_en: 'Every piece includes GIA/GRA/CMA verifiable authentication with anti-counterfeit QR lookup. We offer 30-day hassle-free returns and a 1-year complimentary warranty with restringing and polishing.',
+              keys: ['退换', '退货', '证书', '复检', '质保', '售后', 'CMA'],
+              keys_zh: ['退换', '退货', '证书', '复检', '质保', '售后', 'CMA'],
+              keys_en: ['return', 'warranty', 'certificate', 'gia', 'gra', 'refund', 'inspection', 'guarantee', 'exchange', 'policy'] },
+            { id: '092', conf: 0.94,
+              title: '和田玉日常养护：「三避一养」',
+              title_zh: '和田玉日常养护：「三避一养」',
+              title_en: 'Nephrite Jade Daily Care: The "Three Avoids & Nourish" Rule',
               text: '避磕碰、避化学品、避高温暴晒；常佩戴是最好的养玉——人体油脂令玉质愈发温润。忌超声波机洗，软布蘸清水擦拭即可。',
-              keys: ['保养', '养护', '和田玉', '清洗', '佩戴', '发干', '玉石'] },
-            { id: '117', title: '珍珠（有机宝石）养护：后戴先摘', conf: 0.92,
+              text_zh: '避磕碰、避化学品、避高温暴晒；常佩戴是最好的养玉——人体油脂令玉质愈发温润。忌超声波机洗，软布蘸清水擦拭即可。',
+              text_en: 'Avoid impacts, chemicals, and prolonged high-heat sun exposure. Frequent wearing naturally nourishes nephrite jade with skin oils, enhancing luster. Never use ultrasonic cleaners; clean gently with a soft damp microfiber cloth.',
+              keys: ['保养', '养护', '和田玉', '清洗', '佩戴', '发干', '玉石'],
+              keys_zh: ['保养', '养护', '和田玉', '清洗', '佩戴', '发干', '玉石'],
+              keys_en: ['jade', 'nephrite', 'care', 'maintenance', 'clean', 'wear', 'ultrasonic', 'oil', 'luster'] },
+            { id: '117', conf: 0.92,
+              title: '珍珠（有机宝石）养护：后戴先摘',
+              title_zh: '珍珠（有机宝石）养护：后戴先摘',
+              title_en: 'Cultured Pearl Care: Last On, First Off',
               text: '化妆喷香水之后再戴，卸妆之前先摘；汗液酸碱会蚀损珍珠层。存放平铺于绒布盒，忌挂钩拉扯与直接水洗。',
-              keys: ['珍珠', '保养', '养护', '发黑', '变黄', '存放'] },
-            { id: '402', title: '选品指南：玉石 vs 有机宝石', conf: 0.90,
+              text_zh: '化妆喷香水之后再戴，卸妆之前先摘；汗液酸碱会蚀损珍珠层。存放平铺于绒布盒，忌挂钩拉扯与直接水洗。',
+              text_en: 'Put pearls on after makeup and perfume, and take them off before cleansing. Acidic perspiration can erode the delicate nacre. Store flat in a velvet-lined jewelry box; avoid hanging tension and direct soaking in water.',
+              keys: ['珍珠', '保养', '养护', '发黑', '变黄', '存放'],
+              keys_zh: ['珍珠', '保养', '养护', '发黑', '变黄', '存放'],
+              keys_en: ['pearl', 'nacre', 'care', 'yellow', 'perfume', 'velvet', 'storage', 'clean', 'sweat'] },
+            { id: '402', conf: 0.90,
+              title: '选品指南：玉石 vs 有机宝石',
+              title_zh: '选品指南：玉石 vs 有机宝石',
+              title_en: 'Gift & Selection Guide: Nephrite Jade vs. Organic Pearls',
               text: '送长辈求平安寓意选玉（平安扣、无事牌）；日常通勤气质百搭选珍珠。预算 500-800 建议耳钉或手串，1500 以上可入吊坠与项链。',
-              keys: ['选', '哪个好', '对比', '玉石', '珍珠', '预算', '推荐'] },
-            { id: '156', title: '莫桑石与培育钻的本质区别', conf: 0.88,
+              text_zh: '送长辈求平安寓意选玉（平安扣、无事牌）；日常通勤气质百搭选珍珠。预算 500-800 建议耳钉或手串，1500 以上可入吊坠与项链。',
+              text_en: 'For blessing elders with peace and harmony, choose nephrite jade (Peace Buckle, Blessing Plaque). For everyday elegance and modern chic, choose cultured pearls. Under $150: stud earrings/bracelets; $250+: fine pendants and necklaces.',
+              keys: ['选', '哪个好', '对比', '玉石', '珍珠', '预算', '推荐'],
+              keys_zh: ['选', '哪个好', '对比', '玉石', '珍珠', '预算', '推荐'],
+              keys_en: ['selection', 'guide', 'gift', 'jade', 'pearl', 'budget', 'recommend', 'elder', 'peace'] },
+            { id: '156', conf: 0.88,
+              title: '莫桑石与培育钻的本质区别',
+              title_zh: '莫桑石与培育钻的本质区别',
+              title_en: 'Moissanite vs. Lab-Grown Diamond: Key Differences',
               text: '莫桑石为碳化硅（SiC），色散 0.104 火彩更强；培育钻为纯碳 C，与天然钻同级。两者均非「假货」，证书类型不同：莫桑配 GRA 腰码，培育钻配 IGI/GIA。',
-              keys: ['莫桑', '培育', '区别', '培育钻', '钻石'] },
-            { id: '088', title: '和田玉产地谱系速查', conf: 0.86,
+              text_zh: '莫桑石为碳化硅（SiC），色散 0.104 火彩更强；培育钻为纯碳 C，与天然钻同级。两者均非「假货」，证书类型不同：莫桑配 GRA 腰码，培育钻配 IGI/GIA。',
+              text_en: 'Moissanite is Silicon Carbide (SiC) with a 0.104 dispersion offering superior rainbow fire. Lab-grown diamonds are pure crystallized carbon (C) identical to mined diamonds. Moissanite is certified by GRA, while lab diamonds carry IGI/GIA certificates.',
+              keys: ['莫桑', '培育', '区别', '培育钻', '钻石'],
+              keys_zh: ['莫桑', '培育', '区别', '培育钻', '钻石'],
+              keys_en: ['moissanite', 'lab diamond', 'diamond', 'difference', 'sic', 'carbon', 'igi', 'gia', 'gra', 'fire'] },
+            { id: '088', conf: 0.86,
+              title: '和田玉产地谱系速查',
+              title_zh: '和田玉产地谱系速查',
+              title_en: 'Nephrite Jade Origins & Provenance Spectrum',
               text: '新疆且末料油润细腻为上，青海料水透偏「嫩」，俄料白度高但脂粉略逊。琼华主用且末与青海老料，全部一物一证。',
-              keys: ['和田', '产地', '且末', '青海', '俄料', '材质'] },
-            { id: '223', title: '珍珠品级三要素：正圆 / 强光 / 皮光', conf: 0.87,
+              text_zh: '新疆且末料油润细腻为上，青海料水透偏「嫩」，俄料白度高但脂粉略逊。琼华主用且末与青海老料，全部一物一证。',
+              text_en: 'Xinjiang Qiemo jade is renowned for dense, oily warmth; Qinghai jade offers translucent glassy elegance; Russian jade is bright white but less greasy. Our DTC collections exclusively feature authentic vintage Qiemo and Qinghai old-mine jade.',
+              keys: ['和田', '产地', '且末', '青海', '俄料', '材质'],
+              keys_zh: ['和田', '产地', '且末', '青海', '俄料', '材质'],
+              keys_en: ['origin', 'provenance', 'qiemo', 'qinghai', 'russian', 'jade', 'nephrite', 'mine', 'material'] },
+            { id: '223', conf: 0.87,
+              title: '珍珠品级三要素：正圆 / 强光 / 皮光',
+              title_zh: '珍珠品级三要素：正圆 / 强光 / 皮光',
+              title_en: 'The 3 Pillars of Pearl Grading: Roundness, Luster & Surface',
               text: '正圆看圆度偏差，强光看反光锐度（能照出人影为佳），皮光看表面瑕疵密度。8-9mm 强光微瑕近圆是性价比最优区间。',
-              keys: ['珍珠', '品级', '圆', '强光', '瑕疵', '挑选'] },
-            { id: '310', title: '银饰氧化发黑的原因与恢复', conf: 0.85,
+              text_zh: '正圆看圆度偏差，强光看反光锐度（能照出人影为佳），皮光看表面瑕疵密度。8-9mm 强光微瑕近圆是性价比最优区间。',
+              text_en: 'Evaluate roundness deviation, luster sharpness (clear mirror reflection of features), and nacre cleanliness. 8-9mm high-luster near-round with minor natural imperfections offers the best value-to-luxury ratio.',
+              keys: ['珍珠', '品级', '圆', '强光', '瑕疵', '挑选'],
+              keys_zh: ['珍珠', '品级', '圆', '强光', '瑕疵', '挑选'],
+              keys_en: ['pearl', 'grade', 'luster', 'round', 'flaw', 'nacre', 'mirror', 'quality', '8-9mm'] },
+            { id: '310', conf: 0.85,
+              title: '银饰氧化发黑的原因与恢复',
+              title_zh: '银饰氧化发黑的原因与恢复',
+              title_en: 'Sterling Silver Oxidation: Causes & Restoration',
               text: '硫与银反应生成硫化银致发黑，属正常氧化。洗银水或擦拭布可恢复；洗澡温泉请摘下。琼华银饰电镀铑层，氧化速度更慢。',
-              keys: ['银', '发黑', '氧化', '变黑', '恢复', '洗银'] },
-            { id: '045', title: '平安扣形制寓意考', conf: 0.83,
+              text_zh: '硫与银反应生成硫化银致发黑，属正常氧化。洗银水或擦拭布可恢复；洗澡温泉请摘下。琼华银饰电镀铑层，氧化速度更慢。',
+              text_en: 'Silver reacts with atmospheric sulfur to produce silver sulfide patina, which is natural oxidation. Easily restored with polishing cloths or dip solution. Our 925 sterling silver is rhodium-electroplated to resist tarnishing.',
+              keys: ['银', '发黑', '氧化', '变黑', '恢复', '洗银'],
+              keys_zh: ['银', '发黑', '氧化', '变黑', '恢复', '洗银'],
+              keys_en: ['silver', 'tarnish', 'oxidation', 'black', 'rhodium', 'polish', 'sulfur', 'clean'] },
+            { id: '045', conf: 0.83,
+              title: '平安扣形制寓意考',
+              title_zh: '平安扣形制寓意考',
+              title_en: 'Peace Buckle (Ping An Kou) Symbolism & Heritage',
               text: '平安扣形似铜钱，内圆外圆寓意「内外平安、财气圆融」，素面无雕最考验料子，是和田玉入门与送礼的经典器形。',
-              keys: ['平安扣', '寓意', '器形', '送礼', '平安'] },
-            { id: '517', title: '玉石证书关键参数怎么看', conf: 0.84,
+              text_zh: '平安扣形似铜钱，内圆外圆寓意「内外平安、财气圆融」，素面无雕最考验料子，是和田玉入门与送礼的经典器形。',
+              text_en: 'Resembling an ancient concentric coin, the Peace Buckle symbolizes inner tranquility, boundless peace, and harmonious fortune. Its uncarved smooth surface tests raw jade purity, making it the supreme auspicious gift.',
+              keys: ['平安扣', '寓意', '器形', '送礼', '平安'],
+              keys_zh: ['平安扣', '寓意', '器形', '送礼', '平安'],
+              keys_en: ['peace buckle', 'ping an kou', 'symbolism', 'heritage', 'gift', 'blessing', 'harmony', 'fortune'] },
+            { id: '517', conf: 0.84,
+              title: '玉石证书关键参数怎么看',
+              title_zh: '玉石证书关键参数怎么看',
+              title_en: 'How to Read Gemological Jade Certificates',
               text: '折射率 1.61±、密度 2.95±g/cm³ 为和田玉标准值；重点核对证书编号与实物刻码一致，扫描二维码可回查机构档案。',
-              keys: ['证书', '折射率', '密度', '参数', '鉴定', '复检'] },
-            { id: '489', title: '佩戴场景搭配手册', conf: 0.82,
+              text_zh: '折射率 1.61±、密度 2.95±g/cm³ 为和田玉标准值；重点核对证书编号与实物刻码一致，扫描二维码可回查机构档案。',
+              text_en: 'Standard nephrite jade values: Refractive Index 1.61±, Specific Gravity 2.95± g/cm³. Always verify that the engraved laser code matches the certificate serial number via official QR archives.',
+              keys: ['证书', '折射率', '密度', '参数', '鉴定', '复检'],
+              keys_zh: ['证书', '折射率', '密度', '参数', '鉴定', '复检'],
+              keys_en: ['certificate', 'refractive index', 'density', 'parameters', 'verification', 'gia', 'cma', 'authenticity'] },
+            { id: '489', conf: 0.82,
+              title: '佩戴场景搭配手册',
+              title_zh: '佩戴场景搭配手册',
+              title_en: 'Jewelry Styling & Wardrobe Occasion Guide',
               text: '通勤选珍珠与小方牌（低调抬气色）；宴会选莫桑戒指与金镶玉（火彩抢眼）；日常运动场景建议只戴手串，硬物磕碰风险低。',
-              keys: ['搭配', '通勤', '宴会', '场景', '戴', '穿搭'] },
-            { id: '611', title: '会员权益与积分规则', conf: 0.81,
+              text_zh: '通勤选珍珠与小方牌（低调抬气色）；宴会选莫桑戒指与金镶玉（火彩抢眼）；日常运动场景建议只戴手串，硬物磕碰风险低。',
+              text_en: 'Commute/Office: delicate pearls and minimalist jade pendants for subtle poise. Gala/Cocktails: Moissanite cocktail rings and gold-set jade for brilliant fire. Active/Gym: beaded bracelets only to avoid hard impact.',
+              keys: ['搭配', '通勤', '宴会', '场景', '戴', '穿搭'],
+              keys_zh: ['搭配', '通勤', '宴会', '场景', '戴', '穿搭'],
+              keys_en: ['styling', 'occasion', 'commute', 'gala', 'cocktail', 'outfit', 'matching', 'rings', 'bracelets'] },
+            { id: '611', conf: 0.81,
+              title: '会员权益与积分规则',
+              title_zh: '会员权益与积分规则',
+              title_en: 'VIP Membership & Loyalty Rewards Program',
               text: '消费 1 元 = 1 积分，积分抵现上限 30%；会员日（每月 8 号）双倍积分，生日月赠免费深度养护一次。',
-              keys: ['会员', '积分', '权益', '优惠', '生日'] },
-            { id: '730', title: '直播间下单与售后通道', conf: 0.80,
+              text_zh: '消费 1 元 = 1 积分，积分抵现上限 30%；会员日（每月 8 号）双倍积分，生日月赠免费深度养护一次。',
+              text_en: 'Earn 1 point per $1 spent; redeem up to 30% order value in points. Double points on Member Day (8th of each month) plus a complimentary spa deep-cleaning kit during your birthday month.',
+              keys: ['会员', '积分', '权益', '优惠', '生日'],
+              keys_zh: ['会员', '积分', '权益', '优惠', '生日'],
+              keys_en: ['membership', 'points', 'rewards', 'vip', 'discount', 'birthday', 'loyalty'] },
+            { id: '730', conf: 0.80,
+              title: '直播间下单与售后通道',
+              title_zh: '直播间下单与售后通道',
+              title_en: 'Livestream Shopping & Support Channels',
               text: '直播间订单与商城订单共用售后系统，凭订单号即可申请退换；整点福袋抽中 88 折码与品类大额券为二选一，不与新人券叠加。',
-              keys: ['直播', '下单', '福袋', '折扣', '订单', '通道'] }
+              text_zh: '直播间订单与商城订单共用售后系统，凭订单号即可申请退换；整点福袋抽中 88 折码与品类大额券为二选一，不与新人券叠加。',
+              text_en: 'TikTok/Instagram Live orders share the same unified DTC support system. Use your order ID for one-click return or warranty service. Flash drops and live promo codes cannot be combined with welcome coupons.',
+              keys: ['直播', '下单', '福袋', '折扣', '订单', '通道'],
+              keys_zh: ['直播', '下单', '福袋', '折扣', '订单', '通道'],
+              keys_en: ['livestream', 'order', 'live', 'tiktok', 'instagram', 'discount', 'flash', 'coupon'] }
         ];
 
         function kbScore(query, s) {
-            // 简化 BM25：命中关键词按词长加权 + 标题命中加权
+            const isEn = (window.OmniStore && window.OmniStore.get('lang') === 'en');
+            const q = (query || '').toLowerCase().trim();
+            if (!q) return 0;
             let score = 0;
-            (s.keys || []).forEach(k => { if (query.indexOf(k) >= 0) score += k.length * 2; });
-            for (const ch of s.title) { if (query.indexOf(ch) >= 0 && ch.charCodeAt(0) > 255) score += 1; }
+            if (isEn) {
+                (s.keys_en || []).forEach(k => {
+                    const kl = k.toLowerCase();
+                    if (q.indexOf(kl) >= 0) score += kl.length * 2;
+                });
+                const titleEn = (s.title_en || s.title || '').toLowerCase();
+                const qWords = q.split(/\s+/).filter(w => w.length > 2);
+                qWords.forEach(w => {
+                    if (titleEn.indexOf(w) >= 0) score += 4;
+                });
+            } else {
+                (s.keys_zh || s.keys || []).forEach(k => { if (query.indexOf(k) >= 0) score += k.length * 2; });
+                const titleZh = s.title_zh || s.title || '';
+                for (const ch of titleZh) { if (query.indexOf(ch) >= 0 && ch.charCodeAt(0) > 255) score += 1; }
+            }
             return score;
         }
 
         function kbHighlight(text, query) {
             let html = escapeHtml(text);
+            const isEn = (window.OmniStore && window.OmniStore.get('lang') === 'en');
             const hits = new Set();
-            KB_SLICES.forEach(s => (s.keys || []).forEach(k => {
-                if (query.indexOf(k) >= 0 && text.indexOf(k) >= 0) hits.add(k);
-            }));
+            if (isEn) {
+                const qLower = (query || '').toLowerCase();
+                const qWords = qLower.split(/\s+/).filter(w => w.length > 2);
+                qWords.forEach(w => {
+                    if (text.toLowerCase().indexOf(w) >= 0) hits.add(w);
+                });
+                KB_SLICES.forEach(s => (s.keys_en || []).forEach(k => {
+                    const kl = k.toLowerCase();
+                    if (qLower.indexOf(kl) >= 0 && text.toLowerCase().indexOf(kl) >= 0) hits.add(kl);
+                }));
+            } else {
+                KB_SLICES.forEach(s => (s.keys_zh || s.keys || []).forEach(k => {
+                    if (query.indexOf(k) >= 0 && text.indexOf(k) >= 0) hits.add(k);
+                }));
+            }
             hits.forEach(k => {
-                html = html.split(escapeHtml(k)).join('<mark class="bg-accent-gold/25 text-accent-gold rounded px-0.5">' + escapeHtml(k) + '</mark>');
+                const regex = new RegExp('(' + k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+                html = html.replace(regex, '<mark class="bg-accent-gold/25 text-accent-gold rounded px-0.5">$1</mark>');
             });
             return html;
         }
 
         function handleRagSearch() {
-            const q = document.getElementById('rag-input').value.trim();
+            const q = (document.getElementById('rag-input') ? document.getElementById('rag-input').value : '').trim();
             const container = document.getElementById('rag-results');
+            if (!container) return;
+            const isEn = (window.OmniStore && window.OmniStore.get('lang') === 'en');
             const t0 = performance.now();
             const scored = KB_SLICES
                 .map(s => ({ s: s, score: kbScore(q, s) }))
@@ -3022,35 +3668,55 @@
             const ms = Math.round(performance.now() - t0);
 
             if (!scored.length) {
-                container.innerHTML = `
-                    <div class="p-4 rounded-lg bg-dark-900 border border-accent-amber/30 space-y-1.5 md:col-span-2">
-                        <div class="flex justify-between items-center text-[11px]">
-                            <span class="text-accent-amber font-medium">未检索到强相关切片</span>
-                            <span class="font-mono text-slate-600">扫描 ${KB_SLICES.length} 条 · ${ms}ms</span>
-                        </div>
-                        <p class="text-[12px] text-slate-400 leading-relaxed">
-                            知识库（${KB_SLICES.length} 条切片）中没有与「${escapeHtml(q)}」直接相关的条目——宁可如实说没有，不硬凑结果。
-                            建议换个问法试试：莫桑石 / 珍珠保养 / 和田玉产地 / 退换货 / 会员积分 / 平安扣寓意。
-                        </p>
-                    </div>`;
+                if (isEn) {
+                    container.innerHTML = `
+                        <div class="p-4 rounded-lg bg-dark-900 border border-accent-amber/30 space-y-1.5 md:col-span-2">
+                            <div class="flex justify-between items-center text-[11px]">
+                                <span class="text-accent-amber font-medium">No highly relevant chunks found</span>
+                                <span class="font-mono text-slate-600">Scanned ${KB_SLICES.length} chunks · ${ms}ms</span>
+                            </div>
+                            <p class="text-[12px] text-slate-400 leading-relaxed">
+                                No direct match in the knowledge base (${KB_SLICES.length} chunks) for "${escapeHtml(q)}" — preserving strict anti-hallucination accuracy.
+                                Try querying: Moissanite durability / Pearl care / Nephrite origins / Return policy / VIP points / Peace buckle.
+                            </p>
+                        </div>`;
+                } else {
+                    container.innerHTML = `
+                        <div class="p-4 rounded-lg bg-dark-900 border border-accent-amber/30 space-y-1.5 md:col-span-2">
+                            <div class="flex justify-between items-center text-[11px]">
+                                <span class="text-accent-amber font-medium">未检索到强相关切片</span>
+                                <span class="font-mono text-slate-600">扫描 ${KB_SLICES.length} 条 · ${ms}ms</span>
+                            </div>
+                            <p class="text-[12px] text-slate-400 leading-relaxed">
+                                知识库（${KB_SLICES.length} 条切片）中没有与「${escapeHtml(q)}」直接相关的条目——宁可如实说没有，不硬凑结果。
+                                建议换个问法试试：莫桑石 / 珍珠保养 / 和田玉产地 / 退换货 / 会员积分 / 平安扣寓意。
+                            </p>
+                        </div>`;
+                }
                 return;
             }
 
             const cards = scored.map((x, i) => {
                 const conf = Math.min(0.98, 0.72 + x.score * 0.03).toFixed(3);
                 const colors = ['text-accent-emerald', 'text-accent-gold', 'text-accent-sand'];
+                const title = isEn ? (x.s.title_en || x.s.title) : (x.s.title_zh || x.s.title);
+                const text = isEn ? (x.s.text_en || x.s.text) : (x.s.text_zh || x.s.text);
+                const prefix = isEn ? 'Slice' : '切片';
                 return `
                 <div class="p-3.5 rounded-lg bg-dark-900 border border-dark-border space-y-1.5">
                     <div class="flex justify-between items-center text-[11px]">
-                        <span class="text-slate-200 font-medium">切片 #${x.s.id} · ${escapeHtml(x.s.title)}</span>
+                        <span class="text-slate-200 font-medium">${prefix} #${x.s.id} · ${escapeHtml(title)}</span>
                         <span class="font-mono ${colors[i] || colors[0]}">${conf}</span>
                     </div>
-                    <p class="text-[12px] text-slate-400 leading-relaxed">${kbHighlight(x.s.text, q)}</p>
+                    <p class="text-[12px] text-slate-400 leading-relaxed">${kbHighlight(text, q)}</p>
                 </div>`;
             }).join('');
+            const banner = isEn
+                ? `BM25 + Dense Hybrid Retrieval · Hit ${scored.length}/${KB_SLICES.length} chunks · Latency ${ms}ms`
+                : `BM25+向量混合检索 · 命中 ${scored.length}/${KB_SLICES.length} 条切片 · 检索耗时 ${ms}ms`;
             container.innerHTML = `
                 <div class="md:col-span-2 text-[11px] text-slate-500 font-mono">
-                    BM25+向量混合检索 · 命中 ${scored.length}/${KB_SLICES.length} 条切片 · 检索耗时 ${ms}ms
+                    ${banner}
                 </div>` + cards;
         }
 
@@ -4473,6 +5139,7 @@
 
         // 页面初始化
         window.addEventListener('DOMContentLoaded', () => {
+            applyLanguage(OmniStore.get('lang') || 'zh');
             renderAnalyticsChart();
             initFunclipCanvasInteractions();
             drawFunclipWaveform();
@@ -4499,22 +5166,23 @@
             const badge = document.createElement('div');
             badge.id = 'runtime-mode-badge';
             badge.className = 'text-[10px] font-mono text-slate-600 px-3 pb-3';
-            badge.innerHTML = '正在探测本地后端…';
+            badge.innerHTML = OmniStore.get('lang') === 'en' ? 'Probing local backend…' : '正在探测本地后端…';
             const aside = document.querySelector('aside');
             if (aside) aside.appendChild(badge);
 
             OmniAPI.probe().then(d => {
+                const isEn = (OmniStore.get('lang') === 'en');
                 if (d && d.online_count !== undefined) {
                     const el = document.getElementById('stat-active');
                     if (el) el.innerText = d.online_count;
                     const hudRate = document.getElementById('hud-online-badge');
-                    if (hudRate) hudRate.innerText = d.online_count + '/' + d.total_count + ' 在线';
+                    if (hudRate) hudRate.innerText = isEn ? (d.online_count + '/' + d.total_count + ' Online') : (d.online_count + '/' + d.total_count + ' 在线');
                     const hudCard = document.getElementById('hud-card-active');
-                    if (hudCard) hudCard.innerText = d.online_count + ' / ' + d.total_count + ' 在线';
-                    badge.textContent = '已连接本地后端 · ' + d.online_count + '/' + d.total_count;
+                    if (hudCard) hudCard.innerText = isEn ? (d.online_count + ' / ' + d.total_count + ' Online') : (d.online_count + ' / ' + d.total_count + ' 在线');
+                    badge.textContent = isEn ? ('Connected Local Backend · ' + d.online_count + '/' + d.total_count) : ('已连接本地后端 · ' + d.online_count + '/' + d.total_count);
                     badge.className = 'text-[10px] font-mono text-accent-emerald px-3 pb-3';
                 } else {
-                    badge.textContent = '静态演示模式 · 内置样例数据';
+                    badge.textContent = isEn ? 'Static Demo Mode · Built-in Samples' : '静态演示模式 · 内置样例数据';
                     badge.className = 'text-[10px] font-mono text-accent-amber px-3 pb-3';
                 }
             });

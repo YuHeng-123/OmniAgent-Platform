@@ -50,6 +50,10 @@
 
   /* ---------- 内置演示逻辑：与 server.py 的行为保持一致 ---------- */
 
+  function isLangEn() {
+    return typeof window !== 'undefined' && window.OmniStore && window.OmniStore.get('lang') === 'en';
+  }
+
   // 导购知识池（与 server.py GUIDE_PRODUCTS 镜像）
   var GUIDE_PRODUCTS = [
     { tag: '福禄双全', name: '【琼华·福禄双全】天然和田碧玉平安扣吊坠', price: 1680, list: 2399,
@@ -78,11 +82,40 @@
       fit: ['金', '贵气', '婚嫁', '妈妈'] }
   ];
 
+  var GUIDE_PRODUCTS_EN = [
+    { tag: 'Fortune & Serenity', name: '【Qionghua · Fortune】Natural Hetian Nephrite Jade Donut Pendant', price: 268, list: 380,
+      spec: 'Authentic old-mine Hetian jade, oily texture, accompanied by NGTC/GIA lab certificate',
+      fit: ['elder', 'mom', 'peace', 'jade', 'heritage'] },
+    { tag: 'Moonlit Horizon', name: '【Qionghua · Moonlit】Natural Freshwater Cultured Pearl Strand', price: 165, list: 240,
+      spec: '8-9mm near-round, strong metallic mirror luster, sterling clasp',
+      fit: ['mother', 'wife', 'elegant', 'pearl', 'commute'] },
+    { tag: 'Starlight Solitaire', name: '【Qionghua · Starlight】Classic 6-Prong D-Color Moissanite Ring', price: 99, list: 399,
+      spec: 'D-Color / VVS1 cut, laser-inscribed GRA certificate, diamond-rivaling fire',
+      fit: ['girlfriend', 'wife', 'proposal', 'engagement', 'ring', 'moissanite'] },
+    { tag: 'Serene Bamboo', name: '【Qionghua · Bamboo】Natural Nephrite Bamboo Joint Bracelet', price: 110, list: 160,
+      spec: 'Carved bamboo joint beads, uniform green hue, double elastic strung',
+      fit: ['daily', 'bracelet', 'jade', 'men'] },
+    { tag: 'Scarlet Talisman', name: '【Qionghua · Fortune】Natural South Red Agate Talisman Plaque', price: 140, list: 185,
+      spec: 'Vibrant persimmon red, solid core, symmetrical talisman carving',
+      fit: ['dad', 'men', 'protection', 'agate'] },
+    { tag: 'Crescent Moon', name: '【Qionghua · Crescent】S925 Sterling Inlaid Jade Pendant', price: 55, list: 85,
+      spec: 'Entry-level piece, nephrite tablet with sterling chain, modern minimalist wear',
+      fit: ['budget', 'entry', 'student', 'commute', 'necklace'] },
+    { tag: 'Luminous Studs', name: '【Qionghua · Luminous】7-8mm Cultured Pearl Stud Earrings', price: 79, list: 110,
+      spec: 'Round high-luster pearls with S925 anti-loss silicone backs',
+      fit: ['girlfriend', 'earrings', 'pearl', 'daily'] },
+    { tag: 'Golden Harmony', name: '【Qionghua · Harmony】Solid Gold Inlaid Nephrite Jade Pendant', price: 280, list: 360,
+      spec: 'Solid gold bezel + authentic green jade, timeless heirloom craftsmanship',
+      fit: ['gold', 'luxury', 'wedding', 'mom'] }
+  ];
+
   function _pickGuideProducts(msg) {
+    var isEn = isLangEn();
+    var pool = isEn ? GUIDE_PRODUCTS_EN : GUIDE_PRODUCTS;
     var scored = [];
-    GUIDE_PRODUCTS.forEach(function (p) {
+    pool.forEach(function (p) {
       var s = 0;
-      p.fit.forEach(function (k) { if (msg.indexOf(k) >= 0) s++; });
+      p.fit.forEach(function (k) { if (msg.toLowerCase().indexOf(k.toLowerCase()) >= 0) s++; });
       if (s > 0) scored.push({ s: s, p: p });
     });
     scored.sort(function (a, b) { return b.s - a.s; });
@@ -93,27 +126,32 @@
     var m = msg.match(/(\d{3,5})/);
     if (m) {
       var budget = parseInt(m[1], 10);
-      var inRange = GUIDE_PRODUCTS.filter(function (p) { return p.price <= budget * 1.2; });
+      var inRange = pool.filter(function (p) { return p.price <= budget * 1.2; });
       inRange.sort(function (a, b) { return b.price - a.price; });
       if (inRange.length) return inRange.slice(0, 3);
-      return GUIDE_PRODUCTS.slice().sort(function (a, b) { return a.price - b.price; }).slice(0, 2);
+      return pool.slice().sort(function (a, b) { return a.price - b.price; }).slice(0, 2);
     }
     return [];
   }
 
   function _recommendHit(msg) {
-    return ['推荐', '买', '送', '项链', '手串', '戒指', '玉', '翡翠', '看', '挑'].some(function (k) { return msg.indexOf(k) >= 0; });
+    var lower = (msg || '').toLowerCase();
+    var zhHits = ['推荐', '买', '送', '项链', '手串', '戒指', '玉', '翡翠', '看', '挑'].some(function (k) { return msg.indexOf(k) >= 0; });
+    var enHits = ['recommend', 'suggest', 'gift', 'necklace', 'ring', 'pendant', 'jade', 'pearl', 'moissanite', 'diamond', 'buy'].some(function (k) { return lower.indexOf(k) >= 0; });
+    return zhHits || enHits;
   }
 
   function localGuideChat(userMsg) {
     var msg = (userMsg || '').trim();
+    var lower = msg.toLowerCase();
     var t0 = performance.now();
+    var isEn = isLangEn();
 
-    var isCoupon = ['券', '优惠', '打折', '便宜', '省钱', '满减'].some(function (k) { return msg.indexOf(k) >= 0; });
-    var isDiff = ['区别', '真假', '莫桑', '培育', '天然', '证书'].some(function (k) { return msg.indexOf(k) >= 0; });
-    var isAfterSales = ['退', '换', '售后', '保修', '维修', '断线', '坏'].some(function (k) { return msg.indexOf(k) >= 0; });
-    var isCare = ['保养', '清洗', '变黑', '氧化', '佩戴', '护理', '发干'].some(function (k) { return msg.indexOf(k) >= 0; });
-    var isCompare = ['哪个好', '比', 'vs', '选', '值得'].some(function (k) { return msg.indexOf(k) >= 0; }) && (msg.indexOf('玉') >= 0 || msg.indexOf('珍珠') >= 0);
+    var isCoupon = ['券', '优惠', '打折', '便宜', '省钱', '满减', 'coupon', 'discount', 'voucher', 'code', 'promo'].some(function (k) { return lower.indexOf(k) >= 0; });
+    var isDiff = ['区别', '真假', '莫桑', '培育', '天然', '证书', 'diff', 'diamond', 'moissanite', 'gia', 'gra', 'cert', 'real'].some(function (k) { return lower.indexOf(k) >= 0; });
+    var isAfterSales = ['退', '换', '售后', '保修', '维修', '断线', '坏', 'return', 'refund', 'warranty', 'repair', 'broken', 'after-sale'].some(function (k) { return lower.indexOf(k) >= 0; });
+    var isCare = ['保养', '清洗', '变黑', '氧化', '佩戴', '护理', '发干', 'care', 'clean', 'tarnish', 'wash', 'maintain', 'wear'].some(function (k) { return lower.indexOf(k) >= 0; });
+    var isCompare = (['哪个好', '比', 'vs', '选', '值得', 'compare', 'better', 'choice'].some(function (k) { return lower.indexOf(k) >= 0; })) && (lower.indexOf('玉') >= 0 || lower.indexOf('珍珠') >= 0 || lower.indexOf('jade') >= 0 || lower.indexOf('pearl') >= 0);
 
     var intentLabel = isCoupon ? 'COUPON_QUERY'
       : isAfterSales ? 'AFTER_SALES'
@@ -123,59 +161,115 @@
       : (_recommendHit(msg) || _pickGuideProducts(msg).length) ? 'PRODUCT_RECOMMEND'
       : 'KNOWLEDGE_QA';
 
-    var steps = [
+    var steps = isEn ? [
+      { node: 'Intent Router', status: 'done', detail: 'Classified intent: ' + intentLabel },
+      { node: 'Hybrid RAG Retrieval', status: 'done', detail: 'Retrieved 4 high-confidence knowledge chunks, max similarity: 0.942' }
+    ] : [
       { node: '意图识别 (Router)', status: 'done', detail: '分类为: ' + intentLabel },
       { node: '向量库混合检索 (RAG)', status: 'done', detail: '检索到 4 条高置信度知识切片，相似度最高 0.942' }
     ];
     var selfCorrected = false;
     var reply;
 
-    if (msg.indexOf('500') >= 0 && msg.indexOf('券') >= 0) {
+    if (msg.indexOf('500') >= 0 && (isCoupon || lower.indexOf('500') >= 0)) {
       selfCorrected = true;
-      steps.push({ node: '工具调用 (Tool Calling)', status: 'retry', detail: "调用 get_coupon('500元无门槛') 失败：券面额超出系统上限" });
-      steps.push({ node: '⚡ 自动反思与自纠错 (Self-Correction)', status: 'done', detail: '触发纠错策略：自动降级检索最接近规则，回正为【满2000减200】与【新人50元立减】' });
-      reply = '非常抱歉呀，小琼帮您查了一下，目前店内没有【500元无门槛券】哦～ 不过小琼为您申请到了当前最划算的组合：\n\n1. **新人专享礼**：满 300 减 50 元立减券；\n2. **珠宝品类大额券**：满 2000 减 200 元满减券！\n\n如果您今天选购【天然和田玉青海老料吊坠】（原价 ¥1,880），再凑单一个小银饰，即可直接立减 200 元，非常划算！需要我帮您锁定领券名额吗？';
+      if (isEn) {
+        steps.push({ node: 'Tool Execution (get_coupon)', status: 'retry', detail: "Calling get_coupon('$500_unconditional') failed: voucher face value exceeds system authorization ceiling" });
+        steps.push({ node: '⚡ Self-Correction & Policy Engine', status: 'done', detail: 'Triggered self-correction: auto-downgraded to eligible tiers [$200 off $2,000] and [$50 New Buyer Gift]' });
+        reply = 'We apologize for the inconvenience! Our system currently does not offer an unconditional $500 coupon code. However, our luxury concierge has secured the top eligible tiers for your order:\n\n1. **New Buyer Gift**: $50 off orders over $300 (applied automatically at checkout);\n2. **Fine Jewelry VIP Tier**: $200 off orders over $2,000 (valid across all Jadeite, Pearls, and Moissanite)!\n\nFor example, pairing our **Natural Hetian Nephrite Jade Pendant** ($268) with a sterling silver accent easily unlocks the tiered savings. Would you like me to reserve this voucher code for your cart?';
+      } else {
+        steps.push({ node: '工具调用 (Tool Calling)', status: 'retry', detail: "调用 get_coupon('500元无门槛') 失败：券面额超出系统上限" });
+        steps.push({ node: '⚡ 自动反思与自纠错 (Self-Correction)', status: 'done', detail: '触发纠错策略：自动降级检索最接近规则，回正为【满2000减200】与【新人50元立减】' });
+        reply = '非常抱歉呀，小琼帮您查了一下，目前店内没有【500元无门槛券】哦～ 不过小琼为您申请到了当前最划算的组合：\n\n1. **新人专享礼**：满 300 减 50 元立减券；\n2. **珠宝品类大额券**：满 2000 减 200 元满减券！\n\n如果您今天选购【天然和田玉青海老料吊坠】（原价 ¥1,880），再凑单一个小银饰，即可直接立减 200 元，非常划算！需要我帮您锁定领券名额吗？';
+      }
     } else if (isCoupon) {
-      steps.push({ node: '工具调用 (Tool Calling)', status: 'done', detail: '执行 list_coupons(active=True)，返回 2 张可用券 + 1 条直播福袋规则' });
-      reply = '现在店内能叠的优惠小琼帮您理好了：\n\n1. **新人专享礼**：满 300 减 50 元立减券（下单页自动带出）；\n2. **珠宝品类大额券**：满 2000 减 200 元，玉石/珍珠通用；\n3. **私域暗号**：直播间蹲「整点福袋」，可抽 88 折码，与大额券二选一不叠加。\n\n搭配建议：选【映月】925银镶和田玉方牌（¥359）可直接用新人券；两件拼到 ¥2,000 用大额券最划算。需要我按您的预算配个组合吗？';
+      if (isEn) {
+        steps.push({ node: 'Tool Calling (list_coupons)', status: 'done', detail: 'Executed list_coupons(active=True), returned 2 active codes + 1 VIP live voucher tier' });
+        reply = 'Here are the active stackable offers currently available on Qionghua Global DTC:\n\n1. **New Buyer Gift**: $50 off orders over $300 (auto-applied at checkout);\n2. **Fine Jewelry VIP Tier**: $200 off orders over $2,000 across jade and pearls;\n3. **Concierge Secret Code**: Live stream code **LUXURY88** provides an additional 12% off.\n\nWould you like me to configure a curated package tailored to your budget?';
+      } else {
+        steps.push({ node: '工具调用 (Tool Calling)', status: 'done', detail: '执行 list_coupons(active=True)，返回 2 张可用券 + 1 条直播福袋规则' });
+        reply = '现在店内能叠的优惠小琼帮您理好了：\n\n1. **新人专享礼**：满 300 减 50 元立减券（下单页自动带出）；\n2. **珠宝品类大额券**：满 2000 减 200 元，玉石/珍珠通用；\n3. **私域暗号**：直播间蹲「整点福袋」，可抽 88 折码，与大额券二选一不叠加。\n\n搭配建议：选【映月】925银镶和田玉方牌（¥359）可直接用新人券；两件拼到 ¥2,000 用大额券最划算。需要我按您的预算配个组合吗？';
+      }
     } else if (isAfterSales) {
-      steps.push({ node: '工具调用 (Tool Calling)', status: 'done', detail: '执行 query_after_sales_policy()，命中《售后服务手册 v3.2》4 条' });
-      reply = '小琼把售后政策给您讲清楚，放心买：\n\n1. **7 天无理由退换**：签收起 7 天内、吊牌完好的都可退换，店铺运费险已默认勾选；\n2. **1 年免费质保**：绳线老化、佩戴中断线，免费换新绳并重新手工编织；\n3. **终身免费养护**：清洗、抛光、换耳针，寄回或到店都行；\n4. **证书复验**：每件附国家级 CMA/CNAS 质检证书，支持任何权威机构复检，假一赔十。\n\n您是想办理退换，还是想给手上的宝贝做个养护？';
+      if (isEn) {
+        steps.push({ node: 'Tool Calling (query_policy)', status: 'done', detail: 'Executed query_after_sales_policy(), matched Global White-Glove Warranty v3.2' });
+        reply = 'Here is our overseas white-glove warranty and return policy:\n\n1. **30-Day Hassle-Free Returns**: Eligible for unworn jewelry with security tags intact, with prepaid return shipping labels;\n2. **1-Year Complimentary Warranty**: Complimentary restringing and prong maintenance for all artisanal pieces;\n3. **Lifetime Spa & Care**: Free sonic cleaning, re-polishing, and earring post replacements worldwide;\n4. **Dual Authentication**: Each jewel ships with NGTC/GRA certification, guaranteed authentic.\n\nWould you like to initiate a return or request a complimentary jewelry spa service?';
+      } else {
+        steps.push({ node: '工具调用 (Tool Calling)', status: 'done', detail: '执行 query_after_sales_policy()，命中《售后服务手册 v3.2》4 条' });
+        reply = '小琼把售后政策给您讲清楚，放心买：\n\n1. **7 天无理由退换**：签收起 7 天内、吊牌完好的都可退换，店铺运费险已默认勾选；\n2. **1 年免费质保**：绳线老化、佩戴中断线，免费换新绳并重新手工编织；\n3. **终身免费养护**：清洗、抛光、换耳针，寄回或到店都行；\n4. **证书复验**：每件附国家级 CMA/CNAS 质检证书，支持任何权威机构复检，假一赔十。\n\n您是想办理退换，还是想给手上的宝贝做个养护？';
+      }
     } else if (isCare) {
-      var pearl = msg.indexOf('珍珠') >= 0;
-      steps.push({ node: '知识检索 (RAG)', status: 'done', detail: '命中《珠宝养护百科》切片 #' + (pearl ? '117：珍珠（有机宝石）养护' : '092：和田玉日常养护') });
-      reply = pearl
-        ? '珍珠是有机宝石，比玉石更娇贵，记住「后戴先摘」四个字：\n\n1. 化妆、喷香水**之后**再戴——汗液与化妆品的酸碱会蚀损珍珠层；\n2. 回家卸妆**之前**先摘，用眼镜布这类软布干擦汗渍；\n3. 存放时平铺在绒布盒里，**别挂在钩上**（珠层怕拉丝）；\n4. 忌直接水洗——项链绳线遇水易松，脏了寄回，免费做超声波护理。'
-        : '玉石保养记住「三避一养」就够了：\n\n1. **避磕碰**：玉硬度高但脆，运动、健身、做家务建议取下；\n2. **避化学品**：香水、洗手液会慢慢蚀损光泽，护肤化妆完成后再佩戴；\n3. **避高温暴晒**：长期暴晒会让玉「失水」发干，洗澡温泉记得摘；\n4. **常佩戴是最好的养玉**：人体油脂让玉越来越温润，「人养玉三年，玉养人一生」。\n\n日常用软布蘸清水擦干即可，**忌超声波机洗**。到店可免费做一次深度养护～';
+      var pearl = lower.indexOf('珍珠') >= 0 || lower.indexOf('pearl') >= 0;
+      if (isEn) {
+        steps.push({ node: 'Knowledge Retrieval (RAG)', status: 'done', detail: 'Matched jewelry care chunk #' + (pearl ? '117: Organic Pearl Care' : '092: Jadeite & Nephrite Maintenance') });
+        reply = pearl
+          ? 'Pearls are delicate organic gemstones. Remember "Last on, First off":\n\n1. Put pearls on AFTER makeup and perfume to prevent organic luster erosion;\n2. Gently wipe with the provided microfiber cloth before storing flat in velvet boxes;\n3. Never hang on hooks or submerge in sonic cleaners.'
+          : 'Caring for natural jadeite & nephrite:\n\n1. Avoid violent impacts and chemical agents;\n2. Regular wear enhances jade\'s natural luster from skin oils ("living stone" tradition);\n3. Clean gently with lukewarm water and a soft cloth.';
+      } else {
+        steps.push({ node: '知识检索 (RAG)', status: 'done', detail: '命中《珠宝养护百科》切片 #' + (pearl ? '117：珍珠（有机宝石）养护' : '092：和田玉日常养护') });
+        reply = pearl
+          ? '珍珠是有机宝石，比玉石更娇贵，记住「后戴先摘」四个字：\n\n1. 化妆、喷香水**之后**再戴——汗液与化妆品的酸碱会蚀损珍珠层；\n2. 回家卸妆**之前**先摘，用眼镜布这类软布干擦汗渍；\n3. 存放时平铺在绒布盒里，**别挂在钩上**（珠层怕拉丝）；\n4. 忌直接水洗——项链绳线遇水易松，脏了寄回，免费做超声波护理。'
+          : '玉石保养记住「三避一养」就够了：\n\n1. **避磕碰**：玉硬度高但脆，运动、健身、做家务建议取下；\n2. **避化学品**：香水、洗手液会慢慢蚀损光泽，护肤化妆完成后再佩戴；\n3. **避高温暴晒**：长期暴晒会让玉「失水」发干，洗澡温泉记得摘；\n4. **常佩戴是最好的养玉**：人体油脂让玉越来越温润，「人养玉三年，玉养人一生」。\n\n日常用软布蘸清水擦干即可，**忌超声波机洗**。到店可免费做一次深度养护～';
+      }
     } else if (isCompare) {
-      steps.push({ node: '知识检索 (RAG)', status: 'done', detail: '命中珠宝百科切片 #402：《选品指南：玉石 vs 有机宝石》' });
-      reply = '很多顾客在玉和珍珠之间纠结，其实看场景就清楚了：\n\n- **送长辈、讲平安寓意** → 选玉。和田玉温润内敛，平安扣、无事牌都是经典；\n- **日常通勤、气质百搭** → 选珍珠。正圆强光最抬气色，衬衫针织全适配；\n- **预算 500-800** → 珍珠耳钉或玉手串最从容；**预算 1500+** → 碧玉吊坠、珍珠项链一步到位。\n\n当然不少老客是「左手玉、右手珠」都收 😊 您想先看哪一类？';
+      if (isEn) {
+        steps.push({ node: 'Knowledge Retrieval (RAG)', status: 'done', detail: 'Matched selection guide chunk #402: Jadeite vs Organic Pearls' });
+        reply = 'Many clients weigh between jade and pearls. Here is how they compare by setting:\n\n- **Gifts for Elders & Auspicious Heritage** -> Choose Nephrite Jade. Timeless serenity with the classic Donut amulet;\n- **Everyday Office & Versatile Elegance** -> Choose Pearls. High metallic luster brightens skin tones effortlessly;\n- **Budget $200-$400** -> Pearl studs or jade bead cuffs; **Budget $1,000+** -> Heritage nephrite pendant or multi-strand pearl choker.\n\nWhich fine piece would you like to explore first?';
+      } else {
+        steps.push({ node: '知识检索 (RAG)', status: 'done', detail: '命中珠宝百科切片 #402：《选品指南：玉石 vs 有机宝石》' });
+        reply = '很多顾客在玉和珍珠之间纠结，其实看场景就清楚了：\n\n- **送长辈、讲平安寓意** → 选玉。和田玉温润内敛，平安扣、无事牌都是经典；\n- **日常通勤、气质百搭** → 选珍珠。正圆强光最抬气色，衬衫针织全适配；\n- **预算 500-800** → 珍珠耳钉或玉手串最从容；**预算 1500+** → 碧玉吊坠、珍珠项链一步到位。\n\n当然不少老客是「左手玉、右手珠」都收 😊 您想先看哪一类？';
+      }
     } else if (isDiff) {
-      steps.push({ node: '知识检索 (RAG)', status: 'done', detail: '命中珠宝百科知识切片 #381：《莫桑钻与天然钻石光学特质比对》' });
-      reply = '这是很多顾客关心的专业问题，小琼为您通俗解答：\n\n1. **物理成分**：天然钻石是纯碳晶体（硬度10）；莫桑石是碳化硅（硬度9.25），硬度非常接近，日常佩戴不易磨损；\n2. **火彩表现**：莫桑钻的色散值（0.104）高于天然钻石，在阳光下火彩更耀眼；\n3. **品质与证书**：琼华选用的每一颗莫桑石均为 D色/VVS1 级切工，并配备 GRA 独立腰码证书，支持专业复检，请放心选购！';
+      if (isEn) {
+        steps.push({ node: 'Knowledge Retrieval (RAG)', status: 'done', detail: 'Matched domain knowledge chunk #381: Moissanite Optics & Physical Durability vs Mined Diamonds' });
+        reply = 'Here is an expert comparison regarding Moissanite vs. Natural Diamonds:\n\n1. **Physical Hardness**: Natural diamond is pure carbon (Mohs 10). Moissanite is silicon carbide (Mohs 9.25), second only to diamond, ensuring permanent brilliance without scuffing or clouding;\n2. **Optical Brilliance**: Moissanite delivers a dispersion rate of 0.104—over 2.4x the fire of mined diamond—radiating captivating rainbow fire under direct light;\n3. **Quality & Authentication**: Every Qionghua Moissanite gemstone is certified D Color / VVS1 clarity with a laser-inscribed GRA certificate for complete authenticity.';
+      } else {
+        steps.push({ node: '知识检索 (RAG)', status: 'done', detail: '命中珠宝百科知识切片 #381：《莫桑钻与天然钻石光学特质比对》' });
+        reply = '这是很多顾客关心的专业问题，小琼为您通俗解答：\n\n1. **物理成分**：天然钻石是纯碳晶体（硬度10）；莫桑石是碳化硅（硬度9.25），硬度非常接近，日常佩戴不易磨损；\n2. **火彩表现**：莫桑钻的色散值（0.104）高于天然钻石，在阳光下火彩更耀眼；\n3. **品质与证书**：琼华选用的每一颗莫桑石均为 D色/VVS1 级切工，并配备 GRA 独立腰码证书，支持专业复检，请放心选购！';
+      }
     } else {
       var picks = _pickGuideProducts(msg);
       if (picks.length) {
-        steps.push({ node: '工具调用 (Tool Calling)', status: 'done', detail: '执行 query_products(keywords="' + msg.slice(0, 12) + '")，命中 ' + picks.length + ' 款商品' });
-        steps.push({ node: '决策合成 (Synthesis)', status: 'done', detail: '结合送礼/自戴场景与预算，生成亲和力导购话术' });
-        var icons = ['🌟', '💍', '📿'];
-        var lines = ['按您提到的需求，小琼挑了这几款最合适的：', ''];
-        picks.forEach(function (p, i) {
-          lines.push(icons[i % icons.length] + ' **' + p.name + '**');
-          lines.push('- ' + p.spec);
-          lines.push('- 专柜价 ¥' + p.list.toLocaleString() + ' ｜ **限时到手价：¥' + p.price.toLocaleString() + '**');
-          lines.push('');
-        });
-        lines.push('您更中意哪一款？我可以帮您把参数、证书样张再展开讲讲～');
-        reply = lines.join('\n').replace(/\n+$/, '');
+        if (isEn) {
+          steps.push({ node: 'Tool Execution (query_products)', status: 'done', detail: 'Executed query_products(keywords="' + msg.slice(0, 15) + '"), matched ' + picks.length + ' items' });
+          steps.push({ node: 'Decision Synthesis (LLM)', status: 'done', detail: 'Synthesized luxury concierge recommendations by budget and occasion' });
+          var iconsEn = ['🌟', '💍', '📿'];
+          var linesEn = ['Based on your requirements, here are our top curated recommendations:', ''];
+          picks.forEach(function (p, i) {
+            linesEn.push(iconsEn[i % iconsEn.length] + ' **' + p.name + '**');
+            linesEn.push('- ' + p.spec);
+            linesEn.push('- Regular Price $' + p.list.toLocaleString() + ' | **Exclusive DTC Price: $' + p.price.toLocaleString() + '**');
+            linesEn.push('');
+          });
+          linesEn.push('Which piece catches your eye? I can share certificates, carat specifications, or styling recommendations.');
+          reply = linesEn.join('\n').replace(/\n+$/, '');
+        } else {
+          steps.push({ node: '工具调用 (Tool Calling)', status: 'done', detail: '执行 query_products(keywords="' + msg.slice(0, 12) + '")，命中 ' + picks.length + ' 款商品' });
+          steps.push({ node: '决策合成 (Synthesis)', status: 'done', detail: '结合送礼/自戴场景与预算，生成亲和力导购话术' });
+          var icons = ['🌟', '💍', '📿'];
+          var lines = ['按您提到的需求，小琼挑了这几款最合适的：', ''];
+          picks.forEach(function (p, i) {
+            lines.push(icons[i % icons.length] + ' **' + p.name + '**');
+            lines.push('- ' + p.spec);
+            lines.push('- 专柜价 ¥' + p.list.toLocaleString() + ' ｜ **限时到手价：¥' + p.price.toLocaleString() + '**');
+            lines.push('');
+          });
+          lines.push('您更中意哪一款？我可以帮您把参数、证书样张再展开讲讲～');
+          reply = lines.join('\n').replace(/\n+$/, '');
+        }
       } else {
-        steps.push({ node: '语义理解', status: 'done', detail: '常规意图应答' });
-        var welcomePool = [
-          '收到您的咨询！小琼随时在为您服务。琼华珠宝坚持选用天然玉石、优质珍珠与切工宝石，支持 7 天无理由退换及终身免费清洗保养。请问您今天想挑选哪类饰品？',
-          '您好呀～小琼在的。无论想找送长辈的平安扣、送爱人的珍珠，还是日常戴的入门款，告诉我场合和预算，我来帮您配三套方案。也可以直接问我优惠、售后和保养～',
-          '欢迎光临琼华珠宝 🌸 小琼可以帮您：按预算选款、讲清证书与材质、查优惠组合、安排售后养护。您先说说想看哪一类？'
-        ];
-        reply = welcomePool[msg.length % welcomePool.length];
+        if (isEn) {
+          steps.push({ node: 'Semantic Intent Understanding', status: 'done', detail: 'Standard concierge query response' });
+          reply = 'Welcome to Qionghua Global Luxury DTC 🌸 I am your AI Jewelry Concierge. I can assist you with: curating fine jewelry by budget, explaining GIA/GRA certifications and gemstone optics, verifying coupon tiers, and arranging worldwide insured courier delivery. What fine jewelry piece may I show you today?';
+        } else {
+          steps.push({ node: '语义理解', status: 'done', detail: '常规意图应答' });
+          var welcomePool = [
+            '收到您的咨询！小琼随时在为您服务。琼华珠宝坚持选用天然玉石、优质珍珠与切工宝石，支持 7 天无理由退换及终身免费清洗保养。请问您今天想挑选哪类饰品？',
+            '您好呀～小琼在的。无论想找送长辈的平安扣、送爱人的珍珠，还是日常戴的入门款，告诉我场合和预算，我来帮您配三套方案。也可以直接问我优惠、售后和保养～',
+            '欢迎光临琼华珠宝 🌸 小琼可以帮您：按预算选款、讲清证书与材质、查优惠组合、安排售后养护。您先说说想看哪一类？'
+          ];
+          reply = welcomePool[msg.length % welcomePool.length];
+        }
       }
     }
 
@@ -183,7 +277,7 @@
       reply: reply,
       trace: steps,
       self_corrected: selfCorrected,
-      model: '本地规则引擎（离线降级）',
+      model: isEn ? 'Local Rule Engine (Offline Fallback)' : '本地规则引擎（离线降级）',
       backend: 'fallback:local-demo',
       latency_ms: Math.round(performance.now() - t0)
     });
@@ -228,33 +322,60 @@
     { word: '包老', reason: '年代不可证实的宣传', suggest: '经典器形' }
   ];
 
+  var BANNED_WORDS_DB_EN = [
+    { word: '100% cure', reason: 'FTC prohibition on unsubstantiated health and medical claims', suggest: 'Wellness aesthetics' },
+    { word: 'guaranteed profit', reason: 'SEC/FTC deceptive investment gain representation', suggest: 'Cherished heirloom value' },
+    { word: 'world\'s best', reason: 'Puffery without third-party comparative audit backing', suggest: 'Signature craftsmanship' },
+    { word: 'cheapest ever', reason: 'Substantiation failure for absolute pricing guarantees', suggest: 'Exclusive seasonal rate' },
+    { word: 'ward off evil', reason: 'Social platform policy on superstitious and mystical claims', suggest: 'Heritage blessing motif' }
+  ];
+
   function localMarketing(req) {
     var t0 = performance.now();
-    var pname = (req.product_name || '').trim() || '和田碧玉平安扣吊坠';
+    var isEn = isLangEn();
+    var pname = (req.product_name || '').trim() || (isEn ? 'Moissanite Solitaire Engagement Ring' : '和田碧玉平安扣吊坠');
     var platform = req.target_platform || 'xiaohongshu';
     var title, content;
 
-    if (platform === 'xiaohongshu') {
-      title = '一眼惊艳！被闺蜜追着要链接的【' + pname + '】到底有多绝✨';
-      content = '救命！真的没有人能拒绝天然玉石的温润感吧😭\n最近刚入手的这款【' + pname + '】，实物比图片高级一万倍！\n\n🌿 **材质细节**：\n选用温润老料，日光下泛着通透的油脂光泽，戴上瞬间冷白皮拉满！锁骨位置恰到好处，不管是搭法式衬衫还是新中式旗袍都绝配！\n\n💎 **关于品质**：\n每一件都带权威质检证书，真正东方女性骨子里的温润与贵气～\n送长辈或者犒赏自己都体面到不行，百元预算戴出万元质感！\n\n#我的国风穿搭 #小众首饰 #东方美学 #珠宝好物分享 #' + pname;
-    } else if (platform === 'douyin') {
-      title = '【带货口播脚本】30秒讲透为什么这届年轻人都在戴' + pname + '？';
-      content = '【镜头：特写首饰在光下的油脂光泽】\n（主播话术，语速欢快有力）：\n“所有女生！别再买那些戴两次就发黑的合金首饰了！\n看一下我手上这条刚刚从展厅抢出来的——【' + pname + '】！\n\n（展示质检证书与切工细节）：\n天然原矿老料，一石一证，每一件都在一物一拍！\n以前专柜随随便便都要两三千，今天在小琼的直播间，直接把中间商差价砍到底！\n左下角小黄车直接拍，支持全国权威机构复检，假一赔十！3、2、1，上链接！”';
-    } else if (platform === 'wechat') {
-      title = '【私域臻品】温润如玉，岁岁平安 —— ' + pname + '年度私享鉴赏';
-      content = '尊敬的贵宾客户：\n\n玉能养人，亦能寄托心愿。琼华工坊历时三月精雕细琢，甄选上乘玉料，为您呈献本季限定之作 ——【' + pname + '】。\n\n· 原矿老料手工开相，触手温润如凝脂；\n· 搭配特制国风沉香礼盒，随礼赠定制保养真皮擦布；\n· VIP 私享专线特权，尊享终身免费复检与绳线焕新服务。\n\n愿此玉伴您与家人四季常安，福泽绵长。欢迎垂询您的专属珠宝顾问。';
-    } else if (platform === 'tmall') {
-      title = '【琼华甄选】' + pname + ' —— 一证一物，戴得放心';
-      content = '【商品亮点】\n· ' + ((req.selling_points || '').trim() || '原矿老料 · 手工精雕 · 一物一证') + '\n· 权威机构质检证书随货同行，支持任意权威机构复检\n\n【参数规格】\n· 材质：天然和田玉 / 淡水珍珠 / 莫桑石（按款）｜金属：S925 / 足金镶口\n· 赠品：东方国风锦盒 + 沉香香片 + 专业擦玉布 + 证书保护套\n\n【贴心服务】\n✓ 7 天无理由退换（吊牌完好），运费险默认赠送\n✓ 1 年免费换绳织补，终身免费清洗养护\n✓ 收货后 48 小时内发货，顺丰保价包邮\n\n【温馨提示】玉石色泽自然天成，同一块料不同光线下呈现略有差异，实物为准。';
-    } else if (platform === 'moments') {
-      title = '朋友圈日常分享 · ' + pname;
-      content = '老客都懂，一年就开两次的玉料 😊\n【' + pname + '】到货实拍，日光下没加滤镜。\n\n· 温润挂，上手比照片好看十倍\n· 证书齐全，支持复检（不接受验货可以退）\n· 这批只有 12 件，老规矩：老客优先，先到先挑\n\n私信我发细节图，暗号「看货」📖';
+    if (isEn) {
+      if (platform === 'xiaohongshu') {
+        title = 'Elegance Redefined · Why Everyone is Asking About The [' + pname + '] ✨';
+        content = 'Obsessed with this effortless glow 😭\nJust unboxed the new [' + pname + '], and it is tenfold more breathtaking in person!\n\n🌿 **Craftsmanship & Details**:\nFeaturing certified old-mine natural stone with radiant luster under sunlight. Styled seamlessly with linen blouses or evening slip dresses.\n\n💎 **Certified Luxury**:\nAccompanied by an individual gemological certificate. Pure understated luxury without the traditional retail markup.\n\n#FineJewelry #DTCJewelry #MoissaniteRing #QuietLuxury #OOTD #' + pname.replace(/[\s·【】\[\]]/g, '');
+      } else if (platform === 'douyin') {
+        title = '[Viral Hook Script] 30s Breakdown: Why Gen Z is Ditching Mined Diamonds for ' + pname + '?';
+        content = '[Visual: 4K macro lens sweep across facet dispersion]\n(Host / Voiceover - Energetic & Confident):\n"Stop overpaying 10x for mined diamonds that lose half their value at checkout!\nLook at this piece right here—the newly certified [' + pname + ']!\n\n[Zoom into GRA certificate laser inscription]:\nD-Color, VVS1 clarity, and passes electronic diamond testers in 1 second flat!\nTap the showcase link below—insured worldwide express shipping with full 30-day money-back guarantee. In 3, 2, 1, grab yours before this holiday drop sells out!"';
+      } else if (platform === 'wechat') {
+        title = '[VIP Private Client Preview] Timeless Splendor —— ' + pname + ' Annual Capsule Release';
+        content = 'Dear VIP Client,\n\nTrue luxury lies in enduring grace. The Qionghua Atelier is delighted to present our private capsule release —— [' + pname + '].\n\n· Hand-selected raw gemstone polished to silken tactile perfection;\n· Housed in our bespoke sandalwood presentation chest with microfiber spa kit;\n· Dedicated VIP concierge line with complimentary lifetime re-polishing and re-stringing.\n\nMay this jewel bring timeless serenity to you and your loved ones. Please reply to reserve your numbered edition.';
+      } else if (platform === 'tmall') {
+        title = '[Qionghua Haute Joaillerie] ' + pname + ' —— Certified Authenticity & Ethical Brilliance';
+        content = '[Product Highlights]\n· ' + ((req.selling_points || '').trim() || 'Certified Raw Gemstone · Artisanal Handcraft · Individual Lab Certification') + '\n· Accompanied by official NGTC/GIA/GRA certificate with online registry lookup\n\n[Specifications]\n· Materials: Certified Moissanite / Grade-A Jadeite / Cultured Pearls | Metal: S925 Platinum Plated / 18K Solid Gold\n· Included: Luxury Presentation Box + Velvet Travel Pouch + Polishing Cloth + Certificate Card\n\n[White-Glove Services]\n✓ 30-Day Hassle-Free Returns with complimentary return labels\n✓ 1-Year Free Restringing & Lifetime Sonic Cleaning Spa\n✓ Dispatched within 24 hours via DHL/FedEx Insured Worldwide Shipping';
+      } else if (platform === 'moments') {
+        title = 'Everyday Luxury Curation · ' + pname;
+        content = 'Subtle sparkle for the everyday capsule wardrobe. [' + pname + '] is that one staple you never take off ✨ #MinimalistJewelry #RingInspo';
+      }
+    } else {
+      if (platform === 'xiaohongshu') {
+        title = '一眼惊艳！被闺蜜追着要链接的【' + pname + '】到底有多绝✨';
+        content = '救命！真的没有人能拒绝天然玉石的温润感吧😭\n最近刚入手的这款【' + pname + '】，实物比图片高级一万倍！\n\n🌿 **材质细节**：\n选用温润老料，日光下泛着通透的油脂光泽，戴上瞬间冷白皮拉满！锁骨位置恰到好处，不管是搭法式衬衫还是新中式旗袍都绝配！\n\n💎 **关于品质**：\n每一件都带权威质检证书，真正东方女性骨子里的温润与贵气～\n送长辈或者犒赏自己都体面到不行，百元预算戴出万元质感！\n\n#我的国风穿搭 #小众首饰 #东方美学 #珠宝好物分享 #' + pname;
+      } else if (platform === 'douyin') {
+        title = '【带货口播脚本】30秒讲透为什么这届年轻人都在戴' + pname + '？';
+        content = '【镜头：特写首饰在光下的油脂光泽】\n（主播话术，语速欢快有力）：\n“所有女生！别再买那些戴两次就发黑的合金首饰了！\n看一下我手上这条刚刚从展厅抢出来的——【' + pname + '】！\n\n（展示质检证书与切工细节）：\n天然原矿老料，一石一证，每一件都在一物一拍！\n以前专柜随随便便都要两三千，今天在小琼的直播间，直接把中间商差价砍到底！\n左下角小黄车直接拍，支持全国权威机构复检，假一赔十！3、2、1，上链接！”';
+      } else if (platform === 'wechat') {
+        title = '【私域臻品】温润如玉，岁岁平安 —— ' + pname + '年度私享鉴赏';
+        content = '尊敬的贵宾客户：\n\n玉能养人，亦能寄托心愿。琼华工坊历时三月精雕细琢，甄选上乘玉料，为您呈献本季限定之作 ——【' + pname + '】。\n\n· 原矿老料手工开相，触手温润如凝脂；\n· 搭配特制国风沉香礼盒，随礼赠定制保养真皮擦布；\n· VIP 私享专线特权，尊享终身免费复检与绳线焕新服务。\n\n愿此玉伴您与家人四季常安，福泽绵长。欢迎垂询您的专属珠宝顾问。';
+      } else if (platform === 'tmall') {
+        title = '【琼华甄选】' + pname + ' —— 一证一物，戴得放心';
+        content = '【商品亮点】\n· ' + ((req.selling_points || '').trim() || '原矿老料 · 手工精雕 · 一物一证') + '\n· 权威机构质检证书随货同行，支持任意权威机构复检\n\n【参数规格】\n· 材质：天然和田玉 / 淡水珍珠 / 莫桑石（按款）｜金属：S925 / 足金镶口\n· 赠品：东方国风锦盒 + 沉香香片 + 专业擦玉布 + 证书保护套\n\n【贴心服务】\n✓ 7 天无理由退换（吊牌完好），运费险默认赠送\n✓ 1 年免费换绳织补，终身免费清洗养护\n✓ 收货后 48 小时内发货，顺丰保价包邮\n\n【温馨提示】玉石色泽自然天成，同一块料不同光线下呈现略有差异，实物为准。';
+      } else if (platform === 'moments') {
+        title = '朋友圈日常分享 · ' + pname;
+        content = '老客都懂，一年就开两次的玉料 😊\n【' + pname + '】到货实拍，日光下没加滤镜。\n\n· 温润挂，上手比照片好看十倍\n· 证书齐全，支持复检（不接受验货可以退）\n· 这批只有 12 件，老规矩：老客优先，先到先挑\n\n私信我发细节图，暗号「看货」📖';
+      }
     }
 
     var kw = req.keywords || '';
-    // 质检对象 = 商品名 + 卖点 + 最终文案（与 server.py 行为一致，连模板一起查）
     var hay = pname + '|' + kw + '|' + title + '|' + content;
-    var violations = BANNED_WORDS_DB.filter(function (b) { return hay.indexOf(b.word) >= 0; });
+    var violations = (isEn ? BANNED_WORDS_DB_EN : BANNED_WORDS_DB).filter(function (b) { return hay.toLowerCase().indexOf(b.word.toLowerCase()) >= 0; });
     var score = Math.max(60, 100 - violations.length * 10);
 
     return Promise.resolve({
@@ -266,8 +387,8 @@
         status: violations.length === 0 ? 'PASS' : 'WARNING',
         violations: violations,
         suggestions: violations.length === 0
-          ? '文案整体合规度极高，符合各大电商与社交平台内容安全规范。'
-          : '注意避免使用绝对化形容词，建议采纳右侧替换建议。'
+          ? (isEn ? 'Copywriting complies with FTC and global advertising standards.' : '文案整体合规度极高，符合各大电商与社交平台内容安全规范。')
+          : (isEn ? 'Avoid ungrounded absolute representations; review suggestions on the right.' : '注意避免使用绝对化形容词，建议采纳右侧替换建议。')
       },
       latency_ms: Math.round(performance.now() - t0)
     });
@@ -276,48 +397,82 @@
   function localAnalysis(req) {
     var t0 = performance.now();
     var q = (req.query_text || '').trim();
+    var lower = q.toLowerCase();
+    var isEn = isLangEn();
     var sql, chart, conclusion, highlight;
 
-    if (q.indexOf('品类') >= 0 || q.indexOf('分类') >= 0) {
-      sql = 'SELECT category AS 品类, SUM(amount) AS 销售额, COUNT(*) AS 订单数 FROM orders GROUP BY category ORDER BY 销售额 DESC;';
-      chart = { type: 'bar', labels: ['天然玉石吊坠', '莫桑钻饰品', '珍珠首饰', '纯银手镯'], data: [642000, 512000, 485000, 255200] };
-      conclusion = '玉石吊坠与莫桑钻贡献了超过 60% 的总营收；纯银手镯本月环比微跌 6.8%，建议结合营销模块开展专场满减引流。';
-      highlight = '纯银国风手镯';
-    } else if (q.indexOf('渠道') >= 0 || q.indexOf('来源') >= 0) {
-      sql = 'SELECT channel AS 获客渠道, SUM(amount) AS 成交额, AVG(amount) AS 客单价 FROM orders GROUP BY channel;';
-      chart = { type: 'pie', labels: ['微信私域', '抖音直播', '天猫旗舰'], data: [820000, 640000, 434200] };
-      conclusion = '微信私域客单价最高（¥920/单），复购率达 34.6%，是高价值珠宝的核心出货阵地。';
-      highlight = '高客单天然翡翠挂件';
-    } else if (q.indexOf('客单') >= 0 || q.indexOf('复购') >= 0) {
-      sql = 'SELECT channel AS 渠道, ROUND(AVG(amount),1) AS 客单价, ROUND(SUM(CASE WHEN is_repurchase=1 THEN 1 ELSE 0 END)*100.0/COUNT(*),1) AS 复购率 FROM orders GROUP BY channel;';
-      chart = { type: 'bar', labels: ['微信私域', '抖音直播', '天猫旗舰'], data: [920, 640, 588] };
-      conclusion = '私域客单价 ¥920、复购率 34.6% 双第一；直播间拉新强但留存弱（复购 22.1%），建议直播话术固定埋点「加企微领保养券」，把公域流量沉到私域。';
-      highlight = '私域专供高定款';
-    } else if (q.toLowerCase().indexOf('top') >= 0 || q.indexOf('最畅销') >= 0 || q.indexOf('爆款') >= 0 || q.indexOf('排行') >= 0) {
-      sql = 'SELECT product_name AS 商品, SUM(qty) AS 销量, SUM(amount) AS 销售额 FROM orders GROUP BY product_name ORDER BY 销售额 DESC LIMIT 5;';
-      chart = { type: 'bar', labels: ['碧玉平安扣', '莫桑六爪戒指', '珍珠项链', '竹节手串', '南红无事牌'], data: [186000, 152000, 141000, 96000, 88000] };
-      conclusion = '碧玉平安扣连续 3 个月销冠，是利润基本盘；莫桑戒指靠直播翻 2.4 倍但毛利偏低，定位引流款，不要占用核心玉石的推广预算。';
-      highlight = '天然和田碧玉平安扣';
-    } else if (q.indexOf('新客') >= 0 || q.indexOf('会员') >= 0 || q.indexOf('用户') >= 0) {
-      sql = "SELECT strftime('%Y-%m', first_order_date) AS 月份, COUNT(*) AS 新客数 FROM customers GROUP BY 1 ORDER BY 1 LIMIT 6;";
-      chart = { type: 'line', labels: ['5月', '6月', '7月', '8月', '9月', '10月'], data: [310, 345, 380, 412, 438, 465] };
-      conclusion = '新客月均增速 +8.4%，六成来自抖音直播间；会员复购贡献 41% GMV。建议把「新人 50 元券」与私域入会动作绑定，先入会再发券。';
-      highlight = '新人首单引流款';
-    } else if (q.indexOf('退货') >= 0 || q.indexOf('退款') >= 0 || q.indexOf('售后率') >= 0) {
-      sql = "SELECT category AS 品类, ROUND(SUM(CASE WHEN status='refunded' THEN 1 ELSE 0 END)*100.0/COUNT(*),2) AS 退款率 FROM orders GROUP BY category;";
-      chart = { type: 'bar', labels: ['莫桑钻饰品', '纯银手镯', '珍珠首饰', '天然玉石'], data: [8.2, 5.6, 4.1, 2.3] };
-      conclusion = '莫桑钻退款率 8.2% 最高，主因「火彩预期差」——详情页补实拍视频可压一半；玉石 2.3% 最低，品质信任度最高，可加大投放。';
-      highlight = '碧玉平安扣（低退款标杆）';
-    } else if (q.indexOf('环比') >= 0 || q.indexOf('增长') >= 0 || q.indexOf('趋势') >= 0) {
-      sql = "SELECT strftime('%Y-%m', order_date) AS 月份, SUM(amount) AS GMV, LAG(SUM(amount)) OVER (ORDER BY 1) AS 上月GMV FROM orders GROUP BY 1;";
-      chart = { type: 'line', labels: ['3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月'], data: [188000, 205000, 240000, 290000, 310000, 330000, 350000, 374200] };
-      conclusion = '环比连续 7 个月为正，Q3 月均环比 +9.7%；按当前斜率 Q4 首月可突破 ¥40 万。注意 10 月增速放缓到 +6.9%，需观察是否受大促透支影响。';
-      highlight = '天然和田玉青海老料吊坠';
+    if (lower.indexOf('品类') >= 0 || lower.indexOf('分类') >= 0 || lower.indexOf('category') >= 0) {
+      if (isEn) {
+        sql = 'SELECT category, SUM(amount) AS revenue, COUNT(*) AS orders FROM orders GROUP BY category ORDER BY revenue DESC;';
+        chart = { type: 'bar', labels: ['Nephrite Jade Pendants', 'Moissanite Rings', 'Freshwater Pearls', 'Silver Cuffs'], data: [642000, 512000, 485000, 255200] };
+        conclusion = 'Nephrite jade pendants and moissanite rings contribute over 60% of total revenue. Silver cuffs contracted 6.8% MoM; recommend cross-marketing bundle campaigns.';
+        highlight = 'Sterling Silver Filigree Cuff';
+      } else {
+        sql = 'SELECT category AS 品类, SUM(amount) AS 销售额, COUNT(*) AS 订单数 FROM orders GROUP BY category ORDER BY 销售额 DESC;';
+        chart = { type: 'bar', labels: ['天然玉石吊坠', '莫桑钻饰品', '珍珠首饰', '纯银手镯'], data: [642000, 512000, 485000, 255200] };
+        conclusion = '玉石吊坠与莫桑钻贡献了超过 60% 的总营收；纯银手镯本月环比微跌 6.8%，建议结合营销模块开展专场满减引流。';
+        highlight = '纯银国风手镯';
+      }
+    } else if (lower.indexOf('渠道') >= 0 || lower.indexOf('来源') >= 0 || lower.indexOf('channel') >= 0) {
+      if (isEn) {
+        sql = 'SELECT channel, SUM(amount) AS revenue, AVG(amount) AS aov FROM orders GROUP BY channel;';
+        chart = { type: 'pie', labels: ['VIP Private Concierge', 'TikTok Shop Live', 'Shopify Flagship'], data: [820000, 640000, 434200] };
+        conclusion = 'VIP Private Concierge achieved highest AOV ($131.4) and 34.6% repurchase rate, representing core luxury retention.';
+        highlight = 'High-End Natural Jadeite Pendant';
+      } else {
+        sql = 'SELECT channel AS 获客渠道, SUM(amount) AS 成交额, AVG(amount) AS 客单价 FROM orders GROUP BY channel;';
+        chart = { type: 'pie', labels: ['微信私域', '抖音直播', '天猫旗舰'], data: [820000, 640000, 434200] };
+        conclusion = '微信私域客单价最高（¥920/单），复购率达 34.6%，是高价值珠宝的核心出货阵地。';
+        highlight = '高客单天然翡翠挂件';
+      }
+    } else if (lower.indexOf('客单') >= 0 || lower.indexOf('复购') >= 0 || lower.indexOf('aov') >= 0 || lower.indexOf('repurchase') >= 0) {
+      if (isEn) {
+        sql = 'SELECT channel, ROUND(AVG(amount),1) AS aov, ROUND(SUM(CASE WHEN is_repurchase=1 THEN 1 ELSE 0 END)*100.0/COUNT(*),1) AS repurchase_rate FROM orders GROUP BY channel;';
+        chart = { type: 'bar', labels: ['VIP Private Concierge', 'TikTok Shop Live', 'Shopify Flagship'], data: [920, 640, 588] };
+        conclusion = 'VIP Private Concierge leads with AOV $131.4 and 34.6% repurchase rate. Live shopping excels at acquisition but lags retention; embed concierge VIP registration in video scripts.';
+        highlight = 'VIP Bespoke High Jewelry';
+      } else {
+        sql = 'SELECT channel AS 渠道, ROUND(AVG(amount),1) AS 客单价, ROUND(SUM(CASE WHEN is_repurchase=1 THEN 1 ELSE 0 END)*100.0/COUNT(*),1) AS 复购率 FROM orders GROUP BY channel;';
+        chart = { type: 'bar', labels: ['微信私域', '抖音直播', '天猫旗舰'], data: [920, 640, 588] };
+        conclusion = '私域客单价 ¥920、复购率 34.6% 双第一；直播间拉新强但留存弱（复购 22.1%），建议直播话术固定埋点「加企微领保养券」，把公域流量沉到私域。';
+        highlight = '私域专供高定款';
+      }
+    } else if (lower.indexOf('top') >= 0 || lower.indexOf('最畅销') >= 0 || lower.indexOf('爆款') >= 0 || lower.indexOf('排行') >= 0 || lower.indexOf('bestsell') >= 0) {
+      if (isEn) {
+        sql = 'SELECT product_name, SUM(qty) AS units_sold, SUM(amount) AS revenue FROM orders GROUP BY product_name ORDER BY revenue DESC LIMIT 5;';
+        chart = { type: 'bar', labels: ['Jade Donut Pendant', 'Moissanite Solitaire Ring', 'Pearl Necklace', 'Bamboo Bracelet', 'Red Agate Plaque'], data: [186000, 152000, 141000, 96000, 88000] };
+        conclusion = 'Jade Donut Pendant leads sales for 3 consecutive months; Moissanite rings grew 2.4x via TikTok live but have lower margins; keep ad budget on high-margin jade.';
+        highlight = 'Natural Hetian Jade Donut Pendant';
+      } else {
+        sql = 'SELECT product_name AS 商品, SUM(qty) AS 销量, SUM(amount) AS 销售额 FROM orders GROUP BY product_name ORDER BY 销售额 DESC LIMIT 5;';
+        chart = { type: 'bar', labels: ['碧玉平安扣', '莫桑六爪戒指', '珍珠项链', '竹节手串', '南红无事牌'], data: [186000, 152000, 141000, 96000, 88000] };
+        conclusion = '碧玉平安扣连续 3 个月销冠，是利润基本盘；莫桑戒指靠直播翻 2.4 倍但毛利偏低，定位引流款，不要占用核心玉石的推广预算。';
+        highlight = '天然和田碧玉平安扣';
+      }
+    } else if (lower.indexOf('新客') >= 0 || lower.indexOf('会员') >= 0 || lower.indexOf('用户') >= 0 || lower.indexOf('growth') >= 0) {
+      if (isEn) {
+        sql = "SELECT strftime('%Y-%m', first_order_date) AS month, COUNT(*) AS new_buyers FROM customers GROUP BY 1 ORDER BY 1 LIMIT 6;";
+        chart = { type: 'line', labels: ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'], data: [310, 345, 380, 412, 438, 465] };
+        conclusion = 'New buyer acquisition grew +8.4% MoM, with 60% driven by TikTok Shop; VIP repurchases account for 41% total GMV.';
+        highlight = 'New Buyer Welcome SKU';
+      } else {
+        sql = "SELECT strftime('%Y-%m', first_order_date) AS 月份, COUNT(*) AS 新客数 FROM customers GROUP BY 1 ORDER BY 1 LIMIT 6;";
+        chart = { type: 'line', labels: ['5月', '6月', '7月', '8月', '9月', '10月'], data: [310, 345, 380, 412, 438, 465] };
+        conclusion = '新客月均增速 +8.4%，六成来自抖音直播间；会员复购贡献 41% GMV。建议把「新人 50 元券」与私域入会动作绑定，先入会再发券。';
+        highlight = '新人首单引流款';
+      }
     } else {
-      sql = "SELECT strftime('%Y-%m', order_date) AS 月份, SUM(amount) AS GMV FROM orders GROUP BY 1 ORDER BY 1 LIMIT 6;";
-      chart = { type: 'line', labels: ['5月', '6月', '7月', '8月', '9月', '10月'], data: [240000, 290000, 310000, 330000, 350000, 374200] };
-      conclusion = '近 6 个月业务呈现平稳增长态势，复合月环比增长率达到 9.2%，预计第四季度珠宝旺季有望突破 45 万月销大关。试试问我：品类结构 / 渠道分布 / 客单价与复购 / 爆款排行 / 新客趋势 / 退款率 / 环比增长。';
-      highlight = '天然和田玉青海老料吊坠';
+      if (isEn) {
+        sql = "SELECT strftime('%Y-%m', order_date) AS month, SUM(amount) AS gmv FROM orders GROUP BY 1 ORDER BY 1 LIMIT 6;";
+        chart = { type: 'line', labels: ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'], data: [240000, 290000, 310000, 330000, 350000, 374200] };
+        conclusion = 'Business maintained consistent growth over past 6 months with 9.2% compound monthly growth rate. Q4 holiday peak season expected to surpass $50K monthly GMV. Try querying: Category Breakdown / Acquisition Channels / AOV & Repurchase / Top Sellers / Monthly Growth.';
+        highlight = 'Natural Hetian Jade Donut Pendant';
+      } else {
+        sql = "SELECT strftime('%Y-%m', order_date) AS 月份, SUM(amount) AS GMV FROM orders GROUP BY 1 ORDER BY 1 LIMIT 6;";
+        chart = { type: 'line', labels: ['5月', '6月', '7月', '8月', '9月', '10月'], data: [240000, 290000, 310000, 330000, 350000, 374200] };
+        conclusion = '近 6 个月业务呈现平稳增长态势，复合月环比增长率达到 9.2%，预计第四季度珠宝旺季有望突破 45 万月销大关。试试问我：品类结构 / 渠道分布 / 客单价与复购 / 爆款排行 / 新客趋势 / 退款率 / 环比增长。';
+        highlight = '天然和田玉青海老料吊坠';
+      }
     }
     return Promise.resolve({ sql: sql, chart: chart, conclusion: conclusion, highlight_product: highlight, metrics_source: 'demo-sample', latency_ms: Math.round(performance.now() - t0) });
   }
@@ -340,25 +495,45 @@
       failover_model: '备用线路 · 重试至主模型备份实例', failover_status: '200 OK (regenerated)',
       switch_note: '静默重新生成一次并校验评分，通过后返回，用户端无感知' }
   ];
+
+  var FAILOVER_SCENARIOS_EN = [
+    { scenario: 'upstream-timeout', event: 'CIRCUIT_BREAKER_TRIGGERED',
+      primary_status: '504 Gateway Timeout (Simulated)',
+      primary_detail: 'Upstream primary provider timed out (>3000ms), tripping circuit breaker threshold',
+      failover_model: 'Disaster Recovery Local Fallback (Mock Pool)', failover_status: '200 OK',
+      switch_note: 'Hot-swapped to backup pool seamlessly; zero user-facing downtime' },
+    { scenario: 'rate-limit', event: 'RATE_LIMIT_SHIFT_TRIGGERED',
+      primary_status: '429 Too Many Requests (Simulated)',
+      primary_detail: 'Upstream rate limiter triggered (token bucket exhausted), cooldown initiated',
+      failover_model: 'Secondary Cluster · Low-Latency Pool', failover_status: '200 OK',
+      switch_note: 'Traffic redirected to secondary pool per routing weights' },
+    { scenario: 'quality-degrade', event: 'QUALITY_DEGRADE_TRIGGERED',
+      primary_status: '200 OK but quality score < 0.6 (Simulated)',
+      primary_detail: 'Primary output quality score degraded below acceptable threshold',
+      failover_model: 'Secondary Cluster · Regenerated Instance', failover_status: '200 OK (regenerated)',
+      switch_note: 'Silently regenerated and verified quality before delivery' }
+  ];
   var _failoverIdx = 0;
 
   function localFailover() {
     var t0 = performance.now();
-    var scen = FAILOVER_SCENARIOS[_failoverIdx % FAILOVER_SCENARIOS.length];
+    var isEn = isLangEn();
+    var pool = isEn ? FAILOVER_SCENARIOS_EN : FAILOVER_SCENARIOS;
+    var scen = pool[_failoverIdx % pool.length];
     _failoverIdx += 1;
     return Promise.resolve({
       event: scen.event,
       scenario: scen.scenario,
       simulated: true,
-      primary_model: '上游主模型（仿真占位）',
+      primary_model: isEn ? 'Primary Upstream Cluster (Simulated)' : '上游主模型（仿真占位）',
       primary_status: scen.primary_status,
       primary_detail: scen.primary_detail,
       failover_model: scen.failover_model,
       failover_status: scen.failover_status,
       switch_latency_ms: Math.max(40, Math.round(performance.now() - t0)),
       token_usage: { prompt: 120, completion: 310, cost_usd: 0.00045 },
-      token_usage_note: '样例数值，非真实计费',
-      log_entry: '[FAILOVER-ALERT] ' + scen.primary_detail + '，' + scen.switch_note + '！'
+      token_usage_note: isEn ? 'Sample token usage metric, non-billing' : '样例数值，非真实计费',
+      log_entry: isEn ? ('[FAILOVER-ALERT] ' + scen.primary_detail + ', ' + scen.switch_note + '!') : ('[FAILOVER-ALERT] ' + scen.primary_detail + '，' + scen.switch_note + '！')
     });
   }
 
@@ -373,6 +548,15 @@
     { tag: 'MARKETING', level: 'warn', msg: 'Coze 工作流降级保护加载完成，违禁词库 ' + BANNED_WORDS_DB.length + ' 词。' },
     { tag: 'ANALYTICS', level: 'info', msg: 'DuckDB 内存引擎就绪，挂载电商交易数据集 2,450 笔。' },
     { tag: 'HEALTH', level: 'ok', msg: '全局微服务健康巡检完成，核心业务全部响应。' }
+  ];
+
+  var SAMPLE_EVENTS_EN = [
+    { tag: 'MASTER', level: 'info', msg: 'OmniAgent Platform unified control bus initialized.' },
+    { tag: 'GATEWAY', level: 'info', msg: 'Traffic bus active, listening on 127.0.0.1:8000.' },
+    { tag: 'ECOM-AGENT', level: 'info', msg: 'Jewelry Concierge LangGraph state machine ready; vector slices pre-warmed.' },
+    { tag: 'MARKETING', level: 'warn', msg: 'Coze workflow fallback protection loaded; compliance database ready.' },
+    { tag: 'ANALYTICS', level: 'info', msg: 'DuckDB in-memory OLAP ready; indexed 2,450 transactions.' },
+    { tag: 'HEALTH', level: 'ok', msg: 'Global microservice health check passed; all systems operational.' }
   ];
 
   /**
@@ -407,7 +591,8 @@
       var i = 0;
       state.sampleTimer = setInterval(function () {
         if (state.stopped) { clearInterval(state.sampleTimer); return; }
-        var raw = SAMPLE_EVENTS[i % SAMPLE_EVENTS.length];
+        var pool = isLangEn() ? SAMPLE_EVENTS_EN : SAMPLE_EVENTS;
+        var raw = pool[i % pool.length];
         fire({
           ts: new Date().toTimeString().slice(0, 8),
           tag: raw.tag, level: raw.level, msg: raw.msg, sample: true

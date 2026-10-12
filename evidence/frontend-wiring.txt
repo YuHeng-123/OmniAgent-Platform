@@ -7,12 +7,12 @@
     缺失        : 无 ✅
 
 [2] getElementById 引用 vs 已定义 id（含动态创建）
-    已知 id 数  : 215
-    被引用 id 数: 156
+    已知 id 数  : 217
+    被引用 id 数: 164
     悬空引用    : 无 ✅
 
 [3] onclick 调用 vs 已定义函数
-    onclick 函数: clearCompletedJobsUi, clearGuideChat, closeJobCenterDrawer, closePosterModal, closeSidebarOnMobile, closeSkuAttribution, closeTraceSpanModal, copyFunclipSrt, copyMarketingContent, copyPosterImage, copyTraceId, copyXhsNote, deriveSkuVariants, dispatchDemoAsyncTask, downloadPosterImage, executeCommand, exportSkuReport, handleAnalyticsQuery, handleFunclipSlice, handleMarketingGenerate, handleRagSearch, handleXhsGenerate, handleXhsHitlApprove, inspectTraceSpan, loadHistory, openJobCenterDrawer, openSkuAttribution, pipeFunclipToXhs, pipeToMarketing, pipeXhsToMarketing, playFunclipSegment, refreshJobCenter, refreshTraceLogs, renderXhsPosterModal, resetFunclipWaveform, resetTopologyLayout, sendOpenaiProxyTest, sendQuickPrompt, serviceControl, setFunclipPreset, setHistoryRange, setQueryAndRun, setXhsPreset, switchChannel, switchOverviewPersona, switchSkuDrawerTab, switchTab, switchTopologyView, switchXhsDagView, syncSkuToGuide, toggleAudioSound, toggleCommandPalette, toggleDynamicIsland, toggleFunclipPlayback, togglePhoneFrame, toggleSidebar, triggerQuickFailover, zoomFunclipWaveform
+    onclick 函数: clearCompletedJobsUi, clearGuideChat, closeJobCenterDrawer, closePosterModal, closeSidebarOnMobile, closeSkuAttribution, closeTraceSpanModal, copyFunclipSrt, copyMarketingContent, copyPosterImage, copyTraceId, copyXhsNote, deriveSkuVariants, dispatchDemoAsyncTask, downloadPosterImage, executeCommand, exportSkuReport, handleAnalyticsQuery, handleFunclipSlice, handleMarketingGenerate, handleRagSearch, handleXhsGenerate, handleXhsHitlApprove, inspectTraceSpan, loadHistory, openJobCenterDrawer, openSkuAttribution, pipeFunclipToXhs, pipeToMarketing, pipeXhsToMarketing, playFunclipSegment, refreshJobCenter, refreshTraceLogs, renderXhsPosterModal, resetFunclipWaveform, resetTopologyLayout, sendOpenaiProxyTest, sendQuickPrompt, serviceControl, setFunclipPreset, setHistoryRange, setQueryAndRun, setXhsPreset, switchChannel, switchOverviewPersona, switchSkuDrawerTab, switchTab, switchTopologyView, switchXhsDagView, syncSkuToGuide, toggleAudioSound, toggleCommandPalette, toggleDynamicIsland, toggleFunclipPlayback, toggleLanguage, togglePhoneFrame, toggleSidebar, triggerQuickFailover, zoomFunclipWaveform
     未定义      : 无 ✅
 
 [4] templates/index.html 2.2 标记齐全 = ✅

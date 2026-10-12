@@ -963,7 +963,7 @@
                             <input id="mkt-keywords" type="text" value="温润细腻, 原矿老料, 附权威证书, 送礼高阶" class="w-full bg-dark-900 border border-dark-border rounded-lg px-3.5 py-2.5 text-[13px] text-white focus:outline-none" />
                         </div>
 
-                        <button onclick="handleMarketingGenerate()" class="btn-primary w-full py-2.5 rounded-lg text-[13px]">
+                        <button id="btn-marketing-run" onclick="handleMarketingGenerate()" class="btn-primary w-full py-2.5 rounded-lg text-[13px] flex items-center justify-center gap-2">
                             一键生成爆款内容并质检
                         </button>
                     </div>
@@ -1388,6 +1388,42 @@
             setTimeout(() => div.remove(), 5200);
         }
 
+        // -------------------------------------------------------------
+        // 全局通用前端打字机流式输出动画 (Typewriter Stream Utility)
+        // -------------------------------------------------------------
+        let activeTypewriterTimer = null;
+        function streamTypewriter(element, text, options) {
+            options = options || {};
+            const speed = options.speed || 10;
+            const onTick = options.onTick || null;
+            if (activeTypewriterTimer) {
+                clearInterval(activeTypewriterTimer);
+                activeTypewriterTimer = null;
+            }
+            return new Promise(function (resolve) {
+                element.innerHTML = '';
+                let i = 0;
+                const cursor = document.createElement('span');
+                cursor.className = 'inline-block w-1.5 h-3.5 bg-accent-emerald ml-0.5 align-middle animate-pulse';
+                element.appendChild(cursor);
+
+                activeTypewriterTimer = setInterval(function () {
+                    if (i < text.length) {
+                        const chunk = text.substr(i, 3);
+                        const textNode = document.createTextNode(chunk);
+                        element.insertBefore(textNode, cursor);
+                        i += 3;
+                        if (onTick) onTick();
+                    } else {
+                        clearInterval(activeTypewriterTimer);
+                        activeTypewriterTimer = null;
+                        cursor.remove();
+                        resolve();
+                    }
+                }, speed);
+            });
+        }
+
         async function serviceControl(serviceId, action, btn) {
             const key = serviceId + ':' + action;
             // 第一击：变身为「确认」态，3 秒不点就还原 —— 不用原生 confirm()，体验更贴近产品
@@ -1571,18 +1607,39 @@
                 <div class="w-7 h-7 rounded-md bg-accent-sand/15 text-accent-sand flex items-center justify-center text-[11px] flex-shrink-0 mt-0.5">
                     <i class="fas fa-robot"></i>
                 </div>
-                <div class="rounded-xl rounded-tl-sm bg-dark-700 border border-dark-border text-[13px] leading-relaxed px-4 py-3 max-w-[85%] text-slate-300">
-                    ${reply.replace(/\n/g, '<br>')}
+                <div class="agent-bubble-text rounded-xl rounded-tl-sm bg-dark-700 border border-dark-border text-[13px] leading-relaxed px-4 py-3 max-w-[85%] text-slate-300 whitespace-pre-wrap">
                 </div>
             `;
             container.appendChild(div);
             container.scrollTop = container.scrollHeight;
+            const bubble = div.querySelector('.agent-bubble-text');
+            return streamTypewriter(bubble, reply, {
+                speed: 10,
+                onTick: () => { container.scrollTop = container.scrollHeight; }
+            });
         }
 
         async function queryGuideAgent(msg) {
+            const container = document.getElementById('guide-messages');
+            const thinkingDiv = document.createElement('div');
+            thinkingDiv.id = 'guide-thinking-indicator';
+            thinkingDiv.className = "flex items-start gap-3";
+            thinkingDiv.innerHTML = `
+                <div class="w-7 h-7 rounded-md bg-accent-sand/15 text-accent-sand flex items-center justify-center text-[11px] flex-shrink-0 mt-0.5 animate-pulse">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="rounded-xl rounded-tl-sm bg-dark-700/60 border border-dark-border text-[12px] leading-relaxed px-3.5 py-2 text-slate-400 flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-accent-sand animate-ping"></span>
+                    <span>AI 正在多跳意图推理并检索知识库...</span>
+                </div>
+            `;
+            container.appendChild(thinkingDiv);
+            container.scrollTop = container.scrollHeight;
+
             try {
                 const data = await OmniAPI.guideChat(msg, guideHistory);
-                appendAgentMessage(data.reply);
+                if (thinkingDiv && thinkingDiv.parentNode) thinkingDiv.remove();
+                await appendAgentMessage(data.reply);
 
                 // 更新右侧决策跟踪链
                 const traceBox = document.getElementById('guide-trace-steps');
@@ -1625,7 +1682,8 @@
                 guideHistory.push({ role: 'user', content: msg }, { role: 'assistant', content: data.reply });
 
             } catch (err) {
-                appendAgentMessage("抱歉，导购中枢响应异常，已自动切入本地兜底模式。");
+                if (thinkingDiv && thinkingDiv.parentNode) thinkingDiv.remove();
+                await appendAgentMessage("抱歉，导购中枢响应异常，已自动切入本地兜底模式。");
             }
         }
 
@@ -1650,13 +1708,25 @@
             const pname = document.getElementById('mkt-product-name').value;
             const platform = document.querySelector('input[name="mkt-platform"]:checked').value;
             const keywords = document.getElementById('mkt-keywords').value;
+            const btn = document.getElementById('btn-marketing-run');
+            const bodyEl = document.getElementById('mkt-result-body');
+
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin text-xs"></i> <span>矩阵生成与合规质检中...</span>';
+            }
+            if (bodyEl) {
+                bodyEl.innerHTML = '<div class="flex items-center gap-2 text-accent-emerald animate-pulse"><span class="w-2 h-2 rounded-full bg-accent-emerald"></span><span>AI 矩阵正在检索平台爆款模型并执行广告法违禁词合规排查...</span></div>';
+            }
 
             try {
                 const data = await OmniAPI.marketingGenerate({
                     product_name: pname, target_platform: platform, keywords: keywords
                 });
                 document.getElementById('mkt-result-title').innerText = data.title;
-                document.getElementById('mkt-result-body').innerText = data.content;
+                if (bodyEl) {
+                    await streamTypewriter(bodyEl, data.content, { speed: 8 });
+                }
 
                 // 质检报告
                 document.getElementById('mkt-score').innerText = data.compliance.score + ' / 100';
@@ -1682,6 +1752,11 @@
                 }
             } catch (err) {
                 showToast('<b>文案生成失败</b>：服务未响应，已保留上次结果。', 'err');
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '一键生成爆款内容并质检';
+                }
             }
         }
 
@@ -1970,7 +2045,6 @@
 
         let currentXhsData = null;
         let currentChannel = 'xhs';
-        let activeTypewriterTimer = null;
 
         function switchChannel(channel) {
             currentChannel = channel;
@@ -2001,36 +2075,6 @@
                 } else {
                     views[k].classList.add('hidden');
                 }
-            });
-        }
-
-        function streamTypewriter(element, text, options) {
-            options = options || {};
-            const speed = options.speed || 10;
-            if (activeTypewriterTimer) {
-                clearInterval(activeTypewriterTimer);
-                activeTypewriterTimer = null;
-            }
-            return new Promise(function (resolve) {
-                element.innerHTML = '';
-                let i = 0;
-                const cursor = document.createElement('span');
-                cursor.className = 'inline-block w-1.5 h-3.5 bg-accent-emerald ml-0.5 align-middle animate-pulse';
-                element.appendChild(cursor);
-
-                activeTypewriterTimer = setInterval(function () {
-                    if (i < text.length) {
-                        const chunk = text.substr(i, 3);
-                        const textNode = document.createTextNode(chunk);
-                        element.insertBefore(textNode, cursor);
-                        i += 3;
-                    } else {
-                        clearInterval(activeTypewriterTimer);
-                        activeTypewriterTimer = null;
-                        cursor.remove();
-                        resolve();
-                    }
-                }, speed);
             });
         }
 
@@ -2808,8 +2852,8 @@
                 });
                 if (resBox) {
                     const reply = (res.choices && res.choices[0] && res.choices[0].message) ? res.choices[0].message.content : JSON.stringify(res);
-                    const usage = res.usage ? `\n[耗时: ${res.latency_ms}ms · 消耗 Token: ${res.usage.total_tokens} · Trace ID: ${res.trace_id}]` : '';
-                    resBox.innerText = reply + usage;
+                    const usage = res.usage ? `\n\n[耗时: ${res.latency_ms}ms · 消耗 Token: ${res.usage.total_tokens} · Trace ID: ${res.trace_id}]` : '';
+                    await streamTypewriter(resBox, reply + usage, { speed: 8 });
                 }
                 refreshTraceLogs();
             } catch (err) {

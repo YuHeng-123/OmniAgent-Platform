@@ -19,6 +19,7 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUT = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "evidence" / "frontend-wiring.txt"
 
+
 def load_template_with_includes(path: pathlib.Path) -> str:
     """读取模板并递归展开 {% include '...' %} 子组件，保持静态审计覆盖率。"""
     text = path.read_text(encoding="utf-8")

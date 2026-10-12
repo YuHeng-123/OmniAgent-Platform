@@ -72,7 +72,11 @@ def get_task_by_id(task_id: str, tenant_id: Optional[str] = None) -> Optional[Di
     if not task:
         return None
     # 若指定了租户，非同租户且非全局租户不可见
-    if tenant_id and tenant_id not in ("tenant-enterprise-default", "admin") and task["tenant_id"] != tenant_id:
+    if (
+        tenant_id
+        and tenant_id not in ("tenant-enterprise-default", "admin")
+        and task["tenant_id"] != tenant_id
+    ):
         return None
     return task
 

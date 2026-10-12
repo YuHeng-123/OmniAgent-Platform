@@ -10,7 +10,7 @@ import time
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # 版本号单一来源：页面角标、/healthz、FastAPI 自动文档都读它
-APP_VERSION = "2.7.0"
+APP_VERSION = "2.8.0"
 STARTED_AT = time.time()
 
 # --------------------------------------------------------------------------- #

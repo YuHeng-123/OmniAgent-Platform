@@ -168,15 +168,14 @@ __all__ = [
     "LabsFunclipSliceRequest",
 ]
 
+
 # --------------------------------------------------------------------------- #
 # 核心网络探活兼容契约（保留直接签名以满足静态断言与宿主机容器探针约定）
 # --------------------------------------------------------------------------- #
 async def is_port_online(port: int, timeout: float = 0.35) -> bool:
     """探测端口连通性：显式经由 PROBE_HOST，确保容器内可探宿主机"""
     try:
-        reader, writer = await asyncio.wait_for(
-            asyncio.open_connection(PROBE_HOST, port), timeout=timeout
-        )
+        reader, writer = await asyncio.wait_for(asyncio.open_connection(PROBE_HOST, port), timeout=timeout)
         writer.close()
         try:
             await writer.wait_closed()
@@ -190,6 +189,7 @@ async def is_port_online(port: int, timeout: float = 0.35) -> bool:
 async def fetch_from_guide_agent(message: str, history) -> Optional[Dict[str, Any]]:
     """导购链路端点调用协议：基于 PROBE_HOST 与 GUIDE_PORT 动态编排"""
     from routers.business import fetch_from_guide_agent as _fetch
+
     # 保留显式上游地址拼接契约: "http://%s:%d%s" % (PROBE_HOST, GUIDE_PORT, GUIDE_CHAT_PATH)
     _ = "http://%s:%d%s" % (PROBE_HOST, GUIDE_PORT, GUIDE_CHAT_PATH)
     return await _fetch(message, history)
@@ -261,20 +261,23 @@ async def trace_id_middleware(request: Request, call_next):
             svc = "rag-retrieval"
 
         from core.security import get_tenant_context
+
         tenant_ctx = get_tenant_context(request)
 
-        TRACE_AUDIT_LOGS.appendleft({
-            "trace_id": trace_id,
-            "tenant_id": tenant_ctx.get("tenant_id", "default"),
-            "timestamp": datetime.datetime.now().strftime("%H:%M:%S"),
-            "method": request.method,
-            "path": path,
-            "service": svc,
-            "status_code": response.status_code,
-            "latency_ms": max(1, latency_ms),
-            "model": "Qwen-Max" if ("chat" in path or "gateway" in path) else "Hybrid-Engine",
-            "tokens": 420 if "generate" in path else 115,
-        })
+        TRACE_AUDIT_LOGS.appendleft(
+            {
+                "trace_id": trace_id,
+                "tenant_id": tenant_ctx.get("tenant_id", "default"),
+                "timestamp": datetime.datetime.now().strftime("%H:%M:%S"),
+                "method": request.method,
+                "path": path,
+                "service": svc,
+                "status_code": response.status_code,
+                "latency_ms": max(1, latency_ms),
+                "model": "Qwen-Max" if ("chat" in path or "gateway" in path) else "Hybrid-Engine",
+                "tokens": 420 if "generate" in path else 115,
+            }
+        )
     return response
 
 

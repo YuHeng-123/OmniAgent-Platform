@@ -461,8 +461,8 @@
                     <i class="fas fa-layer-group text-accent-emerald mr-2 text-sm"></i>
                     全域智能体调度总览大盘
                 </h1>
-                <!-- 企业级多租户 / 空间隔离切换器 -->
-                <div class="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-dark-950/80 border border-dark-border text-xs ml-2 flex-shrink-0">
+                <!-- 企业级多租户 / 空间隔离切换器 (超宽屏显示，常规屏收纳以防挤压顶栏) -->
+                <div class="hidden 2xl:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-dark-950/80 border border-dark-border text-xs ml-2 flex-shrink-0">
                     <i class="fas fa-building text-accent-cyan text-[11px]"></i>
                     <select id="tenant-workspace-select" onchange="switchTenantWorkspace(this.value)" class="bg-transparent text-slate-200 text-xs focus:outline-none cursor-pointer font-sans">
                         <option value="tenant-hq" class="bg-dark-900 text-slate-200">Shopify 北美独立站 · 旗舰中枢</option>
@@ -472,41 +472,41 @@
                 </div>
             </div>
 
-            <!-- 中间：灵动岛 HUD 状态胶囊 (Dynamic Island Capsule) -->
-            <div class="relative flex items-center justify-center">
-                <div id="dynamic-island" onclick="toggleDynamicIsland()" class="cursor-pointer group select-none transition-transform hover:scale-[1.02] active:scale-[0.98]">
-                    <div class="h-8 sm:h-9 px-3 sm:px-4 rounded-full bg-dark-950/90 border border-dark-border/90 hover:border-accent-cyan/60 shadow-lg shadow-black/50 backdrop-blur-md flex items-center gap-2 sm:gap-2.5 transition-all">
-                        <span class="relative flex h-2 w-2">
+            <!-- 中间：灵动岛 HUD 状态胶囊 (Dynamic Island Capsule - 纯横向胶囊永不折行) -->
+            <div class="relative flex items-center justify-center flex-shrink-0">
+                <div id="dynamic-island" onclick="toggleDynamicIsland()" class="cursor-pointer group select-none transition-transform hover:scale-[1.02] active:scale-[0.98] flex-shrink-0 whitespace-nowrap">
+                    <div class="h-8 sm:h-9 px-3 sm:px-4 rounded-full bg-dark-950/90 border border-dark-border/90 hover:border-accent-cyan/60 shadow-lg shadow-black/50 backdrop-blur-md flex items-center gap-2 sm:gap-2.5 transition-all flex-shrink-0 whitespace-nowrap">
+                        <span class="relative flex h-2 w-2 flex-shrink-0">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
                             <span class="relative inline-flex rounded-full h-2 w-2 bg-accent-emerald"></span>
                         </span>
                         
-                        <span class="text-[11px] font-mono font-medium text-slate-200 hidden sm:inline">中枢 HUD</span>
-                        <span class="h-3 w-[1px] bg-dark-border hidden sm:inline"></span>
+                        <span class="text-[11px] font-mono font-medium text-slate-200 hidden sm:inline flex-shrink-0">中枢 HUD</span>
+                        <span class="h-3 w-[1px] bg-dark-border hidden sm:inline flex-shrink-0"></span>
                         
-                        <div class="flex items-center gap-2 sm:gap-2.5 text-[11px] font-mono">
-                            <span class="text-emerald-400 flex items-center gap-1">
+                        <div class="flex items-center gap-2 text-[11px] font-mono flex-shrink-0 whitespace-nowrap">
+                            <span class="text-emerald-400 flex items-center gap-1 flex-shrink-0">
                                 <i class="fas fa-server text-[9px]"></i>
                                 <span id="hud-online-badge">7/7 在线</span>
                             </span>
-                            <span class="text-slate-600">·</span>
-                            <span class="text-accent-cyan flex items-center gap-1">
+                            <span class="text-slate-600 hidden lg:inline">·</span>
+                            <span class="text-accent-cyan hidden lg:flex items-center gap-1 flex-shrink-0">
                                 <i class="fas fa-route text-[9px]"></i>
                                 <span id="hud-proxy-badge">OpenAI代理</span>
                             </span>
-                            <span class="text-slate-600 hidden md:inline">·</span>
-                            <span class="hidden md:flex items-center gap-1 text-slate-300">
+                            <span class="text-slate-600 hidden xl:inline">·</span>
+                            <span class="hidden xl:flex items-center gap-1 text-slate-300 flex-shrink-0">
                                 <i class="fas fa-fingerprint text-[9px] text-accent-cyan"></i>
-                                <span id="hud-trace-badge" class="truncate max-w-[95px]">tr-8820-ok</span>
+                                <span id="hud-trace-badge" class="truncate max-w-[85px]">tr-8820-ok</span>
                             </span>
-                            <span class="text-slate-600 hidden lg:inline">·</span>
-                            <span class="hidden lg:flex items-center gap-1 text-slate-400">
+                            <span class="text-slate-600 hidden 2xl:inline">·</span>
+                            <span class="hidden 2xl:flex items-center gap-1 text-slate-400 flex-shrink-0">
                                 <i class="fas fa-bolt text-[9px] text-accent-gold"></i>
                                 <span id="hud-latency-badge">38ms</span>
                             </span>
                         </div>
 
-                        <i id="hud-chevron-icon" class="fas fa-chevron-down text-[9px] text-slate-500 group-hover:text-cyan-400 transition-transform duration-200 ml-0.5"></i>
+                        <i id="hud-chevron-icon" class="fas fa-chevron-down text-[9px] text-slate-500 group-hover:text-cyan-400 transition-transform duration-200 ml-0.5 flex-shrink-0"></i>
                     </div>
                 </div>
 

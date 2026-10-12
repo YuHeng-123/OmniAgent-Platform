@@ -461,8 +461,8 @@
                     <i class="fas fa-layer-group text-accent-emerald mr-2 text-sm"></i>
                     全域智能体调度总览大盘
                 </h1>
-                <!-- 企业级多租户 / 空间隔离切换器 -->
-                <div class="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-dark-950/80 border border-dark-border text-xs ml-2 flex-shrink-0">
+                <!-- 企业级多租户 / 空间隔离切换器 (超宽屏显示，常规屏收纳以防挤压顶栏) -->
+                <div class="hidden 2xl:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-dark-950/80 border border-dark-border text-xs ml-2 flex-shrink-0">
                     <i class="fas fa-building text-accent-cyan text-[11px]"></i>
                     <select id="tenant-workspace-select" onchange="switchTenantWorkspace(this.value)" class="bg-transparent text-slate-200 text-xs focus:outline-none cursor-pointer font-sans">
                         <option value="tenant-hq" class="bg-dark-900 text-slate-200">Shopify 北美独立站 · 旗舰中枢</option>
@@ -472,41 +472,41 @@
                 </div>
             </div>
 
-            <!-- 中间：灵动岛 HUD 状态胶囊 (Dynamic Island Capsule) -->
-            <div class="relative flex items-center justify-center">
-                <div id="dynamic-island" onclick="toggleDynamicIsland()" class="cursor-pointer group select-none transition-transform hover:scale-[1.02] active:scale-[0.98]">
-                    <div class="h-8 sm:h-9 px-3 sm:px-4 rounded-full bg-dark-950/90 border border-dark-border/90 hover:border-accent-cyan/60 shadow-lg shadow-black/50 backdrop-blur-md flex items-center gap-2 sm:gap-2.5 transition-all">
-                        <span class="relative flex h-2 w-2">
+            <!-- 中间：灵动岛 HUD 状态胶囊 (Dynamic Island Capsule - 纯横向胶囊永不折行) -->
+            <div class="relative flex items-center justify-center flex-shrink-0">
+                <div id="dynamic-island" onclick="toggleDynamicIsland()" class="cursor-pointer group select-none transition-transform hover:scale-[1.02] active:scale-[0.98] flex-shrink-0 whitespace-nowrap">
+                    <div class="h-8 sm:h-9 px-3 sm:px-4 rounded-full bg-dark-950/90 border border-dark-border/90 hover:border-accent-cyan/60 shadow-lg shadow-black/50 backdrop-blur-md flex items-center gap-2 sm:gap-2.5 transition-all flex-shrink-0 whitespace-nowrap">
+                        <span class="relative flex h-2 w-2 flex-shrink-0">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
                             <span class="relative inline-flex rounded-full h-2 w-2 bg-accent-emerald"></span>
                         </span>
                         
-                        <span class="text-[11px] font-mono font-medium text-slate-200 hidden sm:inline">中枢 HUD</span>
-                        <span class="h-3 w-[1px] bg-dark-border hidden sm:inline"></span>
+                        <span class="text-[11px] font-mono font-medium text-slate-200 hidden sm:inline flex-shrink-0">中枢 HUD</span>
+                        <span class="h-3 w-[1px] bg-dark-border hidden sm:inline flex-shrink-0"></span>
                         
-                        <div class="flex items-center gap-2 sm:gap-2.5 text-[11px] font-mono">
-                            <span class="text-emerald-400 flex items-center gap-1">
+                        <div class="flex items-center gap-2 text-[11px] font-mono flex-shrink-0 whitespace-nowrap">
+                            <span class="text-emerald-400 flex items-center gap-1 flex-shrink-0">
                                 <i class="fas fa-server text-[9px]"></i>
                                 <span id="hud-online-badge">7/7 在线</span>
                             </span>
-                            <span class="text-slate-600">·</span>
-                            <span class="text-accent-cyan flex items-center gap-1">
+                            <span class="text-slate-600 hidden lg:inline">·</span>
+                            <span class="text-accent-cyan hidden lg:flex items-center gap-1 flex-shrink-0">
                                 <i class="fas fa-route text-[9px]"></i>
                                 <span id="hud-proxy-badge">OpenAI代理</span>
                             </span>
-                            <span class="text-slate-600 hidden md:inline">·</span>
-                            <span class="hidden md:flex items-center gap-1 text-slate-300">
+                            <span class="text-slate-600 hidden xl:inline">·</span>
+                            <span class="hidden xl:flex items-center gap-1 text-slate-300 flex-shrink-0">
                                 <i class="fas fa-fingerprint text-[9px] text-accent-cyan"></i>
-                                <span id="hud-trace-badge" class="truncate max-w-[95px]">tr-8820-ok</span>
+                                <span id="hud-trace-badge" class="truncate max-w-[85px]">tr-8820-ok</span>
                             </span>
-                            <span class="text-slate-600 hidden lg:inline">·</span>
-                            <span class="hidden lg:flex items-center gap-1 text-slate-400">
+                            <span class="text-slate-600 hidden 2xl:inline">·</span>
+                            <span class="hidden 2xl:flex items-center gap-1 text-slate-400 flex-shrink-0">
                                 <i class="fas fa-bolt text-[9px] text-accent-gold"></i>
                                 <span id="hud-latency-badge">38ms</span>
                             </span>
                         </div>
 
-                        <i id="hud-chevron-icon" class="fas fa-chevron-down text-[9px] text-slate-500 group-hover:text-cyan-400 transition-transform duration-200 ml-0.5"></i>
+                        <i id="hud-chevron-icon" class="fas fa-chevron-down text-[9px] text-slate-500 group-hover:text-cyan-400 transition-transform duration-200 ml-0.5 flex-shrink-0"></i>
                     </div>
                 </div>
 
@@ -620,804 +620,1201 @@
             <!-- ------------------------------------------------------------- -->
             <!-- 模块化子组件 (Jinja2 Partials) -->
             <!-- ------------------------------------------------------------- -->
-                        <!-- ------------------------------------------------------------- -->
-            <!-- TAB 1: 全局大盘 (Overview) -->
             <!-- ------------------------------------------------------------- -->
-            <div id="tab-overview" class="tab-content space-y-5">
-                <!-- 指标带：一条横向数据带，用晶透分割线代替 4 张卡 -->
-                <div class="glass-card px-2 py-1 grid grid-cols-2 lg:grid-cols-4 divide-x divide-y lg:divide-y-0 divide-dark-border">
-                    <div class="px-5 py-4">
-                        <div class="text-[11px] text-slate-400 mb-1.5 flex items-center justify-between">
-                            <span>活跃 Agent 集群</span>
-                            <i class="fas fa-microchip text-accent-emerald text-xs"></i>
-                        </div>
-                        <div class="kpi-num text-[28px] font-bold leading-none text-white">
-                            <span id="stat-active" class="text-accent-emerald">4</span><span class="text-sm font-normal text-slate-500 ml-1">/ 8</span>
-                        </div>
-                        <div class="text-[11px] text-accent-emerald mt-2 flex items-center gap-1.5">
-                            <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-pulse"></span>核心链路在线
-                        </div>
-                    </div>
+<!-- TAB 1: 全局大盘 (Overview) - 风格 B：奢品与出海内容工场中台 -->
+<!-- ------------------------------------------------------------- -->
+<div id="tab-overview" class="tab-content space-y-5">
 
-                    <div class="px-5 py-4">
-                        <div class="text-[11px] text-slate-400 mb-1.5 flex items-center justify-between">
-                            <span>24h 请求吞吐</span>
-                            <i class="fas fa-wave-square text-accent-cyan text-xs"></i>
-                        </div>
-                        <div class="kpi-num text-[28px] font-bold leading-none text-white">3,482<span class="text-sm font-normal text-accent-cyan ml-1">QPS</span></div>
-                        <div class="text-[11px] text-slate-400 mt-2">平均延迟 <span class="font-mono text-slate-200">42ms</span></div>
-                    </div>
+    <!-- ============================================================= -->
+    <!-- 顶栏 KPI 品牌指标带 (Brand & DTC Real-Time Metrics) -->
+    <!-- ============================================================= -->
+    <div class="glass-card p-3 sm:p-4 border-amber-500/20 bg-gradient-to-r from-dark-950/95 via-dark-900/90 to-dark-950/95">
+        <div class="flex items-center justify-between pb-3 mb-3 border-b border-dark-border/80 flex-wrap gap-2.5">
+            <div class="flex items-center gap-3">
+                <!-- 品牌选择器 -->
+                <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-dark-900/90 border border-amber-500/30 text-xs shadow-inner">
+                    <i class="fas fa-gem text-accent-gold text-xs"></i>
+                    <span class="font-semibold text-white tracking-wide">Luxury Brand Collective</span>
+                    <i class="fas fa-chevron-down text-[10px] text-slate-400 ml-1"></i>
+                </div>
+                <!-- 全局搜索框 -->
+                <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-dark-950/80 border border-dark-border text-xs text-slate-400 w-56">
+                    <i class="fas fa-search text-[11px] text-slate-500"></i>
+                    <span class="text-slate-500 text-[11px]">Global Search...</span>
+                </div>
+            </div>
 
-                    <div class="px-5 py-4">
-                        <div class="text-[11px] text-slate-400 mb-1.5 flex items-center justify-between">
-                            <span>Token 消耗</span>
-                            <i class="fas fa-coins text-accent-gold text-xs"></i>
-                        </div>
-                        <div class="kpi-num text-[28px] font-bold leading-none text-white">1.48<span class="text-sm font-normal text-accent-gold ml-1">M</span></div>
-                        <div class="text-[11px] text-accent-gold mt-2 font-mono">缓存节约 $48.20</div>
-                    </div>
+            <div class="flex items-center gap-3 text-[11px] font-mono text-slate-400">
+                <span class="flex items-center gap-1.5 text-accent-emerald">
+                    <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-pulse"></span>
+                    <span>北美 &amp; 欧洲 DTC 独立站直连</span>
+                </span>
+                <span class="text-slate-600 hidden sm:inline">|</span>
+                <span class="text-slate-300 hidden sm:flex items-center gap-1">
+                    <i class="fas fa-bolt text-accent-gold text-[10px]"></i>
+                    <span>AI 调度护航中</span>
+                </span>
+            </div>
+        </div>
 
-                    <div class="px-5 py-4">
-                        <div class="text-[11px] text-slate-400 mb-1.5 flex items-center justify-between">
-                            <span>RAG 命中率</span>
-                            <i class="fas fa-bullseye text-accent-emerald text-xs"></i>
-                        </div>
-                        <div class="kpi-num text-[28px] font-bold leading-none text-white">95.6<span class="text-sm font-normal text-accent-emerald ml-1">%</span></div>
-                        <div class="text-[11px] text-slate-400 mt-2">双路重排精准召回</div>
+        <!-- 4 张金色高光零售 KPI 指标卡 (严丝合缝对齐设计图顶栏) -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <!-- KPI 1: Brand / GMV -->
+            <div class="p-3.5 rounded-xl bg-dark-900/70 border border-dark-border hover:border-amber-500/30 transition-all group">
+                <div class="flex items-center justify-between text-slate-400 text-[11px] mb-1.5">
+                    <span class="group-hover:text-amber-200/90 transition-colors">Brand / DTC 累计全域 GMV</span>
+                    <div class="w-6 h-6 rounded-md bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-accent-gold">
+                        <i class="fas fa-chart-column text-xs"></i>
+                    </div>
+                </div>
+                <div class="kpi-num text-[26px] font-bold text-white tracking-tight">
+                    ¥2,458,790
+                </div>
+                <div class="text-[10px] text-slate-400 mt-1.5 flex items-center justify-between font-mono">
+                    <span class="text-slate-500">折合 $342,800 USD</span>
+                    <span class="text-accent-emerald font-semibold">+34.2% YoY</span>
+                </div>
+            </div>
+
+            <!-- KPI 2: Real-time Sales Revenue -->
+            <div class="p-3.5 rounded-xl bg-dark-900/70 border border-dark-border hover:border-amber-500/30 transition-all group">
+                <div class="flex items-center justify-between text-slate-400 text-[11px] mb-1.5">
+                    <span class="group-hover:text-amber-200/90 transition-colors">Real-time Sales Revenue (今日)</span>
+                    <div class="w-6 h-6 rounded-md bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-accent-gold">
+                        <i class="fas fa-sack-dollar text-xs"></i>
+                    </div>
+                </div>
+                <div class="kpi-num text-[26px] font-bold text-accent-gold tracking-tight">
+                    ¥2,458,790
+                </div>
+                <div class="text-[10px] text-slate-400 mt-1.5 flex items-center justify-between font-mono">
+                    <span class="text-slate-500">实时成单入账</span>
+                    <span class="text-accent-gold flex items-center gap-1"><i class="fas fa-signal text-[9px]"></i> 实时流</span>
+                </div>
+            </div>
+
+            <!-- KPI 3: AI Content ROI Ratio -->
+            <div class="p-3.5 rounded-xl bg-dark-900/70 border border-dark-border hover:border-amber-500/30 transition-all group">
+                <div class="flex items-center justify-between text-slate-400 text-[11px] mb-1.5">
+                    <span class="group-hover:text-amber-200/90 transition-colors">AI Content ROI Ratio</span>
+                    <div class="w-6 h-6 rounded-md bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-accent-gold">
+                        <i class="fas fa-chart-line text-xs"></i>
+                    </div>
+                </div>
+                <div class="kpi-num text-[26px] font-bold text-accent-emerald tracking-tight">
+                    47.2x
+                </div>
+                <div class="text-[10px] text-slate-400 mt-1.5 flex items-center justify-between font-mono">
+                    <span class="text-slate-500">人效综合放大倍数</span>
+                    <span class="text-accent-emerald font-semibold">+18.5% 环比</span>
+                </div>
+            </div>
+
+            <!-- KPI 4: Total AI Orders & Agent 集群在线探测保活 -->
+            <div class="p-3.5 rounded-xl bg-dark-900/70 border border-dark-border hover:border-amber-500/30 transition-all group">
+                <div class="flex items-center justify-between text-slate-400 text-[11px] mb-1.5">
+                    <span class="group-hover:text-amber-200/90 transition-colors">Total AI Orders (智能接单)</span>
+                    <div class="w-6 h-6 rounded-md bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-accent-gold">
+                        <i class="fas fa-cart-shopping text-xs"></i>
+                    </div>
+                </div>
+                <div class="kpi-num text-[26px] font-bold text-white tracking-tight flex items-baseline justify-between">
+                    <span>8,765</span>
+                    <span class="text-[12px] font-mono font-normal text-accent-emerald">
+                        <span id="stat-active" class="font-bold">4</span><span class="text-slate-500 font-normal">/8 在线</span>
+                    </span>
+                </div>
+                <div class="text-[10px] text-slate-400 mt-1.5 flex items-center justify-between font-mono">
+                    <span class="text-slate-500">零人工干预直通单</span>
+                    <span class="text-accent-cyan font-semibold">99.4% 履约率</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================= -->
+    <!-- 首屏主战场：风格 B 核心三栏（转化漏斗 · 爆款卡片 · 出海内容工场） -->
+    <!-- ============================================================= -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+
+        <!-- 栏 1 (左 3 栏)：E-commerce Conversion (商品转化漏斗) -->
+        <div class="lg:col-span-3 glass-card p-4 flex flex-col justify-between space-y-3.5 border-amber-500/20">
+            <div class="flex items-center justify-between pb-2 border-b border-dark-border/70">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-filter text-accent-gold text-xs"></i>
+                    <h3 class="font-semibold text-white text-[13px] tracking-wide">E-commerce Conversion</h3>
+                </div>
+                <span class="tag tag-accent text-[9px] font-mono">DTC 漏斗</span>
+            </div>
+
+            <!-- 4 阶梯队形漏斗卡片 (金色与暖橙发光进度) -->
+            <div class="space-y-2.5">
+                <!-- 漏斗阶梯 1: Impressions -->
+                <div class="p-3 rounded-xl bg-gradient-to-r from-amber-500/20 via-dark-900/90 to-dark-950 border border-amber-500/30 shadow-md">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="font-medium text-slate-200 flex items-center gap-1.5">
+                            <span>Impressions</span>
+                            <span class="text-slate-400 text-[11px] font-mono">(12.4M)</span>
+                        </span>
+                        <i class="fas fa-eye text-accent-gold text-xs"></i>
+                    </div>
+                    <div class="w-full bg-dark-950/80 h-1.5 rounded-full mt-2.5 overflow-hidden border border-white/5">
+                        <div class="bg-gradient-to-r from-amber-400 to-amber-500 h-full rounded-full shadow-sm" style="width: 85%"></div>
                     </div>
                 </div>
 
-                <p class="text-[11px] text-slate-500 leading-relaxed pl-1">
-                    数据口径：<b class="text-accent-emerald">「活跃 Agent 集群」为实时端口探测值</b>，其余三项为演示样例数据，非实盘经营指标。
-                </p>
+                <div class="flex justify-center text-amber-500/70 text-xs -my-1">
+                    <i class="fas fa-arrow-down"></i>
+                </div>
 
-                <!-- 架构拓扑流图 & 实时事件流 -->
-                <div class="grid grid-cols-1 lg:grid-cols-5 gap-5">
-                    <!-- 业务拓扑架构 (支持 2.5D 全息力导向 HUD 与 传统集群阵列) -->
-                    <div class="lg:col-span-3 glass-card p-5 flex flex-col justify-between">
-                        <div class="flex items-center justify-between mb-3.5 flex-wrap gap-2">
+                <!-- 漏斗阶梯 2: AI Chat Inquiries -->
+                <div class="p-3 rounded-xl bg-gradient-to-r from-amber-500/15 via-dark-900/90 to-dark-950 border border-amber-500/25 shadow-md mx-1">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="font-medium text-slate-200 flex items-center gap-1.5">
+                            <span>AI Chat Inquiries</span>
+                            <span class="text-slate-400 text-[11px] font-mono">(65.8k)</span>
+                        </span>
+                        <i class="fas fa-comment-dots text-accent-gold text-xs"></i>
+                    </div>
+                    <div class="w-full bg-dark-950/80 h-1.5 rounded-full mt-2.5 overflow-hidden border border-white/5">
+                        <div class="bg-gradient-to-r from-amber-400 to-amber-500 h-full rounded-full shadow-sm" style="width: 62%"></div>
+                    </div>
+                </div>
+
+                <div class="flex justify-center text-amber-500/70 text-xs -my-1">
+                    <i class="fas fa-arrow-down"></i>
+                </div>
+
+                <!-- 漏斗阶梯 3: Live Cart Adds -->
+                <div class="p-3 rounded-xl bg-gradient-to-r from-amber-600/20 via-dark-900/90 to-dark-950 border border-amber-600/30 shadow-md mx-2">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="font-medium text-slate-200 flex items-center gap-1.5">
+                            <span>Live Cart Adds</span>
+                            <span class="text-slate-400 text-[11px] font-mono">(18.2k)</span>
+                        </span>
+                        <i class="fas fa-cart-plus text-amber-500 text-xs"></i>
+                    </div>
+                    <div class="w-full bg-dark-950/80 h-1.5 rounded-full mt-2.5 overflow-hidden border border-white/5">
+                        <div class="bg-gradient-to-r from-amber-500 to-rose-500 h-full rounded-full shadow-sm" style="width: 42%"></div>
+                    </div>
+                </div>
+
+                <div class="flex justify-center text-rose-500/70 text-xs -my-1">
+                    <i class="fas fa-arrow-down"></i>
+                </div>
+
+                <!-- 漏斗阶梯 4: Orders (终极成单转化) -->
+                <div class="p-3.5 rounded-xl bg-gradient-to-r from-rose-500 to-amber-600 shadow-xl shadow-rose-950/60 border border-rose-400/50 mx-3 text-center">
+                    <div class="text-[13px] font-bold text-white flex items-center justify-center gap-1.5">
+                        <i class="fas fa-bag-shopping text-xs"></i>
+                        <span>Orders</span>
+                        <span class="text-amber-100 font-mono">(9,120)</span>
+                    </div>
+                    <div class="text-[10px] text-rose-100/90 mt-0.5 font-mono">
+                        成单转化率 13.8% (行业基线 2.8%)
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-2 border-t border-dark-border/60 text-[10px] text-slate-400 flex items-center justify-between font-mono">
+                <span>出海全链路转化增益</span>
+                <span class="text-accent-emerald font-bold">+34.8% AI Lift</span>
+            </div>
+        </div>
+
+        <!-- 栏 2 (中 5 栏)：Top-Selling Luxury Jewelry Items (爆款单品与实效 ROI) -->
+        <div class="lg:col-span-5 glass-card p-4 space-y-3.5 border-amber-500/20 flex flex-col justify-between">
+            <div class="flex items-center justify-between pb-2 border-b border-dark-border/70">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-crown text-accent-gold text-xs"></i>
+                    <h3 class="font-semibold text-white text-[13px] tracking-wide">Top-Selling Luxury Jewelry Items</h3>
+                </div>
+                <button type="button" onclick="switchTab('guide')" class="text-[11px] text-accent-gold hover:underline flex items-center gap-1 font-mono">
+                    <span>See more</span> <i class="fas fa-chevron-right text-[9px]"></i>
+                </button>
+            </div>
+
+            <!-- 两张高定奢品卡片并排 (莫桑石订婚钻戒 & 天然翡翠平安扣) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <!-- 单品 1: Moissanite Engagement Ring -->
+                <div class="p-3 rounded-xl bg-dark-950/90 border border-amber-500/30 hover:border-amber-400/60 transition-all flex flex-col justify-between space-y-2.5 group">
+                    <!-- 商品视觉图容器 (矢量高精实景渲染) -->
+                    <div class="relative w-full h-32 rounded-lg overflow-hidden border border-white/5 bg-dark-900 group-hover:scale-[1.01] transition-transform">
+                        <svg viewBox="0 0 240 150" class="w-full h-full object-cover select-none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="ringBg" cx="50%" cy="50%" r="75%">
+      <stop offset="0%" stop-color="#2a241e"/>
+      <stop offset="50%" stop-color="#181512"/>
+      <stop offset="100%" stop-color="#0c0d11"/>
+    </radialGradient>
+    <linearGradient id="pedestal" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#d4c5b3"/>
+      <stop offset="40%" stop-color="#ab9985"/>
+      <stop offset="100%" stop-color="#54483a"/>
+    </linearGradient>
+    <linearGradient id="platinum" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#94a3b8"/>
+      <stop offset="35%" stop-color="#ffffff"/>
+      <stop offset="65%" stop-color="#cbd5e1"/>
+      <stop offset="100%" stop-color="#64748b"/>
+    </linearGradient>
+    <linearGradient id="diamondFacet1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#bae6fd"/>
+    </linearGradient>
+    <linearGradient id="diamondFacet2" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f0f9ff"/>
+      <stop offset="100%" stop-color="#7dd3fc"/>
+    </linearGradient>
+    <radialGradient id="sparkleGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9"/>
+      <stop offset="50%" stop-color="#38bdf8" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="ringGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="240" height="150" fill="url(#ringBg)"/>
+
+  <!-- Luxury Velvet/Silk Pedestal Base -->
+  <ellipse cx="120" cy="125" rx="90" ry="22" fill="#000000" opacity="0.65" filter="url(#ringGlow)"/>
+  <ellipse cx="120" cy="120" rx="85" ry="18" fill="url(#pedestal)"/>
+  <ellipse cx="120" cy="118" rx="80" ry="15" fill="#3a3025" opacity="0.4"/>
+
+  <!-- Ring Band (Shank in Perspective) -->
+  <ellipse cx="120" cy="98" rx="42" ry="24" fill="none" stroke="url(#platinum)" stroke-width="6.5"/>
+  <ellipse cx="120" cy="98" rx="42" ry="24" fill="none" stroke="#ffffff" stroke-width="1.5" opacity="0.75"/>
+  <!-- Inner shadow of ring -->
+  <ellipse cx="120" cy="98" rx="38.5" ry="20.5" fill="#14110e" opacity="0.85"/>
+
+  <!-- Solitaire Diamond Crown & Prongs (6 Prongs) -->
+  <g transform="translate(120, 68)">
+    <!-- Back Prongs -->
+    <path d="M-12,-8 L-8,12 L-5,12 L-9,-8 Z" fill="#64748b"/>
+    <path d="M12,-8 L8,12 L5,12 L9,-8 Z" fill="#64748b"/>
+
+    <!-- Brilliant Round Diamond Body -->
+    <!-- Table & Crown facets -->
+    <polygon points="0,-22 14,-14 20,2 12,16 0,22 -12,16 -20,2 -14,-14" fill="url(#diamondFacet1)" opacity="0.95"/>
+    <!-- Internal Facets & Refraction -->
+    <polygon points="0,-22 10,-8 0,0 -10,-8" fill="#ffffff" opacity="0.9"/>
+    <polygon points="14,-14 10,-8 15,2 20,2" fill="url(#diamondFacet2)" opacity="0.85"/>
+    <polygon points="-14,-14 -10,-8 -15,2 -20,2" fill="url(#diamondFacet2)" opacity="0.85"/>
+    <polygon points="0,0 10,-8 15,2 8,12 0,16" fill="#e0f2fe" opacity="0.8"/>
+    <polygon points="0,0 -10,-8 -15,2 -8,12 0,16" fill="#bae6fd" opacity="0.85"/>
+    <polygon points="0,22 8,12 0,16 -8,12" fill="#ffffff" opacity="0.95"/>
+    <!-- Central Table Octagon -->
+    <polygon points="0,-10 7,-4 7,4 0,10 -7,4 -7,-4" fill="#ffffff" opacity="0.98"/>
+
+    <!-- Front Prongs (Platinum) -->
+    <path d="M-16,-6 L-13,6 L-10,6 L-14,-6 Z" fill="url(#platinum)"/>
+    <path d="M16,-6 L13,6 L10,6 L14,-6 Z" fill="url(#platinum)"/>
+    <path d="M-6,14 L-4,22 L-2,22 L-4,14 Z" fill="url(#platinum)"/>
+    <path d="M6,14 L4,22 L2,22 L4,14 Z" fill="url(#platinum)"/>
+
+    <!-- Primary Diamond Sparkle Star Flare -->
+    <circle cx="-5" cy="-7" r="14" fill="url(#sparkleGlow)"/>
+    <polygon points="-5,-19 -4,-9 6,-7 -4,-5 -5,5 -6,-5 -16,-7 -6,-9" fill="#ffffff"/>
+    <polygon points="8,5 9,1 13,0 9,-1 8,-5 7,-1 3,0 7,1" fill="#ffffff" opacity="0.85"/>
+  </g>
+</svg>
+                        <div class="absolute top-1.5 left-1.5 px-2 py-0.5 rounded bg-dark-950/80 border border-amber-500/40 text-[9px] font-mono text-accent-gold backdrop-blur-sm">
+                            TOP 1 爆款
+                        </div>
+                        <div class="absolute bottom-1.5 right-1.5 text-[11px] font-mono text-white font-bold bg-dark-950/85 px-2 py-0.5 rounded border border-white/10">
+                            $399
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="font-semibold text-white text-[13px] truncate">Moissanite Engagement Ring</div>
+                        <div class="text-[10px] text-slate-400 font-mono mt-0.5 flex justify-between">
+                            <span>Sales: 129K</span>
+                            <span class="text-accent-gold">经典六爪莫桑石钻戒</span>
+                        </div>
+                    </div>
+
+                    <!-- 3 项金色实效交互指标行 -->
+                    <div class="space-y-1.5 pt-1 border-t border-dark-border/60">
+                        <div class="p-1.5 rounded-lg bg-dark-900/80 border border-amber-500/20 flex items-center justify-between text-[10px] font-mono hover:bg-amber-950/20 transition-colors">
+                            <span class="text-slate-400">AI Script Performance</span>
+                            <span class="text-accent-gold font-bold flex items-center gap-1">75% conversion lift <i class="fas fa-chevron-right text-[8px]"></i></span>
+                        </div>
+                        <div class="p-1.5 rounded-lg bg-dark-900/80 border border-amber-500/20 flex items-center justify-between text-[10px] font-mono hover:bg-amber-950/20 transition-colors">
+                            <span class="text-slate-400">Viral Note Views</span>
+                            <span class="text-accent-gold font-bold flex items-center gap-1">3.2M <i class="fas fa-chevron-right text-[8px]"></i></span>
+                        </div>
+                        <div class="p-1.5 rounded-lg bg-dark-900/80 border border-amber-500/20 flex items-center justify-between text-[10px] font-mono hover:bg-amber-950/20 transition-colors">
+                            <span class="text-slate-400">Video Click-Through Rate</span>
+                            <span class="text-accent-gold font-bold flex items-center gap-1">Moissanite: 14.8% <i class="fas fa-chevron-right text-[8px]"></i></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 单品 2: Natural Jade Pendant -->
+                <div class="p-3 rounded-xl bg-dark-950/90 border border-emerald-500/30 hover:border-emerald-400/60 transition-all flex flex-col justify-between space-y-2.5 group">
+                    <!-- 商品视觉图容器 (天然翡翠平安扣) -->
+                    <div class="relative w-full h-32 rounded-lg overflow-hidden border border-white/5 bg-dark-900 group-hover:scale-[1.01] transition-transform">
+                        <svg viewBox="0 0 240 150" class="w-full h-full object-cover select-none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="jadeBg" cx="50%" cy="50%" r="75%">
+      <stop offset="0%" stop-color="#141f1a"/>
+      <stop offset="60%" stop-color="#0b1310"/>
+      <stop offset="100%" stop-color="#090d0b"/>
+    </radialGradient>
+    <radialGradient id="imperialJade" cx="42%" cy="38%" r="65%">
+      <stop offset="0%" stop-color="#6ee7b7"/>
+      <stop offset="25%" stop-color="#10b981"/>
+      <stop offset="60%" stop-color="#059669"/>
+      <stop offset="85%" stop-color="#047857"/>
+      <stop offset="100%" stop-color="#064e3b"/>
+    </radialGradient>
+    <radialGradient id="innerHoleTrans" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#0c120f" stop-opacity="0.95"/>
+      <stop offset="70%" stop-color="#064e3b" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#10b981" stop-opacity="0.2"/>
+    </radialGradient>
+    <linearGradient id="goldBail" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="45%" stop-color="#f59e0b"/>
+      <stop offset="80%" stop-color="#d97706"/>
+      <stop offset="100%" stop-color="#78350f"/>
+    </linearGradient>
+    <filter id="jadeAura" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="240" height="150" fill="url(#jadeBg)"/>
+
+  <!-- Soft Ambient Occlusion Glow -->
+  <circle cx="120" cy="85" r="46" fill="#10b981" opacity="0.18" filter="url(#jadeAura)"/>
+  <ellipse cx="120" cy="132" rx="42" ry="8" fill="#000000" opacity="0.55"/>
+
+  <!-- Silk Braided Cord (Top) -->
+  <path d="M120,0 L120,44" stroke="#451a03" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M119,0 L119,44" stroke="#78350f" stroke-width="1.5" stroke-linecap="round"/>
+
+  <!-- 18K Solid Gold Bail Clasp -->
+  <g transform="translate(120, 44)">
+    <circle cx="0" cy="0" r="5" fill="url(#goldBail)"/>
+    <circle cx="0" cy="0" r="2.5" fill="#3b1a03"/>
+    <path d="M-3,3 L3,3 L5,10 L-5,10 Z" fill="url(#goldBail)"/>
+    <ellipse cx="0" cy="9" rx="4" ry="1.5" fill="#fef08a"/>
+  </g>
+
+  <!-- Imperial Green Jade Donut Disk (老坑冰种翡翠平安扣) -->
+  <g transform="translate(120, 85)">
+    <!-- Outer Jade Donut -->
+    <circle cx="0" cy="0" r="42" fill="url(#imperialJade)"/>
+    <!-- Surface Polish Highlight Arc -->
+    <path d="M-28,-28 A39,39 0 0,1 28,-28" fill="none" stroke="#a7f3d0" stroke-width="4.5" stroke-linecap="round" opacity="0.55"/>
+    <path d="M-20,-34 A38,38 0 0,1 15,-35" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+
+    <!-- Inner Hole (Cutout) -->
+    <circle cx="0" cy="0" r="14" fill="url(#innerHoleTrans)"/>
+    <!-- Inner Rim Specular Highlight -->
+    <circle cx="0" cy="0" r="14" fill="none" stroke="#34d399" stroke-width="1.8" opacity="0.75"/>
+    <circle cx="0" cy="0" r="11" fill="#0d1411"/>
+
+    <!-- Subtle Jadeite Vein Texture -->
+    <path d="M-22,12 Q-5,20 18,10" fill="none" stroke="#047857" stroke-width="3" opacity="0.4"/>
+    <path d="M-10,-18 Q12,-12 24,4" fill="none" stroke="#34d399" stroke-width="2.5" opacity="0.35"/>
+  </g>
+</svg>
+                        <div class="absolute top-1.5 left-1.5 px-2 py-0.5 rounded bg-dark-950/80 border border-emerald-500/40 text-[9px] font-mono text-accent-emerald backdrop-blur-sm">
+                            欧洲轻奢 TOP 2
+                        </div>
+                        <div class="absolute bottom-1.5 right-1.5 text-[11px] font-mono text-accent-emerald font-bold bg-dark-950/85 px-2 py-0.5 rounded border border-white/10">
+                            $1,280
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="font-semibold text-white text-[13px] truncate">Natural Jade Pendant</div>
+                        <div class="text-[10px] text-slate-400 font-mono mt-0.5 flex justify-between">
+                            <span>Sales: 3.2M</span>
+                            <span class="text-accent-emerald">老坑冰透翡翠平安扣</span>
+                        </div>
+                    </div>
+
+                    <!-- 3 项金色实效交互指标行 -->
+                    <div class="space-y-1.5 pt-1 border-t border-dark-border/60">
+                        <div class="p-1.5 rounded-lg bg-dark-900/80 border border-amber-500/20 flex items-center justify-between text-[10px] font-mono hover:bg-amber-950/20 transition-colors">
+                            <span class="text-slate-400">AI Script Performance</span>
+                            <span class="text-accent-gold font-bold flex items-center gap-1">70% conversion lift <i class="fas fa-chevron-right text-[8px]"></i></span>
+                        </div>
+                        <div class="p-1.5 rounded-lg bg-dark-900/80 border border-amber-500/20 flex items-center justify-between text-[10px] font-mono hover:bg-amber-950/20 transition-colors">
+                            <span class="text-slate-400">Viral Note Views</span>
+                            <span class="text-accent-gold font-bold flex items-center gap-1">3.2M <i class="fas fa-chevron-right text-[8px]"></i></span>
+                        </div>
+                        <div class="p-1.5 rounded-lg bg-dark-900/80 border border-amber-500/20 flex items-center justify-between text-[10px] font-mono hover:bg-amber-950/20 transition-colors">
+                            <span class="text-slate-400">Video Click-Through Rate</span>
+                            <span class="text-accent-gold font-bold flex items-center gap-1">Moissanite: 14.8% <i class="fas fa-chevron-right text-[8px]"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 栏 3 (右 4 栏)：AI Content Factory (出海内容工场流水线 & 视频实时渲染) -->
+        <div class="lg:col-span-4 glass-card p-4 space-y-3.5 border-amber-500/20 flex flex-col justify-between">
+            <div class="flex items-center justify-between pb-2 border-b border-dark-border/70">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-video text-accent-gold text-xs"></i>
+                    <h3 class="font-semibold text-white text-[13px] tracking-wide">AI Content Factory</h3>
+                </div>
+                <span class="text-[10px] font-mono text-accent-emerald flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-pulse"></span>
+                    <span>Generator status</span>
+                </span>
+            </div>
+
+            <!-- 出海渠道切换药丸按钮 (TikTok / Instagram) -->
+            <div class="flex items-center gap-2">
+                <button type="button" class="px-3 py-1 rounded-lg bg-dark-950 text-white border border-amber-500/40 text-[11px] font-medium flex items-center gap-1.5 shadow-sm">
+                    <i class="fab fa-tiktok text-cyan-400 text-xs"></i>
+                    <span>TikTok</span>
+                </button>
+                <button type="button" class="px-3 py-1 rounded-lg bg-dark-900 text-slate-400 hover:text-white border border-dark-border text-[11px] font-medium flex items-center gap-1.5 transition-colors">
+                    <i class="fab fa-instagram text-rose-400 text-xs"></i>
+                    <span>Instagram</span>
+                </button>
+            </div>
+
+            <!-- 实时生成队列列表 (带金色进度条) -->
+            <div class="space-y-2 text-[11px]">
+                <!-- 任务 1 -->
+                <div class="p-2.5 rounded-xl bg-dark-950/80 border border-dark-border/60 space-y-1.5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-1.5 font-sans font-medium text-slate-200">
+                            <i class="fab fa-tiktok text-cyan-400 text-xs"></i>
+                            <span class="truncate">Moissanite Ring Review Video</span>
+                            <i class="fas fa-chevron-down text-[9px] text-slate-500"></i>
+                        </div>
+                        <span class="text-[10px] font-mono text-amber-400">Generating</span>
+                    </div>
+                    <div class="w-full bg-dark-900 h-1 rounded-full overflow-hidden">
+                        <div class="bg-gradient-to-r from-amber-400 to-amber-500 h-full rounded-full" style="width: 82%"></div>
+                    </div>
+                </div>
+
+                <!-- 任务 2 -->
+                <div class="p-2.5 rounded-xl bg-dark-950/80 border border-dark-border/60 space-y-1.5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-1.5 font-sans font-medium text-slate-200">
+                            <i class="fab fa-instagram text-rose-400 text-xs"></i>
+                            <span class="truncate">Jade Styling Note</span>
+                            <i class="fas fa-chevron-down text-[9px] text-slate-500"></i>
+                        </div>
+                        <span class="text-[10px] font-mono text-amber-400">Generating</span>
+                    </div>
+                    <div class="w-full bg-dark-900 h-1 rounded-full overflow-hidden">
+                        <div class="bg-gradient-to-r from-amber-400 to-amber-500 h-full rounded-full" style="width: 65%"></div>
+                    </div>
+                </div>
+
+                <!-- 任务 3 -->
+                <div class="p-2.5 rounded-xl bg-dark-950/80 border border-dark-border/60 space-y-1.5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-1.5 font-sans font-medium text-slate-200">
+                            <i class="fab fa-tiktok text-cyan-400 text-xs"></i>
+                            <span class="truncate">Jade Styling Note</span>
+                            <i class="fas fa-chevron-down text-[9px] text-slate-500"></i>
+                        </div>
+                        <span class="tag text-[9px] font-mono bg-emerald-950/80 text-accent-emerald border-accent-emerald/40">Ready to Publish</span>
+                    </div>
+                    <div class="w-full bg-dark-900 h-1 rounded-full overflow-hidden">
+                        <div class="bg-gradient-to-r from-emerald-400 to-emerald-500 h-full rounded-full" style="width: 100%"></div>
+                    </div>
+                </div>
+
+                <!-- 任务 4 -->
+                <div class="p-2.5 rounded-xl bg-dark-950/80 border border-dark-border/60 space-y-1.5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-1.5 font-sans font-medium text-slate-200">
+                            <i class="fab fa-tiktok text-cyan-400 text-xs"></i>
+                            <span class="truncate">Jade Styling Note</span>
+                            <i class="fas fa-chevron-down text-[9px] text-slate-500"></i>
+                        </div>
+                        <span class="text-[10px] font-mono text-amber-400">Generating</span>
+                    </div>
+                    <div class="w-full bg-dark-900 h-1 rounded-full overflow-hidden">
+                        <div class="bg-gradient-to-r from-amber-400 to-amber-500 h-full rounded-full" style="width: 45%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 底部：Live generation Preview 实时视频渲染预览 -->
+            <div class="p-2.5 rounded-xl bg-dark-950/90 border border-dark-border space-y-2">
+                <div class="flex items-center justify-between text-[11px]">
+                    <span class="font-medium text-slate-300 flex items-center gap-1.5">
+                        <i class="fas fa-play-circle text-rose-500 text-xs"></i>
+                        <span>Live generation Preview</span>
+                    </span>
+                    <button type="button" onclick="switchTab('funclip')" class="text-accent-gold text-[10px] hover:underline font-mono">Show more &gt;</button>
+                </div>
+                <div class="relative w-full h-20 rounded-lg overflow-hidden border border-amber-500/30 bg-dark-900 group cursor-pointer" onclick="switchTab('funclip')">
+                    <div class="w-full h-full opacity-60">
+                        <svg viewBox="0 0 240 150" class="w-full h-full object-cover select-none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="ringBg" cx="50%" cy="50%" r="75%">
+      <stop offset="0%" stop-color="#2a241e"/>
+      <stop offset="50%" stop-color="#181512"/>
+      <stop offset="100%" stop-color="#0c0d11"/>
+    </radialGradient>
+    <linearGradient id="pedestal" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#d4c5b3"/>
+      <stop offset="40%" stop-color="#ab9985"/>
+      <stop offset="100%" stop-color="#54483a"/>
+    </linearGradient>
+    <linearGradient id="platinum" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#94a3b8"/>
+      <stop offset="35%" stop-color="#ffffff"/>
+      <stop offset="65%" stop-color="#cbd5e1"/>
+      <stop offset="100%" stop-color="#64748b"/>
+    </linearGradient>
+    <linearGradient id="diamondFacet1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#bae6fd"/>
+    </linearGradient>
+    <linearGradient id="diamondFacet2" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f0f9ff"/>
+      <stop offset="100%" stop-color="#7dd3fc"/>
+    </linearGradient>
+    <radialGradient id="sparkleGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9"/>
+      <stop offset="50%" stop-color="#38bdf8" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="ringGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="240" height="150" fill="url(#ringBg)"/>
+
+  <!-- Luxury Velvet/Silk Pedestal Base -->
+  <ellipse cx="120" cy="125" rx="90" ry="22" fill="#000000" opacity="0.65" filter="url(#ringGlow)"/>
+  <ellipse cx="120" cy="120" rx="85" ry="18" fill="url(#pedestal)"/>
+  <ellipse cx="120" cy="118" rx="80" ry="15" fill="#3a3025" opacity="0.4"/>
+
+  <!-- Ring Band (Shank in Perspective) -->
+  <ellipse cx="120" cy="98" rx="42" ry="24" fill="none" stroke="url(#platinum)" stroke-width="6.5"/>
+  <ellipse cx="120" cy="98" rx="42" ry="24" fill="none" stroke="#ffffff" stroke-width="1.5" opacity="0.75"/>
+  <!-- Inner shadow of ring -->
+  <ellipse cx="120" cy="98" rx="38.5" ry="20.5" fill="#14110e" opacity="0.85"/>
+
+  <!-- Solitaire Diamond Crown & Prongs (6 Prongs) -->
+  <g transform="translate(120, 68)">
+    <!-- Back Prongs -->
+    <path d="M-12,-8 L-8,12 L-5,12 L-9,-8 Z" fill="#64748b"/>
+    <path d="M12,-8 L8,12 L5,12 L9,-8 Z" fill="#64748b"/>
+
+    <!-- Brilliant Round Diamond Body -->
+    <!-- Table & Crown facets -->
+    <polygon points="0,-22 14,-14 20,2 12,16 0,22 -12,16 -20,2 -14,-14" fill="url(#diamondFacet1)" opacity="0.95"/>
+    <!-- Internal Facets & Refraction -->
+    <polygon points="0,-22 10,-8 0,0 -10,-8" fill="#ffffff" opacity="0.9"/>
+    <polygon points="14,-14 10,-8 15,2 20,2" fill="url(#diamondFacet2)" opacity="0.85"/>
+    <polygon points="-14,-14 -10,-8 -15,2 -20,2" fill="url(#diamondFacet2)" opacity="0.85"/>
+    <polygon points="0,0 10,-8 15,2 8,12 0,16" fill="#e0f2fe" opacity="0.8"/>
+    <polygon points="0,0 -10,-8 -15,2 -8,12 0,16" fill="#bae6fd" opacity="0.85"/>
+    <polygon points="0,22 8,12 0,16 -8,12" fill="#ffffff" opacity="0.95"/>
+    <!-- Central Table Octagon -->
+    <polygon points="0,-10 7,-4 7,4 0,10 -7,4 -7,-4" fill="#ffffff" opacity="0.98"/>
+
+    <!-- Front Prongs (Platinum) -->
+    <path d="M-16,-6 L-13,6 L-10,6 L-14,-6 Z" fill="url(#platinum)"/>
+    <path d="M16,-6 L13,6 L10,6 L14,-6 Z" fill="url(#platinum)"/>
+    <path d="M-6,14 L-4,22 L-2,22 L-4,14 Z" fill="url(#platinum)"/>
+    <path d="M6,14 L4,22 L2,22 L4,14 Z" fill="url(#platinum)"/>
+
+    <!-- Primary Diamond Sparkle Star Flare -->
+    <circle cx="-5" cy="-7" r="14" fill="url(#sparkleGlow)"/>
+    <polygon points="-5,-19 -4,-9 6,-7 -4,-5 -5,5 -6,-5 -16,-7 -6,-9" fill="#ffffff"/>
+    <polygon points="8,5 9,1 13,0 9,-1 8,-5 7,-1 3,0 7,1" fill="#ffffff" opacity="0.85"/>
+  </g>
+</svg>
+                    </div>
+                    <div class="absolute top-1.5 left-2 px-1.5 py-0.5 rounded bg-rose-600/90 text-white font-mono text-[9px] font-bold flex items-center gap-1 shadow">
+                        <span class="w-1 h-1 rounded-full bg-white animate-ping"></span> LIVE
+                    </div>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="w-8 h-8 rounded-full bg-dark-950/80 border border-amber-500/60 flex items-center justify-center text-accent-gold text-xs shadow-lg group-hover:scale-110 transition-transform">
+                            <i class="fas fa-play ml-0.5"></i>
+                        </div>
+                    </div>
+                    <div class="absolute bottom-1 right-2 text-[9px] font-mono text-slate-300 bg-dark-950/70 px-1 rounded">
+                        4K 60fps · 渲染中
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================= -->
+    <!-- 架构拓扑流图 & 实时事件流 (2.5D 力导向 HUD + 中枢事件总线) -->
+    <!-- ============================================================= -->
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-5">
+        <!-- 业务拓扑架构 (支持 2.5D 全息力导向 HUD 与 传统集群阵列) -->
+        <div class="lg:col-span-3 glass-card p-5 flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-3.5 flex-wrap gap-2">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-network-wired text-accent-emerald text-sm"></i>
+                    <h3 class="font-semibold text-white text-sm">全域微服务拓扑协同链</h3>
+                    <span class="tag tag-accent text-[10px] font-mono">2.5D 全息拓扑 HUD</span>
+                </div>
+                <!-- 视图切换：2.5D 力导向拓扑画布 vs 列表卡片 -->
+                <div class="flex items-center p-0.5 rounded-lg bg-dark-900 border border-dark-border text-[10px]">
+                    <button type="button" id="btn-topo-view-canvas" onclick="switchTopologyView('canvas')" class="px-2.5 py-1 rounded font-mono font-medium bg-emerald-950/80 text-accent-emerald border border-accent-emerald/40 transition-all flex items-center gap-1.5">
+                        <i class="fas fa-circle-nodes text-[9px]"></i> 2.5D 全息拓扑
+                    </button>
+                    <button type="button" id="btn-topo-view-list" onclick="switchTopologyView('list')" class="px-2.5 py-1 rounded font-mono text-slate-400 hover:text-slate-200 transition-all flex items-center gap-1.5">
+                        <i class="fas fa-list text-[9px]"></i> 集群阵列
+                    </button>
+                </div>
+            </div>
+
+            <!-- 1. 2.5D 力导向交互拓扑画布容器 -->
+            <div id="topology-canvas-container" class="relative w-full h-[400px] rounded-xl bg-dark-950/98 border border-dark-border overflow-hidden shadow-2xl">
+                <canvas id="topology-cyber-canvas" class="w-full h-full block cursor-crosshair"></canvas>
+
+                <!-- 拓扑节点详情悬浮 HUD (Hover Tooltip Drawer) -->
+                <div id="topology-node-hud" class="pointer-events-none hidden absolute z-30 p-3 rounded-xl bg-dark-900/95 border border-dark-border text-[11px] text-slate-300 shadow-2xl backdrop-blur-xl space-y-1.5 max-w-[240px]">
+                    <div class="flex items-center justify-between gap-2 border-b border-dark-border/60 pb-1.5">
+                        <span id="topo-hud-name" class="font-bold text-white flex items-center gap-1.5"></span>
+                        <span id="topo-hud-port" class="tag font-mono text-[9px]"></span>
+                    </div>
+                    <div id="topo-hud-desc" class="text-slate-400 text-[10px] leading-relaxed"></div>
+                    <div class="grid grid-cols-2 gap-1.5 pt-1 text-[10px] font-mono">
+                        <div class="p-1 rounded bg-dark-950 border border-dark-border/50">
+                            <div class="text-slate-500">协议 / 角色</div>
+                            <div id="topo-hud-type" class="text-accent-cyan truncate mt-0.5"></div>
+                        </div>
+                        <div class="p-1 rounded bg-dark-950 border border-dark-border/50">
+                            <div class="text-slate-500">实时延迟</div>
+                            <div id="topo-hud-latency" class="text-accent-emerald mt-0.5">42ms</div>
+                        </div>
+                    </div>
+                    <div class="pt-1 flex items-center justify-between text-[9px] font-mono text-slate-500">
+                        <span>点击节点一键直达对应工作台</span>
+                        <i class="fas fa-arrow-up-right-from-square text-accent-emerald"></i>
+                    </div>
+                </div>
+
+                <!-- 画布左下角拓扑状态指标 -->
+                <div class="absolute bottom-2 left-3 flex items-center gap-3 text-[10px] font-mono text-slate-400 pointer-events-none bg-dark-900/80 px-2.5 py-1 rounded-lg border border-dark-border/60 backdrop-blur-sm">
+                    <span class="flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-pulse"></span>
+                        <span>中枢网关调度 :8888</span>
+                    </span>
+                    <span class="text-slate-600">|</span>
+                    <span class="text-accent-cyan">8 节点环状协同</span>
+                    <span class="text-slate-600">|</span>
+                    <span id="topo-fps-badge" class="text-slate-400">60 FPS 流量流光</span>
+                </div>
+
+                <!-- 画布右上角控制按钮 -->
+                <div class="absolute top-2 right-2 flex items-center gap-1 text-[10px]">
+                    <button type="button" onclick="resetTopologyLayout()" class="p-1.5 rounded-lg bg-dark-900/80 border border-dark-border text-slate-400 hover:text-white hover:border-accent-emerald/40 transition-colors" title="重置拓扑布局">
+                        <i class="fas fa-arrows-rotate text-[10px]"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2. 原有集群节点列表容器 (保持 100% 审计与起停管控兼容) -->
+            <div id="topology-list-container" class="hidden divide-y divide-dark-border border-t border-dark-border max-h-[400px] overflow-y-auto">
+                
+                <div class="flex items-center gap-3 py-3 group hover:bg-white/[0.02] -mx-2 px-2 rounded-lg transition-colors">
+                    <!-- 状态点：绿=在线 / 灰=离线 -->
+                    
+                    <span class="relative flex h-2 w-2 flex-shrink-0">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-accent-emerald"></span>
+                    </span>
+                    
+
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[13px] text-white font-medium truncate">企业 AI 统一网关</span>
+                            <span class="tag flex-shrink-0">Infra</span>
+                        </div>
+                        <div class="text-[11px] text-slate-400 truncate mt-0.5">流量总线与大模型调度 · 全域流量接管、虚拟 Key 路由、毫秒级主备热切与 Token 计量</div>
+                    </div>
+
+                    <span class="text-[11px] font-mono text-accent-cyan/90 bg-dark-900/80 px-2 py-0.5 rounded border border-dark-border flex-shrink-0 hidden sm:block">:8000</span>
+
+                    <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，没配置就如实禁用，不假装能启动。点击有二次确认。 -->
+                    <div class="flex-shrink-0 w-[68px] text-right">
+                        
+                        <span class="text-[11px] text-accent-emerald font-medium block">运行中</span>
+                        <button onclick="serviceControl('ai-gateway', 'stop', this)"
+                                title="终止监听 :8000 的进程（真实操作，事件总线将推送下线事件）"
+                                class="mt-1 w-full py-1 rounded-md text-[11px] border border-dark-border text-slate-400 hover:border-accent-rose/50 hover:text-accent-rose hover:bg-accent-rose/10 transition-colors">
+                            停止
+                        </button>
+                        
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-3 py-3 group hover:bg-white/[0.02] -mx-2 px-2 rounded-lg transition-colors">
+                    <!-- 状态点：绿=在线 / 灰=离线 -->
+                    
+                    <span class="relative flex h-2 w-2 flex-shrink-0">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-accent-emerald"></span>
+                    </span>
+                    
+
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[13px] text-white font-medium truncate">琼华珠宝 AI 智能导购</span>
+                            <span class="tag flex-shrink-0">Business</span>
+                        </div>
+                        <div class="text-[11px] text-slate-400 truncate mt-0.5">核心业务 Agent · 混合检索 + 工具调用 + 报错自纠错链路的多轮导购智能体</div>
+                    </div>
+
+                    <span class="text-[11px] font-mono text-accent-cyan/90 bg-dark-900/80 px-2 py-0.5 rounded border border-dark-border flex-shrink-0 hidden sm:block">:8001</span>
+
+                    <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，没配置就如实禁用，不假装能启动。点击有二次确认。 -->
+                    <div class="flex-shrink-0 w-[68px] text-right">
+                        
+                        <span class="text-[11px] text-accent-emerald font-medium block">运行中</span>
+                        <button onclick="serviceControl('ecom-ai-guide', 'stop', this)"
+                                title="终止监听 :8001 的进程（真实操作，事件总线将推送下线事件）"
+                                class="mt-1 w-full py-1 rounded-md text-[11px] border border-dark-border text-slate-400 hover:border-accent-rose/50 hover:text-accent-rose hover:bg-accent-rose/10 transition-colors">
+                            停止
+                        </button>
+                        
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-3 py-3 group hover:bg-white/[0.02] -mx-2 px-2 rounded-lg transition-colors">
+                    <!-- 状态点：绿=在线 / 灰=离线 -->
+                    
+                    <span class="relative flex h-2 w-2 flex-shrink-0">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-accent-emerald"></span>
+                    </span>
+                    
+
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[13px] text-white font-medium truncate">多平台爆款素材工作台</span>
+                            <span class="tag flex-shrink-0">Business</span>
+                        </div>
+                        <div class="text-[11px] text-slate-400 truncate mt-0.5">内容营销 Agent · Coze 工作流工程化封装，小红书/抖音营销图文生成与违禁词合规审查</div>
+                    </div>
+
+                    <span class="text-[11px] font-mono text-accent-cyan/90 bg-dark-900/80 px-2 py-0.5 rounded border border-dark-border flex-shrink-0 hidden sm:block">:8002</span>
+
+                    <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，没配置就如实禁用，不假装能启动。点击有二次确认。 -->
+                    <div class="flex-shrink-0 w-[68px] text-right">
+                        
+                        <span class="text-[11px] text-accent-emerald font-medium block">运行中</span>
+                        <button onclick="serviceControl('coze-material-studio', 'stop', this)"
+                                title="终止监听 :8002 的进程（真实操作，事件总线将推送下线事件）"
+                                class="mt-1 w-full py-1 rounded-md text-[11px] border border-dark-border text-slate-400 hover:border-accent-rose/50 hover:text-accent-rose hover:bg-accent-rose/10 transition-colors">
+                            停止
+                        </button>
+                        
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-3 py-3 group hover:bg-white/[0.02] -mx-2 px-2 rounded-lg transition-colors">
+                    <!-- 状态点：绿=在线 / 灰=离线 -->
+                    
+                    <span class="relative flex h-2 w-2 flex-shrink-0">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-accent-emerald"></span>
+                    </span>
+                    
+
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[13px] text-white font-medium truncate">AI 数据分析专家</span>
+                            <span class="tag flex-shrink-0">Data</span>
+                        </div>
+                        <div class="text-[11px] text-slate-400 truncate mt-0.5">决策分析 Agent · DuckDB + 本地 Ollama 驱动，自然语言 Text-to-SQL 与交互式动态图表看板</div>
+                    </div>
+
+                    <span class="text-[11px] font-mono text-accent-cyan/90 bg-dark-900/80 px-2 py-0.5 rounded border border-dark-border flex-shrink-0 hidden sm:block">:8510</span>
+
+                    <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，没配置就如实禁用，不假装能启动。点击有二次确认。 -->
+                    <div class="flex-shrink-0 w-[68px] text-right">
+                        
+                        <span class="text-[11px] text-accent-emerald font-medium block">运行中</span>
+                        <button onclick="serviceControl('ai-data-analysis-assistant', 'stop', this)"
+                                title="终止监听 :8510 的进程（真实操作，事件总线将推送下线事件）"
+                                class="mt-1 w-full py-1 rounded-md text-[11px] border border-dark-border text-slate-400 hover:border-accent-rose/50 hover:text-accent-rose hover:bg-accent-rose/10 transition-colors">
+                            停止
+                        </button>
+                        
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-3 py-3 group hover:bg-white/[0.02] -mx-2 px-2 rounded-lg transition-colors">
+                    <!-- 状态点：绿=在线 / 灰=离线 -->
+                    
+                    <span class="relative flex h-2 w-2 flex-shrink-0">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-accent-emerald"></span>
+                    </span>
+                    
+
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[13px] text-white font-medium truncate">企业级智能知识库 (RAG)</span>
+                            <span class="tag flex-shrink-0">Infra</span>
+                        </div>
+                        <div class="text-[11px] text-slate-400 truncate mt-0.5">知识底座 · 基于 Streamlit + 本地向量检索的高精度行业知识库，支持 PDF/Word 知识检索问答</div>
+                    </div>
+
+                    <span class="text-[11px] font-mono text-accent-cyan/90 bg-dark-900/80 px-2 py-0.5 rounded border border-dark-border flex-shrink-0 hidden sm:block">:8501</span>
+
+                    <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，没配置就如实禁用，不假装能启动。点击有二次确认。 -->
+                    <div class="flex-shrink-0 w-[68px] text-right">
+                        
+                        <span class="text-[11px] text-accent-emerald font-medium block">运行中</span>
+                        <button onclick="serviceControl('ai-knowledge-assistant', 'stop', this)"
+                                title="终止监听 :8501 的进程（真实操作，事件总线将推送下线事件）"
+                                class="mt-1 w-full py-1 rounded-md text-[11px] border border-dark-border text-slate-400 hover:border-accent-rose/50 hover:text-accent-rose hover:bg-accent-rose/10 transition-colors">
+                            停止
+                        </button>
+                        
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-3 py-3 group hover:bg-white/[0.02] -mx-2 px-2 rounded-lg transition-colors">
+                    <!-- 状态点：绿=在线 / 灰=离线 -->
+                    
+                    <span class="relative flex h-2 w-2 flex-shrink-0">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-accent-emerald"></span>
+                    </span>
+                    
+
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[13px] text-white font-medium truncate">自动化情报抓取平台</span>
+                            <span class="tag flex-shrink-0">Data</span>
+                        </div>
+                        <div class="text-[11px] text-slate-400 truncate mt-0.5">数据管道 · 独立轻量化情报抓取工作台，支持网页结构化采集、价格规则抽取与数据导出</div>
+                    </div>
+
+                    <span class="text-[11px] font-mono text-accent-cyan/90 bg-dark-900/80 px-2 py-0.5 rounded border border-dark-border flex-shrink-0 hidden sm:block">:8765</span>
+
+                    <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，没配置就如实禁用，不假装能启动。点击有二次确认。 -->
+                    <div class="flex-shrink-0 w-[68px] text-right">
+                        
+                        <span class="text-[11px] text-accent-emerald font-medium block">运行中</span>
+                        <button onclick="serviceControl('data-automation-workbench', 'stop', this)"
+                                title="终止监听 :8765 的进程（真实操作，事件总线将推送下线事件）"
+                                class="mt-1 w-full py-1 rounded-md text-[11px] border border-dark-border text-slate-400 hover:border-accent-rose/50 hover:text-accent-rose hover:bg-accent-rose/10 transition-colors">
+                            停止
+                        </button>
+                        
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-3 py-3 group hover:bg-white/[0.02] -mx-2 px-2 rounded-lg transition-colors">
+                    <!-- 状态点：绿=在线 / 灰=离线 -->
+                    
+                    <span class="relative flex h-2 w-2 flex-shrink-0">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-accent-emerald"></span>
+                    </span>
+                    
+
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[13px] text-white font-medium truncate">多模态音视频智能体 (FunClip)</span>
+                            <span class="tag flex-shrink-0">Innovation</span>
+                        </div>
+                        <div class="text-[11px] text-slate-400 truncate mt-0.5">交互 Agent · FunClip 音视频自动化切片与字幕合成 · 上游源码已收编 labs/funclip-studio</div>
+                    </div>
+
+                    <span class="text-[11px] font-mono text-accent-cyan/90 bg-dark-900/80 px-2 py-0.5 rounded border border-dark-border flex-shrink-0 hidden sm:block">:7860</span>
+
+                    <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，没配置就如实禁用，不假装能启动。点击有二次确认。 -->
+                    <div class="flex-shrink-0 w-[68px] text-right">
+                        
+                        <span class="text-[11px] text-accent-emerald font-medium block">运行中</span>
+                        <button onclick="serviceControl('ark_aigc_demo', 'stop', this)"
+                                title="终止监听 :7860 的进程（真实操作，事件总线将推送下线事件）"
+                                class="mt-1 w-full py-1 rounded-md text-[11px] border border-dark-border text-slate-400 hover:border-accent-rose/50 hover:text-accent-rose hover:bg-accent-rose/10 transition-colors">
+                            停止
+                        </button>
+                        
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-3 py-3 group hover:bg-white/[0.02] -mx-2 px-2 rounded-lg transition-colors">
+                    <!-- 状态点：绿=在线 / 灰=离线 -->
+                    
+                    <span class="relative flex h-2 w-2 flex-shrink-0">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-accent-emerald"></span>
+                    </span>
+                    
+
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[13px] text-white font-medium truncate">内容工厂 (Labs)</span>
+                            <span class="tag flex-shrink-0">Innovation</span>
+                        </div>
+                        <div class="text-[11px] text-slate-400 truncate mt-0.5">内容营销 Agent · LangGraph 1.0 多轮状态机营销流水线——选题→成文→配图，HITL 人工审核中断恢复</div>
+                    </div>
+
+                    <span class="text-[11px] font-mono text-accent-cyan/90 bg-dark-900/80 px-2 py-0.5 rounded border border-dark-border flex-shrink-0 hidden sm:block">:8020</span>
+
+                    <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，没配置就如实禁用，不假装能启动。点击有二次确认。 -->
+                    <div class="flex-shrink-0 w-[68px] text-right">
+                        
+                        <span class="text-[11px] text-accent-emerald font-medium block">运行中</span>
+                        <button onclick="serviceControl('graph-xiaohongshu', 'stop', this)"
+                                title="终止监听 :8020 的进程（真实操作，事件总线将推送下线事件）"
+                                class="mt-1 w-full py-1 rounded-md text-[11px] border border-dark-border text-slate-400 hover:border-accent-rose/50 hover:text-accent-rose hover:bg-accent-rose/10 transition-colors">
+                            停止
+                        </button>
+                        
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+
+        <!-- 实时调度事件流水 (Live Log Ticker) -->
+        <div class="lg:col-span-2 glass-card p-5 flex flex-col">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-terminal text-accent-emerald text-sm"></i>
+                    <h3 class="font-semibold text-white text-sm">中枢事件总线</h3>
+                </div>
+                <span id="event-bus-mode" class="text-[11px] font-mono text-slate-400 flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-pulse"></span>连接中
+                </span>
+            </div>
+            <div id="event-log-container" class="flex-1 rounded-lg p-3 font-mono text-[11px] leading-relaxed overflow-y-auto space-y-1.5 h-[380px]">
+                <div class="text-slate-500">正在接入事件总线…</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================= -->
+    <!-- Token FinOps 算力经济学与商业 ROI 智能大盘 -->
+    <!-- ============================================================= -->
+    <div class="glass-card p-5 space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-dark-border flex-wrap gap-2">
+            <div class="flex items-center gap-2">
+                <i class="fas fa-coins text-accent-gold text-sm"></i>
+                <h3 class="font-semibold text-white text-sm">企业级大模型算力经济学 (Model FinOps &amp; ROI Engine)</h3>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="tag tag-accent font-mono text-[10px]">KV-Cache 动态降本: 92.4%</span>
+                <span class="tag font-mono text-[10px]">综合 ROI: 47.6x</span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+            <!-- 左侧：多模型成本与分流矩阵 + ROI 对比 -->
+            <div class="lg:col-span-7 space-y-3.5">
+                <!-- 成本分流 4 卡网格 -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
+                    <div class="p-2.5 rounded-xl bg-dark-900 border border-dark-border">
+                        <div class="text-slate-500 font-mono text-[10px]">Prompt Token</div>
+                        <div class="text-[13px] font-bold text-slate-100 mt-0.5 font-mono">1.14 M <span class="text-[10px] text-slate-500 font-normal">77%</span></div>
+                    </div>
+                    <div class="p-2.5 rounded-xl bg-dark-900 border border-dark-border">
+                        <div class="text-slate-500 font-mono text-[10px]">Completion Token</div>
+                        <div class="text-[13px] font-bold text-accent-cyan mt-0.5 font-mono">337 K <span class="text-[10px] text-slate-500 font-normal">23%</span></div>
+                    </div>
+                    <div class="p-2.5 rounded-xl bg-dark-900 border border-dark-border">
+                        <div class="text-slate-500 font-mono text-[10px]">KV-Cache 节省</div>
+                        <div class="text-[13px] font-bold text-accent-emerald mt-0.5 font-mono">¥ 342.60</div>
+                    </div>
+                    <div class="p-2.5 rounded-xl bg-dark-900 border border-dark-border">
+                        <div class="text-slate-500 font-mono text-[10px]">当日实际支出</div>
+                        <div class="text-[13px] font-bold text-accent-gold mt-0.5 font-mono">¥ 38.60</div>
+                    </div>
+                </div>
+
+                <!-- 主流模型实时单价与调度份额表 -->
+                <div class="p-3 rounded-xl bg-dark-900/60 border border-dark-border space-y-2 text-[11px]">
+                    <div class="flex items-center justify-between text-slate-400 font-medium">
+                        <span class="flex items-center gap-1.5"><i class="fas fa-layer-group text-accent-cyan"></i> 主流模型单价核算与调用分流份额</span>
+                        <span class="text-[10px] font-mono text-slate-500">双币种实时折算</span>
+                    </div>
+                    <div class="space-y-1.5 font-mono text-[10px]">
+                        <div class="p-2 rounded-lg bg-dark-950/80 border border-dark-border/60 flex items-center justify-between">
                             <div class="flex items-center gap-2">
-                                <i class="fas fa-network-wired text-accent-emerald text-sm"></i>
-                                <h3 class="font-semibold text-white text-sm">全域微服务拓扑协同链</h3>
-                                <span class="tag tag-accent text-[10px] font-mono">2.5D 全息拓扑 HUD</span>
+                                <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald"></span>
+                                <span class="text-slate-200 font-semibold font-sans">DeepSeek-Chat</span>
+                                <span class="tag text-[9px]">主力内容矩阵</span>
                             </div>
-                            <!-- 视图切换：2.5D 力导向拓扑画布 vs 列表卡片 -->
-                            <div class="flex items-center p-0.5 rounded-lg bg-dark-900 border border-dark-border text-[10px]">
-                                <button type="button" id="btn-topo-view-canvas" onclick="switchTopologyView('canvas')" class="px-2.5 py-1 rounded font-mono font-medium bg-emerald-950/80 text-accent-emerald border border-accent-emerald/40 transition-all flex items-center gap-1.5">
-                                    <i class="fas fa-circle-nodes text-[9px]"></i> 2.5D 全息拓扑
-                                </button>
-                                <button type="button" id="btn-topo-view-list" onclick="switchTopologyView('list')" class="px-2.5 py-1 rounded font-mono text-slate-400 hover:text-slate-200 transition-all flex items-center gap-1.5">
-                                    <i class="fas fa-list text-[9px]"></i> 集群阵列
-                                </button>
+                            <div class="flex items-center gap-3">
+                                <span class="text-slate-400">¥0.002 / 1k tokens</span>
+                                <span class="text-accent-emerald font-bold">58% 份额</span>
+                                <span class="text-slate-300">¥22.38</span>
                             </div>
                         </div>
-
-                        <!-- 1. 2.5D 力导向交互拓扑画布容器 -->
-                        <div id="topology-canvas-container" class="relative w-full h-[400px] rounded-xl bg-dark-950/98 border border-dark-border overflow-hidden shadow-2xl">
-                            <canvas id="topology-cyber-canvas" class="w-full h-full block cursor-crosshair"></canvas>
-
-                            <!-- 拓扑节点详情悬浮 HUD (Hover Tooltip Drawer) -->
-                            <div id="topology-node-hud" class="pointer-events-none hidden absolute z-30 p-3 rounded-xl bg-dark-900/95 border border-dark-border text-[11px] text-slate-300 shadow-2xl backdrop-blur-xl space-y-1.5 max-w-[240px]">
-                                <div class="flex items-center justify-between gap-2 border-b border-dark-border/60 pb-1.5">
-                                    <span id="topo-hud-name" class="font-bold text-white flex items-center gap-1.5"></span>
-                                    <span id="topo-hud-port" class="tag font-mono text-[9px]"></span>
-                                </div>
-                                <div id="topo-hud-desc" class="text-slate-400 text-[10px] leading-relaxed"></div>
-                                <div class="grid grid-cols-2 gap-1.5 pt-1 text-[10px] font-mono">
-                                    <div class="p-1 rounded bg-dark-950 border border-dark-border/50">
-                                        <div class="text-slate-500">协议 / 角色</div>
-                                        <div id="topo-hud-type" class="text-accent-cyan truncate mt-0.5"></div>
-                                    </div>
-                                    <div class="p-1 rounded bg-dark-950 border border-dark-border/50">
-                                        <div class="text-slate-500">实时延迟</div>
-                                        <div id="topo-hud-latency" class="text-accent-emerald mt-0.5">42ms</div>
-                                    </div>
-                                </div>
-                                <div class="pt-1 flex items-center justify-between text-[9px] font-mono text-slate-500">
-                                    <span>点击节点一键直达对应工作台</span>
-                                    <i class="fas fa-arrow-up-right-from-square text-accent-emerald"></i>
-                                </div>
-                            </div>
-
-                            <!-- 画布左下角拓扑状态指标 -->
-                            <div class="absolute bottom-2 left-3 flex items-center gap-3 text-[10px] font-mono text-slate-400 pointer-events-none bg-dark-900/80 px-2.5 py-1 rounded-lg border border-dark-border/60 backdrop-blur-sm">
-                                <span class="flex items-center gap-1.5">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-pulse"></span>
-                                    <span>中枢网关调度 :8888</span>
-                                </span>
-                                <span class="text-slate-600">|</span>
-                                <span class="text-accent-cyan">8 节点环状协同</span>
-                                <span class="text-slate-600">|</span>
-                                <span id="topo-fps-badge" class="text-slate-400">60 FPS 流量流光</span>
-                            </div>
-
-                            <!-- 画布右上角控制按钮 -->
-                            <div class="absolute top-2 right-2 flex items-center gap-1 text-[10px]">
-                                <button type="button" onclick="resetTopologyLayout()" class="p-1.5 rounded-lg bg-dark-900/80 border border-dark-border text-slate-400 hover:text-white hover:border-accent-emerald/40 transition-colors" title="重置拓扑布局">
-                                    <i class="fas fa-arrows-rotate text-[10px]"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- 2. 原有集群节点列表容器 (保持 100% 审计与起停管控兼容) -->
-                        <div id="topology-list-container" class="hidden divide-y divide-dark-border border-t border-dark-border max-h-[400px] overflow-y-auto">
-                            
-                            <div class="flex items-center gap-3 py-3 group hover:bg-white/[0.02] -mx-2 px-2 rounded-lg transition-colors">
-                                <!-- 状态点：绿=在线 / 灰=离线 -->
-                                
-                                <span class="relative flex h-2 w-2 flex-shrink-0">
-                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
-                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-accent-emerald"></span>
-                                </span>
-                                
-
-                                <div class="min-w-0 flex-1">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-[13px] text-white font-medium truncate">企业 AI 统一网关</span>
-                                        <span class="tag flex-shrink-0">Infra</span>
-                                    </div>
-                                    <div class="text-[11px] text-slate-400 truncate mt-0.5">流量总线与大模型调度 · 全域流量接管、虚拟 Key 路由、毫秒级主备热切与 Token 计量</div>
-                                </div>
-
-                                <span class="text-[11px] font-mono text-accent-cyan/90 bg-dark-900/80 px-2 py-0.5 rounded border border-dark-border flex-shrink-0 hidden sm:block">:8000</span>
-
-                                <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，没配置就如实禁用，不假装能启动。点击有二次确认。 -->
-                                <div class="flex-shrink-0 w-[68px] text-right">
-                                    
-                                    <span class="text-[11px] text-accent-emerald font-medium block">运行中</span>
-                                    <button onclick="serviceControl('ai-gateway', 'stop', this)"
-                                            title="终止监听 :8000 的进程（真实操作，事件总线将推送下线事件）"
-                                            class="mt-1 w-full py-1 rounded-md text-[11px] border border-dark-border text-slate-400 hover:border-accent-rose/50 hover:text-accent-rose hover:bg-accent-rose/10 transition-colors">
-                                        停止
-                                    </button>
-                                    
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-center gap-3 py-3 group hover:bg-white/[0.02] -mx-2 px-2 rounded-lg transition-colors">
-                                <!-- 状态点：绿=在线 / 灰=离线 -->
-                                
-                                <span class="relative flex h-2 w-2 flex-shrink-0">
-                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
-                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-accent-emerald"></span>
-                                </span>
-                                
-
-                                <div class="min-w-0 flex-1">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-[13px] text-white font-medium truncate">琼华珠宝 AI 智能导购</span>
-                                        <span class="tag flex-shrink-0">Business</span>
-                                    </div>
-                                    <div class="text-[11px] text-slate-400 truncate mt-0.5">核心业务 Agent · 混合检索 + 工具调用 + 报错自纠错链路的多轮导购智能体</div>
-                                </div>
-
-                                <span class="text-[11px] font-mono text-accent-cyan/90 bg-dark-900/80 px-2 py-0.5 rounded border border-dark-border flex-shrink-0 hidden sm:block">:8001</span>
-
-                                <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，没配置就如实禁用，不假装能启动。点击有二次确认。 -->
-                                <div class="flex-shrink-0 w-[68px] text-right">
-                                    
-                                    <span class="text-[11px] text-accent-emerald font-medium block">运行中</span>
-                                    <button onclick="serviceControl('ecom-ai-guide', 'stop', this)"
-                                            title="终止监听 :8001 的进程（真实操作，事件总线将推送下线事件）"
-                                            class="mt-1 w-full py-1 rounded-md text-[11px] border border-dark-border text-slate-400 hover:border-accent-rose/50 hover:text-accent-rose hover:bg-accent-rose/10 transition-colors">
-                                        停止
-                                    </button>
-                                    
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-center gap-3 py-3 group hover:bg-white/[0.02] -mx-2 px-2 rounded-lg transition-colors">
-                                <!-- 状态点：绿=在线 / 灰=离线 -->
-                                
-                                <span class="relative flex h-2 w-2 flex-shrink-0">
-                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
-                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-accent-emerald"></span>
-                                </span>
-                                
-
-                                <div class="min-w-0 flex-1">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-[13px] text-white font-medium truncate">多平台爆款素材工作台</span>
-                                        <span class="tag flex-shrink-0">Business</span>
-                                    </div>
-                                    <div class="text-[11px] text-slate-400 truncate mt-0.5">内容营销 Agent · Coze 工作流工程化封装，小红书/抖音营销图文生成与违禁词合规审查</div>
-                                </div>
-
-                                <span class="text-[11px] font-mono text-accent-cyan/90 bg-dark-900/80 px-2 py-0.5 rounded border border-dark-border flex-shrink-0 hidden sm:block">:8002</span>
-
-                                <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，没配置就如实禁用，不假装能启动。点击有二次确认。 -->
-                                <div class="flex-shrink-0 w-[68px] text-right">
-                                    
-                                    <span class="text-[11px] text-accent-emerald font-medium block">运行中</span>
-                                    <button onclick="serviceControl('coze-material-studio', 'stop', this)"
-                                            title="终止监听 :8002 的进程（真实操作，事件总线将推送下线事件）"
-                                            class="mt-1 w-full py-1 rounded-md text-[11px] border border-dark-border text-slate-400 hover:border-accent-rose/50 hover:text-accent-rose hover:bg-accent-rose/10 transition-colors">
-                                        停止
-                                    </button>
-                                    
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-center gap-3 py-3 group hover:bg-white/[0.02] -mx-2 px-2 rounded-lg transition-colors">
-                                <!-- 状态点：绿=在线 / 灰=离线 -->
-                                
-                                <span class="relative flex h-2 w-2 flex-shrink-0">
-                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
-                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-accent-emerald"></span>
-                                </span>
-                                
-
-                                <div class="min-w-0 flex-1">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-[13px] text-white font-medium truncate">AI 数据分析专家</span>
-                                        <span class="tag flex-shrink-0">Data</span>
-                                    </div>
-                                    <div class="text-[11px] text-slate-400 truncate mt-0.5">决策分析 Agent · DuckDB + 本地 Ollama 驱动，自然语言 Text-to-SQL 与交互式动态图表看板</div>
-                                </div>
-
-                                <span class="text-[11px] font-mono text-accent-cyan/90 bg-dark-900/80 px-2 py-0.5 rounded border border-dark-border flex-shrink-0 hidden sm:block">:8510</span>
-
-                                <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，没配置就如实禁用，不假装能启动。点击有二次确认。 -->
-                                <div class="flex-shrink-0 w-[68px] text-right">
-                                    
-                                    <span class="text-[11px] text-accent-emerald font-medium block">运行中</span>
-                                    <button onclick="serviceControl('ai-data-analysis-assistant', 'stop', this)"
-                                            title="终止监听 :8510 的进程（真实操作，事件总线将推送下线事件）"
-                                            class="mt-1 w-full py-1 rounded-md text-[11px] border border-dark-border text-slate-400 hover:border-accent-rose/50 hover:text-accent-rose hover:bg-accent-rose/10 transition-colors">
-                                        停止
-                                    </button>
-                                    
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-center gap-3 py-3 group hover:bg-white/[0.02] -mx-2 px-2 rounded-lg transition-colors">
-                                <!-- 状态点：绿=在线 / 灰=离线 -->
-                                
-                                <span class="relative flex h-2 w-2 flex-shrink-0">
-                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
-                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-accent-emerald"></span>
-                                </span>
-                                
-
-                                <div class="min-w-0 flex-1">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-[13px] text-white font-medium truncate">企业级智能知识库 (RAG)</span>
-                                        <span class="tag flex-shrink-0">Infra</span>
-                                    </div>
-                                    <div class="text-[11px] text-slate-400 truncate mt-0.5">知识底座 · 基于 Streamlit + 本地向量检索的高精度行业知识库，支持 PDF/Word 知识检索问答</div>
-                                </div>
-
-                                <span class="text-[11px] font-mono text-accent-cyan/90 bg-dark-900/80 px-2 py-0.5 rounded border border-dark-border flex-shrink-0 hidden sm:block">:8501</span>
-
-                                <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，没配置就如实禁用，不假装能启动。点击有二次确认。 -->
-                                <div class="flex-shrink-0 w-[68px] text-right">
-                                    
-                                    <span class="text-[11px] text-accent-emerald font-medium block">运行中</span>
-                                    <button onclick="serviceControl('ai-knowledge-assistant', 'stop', this)"
-                                            title="终止监听 :8501 的进程（真实操作，事件总线将推送下线事件）"
-                                            class="mt-1 w-full py-1 rounded-md text-[11px] border border-dark-border text-slate-400 hover:border-accent-rose/50 hover:text-accent-rose hover:bg-accent-rose/10 transition-colors">
-                                        停止
-                                    </button>
-                                    
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-center gap-3 py-3 group hover:bg-white/[0.02] -mx-2 px-2 rounded-lg transition-colors">
-                                <!-- 状态点：绿=在线 / 灰=离线 -->
-                                
-                                <span class="relative flex h-2 w-2 flex-shrink-0">
-                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
-                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-accent-emerald"></span>
-                                </span>
-                                
-
-                                <div class="min-w-0 flex-1">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-[13px] text-white font-medium truncate">自动化情报抓取平台</span>
-                                        <span class="tag flex-shrink-0">Data</span>
-                                    </div>
-                                    <div class="text-[11px] text-slate-400 truncate mt-0.5">数据管道 · 独立轻量化情报抓取工作台，支持网页结构化采集、价格规则抽取与数据导出</div>
-                                </div>
-
-                                <span class="text-[11px] font-mono text-accent-cyan/90 bg-dark-900/80 px-2 py-0.5 rounded border border-dark-border flex-shrink-0 hidden sm:block">:8765</span>
-
-                                <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，没配置就如实禁用，不假装能启动。点击有二次确认。 -->
-                                <div class="flex-shrink-0 w-[68px] text-right">
-                                    
-                                    <span class="text-[11px] text-accent-emerald font-medium block">运行中</span>
-                                    <button onclick="serviceControl('data-automation-workbench', 'stop', this)"
-                                            title="终止监听 :8765 的进程（真实操作，事件总线将推送下线事件）"
-                                            class="mt-1 w-full py-1 rounded-md text-[11px] border border-dark-border text-slate-400 hover:border-accent-rose/50 hover:text-accent-rose hover:bg-accent-rose/10 transition-colors">
-                                        停止
-                                    </button>
-                                    
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-center gap-3 py-3 group hover:bg-white/[0.02] -mx-2 px-2 rounded-lg transition-colors">
-                                <!-- 状态点：绿=在线 / 灰=离线 -->
-                                
-                                <span class="relative flex h-2 w-2 flex-shrink-0">
-                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
-                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-accent-emerald"></span>
-                                </span>
-                                
-
-                                <div class="min-w-0 flex-1">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-[13px] text-white font-medium truncate">多模态音视频智能体 (FunClip)</span>
-                                        <span class="tag flex-shrink-0">Innovation</span>
-                                    </div>
-                                    <div class="text-[11px] text-slate-400 truncate mt-0.5">交互 Agent · FunClip 音视频自动化切片与字幕合成 · 上游源码已收编 labs/funclip-studio</div>
-                                </div>
-
-                                <span class="text-[11px] font-mono text-accent-cyan/90 bg-dark-900/80 px-2 py-0.5 rounded border border-dark-border flex-shrink-0 hidden sm:block">:7860</span>
-
-                                <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，没配置就如实禁用，不假装能启动。点击有二次确认。 -->
-                                <div class="flex-shrink-0 w-[68px] text-right">
-                                    
-                                    <span class="text-[11px] text-accent-emerald font-medium block">运行中</span>
-                                    <button onclick="serviceControl('ark_aigc_demo', 'stop', this)"
-                                            title="终止监听 :7860 的进程（真实操作，事件总线将推送下线事件）"
-                                            class="mt-1 w-full py-1 rounded-md text-[11px] border border-dark-border text-slate-400 hover:border-accent-rose/50 hover:text-accent-rose hover:bg-accent-rose/10 transition-colors">
-                                        停止
-                                    </button>
-                                    
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-center gap-3 py-3 group hover:bg-white/[0.02] -mx-2 px-2 rounded-lg transition-colors">
-                                <!-- 状态点：绿=在线 / 灰=离线 -->
-                                
-                                <span class="relative flex h-2 w-2 flex-shrink-0">
-                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
-                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-accent-emerald"></span>
-                                </span>
-                                
-
-                                <div class="min-w-0 flex-1">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-[13px] text-white font-medium truncate">内容工厂 (Labs)</span>
-                                        <span class="tag flex-shrink-0">Innovation</span>
-                                    </div>
-                                    <div class="text-[11px] text-slate-400 truncate mt-0.5">内容营销 Agent · LangGraph 1.0 多轮状态机营销流水线——选题→成文→配图，HITL 人工审核中断恢复</div>
-                                </div>
-
-                                <span class="text-[11px] font-mono text-accent-cyan/90 bg-dark-900/80 px-2 py-0.5 rounded border border-dark-border flex-shrink-0 hidden sm:block">:8020</span>
-
-                                <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，没配置就如实禁用，不假装能启动。点击有二次确认。 -->
-                                <div class="flex-shrink-0 w-[68px] text-right">
-                                    
-                                    <span class="text-[11px] text-accent-emerald font-medium block">运行中</span>
-                                    <button onclick="serviceControl('graph-xiaohongshu', 'stop', this)"
-                                            title="终止监听 :8020 的进程（真实操作，事件总线将推送下线事件）"
-                                            class="mt-1 w-full py-1 rounded-md text-[11px] border border-dark-border text-slate-400 hover:border-accent-rose/50 hover:text-accent-rose hover:bg-accent-rose/10 transition-colors">
-                                        停止
-                                    </button>
-                                    
-                                </div>
-                            </div>
-                            
-                        </div>
-                    </div>
-
-                    <!-- 实时调度事件流水 (Live Log Ticker) -->
-                    <div class="lg:col-span-2 glass-card p-5 flex flex-col">
-                        <div class="flex items-center justify-between mb-3">
+                        <div class="p-2 rounded-lg bg-dark-950/80 border border-dark-border/60 flex items-center justify-between">
                             <div class="flex items-center gap-2">
-                                <i class="fas fa-terminal text-accent-emerald text-sm"></i>
-                                <h3 class="font-semibold text-white text-sm">中枢事件总线</h3>
+                                <span class="w-1.5 h-1.5 rounded-full bg-accent-cyan"></span>
+                                <span class="text-slate-200 font-semibold font-sans">Qwen-Max</span>
+                                <span class="tag text-[9px]">复杂决策推理</span>
                             </div>
-                            <span id="event-bus-mode" class="text-[11px] font-mono text-slate-400 flex items-center gap-1.5">
-                                <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-pulse"></span>连接中
-                            </span>
-                        </div>
-                        <div id="event-log-container" class="flex-1 rounded-lg p-3 font-mono text-[11px] leading-relaxed overflow-y-auto space-y-1.5 h-[380px]">
-                            <div class="text-slate-500">正在接入事件总线…</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ============================================================= -->
-                <!-- 风格 B：全球跨境 DTC 零售转化与出海内容工场大盘 (Global DTC Retail & Content Studio) -->
-                <!-- ============================================================= -->
-                <div class="glass-card p-5 space-y-4">
-                    <div class="flex items-center justify-between pb-3 border-b border-dark-border flex-wrap gap-2">
-                        <div class="flex items-center gap-2">
-                            <i class="fas fa-gem text-accent-gold text-sm"></i>
-                            <h3 class="font-semibold text-white text-sm">全球独立站 DTC 零售转化与出海内容工厂 (Global DTC Retail Studio)</h3>
-                            <span class="tag tag-accent text-[10px] font-mono">北美 &amp; 欧洲独立站</span>
-                        </div>
-                        <div class="flex items-center gap-3 text-[11px] font-mono text-slate-400">
-                            <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-accent-gold"></span>今日销售额: <b class="text-white">¥ 2,458,790</b> ($342,800)</span>
-                            <span class="text-slate-600">|</span>
-                            <span class="text-accent-emerald flex items-center gap-1"><i class="fas fa-arrow-trend-up"></i> AI 增益 +34.2%</span>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-                        <!-- 1. 全球 AI 销售漏斗 (Global DTC Funnel) - 3 cols -->
-                        <div class="lg:col-span-3 p-3.5 rounded-xl bg-dark-900/60 border border-dark-border flex flex-col justify-between space-y-3">
-                            <div class="flex items-center justify-between">
-                                <span class="text-[12px] font-semibold text-slate-200 flex items-center gap-1.5">
-                                    <i class="fas fa-filter text-accent-cyan text-xs"></i> 全球全渠道转化漏斗
-                                </span>
-                                <span class="tag text-[9px]">DTC 独立站</span>
-                            </div>
-                            <!-- 漏斗阶段卡片 -->
-                            <div class="space-y-2 text-[11px]">
-                                <div class="p-2 rounded-lg bg-dark-950/80 border border-dark-border/50 relative overflow-hidden">
-                                    <div class="flex justify-between items-center text-slate-400">
-                                        <span>社媒全域曝光</span>
-                                        <span class="font-mono font-bold text-slate-200">12.4 M</span>
-                                    </div>
-                                    <div class="w-full bg-slate-800 h-1 rounded-full mt-1.5 overflow-hidden">
-                                        <div class="bg-accent-gold h-full rounded-full" style="width: 100%"></div>
-                                    </div>
-                                </div>
-
-                                <div class="p-2 rounded-lg bg-dark-950/80 border border-dark-border/50 relative overflow-hidden">
-                                    <div class="flex justify-between items-center text-slate-400">
-                                        <span>AI 导购深度接待</span>
-                                        <span class="font-mono font-bold text-accent-cyan">65.8 K</span>
-                                    </div>
-                                    <div class="w-full bg-slate-800 h-1 rounded-full mt-1.5 overflow-hidden">
-                                        <div class="bg-accent-cyan h-full rounded-full" style="width: 68%"></div>
-                                    </div>
-                                </div>
-
-                                <div class="p-2 rounded-lg bg-dark-950/80 border border-dark-border/50 relative overflow-hidden">
-                                    <div class="flex justify-between items-center text-slate-400">
-                                        <span>独立站实时加购 (ATC)</span>
-                                        <span class="font-mono font-bold text-accent-emerald">18.2 K</span>
-                                    </div>
-                                    <div class="w-full bg-slate-800 h-1 rounded-full mt-1.5 overflow-hidden">
-                                        <div class="bg-accent-emerald h-full rounded-full" style="width: 42%"></div>
-                                    </div>
-                                </div>
-
-                                <div class="p-2 rounded-lg bg-dark-950/80 border border-dark-border/50 relative overflow-hidden">
-                                    <div class="flex justify-between items-center text-slate-400">
-                                        <span>最终完成出海订单</span>
-                                        <span class="font-mono font-bold text-accent-gold">9,120 笔</span>
-                                    </div>
-                                    <div class="w-full bg-slate-800 h-1 rounded-full mt-1.5 overflow-hidden">
-                                        <div class="bg-gradient-to-r from-accent-gold to-accent-emerald h-full rounded-full" style="width: 26%"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="text-[10px] text-slate-500 font-mono flex items-center justify-between border-t border-dark-border/60 pt-2">
-                                <span>综合成单转化率</span>
-                                <span class="text-accent-emerald font-bold">13.8% (行业基线 2.8%)</span>
+                            <div class="flex items-center gap-3">
+                                <span class="text-slate-400">¥0.020 / 1k tokens</span>
+                                <span class="text-accent-cyan font-bold">24% 份额</span>
+                                <span class="text-slate-300">¥9.26</span>
                             </div>
                         </div>
-
-                        <!-- 2. 爆款轻奢单品 AI 表现卡片 (Top-Selling Luxury Items) - 5 cols -->
-                        <div class="lg:col-span-5 p-3.5 rounded-xl bg-dark-900/60 border border-dark-border space-y-3">
-                            <div class="flex items-center justify-between">
-                                <span class="text-[12px] font-semibold text-slate-200 flex items-center gap-1.5">
-                                    <i class="fas fa-crown text-accent-gold text-xs"></i> 独立站出海爆款单品 AI 矩阵
-                                </span>
-                                <span class="text-[10px] text-slate-400 font-mono">实效归因</span>
+                        <div class="p-2 rounded-lg bg-dark-950/80 border border-dark-border/60 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
+                                <span class="text-slate-200 font-semibold font-sans">Claude 3.5 Sonnet</span>
+                                <span class="tag text-[9px]">视觉分镜编排</span>
                             </div>
-
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[11px]">
-                                <!-- 单品 1: 莫桑石戒指 -->
-                                <div class="p-3 rounded-xl bg-dark-950/90 border border-dark-border hover:border-accent-gold/40 transition-colors space-y-2">
-                                    <div class="flex items-center justify-between">
-                                        <span class="tag tag-accent text-[9px] font-sans">北美爆款 TOP1</span>
-                                        <span class="text-[11px] font-mono text-accent-gold font-bold">$399</span>
-                                    </div>
-                                    <div class="font-medium text-white text-[12px] truncate">Moissanite Solitaire Ring</div>
-                                    <div class="text-slate-400 text-[10px]">经典六爪莫桑石订婚钻戒</div>
-                                    <div class="space-y-1 font-mono text-[10px] pt-1 border-t border-dark-border/60">
-                                        <div class="flex justify-between text-slate-400">
-                                            <span>出海总销量:</span> <span class="text-slate-200 font-bold">129K 件</span>
-                                        </div>
-                                        <div class="flex justify-between text-slate-400">
-                                            <span>AI 脚本转化提升:</span> <span class="text-accent-emerald font-bold">+75% lift</span>
-                                        </div>
-                                        <div class="flex justify-between text-slate-400">
-                                            <span>TikTok 播放量:</span> <span class="text-accent-cyan">3.2M views</span>
-                                        </div>
-                                        <div class="flex justify-between text-slate-400">
-                                            <span>短视频完播点击:</span> <span class="text-accent-gold">14.8% CTR</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- 单品 2: 天然和田碧玉 / 翡翠吊坠 -->
-                                <div class="p-3 rounded-xl bg-dark-950/90 border border-dark-border hover:border-accent-emerald/40 transition-colors space-y-2">
-                                    <div class="flex items-center justify-between">
-                                        <span class="tag text-[9px] font-sans bg-emerald-950/80 text-accent-emerald border-accent-emerald/30">欧洲轻奢 TOP2</span>
-                                        <span class="text-[11px] font-mono text-accent-emerald font-bold">$1,280</span>
-                                    </div>
-                                    <div class="font-medium text-white text-[12px] truncate">Natural Jadeite Pendant</div>
-                                    <div class="text-slate-400 text-[10px]">老坑冰透翡翠平安扣吊坠</div>
-                                    <div class="space-y-1 font-mono text-[10px] pt-1 border-t border-dark-border/60">
-                                        <div class="flex justify-between text-slate-400">
-                                            <span>出海总销量:</span> <span class="text-slate-200 font-bold">32K 件</span>
-                                        </div>
-                                        <div class="flex justify-between text-slate-400">
-                                            <span>AI 视觉排版提效:</span> <span class="text-accent-emerald font-bold">+70% lift</span>
-                                        </div>
-                                        <div class="flex justify-between text-slate-400">
-                                            <span>Instagram 种草:</span> <span class="text-accent-cyan">2.8M views</span>
-                                        </div>
-                                        <div class="flex justify-between text-slate-400">
-                                            <span>质检一石一证:</span> <span class="text-accent-emerald">GIA/NGTC 保真</span>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-slate-400">$0.015 / 1k tokens</span>
+                                <span class="text-purple-400 font-bold">12% 份额</span>
+                                <span class="text-slate-300">¥4.62</span>
                             </div>
                         </div>
-
-                        <!-- 3. AI 出海内容工场实时流水线 (AI Content Studio) - 4 cols -->
-                        <div class="lg:col-span-4 p-3.5 rounded-xl bg-dark-900/60 border border-dark-border space-y-3 flex flex-col justify-between">
-                            <div class="flex items-center justify-between">
-                                <span class="text-[12px] font-semibold text-slate-200 flex items-center gap-1.5">
-                                    <i class="fas fa-video text-accent-cyan text-xs"></i> 海外社媒内容工场流水线
-                                </span>
-                                <span class="tag text-[9px] font-mono text-accent-emerald">实时生产中</span>
+                        <div class="p-2 rounded-lg bg-dark-950/80 border border-dark-border/60 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-accent-gold"></span>
+                                <span class="text-slate-200 font-semibold font-sans">GPT-4o (备用热切)</span>
+                                <span class="tag text-[9px]">容灾冷备</span>
                             </div>
-
-                            <div class="space-y-2 text-[11px]">
-                                <!-- 任务 1: TikTok -->
-                                <div class="p-2.5 rounded-lg bg-dark-950/80 border border-dark-border/60 space-y-1.5">
-                                    <div class="flex items-center justify-between">
-                                        <div class="flex items-center gap-1.5">
-                                            <i class="fab fa-tiktok text-cyan-400 text-xs"></i>
-                                            <span class="text-slate-200 font-medium font-sans">Moissanite Sparkle Video</span>
-                                        </div>
-                                        <span class="text-[10px] font-mono text-cyan-400 animate-pulse">82% 生成中</span>
-                                    </div>
-                                    <div class="text-[10px] text-slate-400">15s 莫桑石微距火彩短视频 · 达摩院 FunClip 自动加英文字幕</div>
-                                    <div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
-                                        <div class="bg-accent-cyan h-full rounded-full" style="width: 82%"></div>
-                                    </div>
-                                </div>
-
-                                <!-- 任务 2: Instagram -->
-                                <div class="p-2.5 rounded-lg bg-dark-950/80 border border-dark-border/60 space-y-1.5">
-                                    <div class="flex items-center justify-between">
-                                        <div class="flex items-center gap-1.5">
-                                            <i class="fab fa-instagram text-pink-400 text-xs"></i>
-                                            <span class="text-slate-200 font-medium font-sans">Jade Aesthetic Carousel</span>
-                                        </div>
-                                        <span class="text-[10px] font-mono text-accent-emerald">就绪待发布</span>
-                                    </div>
-                                    <div class="text-[10px] text-slate-400">新中式翡翠穿搭 4 图轮播 · LangGraph HITL 审核通过</div>
-                                    <div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
-                                        <div class="bg-accent-emerald h-full rounded-full" style="width: 100%"></div>
-                                    </div>
-                                </div>
-
-                                <!-- 任务 3: Meta Ads -->
-                                <div class="p-2.5 rounded-lg bg-dark-950/80 border border-dark-border/60 space-y-1.5">
-                                    <div class="flex items-center justify-between">
-                                        <div class="flex items-center gap-1.5">
-                                            <i class="fab fa-facebook text-blue-400 text-xs"></i>
-                                            <span class="text-slate-200 font-medium font-sans">High-ROAS Ad Copy Variant #3</span>
-                                        </div>
-                                        <span class="text-[10px] font-mono text-accent-gold">4.8x ROAS</span>
-                                    </div>
-                                    <div class="text-[10px] text-slate-400">欧美圣诞礼遇季投流 · Coze 自动规避海外违规词</div>
-                                </div>
-                            </div>
-
-                            <div class="pt-2 border-t border-dark-border/60 flex items-center justify-between text-[11px]">
-                                <button type="button" onclick="switchTab('xhs')" class="text-accent-emerald hover:underline flex items-center gap-1 font-mono">
-                                    <span>打开出海内容工场</span> <i class="fas fa-arrow-right text-[10px]"></i>
-                                </button>
-                                <span class="text-[10px] text-slate-500 font-mono">日产出 450+ 篇</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ============================================================= -->
-                <!-- Token FinOps 算力经济学与商业 ROI 智能大盘 -->
-                <!-- ============================================================= -->
-                <div class="glass-card p-5 space-y-4">
-                    <div class="flex items-center justify-between pb-3 border-b border-dark-border flex-wrap gap-2">
-                        <div class="flex items-center gap-2">
-                            <i class="fas fa-coins text-accent-gold text-sm"></i>
-                            <h3 class="font-semibold text-white text-sm">企业级大模型算力经济学 (Model FinOps &amp; ROI Engine)</h3>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span class="tag tag-accent font-mono text-[10px]">KV-Cache 动态降本: 92.4%</span>
-                            <span class="tag font-mono text-[10px]">综合 ROI: 47.6x</span>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-                        <!-- 左侧：多模型成本与分流矩阵 + ROI 对比 -->
-                        <div class="lg:col-span-7 space-y-3.5">
-                            <!-- 成本分流 4 卡网格 -->
-                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
-                                <div class="p-2.5 rounded-xl bg-dark-900 border border-dark-border">
-                                    <div class="text-slate-500 font-mono text-[10px]">Prompt Token</div>
-                                    <div class="text-[13px] font-bold text-slate-100 mt-0.5 font-mono">1.14 M <span class="text-[10px] text-slate-500 font-normal">77%</span></div>
-                                </div>
-                                <div class="p-2.5 rounded-xl bg-dark-900 border border-dark-border">
-                                    <div class="text-slate-500 font-mono text-[10px]">Completion Token</div>
-                                    <div class="text-[13px] font-bold text-accent-cyan mt-0.5 font-mono">337 K <span class="text-[10px] text-slate-500 font-normal">23%</span></div>
-                                </div>
-                                <div class="p-2.5 rounded-xl bg-dark-900 border border-dark-border">
-                                    <div class="text-slate-500 font-mono text-[10px]">KV-Cache 节省</div>
-                                    <div class="text-[13px] font-bold text-accent-emerald mt-0.5 font-mono">¥ 342.60</div>
-                                </div>
-                                <div class="p-2.5 rounded-xl bg-dark-900 border border-dark-border">
-                                    <div class="text-slate-500 font-mono text-[10px]">当日实际支出</div>
-                                    <div class="text-[13px] font-bold text-accent-gold mt-0.5 font-mono">¥ 38.60</div>
-                                </div>
-                            </div>
-
-                            <!-- 主流模型实时单价与调度份额表 -->
-                            <div class="p-3 rounded-xl bg-dark-900/60 border border-dark-border space-y-2 text-[11px]">
-                                <div class="flex items-center justify-between text-slate-400 font-medium">
-                                    <span class="flex items-center gap-1.5"><i class="fas fa-layer-group text-accent-cyan"></i> 主流模型单价核算与调用分流份额</span>
-                                    <span class="text-[10px] font-mono text-slate-500">双币种实时折算</span>
-                                </div>
-                                <div class="space-y-1.5 font-mono text-[10px]">
-                                    <div class="p-2 rounded-lg bg-dark-950/80 border border-dark-border/60 flex items-center justify-between">
-                                        <div class="flex items-center gap-2">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald"></span>
-                                            <span class="text-slate-200 font-semibold font-sans">DeepSeek-Chat</span>
-                                            <span class="tag text-[9px]">主力内容矩阵</span>
-                                        </div>
-                                        <div class="flex items-center gap-3">
-                                            <span class="text-slate-400">¥0.002 / 1k tokens</span>
-                                            <span class="text-accent-emerald font-bold">58% 份额</span>
-                                            <span class="text-slate-300">¥22.38</span>
-                                        </div>
-                                    </div>
-                                    <div class="p-2 rounded-lg bg-dark-950/80 border border-dark-border/60 flex items-center justify-between">
-                                        <div class="flex items-center gap-2">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-accent-cyan"></span>
-                                            <span class="text-slate-200 font-semibold font-sans">Qwen-Max</span>
-                                            <span class="tag text-[9px]">复杂决策推理</span>
-                                        </div>
-                                        <div class="flex items-center gap-3">
-                                            <span class="text-slate-400">¥0.020 / 1k tokens</span>
-                                            <span class="text-accent-cyan font-bold">24% 份额</span>
-                                            <span class="text-slate-300">¥9.26</span>
-                                        </div>
-                                    </div>
-                                    <div class="p-2 rounded-lg bg-dark-950/80 border border-dark-border/60 flex items-center justify-between">
-                                        <div class="flex items-center gap-2">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
-                                            <span class="text-slate-200 font-semibold font-sans">Claude 3.5 Sonnet</span>
-                                            <span class="tag text-[9px]">视觉分镜编排</span>
-                                        </div>
-                                        <div class="flex items-center gap-3">
-                                            <span class="text-slate-400">$0.015 / 1k tokens</span>
-                                            <span class="text-purple-400 font-bold">12% 份额</span>
-                                            <span class="text-slate-300">¥4.62</span>
-                                        </div>
-                                    </div>
-                                    <div class="p-2 rounded-lg bg-dark-950/80 border border-dark-border/60 flex items-center justify-between">
-                                        <div class="flex items-center gap-2">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-accent-gold"></span>
-                                            <span class="text-slate-200 font-semibold font-sans">GPT-4o (备用热切)</span>
-                                            <span class="tag text-[9px]">容灾冷备</span>
-                                        </div>
-                                        <div class="flex items-center gap-3">
-                                            <span class="text-slate-400">$0.005 / 1k tokens</span>
-                                            <span class="text-accent-gold font-bold">6% 份额</span>
-                                            <span class="text-slate-300">¥2.34</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 右侧：AI 算力成本 vs 全人工等效成本 7日对比曲线图 + 动态计算器 -->
-                        <div class="lg:col-span-5 p-3.5 rounded-xl bg-dark-900/60 border border-dark-border flex flex-col justify-between space-y-3">
-                            <div class="flex items-center justify-between">
-                                <span class="text-[11px] font-medium text-slate-300 flex items-center gap-1.5">
-                                    <i class="fas fa-chart-area text-accent-emerald text-xs"></i>
-                                    <span>7 日累计成本对比：AI 算力 vs 传统人工</span>
-                                </span>
-                                <span class="text-[10px] font-mono text-accent-emerald">节约 97.9%</span>
-                            </div>
-
-                            <!-- ROI Canvas 画布 -->
-                            <div class="relative w-full h-[150px] bg-dark-950 rounded-lg overflow-hidden border border-dark-border/50">
-                                <canvas id="finops-roi-canvas" class="w-full h-full block"></canvas>
-                            </div>
-
-                            <!-- 交互式算力 ROI 估算条 -->
-                            <div class="pt-2 border-t border-dark-border/60 space-y-1.5 text-[11px]">
-                                <div class="flex items-center justify-between text-slate-400">
-                                    <span>企业月度等效人效产出估算:</span>
-                                    <span id="finops-roi-result" class="text-accent-emerald font-bold font-mono">已省 ¥ 52,480 / 月</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-[10px] text-slate-500 font-mono">日调用规模:</span>
-                                    <input id="finops-scale-slider" type="range" min="1000" max="100000" step="1000" value="25000" oninput="updateFinOpsCalculator(this.value)" class="flex-1 accent-accent-emerald h-1.5 bg-dark-950 rounded-lg cursor-pointer" />
-                                    <span id="finops-scale-badge" class="text-[10px] font-mono text-slate-300">2.5w 次/日</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Labs · 纵深智能体工作台直通 -->
-                <div class="glass-card p-5">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center gap-2">
-                            <i class="fas fa-flask text-accent-gold text-sm"></i>
-                            <h3 class="font-semibold text-white text-sm">Labs · 纵深专业智能体直通</h3>
-                        </div>
-                        <span class="tag">侧边栏直通实操工作台</span>
-                    </div>
-                    <div id="labs-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                        <!-- Module 1: Instagram & TikTok 出海营销流水线 -->
-                        <div class="rounded-xl border border-dark-border bg-dark-900/50 p-4 hover:border-accent-emerald/40 transition-colors flex flex-col justify-between">
-                            <div>
-                                <div class="flex items-center gap-2 mb-1.5">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald flex-shrink-0 animate-pulse"></span>
-                                    <span class="text-[13px] text-slate-200 font-medium font-mono">labs/graph-content</span>
-                                    <span class="tag flex-shrink-0">海外内容工厂</span>
-                                    <span class="ml-auto text-[11px] text-accent-emerald">工作台就绪</span>
-                                </div>
-                                <ul class="text-[11px] text-slate-400 leading-relaxed space-y-1 mt-2">
-                                    <li class="flex gap-2"><span class="text-accent-gold mt-px">·</span><span>基于 LangGraph 1.0 StateGraph 营销文案与图片全流程生成</span></li>
-                                    <li class="flex gap-2"><span class="text-accent-gold mt-px">·</span><span>内置 interrupt() 人在环路 (HITL) 人工审核修改与断点恢复</span></li>
-                                    <li class="flex gap-2"><span class="text-accent-gold mt-px">·</span><span>生产级 PII 日志敏感信息脱敏与 Postgres Checkpointer 状态持久化</span></li>
-                                </ul>
-                                <div class="flex flex-wrap gap-1.5 mt-3">
-                                    <span class="tag">LangGraph 1.0</span>
-                                    <span class="tag">Postgres Checkpointer</span>
-                                    <span class="tag">Vue3 SPA</span>
-                                    <span class="tag">HITL人在环路</span>
-                                </div>
-                            </div>
-                            <div class="flex items-center justify-between text-[11px] mt-3 pt-2 border-t border-dark-border/60">
-                                <button onclick="switchTab('xhs')" class="text-accent-emerald hover:underline flex items-center gap-1 font-mono font-medium">
-                                    打开实操工作台 <i class="fas fa-arrow-right text-[10px]"></i>
-                                </button>
-                                <a href="https://github.com/YuHeng-123/OmniAgent-Platform/tree/main/labs/graph-xiaohongshu" target="_blank" class="text-slate-500 hover:text-slate-300 flex items-center gap-1 font-mono text-[10px]">
-                                    源码仓库 <i class="fas fa-arrow-up-right-from-square text-[9px]"></i>
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- Module 2: 多模态音视频智能体 -->
-                        <div class="rounded-xl border border-dark-border bg-dark-900/50 p-4 hover:border-accent-cyan/40 transition-colors flex flex-col justify-between">
-                            <div>
-                                <div class="flex items-center gap-2 mb-1.5">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-accent-cyan flex-shrink-0 animate-pulse"></span>
-                                    <span class="text-[13px] text-slate-200 font-medium font-mono">labs/funclip-studio</span>
-                                    <span class="tag flex-shrink-0">多模态音视频智能体</span>
-                                    <span class="ml-auto text-[11px] text-accent-cyan">工作台就绪</span>
-                                </div>
-                                <ul class="text-[11px] text-slate-400 leading-relaxed space-y-1 mt-2">
-                                    <li class="flex gap-2"><span class="text-accent-gold mt-px">·</span><span>阿里达摩院 FunASR 工业级语音识别与精准毫秒级时间戳对齐</span></li>
-                                    <li class="flex gap-2"><span class="text-accent-gold mt-px">·</span><span>热词感知增强、按说话人分段识别、视频智能自动化切片</span></li>
-                                    <li class="flex gap-2"><span class="text-accent-gold mt-px">·</span><span>中枢统一工程化封装，Windows 跨进程自动化调度与就绪探测</span></li>
-                                </ul>
-                                <div class="flex flex-wrap gap-1.5 mt-3">
-                                    <span class="tag">FunASR</span>
-                                    <span class="tag">PyTorch</span>
-                                    <span class="tag">Gradio</span>
-                                    <span class="tag">达摩院开源</span>
-                                    <span class="tag">音视频切片</span>
-                                </div>
-                            </div>
-                            <div class="flex items-center justify-between text-[11px] mt-3 pt-2 border-t border-dark-border/60">
-                                <button onclick="switchTab('funclip')" class="text-accent-cyan hover:underline flex items-center gap-1 font-mono font-medium">
-                                    打开实操工作台 <i class="fas fa-arrow-right text-[10px]"></i>
-                                </button>
-                                <a href="https://github.com/YuHeng-123/OmniAgent-Platform/tree/main/labs/funclip-studio" target="_blank" class="text-slate-500 hover:text-slate-300 flex items-center gap-1 font-mono text-[10px]">
-                                    源码仓库 <i class="fas fa-arrow-up-right-from-square text-[9px]"></i>
-                                </a>
+                            <div class="flex items-center gap-3">
+                                <span class="text-slate-400">$0.005 / 1k tokens</span>
+                                <span class="text-accent-gold font-bold">6% 份额</span>
+                                <span class="text-slate-300">¥2.34</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- 右侧：AI 算力成本 vs 全人工等效成本 7日对比曲线图 + 动态计算器 -->
+            <div class="lg:col-span-5 p-3.5 rounded-xl bg-dark-900/60 border border-dark-border flex flex-col justify-between space-y-3">
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] font-medium text-slate-300 flex items-center gap-1.5">
+                        <i class="fas fa-chart-area text-accent-emerald text-xs"></i>
+                        <span>7 日累计成本对比：AI 算力 vs 传统人工</span>
+                    </span>
+                    <span class="text-[10px] font-mono text-accent-emerald">节约 97.9%</span>
+                </div>
+
+                <!-- ROI Canvas 画布 -->
+                <div class="relative w-full h-[150px] bg-dark-950 rounded-lg overflow-hidden border border-dark-border/50">
+                    <canvas id="finops-roi-canvas" class="w-full h-full block"></canvas>
+                </div>
+
+                <!-- 交互式算力 ROI 估算条 -->
+                <div class="pt-2 border-t border-dark-border/60 space-y-1.5 text-[11px]">
+                    <div class="flex items-center justify-between text-slate-400">
+                        <span>企业月度等效人效产出估算:</span>
+                        <span id="finops-roi-result" class="text-accent-emerald font-bold font-mono">已省 ¥ 52,480 / 月</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] text-slate-500 font-mono">日调用规模:</span>
+                        <input id="finops-scale-slider" type="range" min="1000" max="100000" step="1000" value="25000" oninput="updateFinOpsCalculator(this.value)" class="flex-1 accent-accent-emerald h-1.5 bg-dark-950 rounded-lg cursor-pointer" />
+                        <span id="finops-scale-badge" class="text-[10px] font-mono text-slate-300">2.5w 次/日</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================= -->
+    <!-- Labs · 纵深智能体工作台直通 -->
+    <!-- ============================================================= -->
+    <div class="glass-card p-5">
+        <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-2">
+                <i class="fas fa-flask text-accent-gold text-sm"></i>
+                <h3 class="font-semibold text-white text-sm">Labs · 纵深专业智能体直通</h3>
+            </div>
+            <span class="tag">侧边栏直通实操工作台</span>
+        </div>
+        <div id="labs-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <!-- Module 1: Instagram & TikTok 出海营销流水线 -->
+            <div class="rounded-xl border border-dark-border bg-dark-900/50 p-4 hover:border-accent-emerald/40 transition-colors flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center gap-2 mb-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald flex-shrink-0 animate-pulse"></span>
+                        <span class="text-[13px] text-slate-200 font-medium font-mono">labs/graph-content</span>
+                        <span class="tag flex-shrink-0">海外内容工厂</span>
+                        <span class="ml-auto text-[11px] text-accent-emerald">工作台就绪</span>
+                    </div>
+                    <ul class="text-[11px] text-slate-400 leading-relaxed space-y-1 mt-2">
+                        <li class="flex gap-2"><span class="text-accent-gold mt-px">·</span><span>基于 LangGraph 1.0 StateGraph 营销文案与图片全流程生成</span></li>
+                        <li class="flex gap-2"><span class="text-accent-gold mt-px">·</span><span>内置 interrupt() 人在环路 (HITL) 人工审核修改与断点恢复</span></li>
+                        <li class="flex gap-2"><span class="text-accent-gold mt-px">·</span><span>生产级 PII 日志敏感信息脱敏与 Postgres Checkpointer 状态持久化</span></li>
+                    </ul>
+                    <div class="flex flex-wrap gap-1.5 mt-3">
+                        <span class="tag">LangGraph 1.0</span>
+                        <span class="tag">Postgres Checkpointer</span>
+                        <span class="tag">Vue3 SPA</span>
+                        <span class="tag">HITL人在环路</span>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between text-[11px] mt-3 pt-2 border-t border-dark-border/60">
+                    <button onclick="switchTab('xhs')" class="text-accent-emerald hover:underline flex items-center gap-1 font-mono font-medium">
+                        打开实操工作台 <i class="fas fa-arrow-right text-[10px]"></i>
+                    </button>
+                    <a href="https://github.com/YuHeng-123/OmniAgent-Platform/tree/main/labs/graph-xiaohongshu" target="_blank" class="text-slate-500 hover:text-slate-300 flex items-center gap-1 font-mono text-[10px]">
+                        源码仓库 <i class="fas fa-arrow-up-right-from-square text-[9px]"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Module 2: 多模态音视频智能体 -->
+            <div class="rounded-xl border border-dark-border bg-dark-900/50 p-4 hover:border-accent-cyan/40 transition-colors flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center gap-2 mb-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-accent-cyan flex-shrink-0 animate-pulse"></span>
+                        <span class="text-[13px] text-slate-200 font-medium font-mono">labs/funclip-studio</span>
+                        <span class="tag flex-shrink-0">多模态音视频智能体</span>
+                        <span class="ml-auto text-[11px] text-accent-cyan">工作台就绪</span>
+                    </div>
+                    <ul class="text-[11px] text-slate-400 leading-relaxed space-y-1 mt-2">
+                        <li class="flex gap-2"><span class="text-accent-gold mt-px">·</span><span>阿里达摩院 FunASR 工业级语音识别与精准毫秒级时间戳对齐</span></li>
+                        <li class="flex gap-2"><span class="text-accent-gold mt-px">·</span><span>热词感知增强、按说话人分段识别、视频智能自动化切片</span></li>
+                        <li class="flex gap-2"><span class="text-accent-gold mt-px">·</span><span>中枢统一工程化封装，Windows 跨进程自动化调度与就绪探测</span></li>
+                    </ul>
+                    <div class="flex flex-wrap gap-1.5 mt-3">
+                        <span class="tag">FunASR</span>
+                        <span class="tag">PyTorch</span>
+                        <span class="tag">Gradio</span>
+                        <span class="tag">达摩院开源</span>
+                        <span class="tag">音视频切片</span>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between text-[11px] mt-3 pt-2 border-t border-dark-border/60">
+                    <button onclick="switchTab('funclip')" class="text-accent-cyan hover:underline flex items-center gap-1 font-mono font-medium">
+                        打开实操工作台 <i class="fas fa-arrow-right text-[10px]"></i>
+                    </button>
+                    <a href="https://github.com/YuHeng-123/OmniAgent-Platform/tree/main/labs/funclip-studio" target="_blank" class="text-slate-500 hover:text-slate-300 flex items-center gap-1 font-mono text-[10px]">
+                        源码仓库 <i class="fas fa-arrow-up-right-from-square text-[9px]"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
                         <!-- ------------------------------------------------------------- -->
             <!-- TAB 2: 电商智能导购工作站 (Ecom Guide) -->
             <!-- ------------------------------------------------------------- -->

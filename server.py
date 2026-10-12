@@ -766,7 +766,7 @@ LABS_META = [
         "id": "graph-xiaohongshu",
         "dir": "labs/graph-xiaohongshu",
         "name": "graph-xiaohongshu",
-        "title": "内容工厂",
+        "title": "小红书深度工场",
         "probe_port": 8020,
         "tech": [
             "LangGraph 1.0",
@@ -2011,7 +2011,7 @@ async def labs_modules():
         "modules": [
             {
                 "name": "labs/graph-xiaohongshu",
-                "title": "内容工厂",
+                "title": "小红书深度工场",
                 "probe_port": 8020,
                 "status": "online" if xhs_online else "offline",
                 "tech": ["LangGraph 1.0", "Postgres Checkpointer", "Vue3", "HITL人在环路"],
@@ -2020,7 +2020,7 @@ async def labs_modules():
                     "内置 interrupt() 人在环路机制，支持人工审核修改与断点恢复",
                     "生产级 PII 日志敏感信息脱敏与状态快照落库持久化",
                 ],
-                "note": "从独立内容工厂项目完整收编，支撑中枢的内容生产纵深",
+                "note": "从独立内容工厂项目完整收编，支撑中枢的小红书深度长文创作与 HITL 状态机编排",
                 "url": "https://github.com/YuHeng-123/OmniAgent-Platform/tree/main/labs/graph-xiaohongshu",
             },
             {

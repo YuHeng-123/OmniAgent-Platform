@@ -7,12 +7,12 @@
     缺失        : 无 ✅
 
 [2] getElementById 引用 vs 已定义 id（含动态创建）
-    已知 id 数  : 121
-    被引用 id 数: 89
+    已知 id 数  : 124
+    被引用 id 数: 91
     悬空引用    : 无 ✅
 
 [3] onclick 调用 vs 已定义函数
-    onclick 函数: clearGuideChat, closeSidebarOnMobile, copyFunclipSrt, copyMarketingContent, copyTraceId, copyXhsNote, handleAnalyticsQuery, handleFunclipSlice, handleMarketingGenerate, handleRagSearch, handleXhsGenerate, handleXhsHitlApprove, loadHistory, pipeFunclipToXhs, pipeToMarketing, playFunclipSegment, refreshTraceLogs, resetFunclipWaveform, sendOpenaiProxyTest, sendQuickPrompt, serviceControl, setFunclipPreset, setHistoryRange, setQueryAndRun, setXhsPreset, switchChannel, switchTab, toggleDynamicIsland, toggleFunclipPlayback, toggleSidebar, triggerQuickFailover, zoomFunclipWaveform
+    onclick 函数: clearGuideChat, closeSidebarOnMobile, copyFunclipSrt, copyMarketingContent, copyTraceId, copyXhsNote, handleAnalyticsQuery, handleFunclipSlice, handleMarketingGenerate, handleRagSearch, handleXhsGenerate, handleXhsHitlApprove, loadHistory, pipeFunclipToXhs, pipeToMarketing, pipeXhsToMarketing, playFunclipSegment, refreshTraceLogs, resetFunclipWaveform, sendOpenaiProxyTest, sendQuickPrompt, serviceControl, setFunclipPreset, setHistoryRange, setQueryAndRun, setXhsPreset, switchChannel, switchTab, toggleDynamicIsland, toggleFunclipPlayback, toggleSidebar, triggerQuickFailover, zoomFunclipWaveform
     未定义      : 无 ✅
 
 [4] templates/index.html 2.2 标记齐全 = ✅

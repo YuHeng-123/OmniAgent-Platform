@@ -294,7 +294,7 @@
 
                     <button onclick="switchTab('marketing');closeSidebarOnMobile()" id="nav-marketing" class="nav-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] text-slate-400 hover:text-slate-100 transition-colors">
                         <i class="fas fa-wand-magic-sparkles w-4 text-center text-[12px]"></i>
-                        <span>爆款营销工场</span>
+                        <span>全渠道营销矩阵</span>
                         <span class="ml-auto tag">Coze</span>
                     </button>
 
@@ -330,7 +330,7 @@
                 <nav class="space-y-0.5">
                     <button onclick="switchTab('xhs');closeSidebarOnMobile()" id="nav-xhs" class="nav-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] text-slate-400 hover:text-slate-100 transition-colors">
                         <i class="fas fa-feather-pointed w-4 text-center text-[12px] text-accent-emerald"></i>
-                        <span>内容工厂</span>
+                        <span>小红书深度工场</span>
                         <span class="ml-auto tag">LangGraph</span>
                     </button>
                     <button onclick="switchTab('funclip');closeSidebarOnMobile()" id="nav-funclip" class="nav-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] text-slate-400 hover:text-slate-100 transition-colors">
@@ -828,15 +828,30 @@
             </div>
 
             <!-- ------------------------------------------------------------- -->
-            <!-- TAB 3: 爆款营销工场 (Marketing Studio) -->
+            <!-- TAB 3: 全渠道营销矩阵与合规风控 (Marketing Studio · Coze) -->
             <!-- ------------------------------------------------------------- -->
-<div id="tab-marketing" class="tab-content hidden space-y-5">
+            <div id="tab-marketing" class="tab-content hidden space-y-5">
+                <!-- 上下游工序协同链路指引条 (Pipeline Chain Banner) -->
+                <div class="glass-card px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 text-[11px] border-l-4 border-accent-gold">
+                    <div class="flex items-center gap-2 text-slate-300">
+                        <span class="w-2 h-2 rounded-full bg-accent-gold animate-pulse"></span>
+                        <span class="font-medium text-white">工序定位：第二道 · 全渠道矩阵分发与合规风控 (Coze)</span>
+                        <span class="text-slate-500 hidden sm:inline">|</span>
+                        <span id="mkt-source-badge" class="text-slate-400 font-mono">接收来自「小红书深度工场 (LangGraph)」或「视频切片 (FunASR)」的母版内容进行 5 大渠道派生</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="switchTab('xhs')" class="text-accent-emerald hover:underline flex items-center gap-1 font-mono">
+                            <i class="fas fa-arrow-left text-[10px]"></i> 返回深度创作工场
+                        </button>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
                     <!-- 左侧：参数与生成配置 -->
                     <div class="lg:col-span-5 glass-card p-5 space-y-5">
                         <div class="flex items-center gap-2 pb-3 border-b border-dark-border">
-                            <i class="fas fa-pen-nib text-accent-amber text-sm"></i>
-                            <h3 class="font-semibold text-white text-sm">多平台爆款内容生成器</h3>
+                            <i class="fas fa-wand-magic-sparkles text-accent-gold text-sm"></i>
+                            <h3 class="font-semibold text-white text-sm">全渠道爆款营销与合规风控</h3>
                         </div>
 
                         <div>
@@ -1252,12 +1267,12 @@
         const TAB_TITLES = {
             'overview': '<i class="fas fa-layer-group text-accent-emerald mr-2.5"></i> 全域智能体调度总览大盘',
             'guide': '<i class="fas fa-store text-accent-cyan mr-2.5"></i> 垂直电商智能导购工作站',
-            'marketing': '<i class="fas fa-wand-magic-sparkles text-accent-amber mr-2.5"></i> 多平台爆款营销工场',
+            'marketing': '<i class="fas fa-wand-magic-sparkles text-accent-amber mr-2.5"></i> 全渠道营销矩阵与合规风控 · Coze',
             'analytics': '<i class="fas fa-chart-pie text-accent-emerald mr-2.5"></i> 智能数据分析与商业洞察',
             'gateway': '<i class="fas fa-shield-halved text-accent-cyan mr-2.5"></i> 模型调度网关与容灾中枢',
             'rag': '<i class="fas fa-database text-accent-cyan mr-2.5"></i> 企业级行业知识库与向量检索',
             'history': '<i class="fas fa-clock-rotate-left text-accent-emerald mr-2.5"></i> 历史趋势与事件回放',
-            'xhs': '<i class="fas fa-feather-pointed text-accent-emerald mr-2.5"></i> 内容工厂 · LangGraph 1.0',
+            'xhs': '<i class="fas fa-feather-pointed text-accent-emerald mr-2.5"></i> 小红书深度工场 · LangGraph 1.0 (HITL)',
             'funclip': '<i class="fas fa-film text-accent-cyan mr-2.5"></i> 达摩院 FunClip 多模态音视频智能切片'
         };
 
@@ -2558,7 +2573,31 @@
             document.getElementById('xhs-product-name').value = sample.pName || '天然原矿翡翠珠宝';
             document.getElementById('xhs-tone').value = '专业博主深度评测';
             document.getElementById('xhs-keywords').value = sample.hotwords;
+            const xhsBadge = document.getElementById('xhs-source-badge');
+            if (xhsBadge) {
+                xhsBadge.innerHTML = '<span class="text-accent-cyan font-medium">已继承 FunClip 视频切片高光热词：</span> ' + (sample.pName || '珠宝热词');
+            }
+            showToast('【工序协同联动】已从 FunClip 导入高光热词并进入小红书深度工场！', 'info');
             handleXhsGenerate();
+        }
+
+        // -------------------------------------------------------------
+        // 工序协同闭环：小红书深度工场 (LangGraph) -> 全渠道营销矩阵 (Coze)
+        // -------------------------------------------------------------
+        function pipeXhsToMarketing() {
+            const prod = document.getElementById('xhs-product-name')?.value || '天然冰种和田碧玉平安扣吊坠';
+            const kw = document.getElementById('xhs-keywords')?.value || '温润细腻, 原矿老料, 权威证书, 新中式穿搭, 闺蜜送礼';
+            switchTab('marketing');
+            const mktProd = document.getElementById('mkt-product-name');
+            const mktKeys = document.getElementById('mkt-keywords');
+            const sourceBadge = document.getElementById('mkt-source-badge');
+            if (mktProd) mktProd.value = prod;
+            if (mktKeys) mktKeys.value = kw;
+            if (sourceBadge) {
+                sourceBadge.innerHTML = '<span class="text-accent-gold font-medium">已继承小红书深度工场 (LangGraph) 爆款母版：</span> ' + prod;
+            }
+            showToast('【工序协同联动】已从小红书深度工场导入母版！正在调用全渠道营销矩阵 (Coze) 派生文案并执行《新广告法》合规审查...', 'ok');
+            handleMarketingGenerate();
         }
 
         function copyFunclipSrt() {

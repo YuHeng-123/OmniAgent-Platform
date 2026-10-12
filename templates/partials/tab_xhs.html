@@ -1,16 +1,29 @@
             <!-- ------------------------------------------------------------- -->
-            <!-- TAB 8: 内容工厂 (LangGraph 1.0) -->
+            <!-- TAB 8: 小红书深度工场 (LangGraph 1.0) -->
             <!-- ------------------------------------------------------------- -->
             <div id="tab-xhs" class="tab-content hidden space-y-5">
+                <!-- 上下游工序协同链路指引条 (Pipeline Chain Banner) -->
+                <div class="glass-card px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 text-[11px] border-l-4 border-accent-emerald">
+                    <div class="flex items-center gap-2 text-slate-300">
+                        <span class="w-2 h-2 rounded-full bg-accent-emerald animate-pulse"></span>
+                        <span class="font-medium text-white">工序定位：第一道 · 单品爆款长文深度打透 (LangGraph 1.0 StateGraph)</span>
+                        <span class="text-slate-500 hidden sm:inline">|</span>
+                        <span id="xhs-source-badge" class="text-slate-400 font-mono">打通选题、人在环路审查与视觉分镜；成文后可一键流转至全渠道矩阵</span>
+                    </div>
+                    <button type="button" onclick="pipeXhsToMarketing()" class="text-accent-gold hover:underline flex items-center gap-1 font-mono font-medium">
+                        <span>流转至全渠道矩阵</span> <i class="fas fa-arrow-right text-[10px]"></i>
+                    </button>
+                </div>
+
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
                     <!-- 左侧：参数与 StateGraph 编排工作台 -->
                     <div class="lg:col-span-5 glass-card p-5 space-y-4">
                         <div class="flex items-center justify-between pb-3 border-b border-dark-border">
                             <div class="flex items-center gap-2">
                                 <i class="fas fa-feather-pointed text-accent-emerald text-sm"></i>
-                                <h3 class="font-semibold text-white text-sm">内容工厂</h3>
+                                <h3 class="font-semibold text-white text-sm">小红书深度工场</h3>
                             </div>
-                            <span class="tag tag-accent text-[11px] font-mono">LangGraph 1.0</span>
+                            <span class="tag tag-accent text-[11px] font-mono">LangGraph 1.0 (HITL)</span>
                         </div>
 
                         <!-- 快速预设模板 -->
@@ -143,6 +156,10 @@
                                     <span id="xhs-meta-latency" class="text-slate-400 text-[11px]">耗时: —</span>
                                     <span id="xhs-meta-thread" class="text-slate-500 hidden sm:inline text-[11px]">Thread: idle</span>
                                 </div>
+                                <button type="button" id="btn-pipe-xhs-to-mkt" onclick="pipeXhsToMarketing()" class="px-2.5 py-1.5 rounded-lg text-[12px] font-medium bg-accent-gold/15 border border-accent-gold/40 text-accent-gold hover:bg-accent-gold/25 flex items-center gap-1.5 transition-colors shadow-sm" title="将此爆款母版一键流转到全渠道营销矩阵，自动派生多平台文案并做广告法质检">
+                                    <i class="fas fa-share-nodes text-xs"></i>
+                                    <span>同步至全渠道矩阵 (Coze)</span>
+                                </button>
                                 <button type="button" onclick="copyXhsNote()" class="btn-ghost px-3 py-1.5 rounded-lg text-[12px] flex items-center gap-1.5">
                                     <i class="fas fa-copy"></i>
                                     <span>复制当前内容</span>

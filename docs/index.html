@@ -304,7 +304,7 @@
             <!-- 搜索框 -->
             <div class="p-3.5 border-b border-dark-border/80 flex items-center gap-3 bg-dark-900/50">
                 <i class="fas fa-search text-slate-400 text-xs"></i>
-                <input id="cmd-palette-input" type="text" placeholder="输入指令或搜索工作台（如：小红书、热切、OpenAI、Trace、导购）..." class="flex-1 bg-transparent text-white placeholder-slate-500 text-[13px] focus:outline-none" autocomplete="off" />
+                <input id="cmd-palette-input" type="text" placeholder="输入指令或搜索工作台（如：Instagram、TikTok、出海、热切、OpenAI、导购）..." class="flex-1 bg-transparent text-white placeholder-slate-500 text-[13px] focus:outline-none" autocomplete="off" />
                 <button type="button" onclick="toggleCommandPalette()" class="px-1.5 py-0.5 rounded bg-dark-950 border border-dark-border text-[10px] text-slate-400 hover:text-white font-mono transition-colors">ESC 关闭</button>
             </div>
 
@@ -418,13 +418,13 @@
                 <nav class="space-y-0.5">
                     <button onclick="switchTab('xhs');closeSidebarOnMobile()" id="nav-xhs" class="nav-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] text-slate-400 hover:text-slate-100 transition-colors">
                         <i class="fas fa-feather-pointed w-4 text-center text-[12px] text-accent-emerald"></i>
-                        <span>小红书深度工场</span>
+                        <span>Instagram &amp; TikTok 出海工场</span>
                         <span class="ml-auto tag">LangGraph</span>
                     </button>
                     <button onclick="switchTab('funclip');closeSidebarOnMobile()" id="nav-funclip" class="nav-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] text-slate-400 hover:text-slate-100 transition-colors">
                         <i class="fas fa-film w-4 text-center text-[12px] text-accent-cyan"></i>
-                        <span>音视频智能切片</span>
-                        <span class="ml-auto tag">FunASR</span>
+                        <span>Reels 短视频分镜切片</span>
+                        <span class="ml-auto tag">AI Video</span>
                     </button>
                 </nav>
             </div>
@@ -465,9 +465,9 @@
                 <div class="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-dark-950/80 border border-dark-border text-xs ml-2 flex-shrink-0">
                     <i class="fas fa-building text-accent-cyan text-[11px]"></i>
                     <select id="tenant-workspace-select" onchange="switchTenantWorkspace(this.value)" class="bg-transparent text-slate-200 text-xs focus:outline-none cursor-pointer font-sans">
-                        <option value="tenant-hq" class="bg-dark-900 text-slate-200">深圳南山总店 · 旗舰中枢</option>
-                        <option value="tenant-tiktok" class="bg-dark-900 text-slate-200">TikTok 跨境出海矩阵</option>
-                        <option value="tenant-embroidery" class="bg-dark-900 text-slate-200">非遗国风苏绣文创部</option>
+                        <option value="tenant-hq" class="bg-dark-900 text-slate-200">Shopify 北美独立站 · 旗舰中枢</option>
+                        <option value="tenant-tiktok" class="bg-dark-900 text-slate-200">TikTok Shop 全球出海矩阵</option>
+                        <option value="tenant-embroidery" class="bg-dark-900 text-slate-200">Instagram 欧美轻奢独立站</option>
                     </select>
                 </div>
             </div>
@@ -1019,13 +1019,210 @@
                 </div>
 
                 <!-- ============================================================= -->
+                <!-- 风格 B：全球跨境 DTC 零售转化与出海内容工场大盘 (Global DTC Retail & Content Studio) -->
+                <!-- ============================================================= -->
+                <div class="glass-card p-5 space-y-4">
+                    <div class="flex items-center justify-between pb-3 border-b border-dark-border flex-wrap gap-2">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-gem text-accent-gold text-sm"></i>
+                            <h3 class="font-semibold text-white text-sm">全球独立站 DTC 零售转化与出海内容工厂 (Global DTC Retail Studio)</h3>
+                            <span class="tag tag-accent text-[10px] font-mono">北美 &amp; 欧洲独立站</span>
+                        </div>
+                        <div class="flex items-center gap-3 text-[11px] font-mono text-slate-400">
+                            <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-accent-gold"></span>今日销售额: <b class="text-white">¥ 2,458,790</b> ($342,800)</span>
+                            <span class="text-slate-600">|</span>
+                            <span class="text-accent-emerald flex items-center gap-1"><i class="fas fa-arrow-trend-up"></i> AI 增益 +34.2%</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                        <!-- 1. 全球 AI 销售漏斗 (Global DTC Funnel) - 3 cols -->
+                        <div class="lg:col-span-3 p-3.5 rounded-xl bg-dark-900/60 border border-dark-border flex flex-col justify-between space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[12px] font-semibold text-slate-200 flex items-center gap-1.5">
+                                    <i class="fas fa-filter text-accent-cyan text-xs"></i> 全球全渠道转化漏斗
+                                </span>
+                                <span class="tag text-[9px]">DTC 独立站</span>
+                            </div>
+                            <!-- 漏斗阶段卡片 -->
+                            <div class="space-y-2 text-[11px]">
+                                <div class="p-2 rounded-lg bg-dark-950/80 border border-dark-border/50 relative overflow-hidden">
+                                    <div class="flex justify-between items-center text-slate-400">
+                                        <span>社媒全域曝光</span>
+                                        <span class="font-mono font-bold text-slate-200">12.4 M</span>
+                                    </div>
+                                    <div class="w-full bg-slate-800 h-1 rounded-full mt-1.5 overflow-hidden">
+                                        <div class="bg-accent-gold h-full rounded-full" style="width: 100%"></div>
+                                    </div>
+                                </div>
+
+                                <div class="p-2 rounded-lg bg-dark-950/80 border border-dark-border/50 relative overflow-hidden">
+                                    <div class="flex justify-between items-center text-slate-400">
+                                        <span>AI 导购深度接待</span>
+                                        <span class="font-mono font-bold text-accent-cyan">65.8 K</span>
+                                    </div>
+                                    <div class="w-full bg-slate-800 h-1 rounded-full mt-1.5 overflow-hidden">
+                                        <div class="bg-accent-cyan h-full rounded-full" style="width: 68%"></div>
+                                    </div>
+                                </div>
+
+                                <div class="p-2 rounded-lg bg-dark-950/80 border border-dark-border/50 relative overflow-hidden">
+                                    <div class="flex justify-between items-center text-slate-400">
+                                        <span>独立站实时加购 (ATC)</span>
+                                        <span class="font-mono font-bold text-accent-emerald">18.2 K</span>
+                                    </div>
+                                    <div class="w-full bg-slate-800 h-1 rounded-full mt-1.5 overflow-hidden">
+                                        <div class="bg-accent-emerald h-full rounded-full" style="width: 42%"></div>
+                                    </div>
+                                </div>
+
+                                <div class="p-2 rounded-lg bg-dark-950/80 border border-dark-border/50 relative overflow-hidden">
+                                    <div class="flex justify-between items-center text-slate-400">
+                                        <span>最终完成出海订单</span>
+                                        <span class="font-mono font-bold text-accent-gold">9,120 笔</span>
+                                    </div>
+                                    <div class="w-full bg-slate-800 h-1 rounded-full mt-1.5 overflow-hidden">
+                                        <div class="bg-gradient-to-r from-accent-gold to-accent-emerald h-full rounded-full" style="width: 26%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-[10px] text-slate-500 font-mono flex items-center justify-between border-t border-dark-border/60 pt-2">
+                                <span>综合成单转化率</span>
+                                <span class="text-accent-emerald font-bold">13.8% (行业基线 2.8%)</span>
+                            </div>
+                        </div>
+
+                        <!-- 2. 爆款轻奢单品 AI 表现卡片 (Top-Selling Luxury Items) - 5 cols -->
+                        <div class="lg:col-span-5 p-3.5 rounded-xl bg-dark-900/60 border border-dark-border space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[12px] font-semibold text-slate-200 flex items-center gap-1.5">
+                                    <i class="fas fa-crown text-accent-gold text-xs"></i> 独立站出海爆款单品 AI 矩阵
+                                </span>
+                                <span class="text-[10px] text-slate-400 font-mono">实效归因</span>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[11px]">
+                                <!-- 单品 1: 莫桑石戒指 -->
+                                <div class="p-3 rounded-xl bg-dark-950/90 border border-dark-border hover:border-accent-gold/40 transition-colors space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="tag tag-accent text-[9px] font-sans">北美爆款 TOP1</span>
+                                        <span class="text-[11px] font-mono text-accent-gold font-bold">$399</span>
+                                    </div>
+                                    <div class="font-medium text-white text-[12px] truncate">Moissanite Solitaire Ring</div>
+                                    <div class="text-slate-400 text-[10px]">经典六爪莫桑石订婚钻戒</div>
+                                    <div class="space-y-1 font-mono text-[10px] pt-1 border-t border-dark-border/60">
+                                        <div class="flex justify-between text-slate-400">
+                                            <span>出海总销量:</span> <span class="text-slate-200 font-bold">129K 件</span>
+                                        </div>
+                                        <div class="flex justify-between text-slate-400">
+                                            <span>AI 脚本转化提升:</span> <span class="text-accent-emerald font-bold">+75% lift</span>
+                                        </div>
+                                        <div class="flex justify-between text-slate-400">
+                                            <span>TikTok 播放量:</span> <span class="text-accent-cyan">3.2M views</span>
+                                        </div>
+                                        <div class="flex justify-between text-slate-400">
+                                            <span>短视频完播点击:</span> <span class="text-accent-gold">14.8% CTR</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 单品 2: 天然和田碧玉 / 翡翠吊坠 -->
+                                <div class="p-3 rounded-xl bg-dark-950/90 border border-dark-border hover:border-accent-emerald/40 transition-colors space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="tag text-[9px] font-sans bg-emerald-950/80 text-accent-emerald border-accent-emerald/30">欧洲轻奢 TOP2</span>
+                                        <span class="text-[11px] font-mono text-accent-emerald font-bold">$1,280</span>
+                                    </div>
+                                    <div class="font-medium text-white text-[12px] truncate">Natural Jadeite Pendant</div>
+                                    <div class="text-slate-400 text-[10px]">老坑冰透翡翠平安扣吊坠</div>
+                                    <div class="space-y-1 font-mono text-[10px] pt-1 border-t border-dark-border/60">
+                                        <div class="flex justify-between text-slate-400">
+                                            <span>出海总销量:</span> <span class="text-slate-200 font-bold">32K 件</span>
+                                        </div>
+                                        <div class="flex justify-between text-slate-400">
+                                            <span>AI 视觉排版提效:</span> <span class="text-accent-emerald font-bold">+70% lift</span>
+                                        </div>
+                                        <div class="flex justify-between text-slate-400">
+                                            <span>Instagram 种草:</span> <span class="text-accent-cyan">2.8M views</span>
+                                        </div>
+                                        <div class="flex justify-between text-slate-400">
+                                            <span>质检一石一证:</span> <span class="text-accent-emerald">GIA/NGTC 保真</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. AI 出海内容工场实时流水线 (AI Content Studio) - 4 cols -->
+                        <div class="lg:col-span-4 p-3.5 rounded-xl bg-dark-900/60 border border-dark-border space-y-3 flex flex-col justify-between">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[12px] font-semibold text-slate-200 flex items-center gap-1.5">
+                                    <i class="fas fa-video text-accent-cyan text-xs"></i> 海外社媒内容工场流水线
+                                </span>
+                                <span class="tag text-[9px] font-mono text-accent-emerald">实时生产中</span>
+                            </div>
+
+                            <div class="space-y-2 text-[11px]">
+                                <!-- 任务 1: TikTok -->
+                                <div class="p-2.5 rounded-lg bg-dark-950/80 border border-dark-border/60 space-y-1.5">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-1.5">
+                                            <i class="fab fa-tiktok text-cyan-400 text-xs"></i>
+                                            <span class="text-slate-200 font-medium font-sans">Moissanite Sparkle Video</span>
+                                        </div>
+                                        <span class="text-[10px] font-mono text-cyan-400 animate-pulse">82% 生成中</span>
+                                    </div>
+                                    <div class="text-[10px] text-slate-400">15s 莫桑石微距火彩短视频 · 达摩院 FunClip 自动加英文字幕</div>
+                                    <div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                                        <div class="bg-accent-cyan h-full rounded-full" style="width: 82%"></div>
+                                    </div>
+                                </div>
+
+                                <!-- 任务 2: Instagram -->
+                                <div class="p-2.5 rounded-lg bg-dark-950/80 border border-dark-border/60 space-y-1.5">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-1.5">
+                                            <i class="fab fa-instagram text-pink-400 text-xs"></i>
+                                            <span class="text-slate-200 font-medium font-sans">Jade Aesthetic Carousel</span>
+                                        </div>
+                                        <span class="text-[10px] font-mono text-accent-emerald">就绪待发布</span>
+                                    </div>
+                                    <div class="text-[10px] text-slate-400">新中式翡翠穿搭 4 图轮播 · LangGraph HITL 审核通过</div>
+                                    <div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                                        <div class="bg-accent-emerald h-full rounded-full" style="width: 100%"></div>
+                                    </div>
+                                </div>
+
+                                <!-- 任务 3: Meta Ads -->
+                                <div class="p-2.5 rounded-lg bg-dark-950/80 border border-dark-border/60 space-y-1.5">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-1.5">
+                                            <i class="fab fa-facebook text-blue-400 text-xs"></i>
+                                            <span class="text-slate-200 font-medium font-sans">High-ROAS Ad Copy Variant #3</span>
+                                        </div>
+                                        <span class="text-[10px] font-mono text-accent-gold">4.8x ROAS</span>
+                                    </div>
+                                    <div class="text-[10px] text-slate-400">欧美圣诞礼遇季投流 · Coze 自动规避海外违规词</div>
+                                </div>
+                            </div>
+
+                            <div class="pt-2 border-t border-dark-border/60 flex items-center justify-between text-[11px]">
+                                <button type="button" onclick="switchTab('xhs')" class="text-accent-emerald hover:underline flex items-center gap-1 font-mono">
+                                    <span>打开出海内容工场</span> <i class="fas fa-arrow-right text-[10px]"></i>
+                                </button>
+                                <span class="text-[10px] text-slate-500 font-mono">日产出 450+ 篇</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============================================================= -->
                 <!-- Token FinOps 算力经济学与商业 ROI 智能大盘 -->
                 <!-- ============================================================= -->
                 <div class="glass-card p-5 space-y-4">
                     <div class="flex items-center justify-between pb-3 border-b border-dark-border flex-wrap gap-2">
                         <div class="flex items-center gap-2">
                             <i class="fas fa-coins text-accent-gold text-sm"></i>
-                            <h3 class="font-semibold text-white text-sm">企业级大模型算力经济学 (Model FinOps & ROI Engine)</h3>
+                            <h3 class="font-semibold text-white text-sm">企业级大模型算力经济学 (Model FinOps &amp; ROI Engine)</h3>
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="tag tag-accent font-mono text-[10px]">KV-Cache 动态降本: 92.4%</span>
@@ -1156,13 +1353,13 @@
                         <span class="tag">侧边栏直通实操工作台</span>
                     </div>
                     <div id="labs-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                        <!-- Module 1: 小红书营销流水线 -->
+                        <!-- Module 1: Instagram & TikTok 出海营销流水线 -->
                         <div class="rounded-xl border border-dark-border bg-dark-900/50 p-4 hover:border-accent-emerald/40 transition-colors flex flex-col justify-between">
                             <div>
                                 <div class="flex items-center gap-2 mb-1.5">
                                     <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald flex-shrink-0 animate-pulse"></span>
                                     <span class="text-[13px] text-slate-200 font-medium font-mono">labs/graph-content</span>
-                                    <span class="tag flex-shrink-0">内容工厂</span>
+                                    <span class="tag flex-shrink-0">海外内容工厂</span>
                                     <span class="ml-auto text-[11px] text-accent-emerald">工作台就绪</span>
                                 </div>
                                 <ul class="text-[11px] text-slate-400 leading-relaxed space-y-1 mt-2">
@@ -1235,10 +1432,10 @@
                                     <i class="fas fa-gem text-sm"></i>
                                 </div>
                                 <div class="min-w-0">
-                                    <div class="text-[13px] text-white font-medium truncate">琼华珠宝 · AI 智能导购智能体</div>
+                                    <div class="text-[13px] text-white font-medium truncate">琼华海外轻奢 · AI 独立站智能导购 (Global Concierge)</div>
                                     <div class="text-[11px] text-accent-emerald flex items-center gap-1.5">
                                         <span class="w-1 h-1 rounded-full bg-accent-emerald"></span>
-                                        多轮会话 + 工具自纠错推理引擎
+                                        多语言多轮会话 + 全球直邮/货币换算与工具自纠错
                                     </div>
                                 </div>
                             </div>
@@ -1255,8 +1452,8 @@
                                     <i class="fas fa-robot"></i>
                                 </div>
                                 <div class="rounded-xl rounded-tl-sm bg-dark-700 border border-dark-border text-[13px] leading-relaxed px-4 py-3 max-w-[85%] text-slate-300">
-                                    您好！我是琼华珠宝的资深 AI 选品顾问「小琼」。<br><br>
-                                    我可以为您智能挑选玉石、莫桑钻、珍珠等珠宝饰品，支持按预算 / 送礼人群推荐，也可以帮您查询最新满减优惠券与鉴定证书。请问您今天想挑选哪类首饰？
+                                    您好！我是琼华珠宝全球独立站的资深 AI 选品顾问「Qionghua Concierge」。<br><br>
+                                    我可以为您智能挑选天然翡翠、莫桑石、珍珠等轻奢饰品，支持按美元/多币种预算与欧美礼遇季场景推荐，也可帮您查询 GIA 国际鉴定证书与全球直邮规范。请问您今天想挑选哪类首饰？
                                 </div>
                             </div>
                         </div>
@@ -1264,14 +1461,14 @@
                         <!-- 快捷提问词：统一 chip 样式，去掉 emoji 与彩色底 -->
                         <div class="px-4 py-2.5 border-t border-dark-border flex items-center gap-2 overflow-x-auto">
                             <span class="text-[11px] text-slate-600 whitespace-nowrap">快捷测试</span>
-                            <button onclick="sendQuickPrompt('帮我推荐一款 1000-2000 元送长辈的和田玉吊坠')" class="chip">
-                                送长辈天然玉石
+                            <button onclick="sendQuickPrompt('帮我推荐一款 $200-$500 送礼的天然和田玉吊坠，支持国际直邮吗？')" class="chip">
+                                送礼天然玉石 ($200-$500)
                             </button>
                             <button onclick="sendQuickPrompt('有没有 500 元无门槛优惠券？')" class="chip">
                                 测试券超出自纠错
                             </button>
-                            <button onclick="sendQuickPrompt('莫桑钻和天然钻石有什么区别？保真吗？')" class="chip">
-                                莫桑钻百科与证书
+                            <button onclick="sendQuickPrompt('莫桑钻和天然钻石有什么区别？附带 GIA/IGI 权威证书吗？')" class="chip">
+                                莫桑钻与 GIA 国际认证
                             </button>
                         </div>
 
@@ -1349,7 +1546,7 @@
                         <span class="w-2 h-2 rounded-full bg-accent-gold animate-pulse"></span>
                         <span class="font-medium text-white">工序定位：第二道 · 全渠道矩阵分发与合规风控 (Coze)</span>
                         <span class="text-slate-500 hidden sm:inline">|</span>
-                        <span id="mkt-source-badge" class="text-slate-400 font-mono">接收来自「小红书深度工场 (LangGraph)」或「视频切片 (FunASR)」的母版内容进行 5 大渠道派生</span>
+                        <span id="mkt-source-badge" class="text-slate-400 font-mono">接收来自「出海社媒工场 (LangGraph)」或「短视频切片 (FunASR)」的母版内容进行 5 大海外渠道派生</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <button onclick="switchTab('xhs')" class="text-accent-emerald hover:underline flex items-center gap-1 font-mono">
@@ -1379,35 +1576,35 @@
                                     <input type="radio" name="mkt-platform" value="xiaohongshu" checked class="peer sr-only">
                                     <div class="py-2.5 px-1 rounded-lg border border-dark-border text-center transition-colors peer-checked:border-accent-gold/50 peer-checked:bg-accent-gold/10 peer-checked:text-accent-gold">
                                         <i class="fab fa-instagram block text-sm mb-1"></i>
-                                        <span class="text-[11px]">小红书图文</span>
+                                        <span class="text-[11px]">Instagram 视觉帖</span>
                                     </div>
                                 </label>
                                 <label class="cursor-pointer">
                                     <input type="radio" name="mkt-platform" value="douyin" class="peer sr-only">
                                     <div class="py-2.5 px-1 rounded-lg border border-dark-border text-center transition-colors peer-checked:border-accent-gold/50 peer-checked:bg-accent-gold/10 peer-checked:text-accent-gold">
                                         <i class="fab fa-tiktok block text-sm mb-1"></i>
-                                        <span class="text-[11px]">抖音口播</span>
+                                        <span class="text-[11px]">TikTok 爆款脚本</span>
                                     </div>
                                 </label>
                                 <label class="cursor-pointer">
                                     <input type="radio" name="mkt-platform" value="wechat" class="peer sr-only">
                                     <div class="py-2.5 px-1 rounded-lg border border-dark-border text-center transition-colors peer-checked:border-accent-gold/50 peer-checked:bg-accent-gold/10 peer-checked:text-accent-gold">
-                                        <i class="fab fa-weixin block text-sm mb-1"></i>
-                                        <span class="text-[11px]">微信私域</span>
+                                        <i class="fab fa-whatsapp block text-sm mb-1"></i>
+                                        <span class="text-[11px]">WhatsApp / 私域</span>
                                     </div>
                                 </label>
                                 <label class="cursor-pointer">
                                     <input type="radio" name="mkt-platform" value="tmall" class="peer sr-only">
                                     <div class="py-2.5 px-1 rounded-lg border border-dark-border text-center transition-colors peer-checked:border-accent-gold/50 peer-checked:bg-accent-gold/10 peer-checked:text-accent-gold">
                                         <i class="fas fa-shopping-bag block text-sm mb-1"></i>
-                                        <span class="text-[11px]">电商详情页</span>
+                                        <span class="text-[11px]">Shopify 详情页</span>
                                     </div>
                                 </label>
                                 <label class="cursor-pointer">
                                     <input type="radio" name="mkt-platform" value="moments" class="peer sr-only">
                                     <div class="py-2.5 px-1 rounded-lg border border-dark-border text-center transition-colors peer-checked:border-accent-gold/50 peer-checked:bg-accent-gold/10 peer-checked:text-accent-gold">
-                                        <i class="fas fa-mobile-screen block text-sm mb-1"></i>
-                                        <span class="text-[11px]">朋友圈短文案</span>
+                                        <i class="fab fa-x-twitter block text-sm mb-1"></i>
+                                        <span class="text-[11px]">X / 跨境短推</span>
                                     </div>
                                 </label>
                             </div>
@@ -1683,7 +1880,7 @@
                                 <span class="font-mono text-accent-gold">0.887</span>
                             </div>
                             <p class="text-[12px] text-slate-400 leading-relaxed">
-                                新疆且末与青海老料在强光透射下呈现致密毡状交织结构，油脂光泽感强，黑点分布均匀自然。琼华每一件出库碧玉饰品均经 NGTC 国家级宝玉石质检机构一物一证检验。
+                                新疆且末与青海老料在强光透射下呈现致密毡状交织结构，油脂光泽感强，黑点分布均匀自然。琼华每一件出库碧玉饰品均经 NGTC / GIA / IGI 国际宝玉石权威机构一物一证保真检验。
                             </p>
                         </div>
                     </div>
@@ -1755,7 +1952,7 @@
             <!-- TAB 8: 内容工厂 (LangGraph 1.0) -->
             <!-- ------------------------------------------------------------- -->
                         <!-- ------------------------------------------------------------- -->
-            <!-- TAB 8: 小红书深度工场 (LangGraph 1.0) -->
+            <!-- TAB 8: Instagram & TikTok 出海工场 (LangGraph 1.0) -->
             <!-- ------------------------------------------------------------- -->
             <div id="tab-xhs" class="tab-content hidden space-y-5">
                 <!-- 上下游工序协同链路指引条 (Pipeline Chain Banner) -->
@@ -1777,7 +1974,7 @@
                         <div class="flex items-center justify-between pb-3 border-b border-dark-border">
                             <div class="flex items-center gap-2">
                                 <i class="fas fa-feather-pointed text-accent-emerald text-sm"></i>
-                                <h3 class="font-semibold text-white text-sm">小红书深度工场</h3>
+                                <h3 class="font-semibold text-white text-sm">Instagram &amp; TikTok 出海工场</h3>
                             </div>
                             <span class="tag tag-accent text-[11px] font-mono">LangGraph 1.0 (HITL)</span>
                         </div>
@@ -1920,16 +2117,16 @@
                         <div class="glass-card p-3.5 flex items-center justify-between flex-wrap gap-2.5">
                             <div class="flex items-center gap-1.5 p-1 rounded-xl bg-dark-900 border border-dark-border">
                                 <button type="button" id="channel-tab-xhs" onclick="switchChannel('xhs')" class="channel-btn px-3 py-1.5 rounded-lg text-[12px] font-medium flex items-center gap-1.5 transition-all bg-emerald-950/70 text-accent-emerald border border-accent-emerald/40">
-                                    <i class="fas fa-mobile-screen-button text-xs"></i>
-                                    <span>小红书图文</span>
+                                    <i class="fab fa-instagram text-xs text-pink-400"></i>
+                                    <span>Instagram 视觉图文</span>
                                 </button>
                                 <button type="button" id="channel-tab-wechat" onclick="switchChannel('wechat')" class="channel-btn px-3 py-1.5 rounded-lg text-[12px] font-medium text-slate-400 hover:text-white flex items-center gap-1.5 transition-all">
-                                    <i class="fab fa-weixin text-green-400 text-xs"></i>
-                                    <span>微信公众号</span>
+                                    <i class="fab fa-facebook text-blue-400 text-xs"></i>
+                                    <span>Facebook &amp; Meta 长文</span>
                                 </button>
                                 <button type="button" id="channel-tab-video" onclick="switchChannel('video')" class="channel-btn px-3 py-1.5 rounded-lg text-[12px] font-medium text-slate-400 hover:text-white flex items-center gap-1.5 transition-all">
-                                    <i class="fas fa-clapperboard text-accent-cyan text-xs"></i>
-                                    <span>短视频分镜脚本</span>
+                                    <i class="fab fa-tiktok text-cyan-400 text-xs"></i>
+                                    <span>TikTok / Reels 分镜脚本</span>
                                 </button>
                             </div>
                             <div class="flex items-center flex-wrap gap-2">
@@ -1937,9 +2134,9 @@
                                     <i class="fas fa-mobile-screen text-xs text-accent-cyan"></i>
                                     <span id="phone-frame-label">真机外壳: 开</span>
                                 </button>
-                                <button type="button" id="btn-generate-poster" onclick="renderXhsPosterModal()" class="px-2.5 py-1.5 rounded-lg text-[12px] font-medium bg-accent-emerald/20 border border-accent-emerald/50 text-accent-emerald hover:bg-accent-emerald/30 flex items-center gap-1.5 transition-all shadow-sm" title="纯前端 HTML5 Canvas 压制生成 1080P 小红书种草长图海报并导出">
+                                <button type="button" id="btn-generate-poster" onclick="renderXhsPosterModal()" class="px-2.5 py-1.5 rounded-lg text-[12px] font-medium bg-accent-emerald/20 border border-accent-emerald/50 text-accent-emerald hover:bg-accent-emerald/30 flex items-center gap-1.5 transition-all shadow-sm" title="纯前端 HTML5 Canvas 压制生成 1080P Instagram 视觉海报并导出">
                                     <i class="fas fa-image text-xs"></i>
-                                    <span>导出种草海报</span>
+                                    <span>导出视觉海报</span>
                                 </button>
                                 <button type="button" id="btn-pipe-xhs-to-mkt" onclick="pipeXhsToMarketing()" class="px-2.5 py-1.5 rounded-lg text-[12px] font-medium bg-accent-gold/15 border border-accent-gold/40 text-accent-gold hover:bg-accent-gold/25 flex items-center gap-1.5 transition-colors shadow-sm" title="将此爆款母版一键流转到全渠道营销矩阵，自动派生多平台文案并做广告法质检">
                                     <i class="fas fa-share-nodes text-xs"></i>
@@ -1954,7 +2151,7 @@
 
                         <!-- 拟真多端内容预览卡片 -->
                         <div id="xhs-preview-card" class="glass-card p-5 space-y-4 rounded-2xl border border-dark-border transition-all">
-                            <!-- 渠道 1: 小红书移动端拟真 (带 iPhone 16 Pro 钛金属外壳与状态栏) -->
+                            <!-- 渠道 1: Instagram 移动端拟真 (带 iPhone 16 Pro 钛金属外壳与状态栏) -->
                             <div id="view-channel-xhs" class="space-y-4 max-w-md mx-auto shadow-2xl rounded-3xl overflow-hidden border border-slate-700/60 bg-dark-950/80 p-4 transition-all">
                                 <!-- iPhone 16 Pro 拟真顶栏与灵动岛药丸 -->
                                 <div id="phone-frame-header" class="rounded-t-2xl bg-slate-950/90 border-b border-slate-800/80 pb-2.5 text-[10px] font-mono text-slate-400 select-none">
@@ -1971,13 +2168,13 @@
                                             <i class="fas fa-battery-full text-[11px] text-emerald-400"></i>
                                         </div>
                                     </div>
-                                    <!-- 小红书 App 原生顶栏 -->
+                                    <!-- Instagram App 原生顶栏 -->
                                     <div class="flex items-center justify-between mt-2 pt-2 border-t border-slate-800/80 px-2 text-[11px]">
                                         <i class="fas fa-chevron-left text-slate-400"></i>
                                         <div class="flex items-center gap-4 text-slate-300 font-sans font-medium text-xs">
-                                            <span class="text-slate-500">关注</span>
-                                            <span class="text-white border-b-2 border-red-500 pb-0.5">正文</span>
-                                            <span class="text-slate-500">附近</span>
+                                            <span class="text-slate-500">Feed</span>
+                                            <span class="text-white border-b-2 border-pink-500 pb-0.5">Reels</span>
+                                            <span class="text-slate-500">Explore</span>
                                         </div>
                                         <i class="fas fa-arrow-up-from-bracket text-slate-400"></i>
                                     </div>
@@ -2040,7 +2237,7 @@
                                         <span class="flex items-center gap-1 hover:text-accent-gold transition-colors"><i class="fas fa-star text-accent-gold"></i> 1.8k</span>
                                         <span class="flex items-center gap-1"><i class="fas fa-comment-dots"></i> 368</span>
                                     </div>
-                                    <span class="text-[10px] font-mono text-slate-600">小红书移动端拟真</span>
+                                    <span class="text-[10px] font-mono text-slate-600">Instagram 移动端拟真</span>
                                 </div>
 
                                 <!-- iPhone 16 Pro 底部 Home 指示条 -->
@@ -2049,16 +2246,16 @@
                                 </div>
                             </div>
 
-                            <!-- 渠道 2: 微信公众号深度图文拟真 -->
+                            <!-- 渠道 2: Facebook & Meta 深度长文拟真 -->
                             <div id="view-channel-wechat" class="hidden space-y-4">
-                                <!-- 公众号顶部信息 -->
+                                <!-- Meta 顶部信息 -->
                                 <div class="flex items-center justify-between pb-3 border-b border-dark-border text-[11px]">
                                     <div class="flex items-center gap-2">
-                                        <span class="px-1.5 py-0.5 rounded bg-green-950/60 border border-green-500/30 text-green-400 text-[10px] font-medium">原创</span>
-                                        <span class="text-white font-medium">东方雅物志</span>
-                                        <span class="text-slate-500">· 3分钟阅读</span>
+                                        <span class="px-1.5 py-0.5 rounded bg-blue-950/60 border border-blue-500/30 text-blue-400 text-[10px] font-medium">Meta Verified</span>
+                                        <span class="text-white font-medium">Qionghua High Jewelry</span>
+                                        <span class="text-slate-500">· 3 min read</span>
                                     </div>
-                                    <span class="text-slate-500 font-mono text-[10px]">微信公众平台规范</span>
+                                    <span class="text-slate-500 font-mono text-[10px]">Meta 商业图文规范</span>
                                 </div>
 
                                 <!-- 文章大标题 -->
@@ -2182,7 +2379,7 @@
                 </div>
 
                 <!-- ============================================================= -->
-                <!-- 1080P 小红书种草长图海报预览与导出模态框 (HTML5 Canvas 压制生成) -->
+                <!-- 1080P Instagram 视觉海报预览与导出模态框 (HTML5 Canvas 压制生成) -->
                 <!-- ============================================================= -->
                 <div id="xhs-poster-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
                     <div id="xhs-poster-box" class="w-full max-w-2xl max-h-[92vh] rounded-2xl bg-dark-950/98 border border-dark-border shadow-2xl shadow-black/95 overflow-hidden flex flex-col text-[12px]">
@@ -2190,7 +2387,7 @@
                         <div class="p-3.5 border-b border-dark-border flex items-center justify-between bg-dark-900/60">
                             <div class="flex items-center gap-2">
                                 <span class="w-2.5 h-2.5 rounded-full bg-accent-emerald animate-pulse"></span>
-                                <h4 class="font-semibold text-white text-sm">小红书 1080P 高清种草海报</h4>
+                                <h4 class="font-semibold text-white text-sm">Instagram 1080P 高清视觉海报</h4>
                                 <span class="tag tag-accent text-[10px] font-mono">1080 × 1440 黄金比例</span>
                             </div>
                             <button type="button" onclick="closePosterModal()" class="btn-ghost px-2 py-1 rounded text-slate-400 hover:text-white" title="关闭">
@@ -2201,7 +2398,7 @@
                         <!-- 海报图像展示区 -->
                         <div class="flex-1 overflow-y-auto p-4 flex items-center justify-center bg-dark-900/40">
                             <div class="max-h-[62vh] rounded-xl overflow-hidden shadow-2xl border border-dark-border/80 bg-black flex items-center justify-center">
-                                <img id="xhs-poster-img" alt="小红书 1080P 高清种草海报" class="max-h-[60vh] object-contain" />
+                                <img id="xhs-poster-img" alt="Instagram 1080P 高清视觉海报" class="max-h-[60vh] object-contain" />
                             </div>
                             <!-- 隐藏的渲染 Canvas -->
                             <canvas id="xhs-poster-canvas" width="1080" height="1440" class="hidden"></canvas>
@@ -2548,9 +2745,9 @@
             };
 
             const TENANT_LABELS = {
-                'tenant-hq': '深圳南山总店 · 旗舰中枢',
-                'tenant-tiktok': 'TikTok 跨境出海矩阵',
-                'tenant-embroidery': '非遗国风苏绣文创部'
+                'tenant-hq': 'Shopify 北美独立站 · 旗舰中枢',
+                'tenant-tiktok': 'TikTok Shop 全球出海矩阵',
+                'tenant-embroidery': 'Instagram 欧美轻奢独立站'
             };
 
             return {
@@ -2817,7 +3014,7 @@
                 { id: 'topic', key: 'topic', label: '选题挖掘', title: '1. Topic Miner', desc: '聚类爆款痛点与搜索热词子图', state: 'idle', xRatio: 0.23, yRatio: 0.5, r: 18 },
                 { id: 'hitl', key: 'hitl', label: 'HITL门控', title: '2. HITL Interrupt', desc: '人在环路中断审查与策略干预', state: 'idle', xRatio: 0.40, yRatio: 0.28, r: 19 },
                 { id: 'writer', key: 'writer', label: '成文子图', title: '3. Copywriter', desc: '结构化正文与钩子框架生成', state: 'idle', xRatio: 0.57, yRatio: 0.5, r: 18 },
-                { id: 'visual', key: 'visual', label: '视觉排版', title: '4. Visual Prompts', desc: '小红书封面卡片与分镜提示词', state: 'idle', xRatio: 0.74, yRatio: 0.5, r: 18 },
+                { id: 'visual', key: 'visual', label: '视觉排版', title: '4. Visual Prompts', desc: 'Instagram 视觉卡片与分镜提示词', state: 'idle', xRatio: 0.74, yRatio: 0.5, r: 18 },
                 { id: 'checkpointer', key: 'checkpointer', label: '快照脱敏', title: '5. Postgres Snapshot', desc: '持久化状态快照与敏感词过滤', state: 'idle', xRatio: 0.88, yRatio: 0.5, r: 18 },
                 { id: 'end', key: 'end', label: 'END', title: '终点落盘', desc: '工作流汇聚并输出至多渠道分发', state: 'idle', xRatio: 0.96, yRatio: 0.5, r: 12 }
             ];
@@ -3130,8 +3327,8 @@
                 { id: 'analytics', name: 'DuckDB 商业决策', port: ':8003', role: 'OLAP 分析', desc: '毫秒级内存列式引擎与数据分析洞察', tab: 'analytics', xRatio: 0.18, yRatio: 0.62, r: 17, type: 'DuckDB', color: '#34D399' },
                 { id: 'rag', name: '企业向量知识库', port: ':8004', role: 'RAG 检索', desc: 'BGE-M3 语义向量与 BM25 混合精准召回', tab: 'rag', xRatio: 0.82, yRatio: 0.62, r: 17, type: 'Milvus/RAG', color: '#06B6D4' },
                 { id: 'history', name: '时序监控历史', port: ':8005', role: '事件回放', desc: 'SQLite 事件流捕获与节点可用率趋势', tab: 'history', xRatio: 0.34, yRatio: 0.82, r: 16, type: 'SQLite', color: '#10B981' },
-                { id: 'xhs', name: '小红书深度工场', port: ':8501', role: '内容流水线', desc: 'LangGraph 1.0 人在环路 (HITL) 深度成文', tab: 'xhs', xRatio: 0.66, yRatio: 0.82, r: 16, type: 'LangGraph HITL', color: '#34D399' },
-                { id: 'funclip', name: '音视频智能切片', port: ':7860', role: '多模态智能体', desc: '阿里达摩院 FunASR 工业级智能视频切片', tab: 'funclip', xRatio: 0.50, yRatio: 0.16, r: 16, type: 'FunASR', color: '#38BDF8' }
+                { id: 'xhs', name: '出海社媒工场', port: ':8501', role: 'Instagram/TikTok', desc: 'LangGraph 1.0 人在环路 (HITL) 跨境爆款流水线', tab: 'xhs', xRatio: 0.66, yRatio: 0.82, r: 16, type: 'LangGraph HITL', color: '#34D399' },
+                { id: 'funclip', name: 'Reels分镜切片', port: ':7860', role: '短视频AI切片', desc: 'FunASR 工业级多模态短视频分镜智能切片', tab: 'funclip', xRatio: 0.50, yRatio: 0.16, r: 16, type: 'FunASR/Reels', color: '#38BDF8' }
             ];
 
             // 粒子队列（在 Hub 与各卫星节点间穿梭）
@@ -3545,8 +3742,8 @@
             'gateway': '<i class="fas fa-shield-halved text-accent-cyan mr-2.5"></i> 模型调度网关与容灾中枢',
             'rag': '<i class="fas fa-database text-accent-cyan mr-2.5"></i> 企业级行业知识库与向量检索',
             'history': '<i class="fas fa-clock-rotate-left text-accent-emerald mr-2.5"></i> 历史趋势与事件回放',
-            'xhs': '<i class="fas fa-feather-pointed text-accent-emerald mr-2.5"></i> 小红书深度工场 · LangGraph 1.0 (HITL)',
-            'funclip': '<i class="fas fa-film text-accent-cyan mr-2.5"></i> 达摩院 FunClip 多模态音视频智能切片'
+            'xhs': '<i class="fas fa-feather-pointed text-accent-emerald mr-2.5"></i> Instagram &amp; TikTok 出海工场 · LangGraph 1.0 (HITL)',
+            'funclip': '<i class="fas fa-film text-accent-cyan mr-2.5"></i> Reels &amp; Shorts 多模态短视频智能切片'
         };
 
         function switchTab(tabId) {
@@ -3579,7 +3776,7 @@
             if (tabId === 'history') {
                 setTimeout(loadHistory, 60);
             }
-            // 小红书 DAG 画布重绘以适应当前视口尺寸
+            // 出海工场 DAG 画布重绘以适应当前视口尺寸
             if (tabId === 'xhs') {
                 setTimeout(resizeAndRenderXhsDag, 80);
             }
@@ -4430,7 +4627,7 @@
                 const visualsContainer = document.getElementById('xhs-out-visuals');
                 visualsContainer.innerHTML = (data.visual_prompts || []).map(vp => '<div>· ' + vp + '</div>').join('');
 
-                // 微信公众号数据填充
+                // Facebook & Meta 长文数据填充
                 if (data.channels && data.channels.wechat) {
                     const wc = data.channels.wechat;
                     const wTitle = document.getElementById('wechat-out-title');
@@ -4504,9 +4701,9 @@
 
         function copyXhsNote() {
             let text = '';
-            let channelName = '小红书图文';
+            let channelName = 'Instagram 视觉图文';
             if (currentChannel === 'wechat') {
-                channelName = '微信公众号';
+                channelName = 'Facebook & Meta 长文';
                 const title = document.getElementById('wechat-out-title') ? document.getElementById('wechat-out-title').innerText : '';
                 const quote = document.getElementById('wechat-out-quote') ? document.getElementById('wechat-out-quote').innerText : '';
                 const content = document.getElementById('wechat-out-content') ? document.getElementById('wechat-out-content').innerText : '';
@@ -4948,12 +5145,12 @@
             if (xhsBadge) {
                 xhsBadge.innerHTML = '<span class="text-accent-cyan font-medium">已继承 FunClip 视频切片高光热词：</span> ' + (sample.pName || '珠宝热词');
             }
-            showToast('【工序协同联动】已从 FunClip 导入高光热词并进入小红书深度工场！', 'info');
+            showToast('【工序协同联动】已从短视频切片导入高光热词并进入出海社媒工场！', 'info');
             handleXhsGenerate();
         }
 
         // -------------------------------------------------------------
-        // 工序协同闭环：小红书深度工场 (LangGraph) -> 全渠道营销矩阵 (Coze)
+        // 工序协同闭环：出海社媒工场 (LangGraph) -> 全渠道营销矩阵 (Coze)
         // -------------------------------------------------------------
         function pipeXhsToMarketing() {
             const prod = document.getElementById('xhs-product-name')?.value || '天然冰种和田碧玉平安扣吊坠';
@@ -4965,9 +5162,9 @@
             if (mktProd) mktProd.value = prod;
             if (mktKeys) mktKeys.value = kw;
             if (sourceBadge) {
-                sourceBadge.innerHTML = '<span class="text-accent-gold font-medium">已继承小红书深度工场 (LangGraph) 爆款母版：</span> ' + prod;
+                sourceBadge.innerHTML = '<span class="text-accent-gold font-medium">已继承出海社媒工场 (LangGraph) 爆款母版：</span> ' + prod;
             }
-            showToast('【工序协同联动】已从小红书深度工场导入母版！正在调用全渠道营销矩阵 (Coze) 派生文案并执行《新广告法》合规审查...', 'ok');
+            showToast('【工序协同联动】已从出海社媒工场导入母版！正在调用全渠道营销矩阵 (Coze) 派生文案并执行合规风控审查...', 'ok');
             handleMarketingGenerate();
         }
 
@@ -5164,9 +5361,9 @@
             { id: 'act-failover', title: '执行网关毫秒级容灾热切演练', category: '快捷动作', icon: 'fas fa-bolt text-accent-gold', keywords: '热切 failover 容灾 网关 timeout 限流 熔断', action: () => triggerQuickFailover() },
             { id: 'act-dynamic-island', title: '展开 / 收起灵动岛 HUD 状态诊断抽屉', category: '快捷动作', icon: 'fas fa-server text-accent-cyan', keywords: '灵动岛 hud 抽屉 状态 诊断 端口', action: () => toggleDynamicIsland() },
             { id: 'act-openai', title: '演练统一 OpenAI 规范 Chat Completions 代理', category: '快捷动作', icon: 'fas fa-terminal text-accent-cyan', keywords: 'openai chat completions 代理 模型 api', action: () => openOpenaiRunner() },
-            { id: 'act-export-poster', title: '小红书深度工场：一键导出 1080P 种草长图海报', category: '快捷动作', icon: 'fas fa-image text-accent-emerald', keywords: '海报 导出 图片 1080p 小红书 canvas poster', action: () => renderXhsPosterModal() },
-            { id: 'act-toggle-phone', title: '小红书深度工场：切换 iPhone 16 Pro 拟真真机外壳', category: '快捷动作', icon: 'fas fa-mobile-screen text-accent-cyan', keywords: '真机 外壳 手机 视口 切换 iphone 16 pro', action: () => togglePhoneFrame() },
-            { id: 'act-pipe-xhs', title: '工序协同：从小红书深度工场同步至营销矩阵', category: '快捷动作', icon: 'fas fa-share-nodes text-accent-gold', keywords: '流转 同步 协同 小红书 营销 闭环 派生', action: () => pipeXhsToMarketing() },
+            { id: 'act-export-poster', title: '出海社媒工场：一键导出 1080P Instagram 视觉海报', category: '快捷动作', icon: 'fas fa-image text-accent-emerald', keywords: '海报 导出 图片 1080p instagram poster pinterest 出海', action: () => renderXhsPosterModal() },
+            { id: 'act-toggle-phone', title: '出海社媒工场：切换 iPhone 16 Pro 拟真真机外壳', category: '快捷动作', icon: 'fas fa-mobile-screen text-accent-cyan', keywords: '真机 外壳 手机 视口 切换 iphone 16 pro instagram', action: () => togglePhoneFrame() },
+            { id: 'act-pipe-xhs', title: '工序协同：从出海社媒工场同步至营销矩阵', category: '快捷动作', icon: 'fas fa-share-nodes text-accent-gold', keywords: '流转 同步 协同 出海社媒 营销 闭环 派生 instagram tiktok', action: () => pipeXhsToMarketing() },
             { id: 'act-copy-trace', title: '复制最近一条全链路高熵 Trace ID', category: '快捷动作', icon: 'fas fa-fingerprint text-accent-emerald', keywords: 'trace id 复制 审计 追踪 日志', action: () => copyLatestTraceId() },
             { id: 'act-reset-waveform', title: '重置 FunClip 音频波形轨道指针至起点', category: '快捷动作', icon: 'fas fa-rotate-left text-accent-cyan', keywords: '波形 重置 funclip 音频 指针 daw', action: () => resetFunclipWaveform() },
             { id: 'act-clear-guide', title: '清空电商智能导购会话历史', category: '快捷动作', icon: 'fas fa-trash-can text-slate-400', keywords: '清空 导购 对话 消息 聊天', action: () => clearGuideChat() },
@@ -5174,12 +5371,12 @@
             // 工作台直达
             { id: 'tab-overview', title: '跳转：全域智能体调度总览大盘', category: '工作台直达', icon: 'fas fa-layer-group text-accent-emerald', keywords: '大盘 监控 总览 overview 概览 集群', action: () => switchTab('overview') },
             { id: 'tab-guide', title: '跳转：垂直电商智能导购工作站 (LangGraph)', category: '工作台直达', icon: 'fas fa-store text-accent-cyan', keywords: '导购 电商 珠宝 选品 guide 优惠券', action: () => switchTab('guide') },
-            { id: 'tab-marketing', title: '跳转：全渠道营销矩阵与合规风控 (Coze)', category: '工作台直达', icon: 'fas fa-wand-magic-sparkles text-accent-gold', keywords: '营销 矩阵 coze 广告法 违禁词 朋友圈 抖音', action: () => switchTab('marketing') },
+            { id: 'tab-marketing', title: '跳转：全渠道营销矩阵与合规风控 (Coze)', category: '工作台直达', icon: 'fas fa-wand-magic-sparkles text-accent-gold', keywords: '营销 矩阵 coze 广告法 违禁词 tiktok instagram', action: () => switchTab('marketing') },
             { id: 'tab-analytics', title: '跳转：智能数据分析与商业洞察 (DuckDB)', category: '工作台直达', icon: 'fas fa-chart-pie text-accent-emerald', keywords: '数据分析 duckdb sql text to sql 图表 销量 gmv', action: () => switchTab('analytics') },
             { id: 'tab-gateway', title: '跳转：模型调度网关与容灾中枢 (MCP)', category: '工作台直达', icon: 'fas fa-shield-halved text-accent-cyan', keywords: '网关 gateway 容灾 mcp 调度', action: () => switchTab('gateway') },
             { id: 'tab-rag', title: '跳转：企业级行业知识库与向量检索 (RAG)', category: '工作台直达', icon: 'fas fa-database text-accent-cyan', keywords: '知识库 rag 向量 检索 相似度 莫桑钻 和田玉', action: () => switchTab('rag') },
             { id: 'tab-history', title: '跳转：历史趋势与事件回放 (SQLite)', category: '工作台直达', icon: 'fas fa-clock-rotate-left text-accent-emerald', keywords: '历史 趋势 事件 回放 sqlite 探针 延迟', action: () => switchTab('history') },
-            { id: 'tab-xhs', title: '跳转：小红书深度工场 · LangGraph 1.0 (HITL)', category: '工作台直达', icon: 'fas fa-feather-pointed text-accent-emerald', keywords: '小红书 xhs langgraph 内容工厂 人在环路 状态机 深度', action: () => switchTab('xhs') },
+            { id: 'tab-xhs', title: '跳转：Instagram & TikTok 出海工场 · LangGraph 1.0 (HITL)', category: '工作台直达', icon: 'fas fa-feather-pointed text-accent-emerald', keywords: 'instagram tiktok 出海 xhs langgraph 内容工厂 人在环路 状态机 深度', action: () => switchTab('xhs') },
             { id: 'tab-funclip', title: '跳转：达摩院 FunClip 多模态音视频智能切片', category: '工作台直达', icon: 'fas fa-film text-accent-cyan', keywords: 'funclip 达摩院 funasr 剪辑 切片 视频 音频 字幕', action: () => switchTab('funclip') }
         ];
 
@@ -5221,7 +5418,7 @@
             const list = document.getElementById('cmd-palette-list');
             if (!list) return;
             if (filteredPaletteCommands.length === 0) {
-                list.innerHTML = '<div class="p-6 text-center text-slate-500 text-[12px]"><i class="fas fa-ghost mr-1 text-slate-600"></i> 未找到匹配指令，试试“小红书”、“热切”或“OpenAI”</div>';
+                list.innerHTML = '<div class="p-6 text-center text-slate-500 text-[12px]"><i class="fas fa-ghost mr-1 text-slate-600"></i> 未找到匹配指令，试试“Instagram”、“TikTok”或“OpenAI”</div>';
                 return;
             }
             let currentCat = '';
@@ -5280,7 +5477,7 @@
         }
 
         // -------------------------------------------------------------
-        // 小红书深度工场：iPhone 16 Pro 钛金属真机视口切换
+        // 出海社媒工场：iPhone 16 Pro 钛金属真机视口切换
         // -------------------------------------------------------------
         let isPhoneFrameEnabled = true;
 
@@ -5306,7 +5503,7 @@
         }
 
         // -------------------------------------------------------------
-        // 小红书深度工场：HTML5 Canvas 1080P 高清种草长图海报压制生成引擎
+        // 出海社媒工场：HTML5 Canvas 1080P 高清视觉海报压制生成引擎
         // -------------------------------------------------------------
         function closePosterModal() {
             const modal = document.getElementById('xhs-poster-modal');
@@ -5529,7 +5726,7 @@
 
             ctx.font = '16px "JetBrains Mono", monospace';
             ctx.fillStyle = '#64748B';
-            ctx.fillText('小红书官方认证珠宝鉴赏创作者 · LangGraph 1.0 Pipeline', 146, botY + 24);
+            ctx.fillText('Instagram 官方认证珠宝鉴赏创作者 · LangGraph 1.0 Pipeline', 146, botY + 24);
 
             // 右侧朱砂红方印章
             const stampW = 100;
@@ -5560,7 +5757,7 @@
             if (!canvas) return;
             const a = document.createElement('a');
             const prod = (document.getElementById('xhs-product-name')?.value || '天然和田玉').trim();
-            a.download = prod + '_小红书1080P种草海报.png';
+            a.download = prod + '_Instagram_1080P视觉海报.png';
             a.href = canvas.toDataURL('image/png');
             a.click();
             showToast('【海报导出】1080P 高清种草长图已保存到您的本地下载目录！', 'ok');
@@ -5575,7 +5772,7 @@
             canvas.toBlob(blob => {
                 if (blob) {
                     navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })])
-                        .then(() => showToast('【海报已复制】高清长图海报已写入系统剪贴板，可在微信/聊天框中直接 Ctrl+V 粘贴！', 'ok'))
+                        .then(() => showToast('【海报已复制】高清长图海报已写入系统剪贴板，可在社媒或聊天框中直接 Ctrl+V 粘贴！', 'ok'))
                         .catch(() => downloadPosterImage());
                 }
             });

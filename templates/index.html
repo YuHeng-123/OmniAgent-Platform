@@ -304,7 +304,7 @@
             <!-- 搜索框 -->
             <div class="p-3.5 border-b border-dark-border/80 flex items-center gap-3 bg-dark-900/50">
                 <i class="fas fa-search text-slate-400 text-xs"></i>
-                <input id="cmd-palette-input" type="text" placeholder="输入指令或搜索工作台（如：小红书、热切、OpenAI、Trace、导购）..." class="flex-1 bg-transparent text-white placeholder-slate-500 text-[13px] focus:outline-none" autocomplete="off" />
+                <input id="cmd-palette-input" type="text" placeholder="输入指令或搜索工作台（如：Instagram、TikTok、出海、热切、OpenAI、导购）..." class="flex-1 bg-transparent text-white placeholder-slate-500 text-[13px] focus:outline-none" autocomplete="off" />
                 <button type="button" onclick="toggleCommandPalette()" class="px-1.5 py-0.5 rounded bg-dark-950 border border-dark-border text-[10px] text-slate-400 hover:text-white font-mono transition-colors">ESC 关闭</button>
             </div>
 
@@ -418,13 +418,13 @@
                 <nav class="space-y-0.5">
                     <button onclick="switchTab('xhs');closeSidebarOnMobile()" id="nav-xhs" class="nav-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] text-slate-400 hover:text-slate-100 transition-colors">
                         <i class="fas fa-feather-pointed w-4 text-center text-[12px] text-accent-emerald"></i>
-                        <span>小红书深度工场</span>
+                        <span>Instagram &amp; TikTok 出海工场</span>
                         <span class="ml-auto tag">LangGraph</span>
                     </button>
                     <button onclick="switchTab('funclip');closeSidebarOnMobile()" id="nav-funclip" class="nav-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] text-slate-400 hover:text-slate-100 transition-colors">
                         <i class="fas fa-film w-4 text-center text-[12px] text-accent-cyan"></i>
-                        <span>音视频智能切片</span>
-                        <span class="ml-auto tag">FunASR</span>
+                        <span>Reels 短视频分镜切片</span>
+                        <span class="ml-auto tag">AI Video</span>
                     </button>
                 </nav>
             </div>
@@ -465,9 +465,9 @@
                 <div class="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-dark-950/80 border border-dark-border text-xs ml-2 flex-shrink-0">
                     <i class="fas fa-building text-accent-cyan text-[11px]"></i>
                     <select id="tenant-workspace-select" onchange="switchTenantWorkspace(this.value)" class="bg-transparent text-slate-200 text-xs focus:outline-none cursor-pointer font-sans">
-                        <option value="tenant-hq" class="bg-dark-900 text-slate-200">深圳南山总店 · 旗舰中枢</option>
-                        <option value="tenant-tiktok" class="bg-dark-900 text-slate-200">TikTok 跨境出海矩阵</option>
-                        <option value="tenant-embroidery" class="bg-dark-900 text-slate-200">非遗国风苏绣文创部</option>
+                        <option value="tenant-hq" class="bg-dark-900 text-slate-200">Shopify 北美独立站 · 旗舰中枢</option>
+                        <option value="tenant-tiktok" class="bg-dark-900 text-slate-200">TikTok Shop 全球出海矩阵</option>
+                        <option value="tenant-embroidery" class="bg-dark-900 text-slate-200">Instagram 欧美轻奢独立站</option>
                     </select>
                 </div>
             </div>
@@ -674,9 +674,9 @@
             };
 
             const TENANT_LABELS = {
-                'tenant-hq': '深圳南山总店 · 旗舰中枢',
-                'tenant-tiktok': 'TikTok 跨境出海矩阵',
-                'tenant-embroidery': '非遗国风苏绣文创部'
+                'tenant-hq': 'Shopify 北美独立站 · 旗舰中枢',
+                'tenant-tiktok': 'TikTok Shop 全球出海矩阵',
+                'tenant-embroidery': 'Instagram 欧美轻奢独立站'
             };
 
             return {
@@ -943,7 +943,7 @@
                 { id: 'topic', key: 'topic', label: '选题挖掘', title: '1. Topic Miner', desc: '聚类爆款痛点与搜索热词子图', state: 'idle', xRatio: 0.23, yRatio: 0.5, r: 18 },
                 { id: 'hitl', key: 'hitl', label: 'HITL门控', title: '2. HITL Interrupt', desc: '人在环路中断审查与策略干预', state: 'idle', xRatio: 0.40, yRatio: 0.28, r: 19 },
                 { id: 'writer', key: 'writer', label: '成文子图', title: '3. Copywriter', desc: '结构化正文与钩子框架生成', state: 'idle', xRatio: 0.57, yRatio: 0.5, r: 18 },
-                { id: 'visual', key: 'visual', label: '视觉排版', title: '4. Visual Prompts', desc: '小红书封面卡片与分镜提示词', state: 'idle', xRatio: 0.74, yRatio: 0.5, r: 18 },
+                { id: 'visual', key: 'visual', label: '视觉排版', title: '4. Visual Prompts', desc: 'Instagram 视觉卡片与分镜提示词', state: 'idle', xRatio: 0.74, yRatio: 0.5, r: 18 },
                 { id: 'checkpointer', key: 'checkpointer', label: '快照脱敏', title: '5. Postgres Snapshot', desc: '持久化状态快照与敏感词过滤', state: 'idle', xRatio: 0.88, yRatio: 0.5, r: 18 },
                 { id: 'end', key: 'end', label: 'END', title: '终点落盘', desc: '工作流汇聚并输出至多渠道分发', state: 'idle', xRatio: 0.96, yRatio: 0.5, r: 12 }
             ];
@@ -1256,8 +1256,8 @@
                 { id: 'analytics', name: 'DuckDB 商业决策', port: ':8003', role: 'OLAP 分析', desc: '毫秒级内存列式引擎与数据分析洞察', tab: 'analytics', xRatio: 0.18, yRatio: 0.62, r: 17, type: 'DuckDB', color: '#34D399' },
                 { id: 'rag', name: '企业向量知识库', port: ':8004', role: 'RAG 检索', desc: 'BGE-M3 语义向量与 BM25 混合精准召回', tab: 'rag', xRatio: 0.82, yRatio: 0.62, r: 17, type: 'Milvus/RAG', color: '#06B6D4' },
                 { id: 'history', name: '时序监控历史', port: ':8005', role: '事件回放', desc: 'SQLite 事件流捕获与节点可用率趋势', tab: 'history', xRatio: 0.34, yRatio: 0.82, r: 16, type: 'SQLite', color: '#10B981' },
-                { id: 'xhs', name: '小红书深度工场', port: ':8501', role: '内容流水线', desc: 'LangGraph 1.0 人在环路 (HITL) 深度成文', tab: 'xhs', xRatio: 0.66, yRatio: 0.82, r: 16, type: 'LangGraph HITL', color: '#34D399' },
-                { id: 'funclip', name: '音视频智能切片', port: ':7860', role: '多模态智能体', desc: '阿里达摩院 FunASR 工业级智能视频切片', tab: 'funclip', xRatio: 0.50, yRatio: 0.16, r: 16, type: 'FunASR', color: '#38BDF8' }
+                { id: 'xhs', name: '出海社媒工场', port: ':8501', role: 'Instagram/TikTok', desc: 'LangGraph 1.0 人在环路 (HITL) 跨境爆款流水线', tab: 'xhs', xRatio: 0.66, yRatio: 0.82, r: 16, type: 'LangGraph HITL', color: '#34D399' },
+                { id: 'funclip', name: 'Reels分镜切片', port: ':7860', role: '短视频AI切片', desc: 'FunASR 工业级多模态短视频分镜智能切片', tab: 'funclip', xRatio: 0.50, yRatio: 0.16, r: 16, type: 'FunASR/Reels', color: '#38BDF8' }
             ];
 
             // 粒子队列（在 Hub 与各卫星节点间穿梭）
@@ -1671,8 +1671,8 @@
             'gateway': '<i class="fas fa-shield-halved text-accent-cyan mr-2.5"></i> 模型调度网关与容灾中枢',
             'rag': '<i class="fas fa-database text-accent-cyan mr-2.5"></i> 企业级行业知识库与向量检索',
             'history': '<i class="fas fa-clock-rotate-left text-accent-emerald mr-2.5"></i> 历史趋势与事件回放',
-            'xhs': '<i class="fas fa-feather-pointed text-accent-emerald mr-2.5"></i> 小红书深度工场 · LangGraph 1.0 (HITL)',
-            'funclip': '<i class="fas fa-film text-accent-cyan mr-2.5"></i> 达摩院 FunClip 多模态音视频智能切片'
+            'xhs': '<i class="fas fa-feather-pointed text-accent-emerald mr-2.5"></i> Instagram &amp; TikTok 出海工场 · LangGraph 1.0 (HITL)',
+            'funclip': '<i class="fas fa-film text-accent-cyan mr-2.5"></i> Reels &amp; Shorts 多模态短视频智能切片'
         };
 
         function switchTab(tabId) {
@@ -1705,7 +1705,7 @@
             if (tabId === 'history') {
                 setTimeout(loadHistory, 60);
             }
-            // 小红书 DAG 画布重绘以适应当前视口尺寸
+            // 出海工场 DAG 画布重绘以适应当前视口尺寸
             if (tabId === 'xhs') {
                 setTimeout(resizeAndRenderXhsDag, 80);
             }
@@ -2556,7 +2556,7 @@
                 const visualsContainer = document.getElementById('xhs-out-visuals');
                 visualsContainer.innerHTML = (data.visual_prompts || []).map(vp => '<div>· ' + vp + '</div>').join('');
 
-                // 微信公众号数据填充
+                // Facebook & Meta 长文数据填充
                 if (data.channels && data.channels.wechat) {
                     const wc = data.channels.wechat;
                     const wTitle = document.getElementById('wechat-out-title');
@@ -2630,9 +2630,9 @@
 
         function copyXhsNote() {
             let text = '';
-            let channelName = '小红书图文';
+            let channelName = 'Instagram 视觉图文';
             if (currentChannel === 'wechat') {
-                channelName = '微信公众号';
+                channelName = 'Facebook & Meta 长文';
                 const title = document.getElementById('wechat-out-title') ? document.getElementById('wechat-out-title').innerText : '';
                 const quote = document.getElementById('wechat-out-quote') ? document.getElementById('wechat-out-quote').innerText : '';
                 const content = document.getElementById('wechat-out-content') ? document.getElementById('wechat-out-content').innerText : '';
@@ -3074,12 +3074,12 @@
             if (xhsBadge) {
                 xhsBadge.innerHTML = '<span class="text-accent-cyan font-medium">已继承 FunClip 视频切片高光热词：</span> ' + (sample.pName || '珠宝热词');
             }
-            showToast('【工序协同联动】已从 FunClip 导入高光热词并进入小红书深度工场！', 'info');
+            showToast('【工序协同联动】已从短视频切片导入高光热词并进入出海社媒工场！', 'info');
             handleXhsGenerate();
         }
 
         // -------------------------------------------------------------
-        // 工序协同闭环：小红书深度工场 (LangGraph) -> 全渠道营销矩阵 (Coze)
+        // 工序协同闭环：出海社媒工场 (LangGraph) -> 全渠道营销矩阵 (Coze)
         // -------------------------------------------------------------
         function pipeXhsToMarketing() {
             const prod = document.getElementById('xhs-product-name')?.value || '天然冰种和田碧玉平安扣吊坠';
@@ -3091,9 +3091,9 @@
             if (mktProd) mktProd.value = prod;
             if (mktKeys) mktKeys.value = kw;
             if (sourceBadge) {
-                sourceBadge.innerHTML = '<span class="text-accent-gold font-medium">已继承小红书深度工场 (LangGraph) 爆款母版：</span> ' + prod;
+                sourceBadge.innerHTML = '<span class="text-accent-gold font-medium">已继承出海社媒工场 (LangGraph) 爆款母版：</span> ' + prod;
             }
-            showToast('【工序协同联动】已从小红书深度工场导入母版！正在调用全渠道营销矩阵 (Coze) 派生文案并执行《新广告法》合规审查...', 'ok');
+            showToast('【工序协同联动】已从出海社媒工场导入母版！正在调用全渠道营销矩阵 (Coze) 派生文案并执行合规风控审查...', 'ok');
             handleMarketingGenerate();
         }
 
@@ -3290,9 +3290,9 @@
             { id: 'act-failover', title: '执行网关毫秒级容灾热切演练', category: '快捷动作', icon: 'fas fa-bolt text-accent-gold', keywords: '热切 failover 容灾 网关 timeout 限流 熔断', action: () => triggerQuickFailover() },
             { id: 'act-dynamic-island', title: '展开 / 收起灵动岛 HUD 状态诊断抽屉', category: '快捷动作', icon: 'fas fa-server text-accent-cyan', keywords: '灵动岛 hud 抽屉 状态 诊断 端口', action: () => toggleDynamicIsland() },
             { id: 'act-openai', title: '演练统一 OpenAI 规范 Chat Completions 代理', category: '快捷动作', icon: 'fas fa-terminal text-accent-cyan', keywords: 'openai chat completions 代理 模型 api', action: () => openOpenaiRunner() },
-            { id: 'act-export-poster', title: '小红书深度工场：一键导出 1080P 种草长图海报', category: '快捷动作', icon: 'fas fa-image text-accent-emerald', keywords: '海报 导出 图片 1080p 小红书 canvas poster', action: () => renderXhsPosterModal() },
-            { id: 'act-toggle-phone', title: '小红书深度工场：切换 iPhone 16 Pro 拟真真机外壳', category: '快捷动作', icon: 'fas fa-mobile-screen text-accent-cyan', keywords: '真机 外壳 手机 视口 切换 iphone 16 pro', action: () => togglePhoneFrame() },
-            { id: 'act-pipe-xhs', title: '工序协同：从小红书深度工场同步至营销矩阵', category: '快捷动作', icon: 'fas fa-share-nodes text-accent-gold', keywords: '流转 同步 协同 小红书 营销 闭环 派生', action: () => pipeXhsToMarketing() },
+            { id: 'act-export-poster', title: '出海社媒工场：一键导出 1080P Instagram 视觉海报', category: '快捷动作', icon: 'fas fa-image text-accent-emerald', keywords: '海报 导出 图片 1080p instagram poster pinterest 出海', action: () => renderXhsPosterModal() },
+            { id: 'act-toggle-phone', title: '出海社媒工场：切换 iPhone 16 Pro 拟真真机外壳', category: '快捷动作', icon: 'fas fa-mobile-screen text-accent-cyan', keywords: '真机 外壳 手机 视口 切换 iphone 16 pro instagram', action: () => togglePhoneFrame() },
+            { id: 'act-pipe-xhs', title: '工序协同：从出海社媒工场同步至营销矩阵', category: '快捷动作', icon: 'fas fa-share-nodes text-accent-gold', keywords: '流转 同步 协同 出海社媒 营销 闭环 派生 instagram tiktok', action: () => pipeXhsToMarketing() },
             { id: 'act-copy-trace', title: '复制最近一条全链路高熵 Trace ID', category: '快捷动作', icon: 'fas fa-fingerprint text-accent-emerald', keywords: 'trace id 复制 审计 追踪 日志', action: () => copyLatestTraceId() },
             { id: 'act-reset-waveform', title: '重置 FunClip 音频波形轨道指针至起点', category: '快捷动作', icon: 'fas fa-rotate-left text-accent-cyan', keywords: '波形 重置 funclip 音频 指针 daw', action: () => resetFunclipWaveform() },
             { id: 'act-clear-guide', title: '清空电商智能导购会话历史', category: '快捷动作', icon: 'fas fa-trash-can text-slate-400', keywords: '清空 导购 对话 消息 聊天', action: () => clearGuideChat() },
@@ -3300,12 +3300,12 @@
             // 工作台直达
             { id: 'tab-overview', title: '跳转：全域智能体调度总览大盘', category: '工作台直达', icon: 'fas fa-layer-group text-accent-emerald', keywords: '大盘 监控 总览 overview 概览 集群', action: () => switchTab('overview') },
             { id: 'tab-guide', title: '跳转：垂直电商智能导购工作站 (LangGraph)', category: '工作台直达', icon: 'fas fa-store text-accent-cyan', keywords: '导购 电商 珠宝 选品 guide 优惠券', action: () => switchTab('guide') },
-            { id: 'tab-marketing', title: '跳转：全渠道营销矩阵与合规风控 (Coze)', category: '工作台直达', icon: 'fas fa-wand-magic-sparkles text-accent-gold', keywords: '营销 矩阵 coze 广告法 违禁词 朋友圈 抖音', action: () => switchTab('marketing') },
+            { id: 'tab-marketing', title: '跳转：全渠道营销矩阵与合规风控 (Coze)', category: '工作台直达', icon: 'fas fa-wand-magic-sparkles text-accent-gold', keywords: '营销 矩阵 coze 广告法 违禁词 tiktok instagram', action: () => switchTab('marketing') },
             { id: 'tab-analytics', title: '跳转：智能数据分析与商业洞察 (DuckDB)', category: '工作台直达', icon: 'fas fa-chart-pie text-accent-emerald', keywords: '数据分析 duckdb sql text to sql 图表 销量 gmv', action: () => switchTab('analytics') },
             { id: 'tab-gateway', title: '跳转：模型调度网关与容灾中枢 (MCP)', category: '工作台直达', icon: 'fas fa-shield-halved text-accent-cyan', keywords: '网关 gateway 容灾 mcp 调度', action: () => switchTab('gateway') },
             { id: 'tab-rag', title: '跳转：企业级行业知识库与向量检索 (RAG)', category: '工作台直达', icon: 'fas fa-database text-accent-cyan', keywords: '知识库 rag 向量 检索 相似度 莫桑钻 和田玉', action: () => switchTab('rag') },
             { id: 'tab-history', title: '跳转：历史趋势与事件回放 (SQLite)', category: '工作台直达', icon: 'fas fa-clock-rotate-left text-accent-emerald', keywords: '历史 趋势 事件 回放 sqlite 探针 延迟', action: () => switchTab('history') },
-            { id: 'tab-xhs', title: '跳转：小红书深度工场 · LangGraph 1.0 (HITL)', category: '工作台直达', icon: 'fas fa-feather-pointed text-accent-emerald', keywords: '小红书 xhs langgraph 内容工厂 人在环路 状态机 深度', action: () => switchTab('xhs') },
+            { id: 'tab-xhs', title: '跳转：Instagram & TikTok 出海工场 · LangGraph 1.0 (HITL)', category: '工作台直达', icon: 'fas fa-feather-pointed text-accent-emerald', keywords: 'instagram tiktok 出海 xhs langgraph 内容工厂 人在环路 状态机 深度', action: () => switchTab('xhs') },
             { id: 'tab-funclip', title: '跳转：达摩院 FunClip 多模态音视频智能切片', category: '工作台直达', icon: 'fas fa-film text-accent-cyan', keywords: 'funclip 达摩院 funasr 剪辑 切片 视频 音频 字幕', action: () => switchTab('funclip') }
         ];
 
@@ -3347,7 +3347,7 @@
             const list = document.getElementById('cmd-palette-list');
             if (!list) return;
             if (filteredPaletteCommands.length === 0) {
-                list.innerHTML = '<div class="p-6 text-center text-slate-500 text-[12px]"><i class="fas fa-ghost mr-1 text-slate-600"></i> 未找到匹配指令，试试“小红书”、“热切”或“OpenAI”</div>';
+                list.innerHTML = '<div class="p-6 text-center text-slate-500 text-[12px]"><i class="fas fa-ghost mr-1 text-slate-600"></i> 未找到匹配指令，试试“Instagram”、“TikTok”或“OpenAI”</div>';
                 return;
             }
             let currentCat = '';
@@ -3406,7 +3406,7 @@
         }
 
         // -------------------------------------------------------------
-        // 小红书深度工场：iPhone 16 Pro 钛金属真机视口切换
+        // 出海社媒工场：iPhone 16 Pro 钛金属真机视口切换
         // -------------------------------------------------------------
         let isPhoneFrameEnabled = true;
 
@@ -3432,7 +3432,7 @@
         }
 
         // -------------------------------------------------------------
-        // 小红书深度工场：HTML5 Canvas 1080P 高清种草长图海报压制生成引擎
+        // 出海社媒工场：HTML5 Canvas 1080P 高清视觉海报压制生成引擎
         // -------------------------------------------------------------
         function closePosterModal() {
             const modal = document.getElementById('xhs-poster-modal');
@@ -3655,7 +3655,7 @@
 
             ctx.font = '16px "JetBrains Mono", monospace';
             ctx.fillStyle = '#64748B';
-            ctx.fillText('小红书官方认证珠宝鉴赏创作者 · LangGraph 1.0 Pipeline', 146, botY + 24);
+            ctx.fillText('Instagram 官方认证珠宝鉴赏创作者 · LangGraph 1.0 Pipeline', 146, botY + 24);
 
             // 右侧朱砂红方印章
             const stampW = 100;
@@ -3686,7 +3686,7 @@
             if (!canvas) return;
             const a = document.createElement('a');
             const prod = (document.getElementById('xhs-product-name')?.value || '天然和田玉').trim();
-            a.download = prod + '_小红书1080P种草海报.png';
+            a.download = prod + '_Instagram_1080P视觉海报.png';
             a.href = canvas.toDataURL('image/png');
             a.click();
             showToast('【海报导出】1080P 高清种草长图已保存到您的本地下载目录！', 'ok');
@@ -3701,7 +3701,7 @@
             canvas.toBlob(blob => {
                 if (blob) {
                     navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })])
-                        .then(() => showToast('【海报已复制】高清长图海报已写入系统剪贴板，可在微信/聊天框中直接 Ctrl+V 粘贴！', 'ok'))
+                        .then(() => showToast('【海报已复制】高清长图海报已写入系统剪贴板，可在社媒或聊天框中直接 Ctrl+V 粘贴！', 'ok'))
                         .catch(() => downloadPosterImage());
                 }
             });

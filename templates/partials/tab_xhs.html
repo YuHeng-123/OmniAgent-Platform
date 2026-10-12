@@ -1,5 +1,5 @@
             <!-- ------------------------------------------------------------- -->
-            <!-- TAB 8: 小红书深度工场 (LangGraph 1.0) -->
+            <!-- TAB 8: Instagram & TikTok 出海工场 (LangGraph 1.0) -->
             <!-- ------------------------------------------------------------- -->
             <div id="tab-xhs" class="tab-content hidden space-y-5">
                 <!-- 上下游工序协同链路指引条 (Pipeline Chain Banner) -->
@@ -21,7 +21,7 @@
                         <div class="flex items-center justify-between pb-3 border-b border-dark-border">
                             <div class="flex items-center gap-2">
                                 <i class="fas fa-feather-pointed text-accent-emerald text-sm"></i>
-                                <h3 class="font-semibold text-white text-sm">小红书深度工场</h3>
+                                <h3 class="font-semibold text-white text-sm">Instagram &amp; TikTok 出海工场</h3>
                             </div>
                             <span class="tag tag-accent text-[11px] font-mono">LangGraph 1.0 (HITL)</span>
                         </div>
@@ -164,16 +164,16 @@
                         <div class="glass-card p-3.5 flex items-center justify-between flex-wrap gap-2.5">
                             <div class="flex items-center gap-1.5 p-1 rounded-xl bg-dark-900 border border-dark-border">
                                 <button type="button" id="channel-tab-xhs" onclick="switchChannel('xhs')" class="channel-btn px-3 py-1.5 rounded-lg text-[12px] font-medium flex items-center gap-1.5 transition-all bg-emerald-950/70 text-accent-emerald border border-accent-emerald/40">
-                                    <i class="fas fa-mobile-screen-button text-xs"></i>
-                                    <span>小红书图文</span>
+                                    <i class="fab fa-instagram text-xs text-pink-400"></i>
+                                    <span>Instagram 视觉图文</span>
                                 </button>
                                 <button type="button" id="channel-tab-wechat" onclick="switchChannel('wechat')" class="channel-btn px-3 py-1.5 rounded-lg text-[12px] font-medium text-slate-400 hover:text-white flex items-center gap-1.5 transition-all">
-                                    <i class="fab fa-weixin text-green-400 text-xs"></i>
-                                    <span>微信公众号</span>
+                                    <i class="fab fa-facebook text-blue-400 text-xs"></i>
+                                    <span>Facebook &amp; Meta 长文</span>
                                 </button>
                                 <button type="button" id="channel-tab-video" onclick="switchChannel('video')" class="channel-btn px-3 py-1.5 rounded-lg text-[12px] font-medium text-slate-400 hover:text-white flex items-center gap-1.5 transition-all">
-                                    <i class="fas fa-clapperboard text-accent-cyan text-xs"></i>
-                                    <span>短视频分镜脚本</span>
+                                    <i class="fab fa-tiktok text-cyan-400 text-xs"></i>
+                                    <span>TikTok / Reels 分镜脚本</span>
                                 </button>
                             </div>
                             <div class="flex items-center flex-wrap gap-2">
@@ -181,9 +181,9 @@
                                     <i class="fas fa-mobile-screen text-xs text-accent-cyan"></i>
                                     <span id="phone-frame-label">真机外壳: 开</span>
                                 </button>
-                                <button type="button" id="btn-generate-poster" onclick="renderXhsPosterModal()" class="px-2.5 py-1.5 rounded-lg text-[12px] font-medium bg-accent-emerald/20 border border-accent-emerald/50 text-accent-emerald hover:bg-accent-emerald/30 flex items-center gap-1.5 transition-all shadow-sm" title="纯前端 HTML5 Canvas 压制生成 1080P 小红书种草长图海报并导出">
+                                <button type="button" id="btn-generate-poster" onclick="renderXhsPosterModal()" class="px-2.5 py-1.5 rounded-lg text-[12px] font-medium bg-accent-emerald/20 border border-accent-emerald/50 text-accent-emerald hover:bg-accent-emerald/30 flex items-center gap-1.5 transition-all shadow-sm" title="纯前端 HTML5 Canvas 压制生成 1080P Instagram 视觉海报并导出">
                                     <i class="fas fa-image text-xs"></i>
-                                    <span>导出种草海报</span>
+                                    <span>导出视觉海报</span>
                                 </button>
                                 <button type="button" id="btn-pipe-xhs-to-mkt" onclick="pipeXhsToMarketing()" class="px-2.5 py-1.5 rounded-lg text-[12px] font-medium bg-accent-gold/15 border border-accent-gold/40 text-accent-gold hover:bg-accent-gold/25 flex items-center gap-1.5 transition-colors shadow-sm" title="将此爆款母版一键流转到全渠道营销矩阵，自动派生多平台文案并做广告法质检">
                                     <i class="fas fa-share-nodes text-xs"></i>
@@ -198,7 +198,7 @@
 
                         <!-- 拟真多端内容预览卡片 -->
                         <div id="xhs-preview-card" class="glass-card p-5 space-y-4 rounded-2xl border border-dark-border transition-all">
-                            <!-- 渠道 1: 小红书移动端拟真 (带 iPhone 16 Pro 钛金属外壳与状态栏) -->
+                            <!-- 渠道 1: Instagram 移动端拟真 (带 iPhone 16 Pro 钛金属外壳与状态栏) -->
                             <div id="view-channel-xhs" class="space-y-4 max-w-md mx-auto shadow-2xl rounded-3xl overflow-hidden border border-slate-700/60 bg-dark-950/80 p-4 transition-all">
                                 <!-- iPhone 16 Pro 拟真顶栏与灵动岛药丸 -->
                                 <div id="phone-frame-header" class="rounded-t-2xl bg-slate-950/90 border-b border-slate-800/80 pb-2.5 text-[10px] font-mono text-slate-400 select-none">
@@ -215,13 +215,13 @@
                                             <i class="fas fa-battery-full text-[11px] text-emerald-400"></i>
                                         </div>
                                     </div>
-                                    <!-- 小红书 App 原生顶栏 -->
+                                    <!-- Instagram App 原生顶栏 -->
                                     <div class="flex items-center justify-between mt-2 pt-2 border-t border-slate-800/80 px-2 text-[11px]">
                                         <i class="fas fa-chevron-left text-slate-400"></i>
                                         <div class="flex items-center gap-4 text-slate-300 font-sans font-medium text-xs">
-                                            <span class="text-slate-500">关注</span>
-                                            <span class="text-white border-b-2 border-red-500 pb-0.5">正文</span>
-                                            <span class="text-slate-500">附近</span>
+                                            <span class="text-slate-500">Feed</span>
+                                            <span class="text-white border-b-2 border-pink-500 pb-0.5">Reels</span>
+                                            <span class="text-slate-500">Explore</span>
                                         </div>
                                         <i class="fas fa-arrow-up-from-bracket text-slate-400"></i>
                                     </div>
@@ -284,7 +284,7 @@
                                         <span class="flex items-center gap-1 hover:text-accent-gold transition-colors"><i class="fas fa-star text-accent-gold"></i> 1.8k</span>
                                         <span class="flex items-center gap-1"><i class="fas fa-comment-dots"></i> 368</span>
                                     </div>
-                                    <span class="text-[10px] font-mono text-slate-600">小红书移动端拟真</span>
+                                    <span class="text-[10px] font-mono text-slate-600">Instagram 移动端拟真</span>
                                 </div>
 
                                 <!-- iPhone 16 Pro 底部 Home 指示条 -->
@@ -293,16 +293,16 @@
                                 </div>
                             </div>
 
-                            <!-- 渠道 2: 微信公众号深度图文拟真 -->
+                            <!-- 渠道 2: Facebook & Meta 深度长文拟真 -->
                             <div id="view-channel-wechat" class="hidden space-y-4">
-                                <!-- 公众号顶部信息 -->
+                                <!-- Meta 顶部信息 -->
                                 <div class="flex items-center justify-between pb-3 border-b border-dark-border text-[11px]">
                                     <div class="flex items-center gap-2">
-                                        <span class="px-1.5 py-0.5 rounded bg-green-950/60 border border-green-500/30 text-green-400 text-[10px] font-medium">原创</span>
-                                        <span class="text-white font-medium">东方雅物志</span>
-                                        <span class="text-slate-500">· 3分钟阅读</span>
+                                        <span class="px-1.5 py-0.5 rounded bg-blue-950/60 border border-blue-500/30 text-blue-400 text-[10px] font-medium">Meta Verified</span>
+                                        <span class="text-white font-medium">Qionghua High Jewelry</span>
+                                        <span class="text-slate-500">· 3 min read</span>
                                     </div>
-                                    <span class="text-slate-500 font-mono text-[10px]">微信公众平台规范</span>
+                                    <span class="text-slate-500 font-mono text-[10px]">Meta 商业图文规范</span>
                                 </div>
 
                                 <!-- 文章大标题 -->
@@ -426,7 +426,7 @@
                 </div>
 
                 <!-- ============================================================= -->
-                <!-- 1080P 小红书种草长图海报预览与导出模态框 (HTML5 Canvas 压制生成) -->
+                <!-- 1080P Instagram 视觉海报预览与导出模态框 (HTML5 Canvas 压制生成) -->
                 <!-- ============================================================= -->
                 <div id="xhs-poster-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
                     <div id="xhs-poster-box" class="w-full max-w-2xl max-h-[92vh] rounded-2xl bg-dark-950/98 border border-dark-border shadow-2xl shadow-black/95 overflow-hidden flex flex-col text-[12px]">
@@ -434,7 +434,7 @@
                         <div class="p-3.5 border-b border-dark-border flex items-center justify-between bg-dark-900/60">
                             <div class="flex items-center gap-2">
                                 <span class="w-2.5 h-2.5 rounded-full bg-accent-emerald animate-pulse"></span>
-                                <h4 class="font-semibold text-white text-sm">小红书 1080P 高清种草海报</h4>
+                                <h4 class="font-semibold text-white text-sm">Instagram 1080P 高清视觉海报</h4>
                                 <span class="tag tag-accent text-[10px] font-mono">1080 × 1440 黄金比例</span>
                             </div>
                             <button type="button" onclick="closePosterModal()" class="btn-ghost px-2 py-1 rounded text-slate-400 hover:text-white" title="关闭">
@@ -445,7 +445,7 @@
                         <!-- 海报图像展示区 -->
                         <div class="flex-1 overflow-y-auto p-4 flex items-center justify-center bg-dark-900/40">
                             <div class="max-h-[62vh] rounded-xl overflow-hidden shadow-2xl border border-dark-border/80 bg-black flex items-center justify-center">
-                                <img id="xhs-poster-img" alt="小红书 1080P 高清种草海报" class="max-h-[60vh] object-contain" />
+                                <img id="xhs-poster-img" alt="Instagram 1080P 高清视觉海报" class="max-h-[60vh] object-contain" />
                             </div>
                             <!-- 隐藏的渲染 Canvas -->
                             <canvas id="xhs-poster-canvas" width="1080" height="1440" class="hidden"></canvas>

@@ -7,12 +7,12 @@
     缺失        : 无 ✅
 
 [2] getElementById 引用 vs 已定义 id（含动态创建）
-    已知 id 数  : 88
-    被引用 id 数: 57
+    已知 id 数  : 101
+    被引用 id 数: 70
     悬空引用    : 无 ✅
 
 [3] onclick 调用 vs 已定义函数
-    onclick 函数: clearGuideChat, closeSidebarOnMobile, copyFunclipSrt, copyMarketingContent, copyXhsNote, handleAnalyticsQuery, handleFunclipSlice, handleMarketingGenerate, handleRagSearch, handleXhsGenerate, handleXhsHitlApprove, loadHistory, pipeFunclipToXhs, pipeToMarketing, playFunclipSegment, sendQuickPrompt, serviceControl, setFunclipPreset, setHistoryRange, setQueryAndRun, setXhsPreset, switchTab, toggleSidebar, triggerQuickFailover
+    onclick 函数: clearGuideChat, closeSidebarOnMobile, copyFunclipSrt, copyMarketingContent, copyXhsNote, handleAnalyticsQuery, handleFunclipSlice, handleMarketingGenerate, handleRagSearch, handleXhsGenerate, handleXhsHitlApprove, loadHistory, pipeFunclipToXhs, pipeToMarketing, playFunclipSegment, sendQuickPrompt, serviceControl, setFunclipPreset, setHistoryRange, setQueryAndRun, setXhsPreset, switchChannel, switchTab, toggleSidebar, triggerQuickFailover
     未定义      : 无 ✅
 
 [4] templates/index.html 2.2 标记齐全 = ✅

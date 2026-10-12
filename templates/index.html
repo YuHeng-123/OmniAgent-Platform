@@ -1243,83 +1243,207 @@
 
                     <!-- 右侧：真实多渠道图文卡片预览与生成成果 -->
                     <div class="lg:col-span-7 space-y-4">
-                        <!-- 顶栏状态与复制操作 -->
-                        <div class="glass-card p-4 flex items-center justify-between">
-                            <div class="flex items-center gap-3 text-[12px] font-mono">
-                                <span id="xhs-meta-status" class="flex items-center gap-1.5 text-accent-emerald">
-                                    <span class="w-2 h-2 rounded-full bg-accent-emerald"></span>
-                                    <span>就绪</span>
-                                </span>
-                                <span id="xhs-meta-latency" class="text-slate-400">耗时: —</span>
-                                <span id="xhs-meta-thread" class="text-slate-500 hidden sm:inline">Thread: idle</span>
+                        <!-- 顶栏状态与多端生态视口切换器 -->
+                        <div class="glass-card p-3.5 flex items-center justify-between flex-wrap gap-2.5">
+                            <div class="flex items-center gap-1.5 p-1 rounded-xl bg-dark-900 border border-dark-border">
+                                <button type="button" id="channel-tab-xhs" onclick="switchChannel('xhs')" class="channel-btn px-3 py-1.5 rounded-lg text-[12px] font-medium flex items-center gap-1.5 transition-all bg-emerald-950/70 text-accent-emerald border border-accent-emerald/40">
+                                    <i class="fas fa-mobile-screen-button text-xs"></i>
+                                    <span>小红书图文</span>
+                                </button>
+                                <button type="button" id="channel-tab-wechat" onclick="switchChannel('wechat')" class="channel-btn px-3 py-1.5 rounded-lg text-[12px] font-medium text-slate-400 hover:text-white flex items-center gap-1.5 transition-all">
+                                    <i class="fab fa-weixin text-green-400 text-xs"></i>
+                                    <span>微信公众号</span>
+                                </button>
+                                <button type="button" id="channel-tab-video" onclick="switchChannel('video')" class="channel-btn px-3 py-1.5 rounded-lg text-[12px] font-medium text-slate-400 hover:text-white flex items-center gap-1.5 transition-all">
+                                    <i class="fas fa-clapperboard text-accent-cyan text-xs"></i>
+                                    <span>短视频分镜脚本</span>
+                                </button>
                             </div>
-                            <button onclick="copyXhsNote()" class="btn-ghost px-3 py-1.5 rounded-lg text-[12px] flex items-center gap-1.5">
-                                <i class="fas fa-copy"></i>
-                                <span>复制图文内容</span>
-                            </button>
+                            <div class="flex items-center gap-3">
+                                <div class="flex items-center gap-2 text-[12px] font-mono">
+                                    <span id="xhs-meta-status" class="flex items-center gap-1.5 text-accent-emerald">
+                                        <span class="w-2 h-2 rounded-full bg-accent-emerald"></span>
+                                        <span>就绪</span>
+                                    </span>
+                                    <span id="xhs-meta-latency" class="text-slate-400 text-[11px]">耗时: —</span>
+                                    <span id="xhs-meta-thread" class="text-slate-500 hidden sm:inline text-[11px]">Thread: idle</span>
+                                </div>
+                                <button type="button" onclick="copyXhsNote()" class="btn-ghost px-3 py-1.5 rounded-lg text-[12px] flex items-center gap-1.5">
+                                    <i class="fas fa-copy"></i>
+                                    <span>复制当前内容</span>
+                                </button>
+                            </div>
                         </div>
 
                         <!-- 拟真多端内容预览卡片 -->
                         <div id="xhs-preview-card" class="glass-card p-5 space-y-4 rounded-2xl border border-dark-border">
-                            <!-- 顶部创作者栏 -->
-                            <div class="flex items-center justify-between pb-3 border-b border-dark-border">
-                                <div class="flex items-center gap-2.5">
-                                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-accent-emerald to-accent-cyan flex items-center justify-center text-dark-950 font-bold text-xs">
-                                        琼
-                                    </div>
-                                    <div>
-                                        <div class="text-[12px] font-medium text-white flex items-center gap-1">
-                                            <span>琼华东方美学主理人</span>
-                                            <i class="fas fa-certificate text-accent-gold text-[10px]"></i>
+                            <!-- 渠道 1: 小红书移动端拟真 -->
+                            <div id="view-channel-xhs" class="space-y-4">
+                                <!-- 顶部创作者栏 -->
+                                <div class="flex items-center justify-between pb-3 border-b border-dark-border">
+                                    <div class="flex items-center gap-2.5">
+                                        <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-accent-emerald to-accent-cyan flex items-center justify-center text-dark-950 font-bold text-xs">
+                                            琼
                                         </div>
-                                        <div class="text-[10px] text-slate-500 font-mono">官方认证珠宝鉴赏创作者</div>
+                                        <div>
+                                            <div class="text-[12px] font-medium text-white flex items-center gap-1">
+                                                <span>琼华东方美学主理人</span>
+                                                <i class="fas fa-certificate text-accent-gold text-[10px]"></i>
+                                            </div>
+                                            <div class="text-[10px] text-slate-500 font-mono">官方认证珠宝鉴赏创作者</div>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="px-2.5 py-1 rounded-full bg-accent-emerald/20 text-accent-emerald text-[11px] font-medium border border-accent-emerald/40">+ 关注</button>
+                                </div>
+
+                                <!-- 封面标语卡片 -->
+                                <div class="p-4 rounded-xl bg-gradient-to-r from-emerald-950/60 via-dark-900 to-teal-950/40 border border-accent-emerald/30">
+                                    <div class="text-[10px] text-accent-emerald font-mono uppercase tracking-wider mb-1">封面爆款大字标题</div>
+                                    <h3 id="xhs-out-cover" class="text-base font-bold text-white tracking-wide">
+                                        真正懂玉的女人，都在悄悄戴【天然和田碧玉平安扣】
+                                    </h3>
+                                </div>
+
+                                <!-- 笔记标题 -->
+                                <h4 id="xhs-out-title" class="text-sm font-semibold text-white leading-snug">
+                                    一眼沦陷！被闺蜜连环追问链接的【天然和田碧玉平安扣】到底有多绝✨
+                                </h4>
+
+                                <!-- 笔记正文 -->
+                                <div id="xhs-out-content" class="text-[12px] text-slate-300 leading-relaxed whitespace-pre-line bg-dark-900/60 p-4 rounded-xl border border-dark-border font-sans min-h-[140px]">
+                                    救命！真的没有人能拒绝天然玉石温润内敛的高级感吧，冷白皮拉满！
+
+                                    最近私信问得最多的就是这款【天然和田碧玉平安扣吊坠】，今天把实测感受和细节全部分享给大家：
+
+                                    🌿 选料与工艺：
+                                    精选原矿老坑料子，日光下泛着通透温润的油脂光泽。手工双面精抛光，佩戴在锁骨处极具呼吸感，不管是搭法式通勤衬衫还是新中式新茶服都温婉典雅！
+
+                                    💎 品质与证书保障：
+                                    一物一证，附带国家级宝玉石质检证书，支持全国权威机构终身复检。无胶无酸洗，佩戴更安心。
+                                </div>
+
+                                <!-- 话题标签 -->
+                                <div id="xhs-out-tags" class="flex flex-wrap gap-1.5">
+                                    <span class="tag">#我的首饰分享</span>
+                                    <span class="tag">#好物推荐</span>
+                                    <span class="tag">#新中式穿搭</span>
+                                    <span class="tag">#天然玉石</span>
+                                </div>
+
+                                <!-- 互动数据模拟栏 -->
+                                <div class="pt-3 border-t border-dark-border flex items-center justify-between text-[11px] text-slate-500">
+                                    <div class="flex items-center gap-4">
+                                        <span class="flex items-center gap-1 hover:text-red-400 transition-colors"><i class="fas fa-heart text-red-500"></i> 2.4k</span>
+                                        <span class="flex items-center gap-1 hover:text-accent-gold transition-colors"><i class="fas fa-star text-accent-gold"></i> 1.8k</span>
+                                        <span class="flex items-center gap-1"><i class="fas fa-comment-dots"></i> 368</span>
+                                    </div>
+                                    <span class="text-[10px] font-mono text-slate-600">小红书移动端拟真</span>
+                                </div>
+                            </div>
+
+                            <!-- 渠道 2: 微信公众号深度图文拟真 -->
+                            <div id="view-channel-wechat" class="hidden space-y-4">
+                                <!-- 公众号顶部信息 -->
+                                <div class="flex items-center justify-between pb-3 border-b border-dark-border text-[11px]">
+                                    <div class="flex items-center gap-2">
+                                        <span class="px-1.5 py-0.5 rounded bg-green-950/60 border border-green-500/30 text-green-400 text-[10px] font-medium">原创</span>
+                                        <span class="text-white font-medium">东方雅物志</span>
+                                        <span class="text-slate-500">· 3分钟阅读</span>
+                                    </div>
+                                    <span class="text-slate-500 font-mono text-[10px]">微信公众平台规范</span>
+                                </div>
+
+                                <!-- 文章大标题 -->
+                                <h3 id="wechat-out-title" class="text-base font-bold text-white tracking-wide leading-snug">
+                                    真正懂玉的女人，都在悄悄佩戴【天然和田碧玉】
+                                </h3>
+
+                                <div class="flex items-center gap-2 text-[11px] text-slate-500 pb-1">
+                                    <span id="wechat-out-author">作者: 琼华东方美学</span>
+                                    <span>·</span>
+                                    <span>发布于 专栏 · 东方珠宝美学</span>
+                                </div>
+
+                                <!-- 经典公众号金句引用框 -->
+                                <div class="p-3.5 rounded-lg bg-emerald-950/30 border-l-4 border-accent-emerald text-[12px] text-emerald-200/90 italic">
+                                    <p id="wechat-out-quote">「玉之美，有如君子之德；温润内敛，胜过一切繁复堆叠。」</p>
+                                </div>
+
+                                <!-- 公众号正文 -->
+                                <div id="wechat-out-content" class="text-[12px] text-slate-300 leading-relaxed whitespace-pre-line bg-dark-900/60 p-4 rounded-xl border border-dark-border min-h-[140px]">
+                                    【导语】
+                                    很多朋友私信问我，预算有限的前提下，想要一件既有东方气韵又耐看百搭的珠宝，到底该选什么？我的答案始终如一：选一块老坑天然玉料制作的经典平安扣。
+
+                                    一、辨料之妙：什么是真正的“老坑温润”？
+                                    精选新疆原矿老料，日光下泛着油脂般内敛的光泽。它不靠火彩夺目，而靠时间沉淀出的水润肌理。手工双面精抛，贴近肌肤处温润如凝脂。
+
+                                    二、搭配之道：新中式美学的画龙点睛
+                                    无论是搭法式通勤衬衫的随性利落，还是新中式茶服的清冷淡雅，一枚平安扣在锁骨之间，恰到好处地点亮了整个人的温婉气场。
+
+                                    三、品质承诺：一物一证，假一赔十
+                                    每一件均附带国家级珠宝玉石质检证书，支持全国权威机构复检。岁月赠礼，长久相伴。
+                                </div>
+
+                                <!-- 公众号底部互动数据 -->
+                                <div class="pt-3 border-t border-dark-border flex items-center justify-between text-[11px] text-slate-500">
+                                    <div class="flex items-center gap-4">
+                                        <span>阅读 <strong class="text-slate-300">10万+</strong></span>
+                                        <span>在看 <strong class="text-slate-300">890</strong></span>
+                                        <span>点赞 <strong class="text-slate-300">1.2k</strong></span>
+                                    </div>
+                                    <span class="text-[10px] font-mono text-slate-600">公众号文章拟真</span>
+                                </div>
+                            </div>
+
+                            <!-- 渠道 3: 短视频分镜脚本拟真 -->
+                            <div id="view-channel-video" class="hidden space-y-4">
+                                <!-- 分镜脚本参数栏 -->
+                                <div class="p-3 rounded-xl bg-dark-900 border border-dark-border flex items-center justify-between text-[11px]">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-video text-accent-cyan"></i>
+                                        <span id="video-out-title" class="text-white font-medium">【爆款短视频带货分镜】30秒讲透天然和田碧玉平安扣</span>
+                                    </div>
+                                    <span id="video-out-meta" class="tag text-[10px]">30s · 黄金3s留人</span>
+                                </div>
+
+                                <!-- 分镜列表 -->
+                                <div id="video-out-shots" class="space-y-2.5 text-[11px]">
+                                    <div class="p-3 rounded-xl bg-dark-900/60 border border-dark-border/80 space-y-1.5">
+                                        <div class="flex items-center justify-between text-[11px] text-accent-cyan font-mono font-medium">
+                                            <span>分镜 01 · 【大特写】 (0-3s 黄金开头)</span>
+                                            <span class="text-slate-500">音效: 玉石轻叩声</span>
+                                        </div>
+                                        <div class="text-slate-400"><strong class="text-slate-300">画面:</strong> 45度角强光微距照射平安扣，展示透光油脂感与胶质感，镜头慢速推入。</div>
+                                        <div class="text-emerald-300 font-mono"><strong class="text-slate-300">台词:</strong> “姐妹们，别再花冤枉钱买酸洗注胶了！真正懂玉的行家，只看这一抹老料油脂光…”</div>
+                                    </div>
+
+                                    <div class="p-3 rounded-xl bg-dark-900/60 border border-dark-border/80 space-y-1.5">
+                                        <div class="flex items-center justify-between text-[11px] text-accent-cyan font-mono font-medium">
+                                            <span>分镜 02 · 【对比中景】 (3-10s 信任击穿)</span>
+                                            <span class="text-slate-500">音效: 证书盖章音</span>
+                                        </div>
+                                        <div class="text-slate-400"><strong class="text-slate-300">画面:</strong> 主播双手对比：左手市场普通染色料，右手且末老矿天然A料，展示证书防伪钢印与一石一码。</div>
+                                        <div class="text-emerald-300 font-mono"><strong class="text-slate-300">台词:</strong> “很多人以为玉石水深，其实认准一石一证一码，全国终身复检，假一赔十！”</div>
+                                    </div>
+
+                                    <div class="p-3 rounded-xl bg-dark-900/60 border border-dark-border/80 space-y-1.5">
+                                        <div class="flex items-center justify-between text-[11px] text-accent-cyan font-mono font-medium">
+                                            <span>分镜 03 · 【近景上身】 (10-22s 种草赋能)</span>
+                                            <span class="text-slate-500">音效: 舒缓国风琵琶</span>
+                                        </div>
+                                        <div class="text-slate-400"><strong class="text-slate-300">画面:</strong> 模特佩戴在锁骨处，搭配白色棉麻新中式上衣，窗边自然光慢动作展示。</div>
+                                        <div class="text-emerald-300 font-mono"><strong class="text-slate-300">台词:</strong> “不挑肤色不挑年龄，戴在颈间是说不出的温润高级。不管是日常通勤还是见长辈，贵气由内而外。”</div>
+                                    </div>
+
+                                    <div class="p-3 rounded-xl bg-dark-900/60 border border-dark-border/80 space-y-1.5">
+                                        <div class="flex items-center justify-between text-[11px] text-accent-cyan font-mono font-medium">
+                                            <span>分镜 04 · 【促单特写】 (22-30s 极速转化)</span>
+                                            <span class="text-slate-500">音效: 倒计时心跳声</span>
+                                        </div>
+                                        <div class="text-slate-400"><strong class="text-slate-300">画面:</strong> 精装国风锦盒包装展示，附赠擦玉布与证书，左下角购物车手势指引。</div>
+                                        <div class="text-emerald-300 font-mono"><strong class="text-slate-300">台词:</strong> “今天专场特惠仅放20条，抢完立即下架。点击左下角小黄车，直接结缘带回家！”</div>
                                     </div>
                                 </div>
-                                <button type="button" class="px-2.5 py-1 rounded-full bg-accent-emerald/20 text-accent-emerald text-[11px] font-medium border border-accent-emerald/40">+ 关注</button>
-                            </div>
-
-                            <!-- 封面标语卡片 -->
-                            <div class="p-4 rounded-xl bg-gradient-to-r from-emerald-950/60 via-dark-900 to-teal-950/40 border border-accent-emerald/30">
-                                <div class="text-[10px] text-accent-emerald font-mono uppercase tracking-wider mb-1">封面爆款大字标题</div>
-                                <h3 id="xhs-out-cover" class="text-base font-bold text-white tracking-wide">
-                                    真正懂玉的女人，都在悄悄戴【天然和田碧玉平安扣】
-                                </h3>
-                            </div>
-
-                            <!-- 笔记标题 -->
-                            <h4 id="xhs-out-title" class="text-sm font-semibold text-white leading-snug">
-                                一眼沦陷！被闺蜜连环追问链接的【天然和田碧玉平安扣】到底有多绝✨
-                            </h4>
-
-                            <!-- 笔记正文 -->
-                            <div id="xhs-out-content" class="text-[12px] text-slate-300 leading-relaxed whitespace-pre-line bg-dark-900/60 p-4 rounded-xl border border-dark-border font-sans">
-                                救命！真的没有人能拒绝天然玉石温润内敛的高级感吧，冷白皮拉满！
-
-                                最近私信问得最多的就是这款【天然和田碧玉平安扣吊坠】，今天把实测感受和细节全部分享给大家：
-
-                                🌿 选料与工艺：
-                                精选原矿老坑料子，日光下泛着通透温润的油脂光泽。手工双面精抛光，佩戴在锁骨处极具呼吸感，不管是搭法式通勤衬衫还是新中式新茶服都温婉典雅！
-
-                                💎 品质与证书保障：
-                                一物一证，附带国家级宝玉石质检证书，支持全国权威机构终身复检。无胶无酸洗，佩戴更安心。
-                            </div>
-
-                            <!-- 话题标签 -->
-                            <div id="xhs-out-tags" class="flex flex-wrap gap-1.5">
-                                <span class="tag">#我的首饰分享</span>
-                                <span class="tag">#好物推荐</span>
-                                <span class="tag">#新中式穿搭</span>
-                                <span class="tag">#天然玉石</span>
-                            </div>
-
-                            <!-- 互动数据模拟栏 -->
-                            <div class="pt-3 border-t border-dark-border flex items-center justify-between text-[11px] text-slate-500">
-                                <div class="flex items-center gap-4">
-                                    <span class="flex items-center gap-1 hover:text-red-400 transition-colors"><i class="fas fa-heart text-red-500"></i> 2.4k</span>
-                                    <span class="flex items-center gap-1 hover:text-accent-gold transition-colors"><i class="fas fa-star text-accent-gold"></i> 1.8k</span>
-                                    <span class="flex items-center gap-1"><i class="fas fa-comment-dots"></i> 368</span>
-                                </div>
-                                <span class="text-[10px] font-mono text-slate-600">移动端渲染拟真</span>
                             </div>
                         </div>
 
@@ -2243,6 +2367,70 @@
         }
 
         let currentXhsData = null;
+        let currentChannel = 'xhs';
+        let activeTypewriterTimer = null;
+
+        function switchChannel(channel) {
+            currentChannel = channel;
+            const tabs = {
+                'xhs': document.getElementById('channel-tab-xhs'),
+                'wechat': document.getElementById('channel-tab-wechat'),
+                'video': document.getElementById('channel-tab-video')
+            };
+            const views = {
+                'xhs': document.getElementById('view-channel-xhs'),
+                'wechat': document.getElementById('view-channel-wechat'),
+                'video': document.getElementById('view-channel-video')
+            };
+
+            Object.keys(tabs).forEach(k => {
+                if (!tabs[k]) return;
+                if (k === channel) {
+                    tabs[k].className = 'channel-btn px-3 py-1.5 rounded-lg text-[12px] font-medium flex items-center gap-1.5 transition-all bg-emerald-950/70 text-accent-emerald border border-accent-emerald/40 shadow-sm';
+                } else {
+                    tabs[k].className = 'channel-btn px-3 py-1.5 rounded-lg text-[12px] font-medium text-slate-400 hover:text-white flex items-center gap-1.5 transition-all border border-transparent';
+                }
+            });
+
+            Object.keys(views).forEach(k => {
+                if (!views[k]) return;
+                if (k === channel) {
+                    views[k].classList.remove('hidden');
+                } else {
+                    views[k].classList.add('hidden');
+                }
+            });
+        }
+
+        function streamTypewriter(element, text, options) {
+            options = options || {};
+            const speed = options.speed || 10;
+            if (activeTypewriterTimer) {
+                clearInterval(activeTypewriterTimer);
+                activeTypewriterTimer = null;
+            }
+            return new Promise(function (resolve) {
+                element.innerHTML = '';
+                let i = 0;
+                const cursor = document.createElement('span');
+                cursor.className = 'inline-block w-1.5 h-3.5 bg-accent-emerald ml-0.5 align-middle animate-pulse';
+                element.appendChild(cursor);
+
+                activeTypewriterTimer = setInterval(function () {
+                    if (i < text.length) {
+                        const chunk = text.substr(i, 3);
+                        const textNode = document.createTextNode(chunk);
+                        element.insertBefore(textNode, cursor);
+                        i += 3;
+                    } else {
+                        clearInterval(activeTypewriterTimer);
+                        activeTypewriterTimer = null;
+                        cursor.remove();
+                        resolve();
+                    }
+                }, speed);
+            });
+        }
 
         async function handleXhsGenerate() {
             const btn = document.getElementById('btn-xhs-run');
@@ -2298,6 +2486,11 @@
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin text-xs"></i> <span>恢复状态机流转 (Resuming)...</span>';
 
+            const activeNode = (id, label) => {
+                const el = document.getElementById(id);
+                el.className = 'p-2 rounded-lg bg-emerald-950/40 border border-accent-emerald/50 flex items-center justify-between text-[11px]';
+                el.innerHTML = '<div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-accent-emerald animate-pulse"></span><span class="text-white font-medium">' + label + '</span></div><span class="text-accent-emerald font-mono text-[10px]">STREAMING</span>';
+            };
             const completeNode = (id, label, ms) => {
                 const el = document.getElementById(id);
                 el.className = 'p-2 rounded-lg bg-dark-900/80 border border-dark-border flex items-center justify-between text-[11px]';
@@ -2306,19 +2499,9 @@
 
             completeNode('xhs-node-hitl', '2. 人在环路中断 (HITL Approved)', 15);
 
-            // 3. Copywriter
-            await new Promise(r => setTimeout(r, 220));
-            completeNode('xhs-node-writer', '3. 深度成文子图 (Copywriter)', 86);
+            // 3. Copywriter 启动流式生成
+            activeNode('xhs-node-writer', '3. 深度成文子图 (Copywriter 打字机流式输出)');
 
-            // 4. Visual Prompts
-            await new Promise(r => setTimeout(r, 180));
-            completeNode('xhs-node-visual', '4. AI 视觉排版 (Visual Prompts)', 41);
-
-            // 5. Checkpointer
-            await new Promise(r => setTimeout(r, 150));
-            completeNode('xhs-node-checkpointer', '5. Postgres 快照持久化 & PII 脱敏', 18);
-
-            // 调用 OmniAPI 获取完整数据
             try {
                 const data = await OmniAPI.xhsGenerate({
                     product_name: pName,
@@ -2328,16 +2511,68 @@
                 });
                 currentXhsData = data;
 
-                // 渲染产出
+                // 填充标题与基础元数据
                 document.getElementById('xhs-out-cover').innerText = data.cover_headline || ('真正懂玉的女人，都在悄悄戴【' + pName + '】');
                 document.getElementById('xhs-out-title').innerText = approvedTopic || data.title;
-                document.getElementById('xhs-out-content').innerText = data.content;
 
                 const tagsContainer = document.getElementById('xhs-out-tags');
                 tagsContainer.innerHTML = (data.tags || []).map(t => '<span class="tag">#' + t + '</span>').join('');
 
                 const visualsContainer = document.getElementById('xhs-out-visuals');
                 visualsContainer.innerHTML = (data.visual_prompts || []).map(vp => '<div>· ' + vp + '</div>').join('');
+
+                // 微信公众号数据填充
+                if (data.channels && data.channels.wechat) {
+                    const wc = data.channels.wechat;
+                    const wTitle = document.getElementById('wechat-out-title');
+                    if (wTitle) wTitle.innerText = wc.title;
+                    const wAuthor = document.getElementById('wechat-out-author');
+                    if (wAuthor) wAuthor.innerText = '作者: ' + (wc.author || '琼华东方美学');
+                    const wQuote = document.getElementById('wechat-out-quote');
+                    if (wQuote) wQuote.innerText = wc.quote;
+                    const wContent = document.getElementById('wechat-out-content');
+                    if (wContent && currentChannel !== 'wechat') wContent.innerText = wc.content;
+                }
+
+                // 短视频分镜数据填充
+                if (data.channels && data.channels.video) {
+                    const vc = data.channels.video;
+                    const vTitle = document.getElementById('video-out-title');
+                    if (vTitle) vTitle.innerText = vc.title;
+                    const vMeta = document.getElementById('video-out-meta');
+                    if (vMeta) vMeta.innerText = vc.meta;
+                    const vShots = document.getElementById('video-out-shots');
+                    if (vShots && vc.shots && vc.shots.length) {
+                        vShots.innerHTML = vc.shots.map(s => '' +
+                            '<div class="p-3 rounded-xl bg-dark-900/60 border border-dark-border/80 space-y-1.5">' +
+                                '<div class="flex items-center justify-between text-[11px] text-accent-cyan font-mono font-medium">' +
+                                    '<span>' + s.num + ' · ' + s.type + ' (' + s.time + ')</span>' +
+                                    '<span class="text-slate-500">音效: ' + s.sfx + '</span>' +
+                                '</div>' +
+                                '<div class="text-slate-400"><strong class="text-slate-300">画面:</strong> ' + s.visual + '</div>' +
+                                '<div class="text-emerald-300 font-mono"><strong class="text-slate-300">台词:</strong> ' + s.audio + '</div>' +
+                            '</div>'
+                        ).join('');
+                    }
+                }
+
+                // 针对当前活跃视口启动打字机流式渲染！
+                if (currentChannel === 'wechat' && data.channels && data.channels.wechat) {
+                    await streamTypewriter(document.getElementById('wechat-out-content'), data.channels.wechat.content);
+                    document.getElementById('xhs-out-content').innerText = data.content;
+                } else {
+                    await streamTypewriter(document.getElementById('xhs-out-content'), data.content);
+                }
+
+                completeNode('xhs-node-writer', '3. 深度成文子图 (Copywriter)', 86);
+
+                // 4. Visual Prompts
+                await new Promise(r => setTimeout(r, 120));
+                completeNode('xhs-node-visual', '4. AI 视觉排版 (Visual Prompts)', 41);
+
+                // 5. Checkpointer
+                await new Promise(r => setTimeout(r, 100));
+                completeNode('xhs-node-checkpointer', '5. Postgres 快照持久化 & PII 脱敏', 18);
 
                 document.getElementById('xhs-meta-latency').innerText = '耗时: ' + (data.latency_ms || 180) + 'ms';
                 document.getElementById('xhs-meta-thread').innerText = 'Thread: ' + (data.thread_id || 'xhs_run_8492');
@@ -2352,11 +2587,26 @@
         }
 
         function copyXhsNote() {
-            const title = document.getElementById('xhs-out-title').innerText;
-            const content = document.getElementById('xhs-out-content').innerText;
-            const text = title + '\n\n' + content;
+            let text = '';
+            let channelName = '小红书图文';
+            if (currentChannel === 'wechat') {
+                channelName = '微信公众号';
+                const title = document.getElementById('wechat-out-title') ? document.getElementById('wechat-out-title').innerText : '';
+                const quote = document.getElementById('wechat-out-quote') ? document.getElementById('wechat-out-quote').innerText : '';
+                const content = document.getElementById('wechat-out-content') ? document.getElementById('wechat-out-content').innerText : '';
+                text = title + '\n\n' + quote + '\n\n' + content;
+            } else if (currentChannel === 'video') {
+                channelName = '短视频分镜脚本';
+                const title = document.getElementById('video-out-title') ? document.getElementById('video-out-title').innerText : '';
+                const shots = document.getElementById('video-out-shots') ? document.getElementById('video-out-shots').innerText : '';
+                text = title + '\n\n' + shots;
+            } else {
+                const title = document.getElementById('xhs-out-title').innerText;
+                const content = document.getElementById('xhs-out-content').innerText;
+                text = title + '\n\n' + content;
+            }
             navigator.clipboard.writeText(text).then(() => {
-                alert('图文内容已复制到剪贴板！');
+                alert('已复制当前【' + channelName + '】内容到剪贴板！');
             }).catch(() => {
                 alert('复制失败，请手动选择复制。');
             });

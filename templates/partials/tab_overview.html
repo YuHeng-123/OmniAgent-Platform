@@ -1,0 +1,209 @@
+            <!-- ------------------------------------------------------------- -->
+            <!-- TAB 1: 全局大盘 (Overview) -->
+            <!-- ------------------------------------------------------------- -->
+            <div id="tab-overview" class="tab-content space-y-5">
+                <!-- 指标带：一条横向数据带，用晶透分割线代替 4 张卡 -->
+                <div class="glass-card px-2 py-1 grid grid-cols-2 lg:grid-cols-4 divide-x divide-y lg:divide-y-0 divide-dark-border">
+                    <div class="px-5 py-4">
+                        <div class="text-[11px] text-slate-400 mb-1.5 flex items-center justify-between">
+                            <span>活跃 Agent 集群</span>
+                            <i class="fas fa-microchip text-accent-emerald text-xs"></i>
+                        </div>
+                        <div class="kpi-num text-[28px] font-bold leading-none text-white">
+                            <span id="stat-active" class="text-accent-emerald">4</span><span class="text-sm font-normal text-slate-500 ml-1">/ 8</span>
+                        </div>
+                        <div class="text-[11px] text-accent-emerald mt-2 flex items-center gap-1.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-pulse"></span>核心链路在线
+                        </div>
+                    </div>
+
+                    <div class="px-5 py-4">
+                        <div class="text-[11px] text-slate-400 mb-1.5 flex items-center justify-between">
+                            <span>24h 请求吞吐</span>
+                            <i class="fas fa-wave-square text-accent-cyan text-xs"></i>
+                        </div>
+                        <div class="kpi-num text-[28px] font-bold leading-none text-white">3,482<span class="text-sm font-normal text-accent-cyan ml-1">QPS</span></div>
+                        <div class="text-[11px] text-slate-400 mt-2">平均延迟 <span class="font-mono text-slate-200">42ms</span></div>
+                    </div>
+
+                    <div class="px-5 py-4">
+                        <div class="text-[11px] text-slate-400 mb-1.5 flex items-center justify-between">
+                            <span>Token 消耗</span>
+                            <i class="fas fa-coins text-accent-gold text-xs"></i>
+                        </div>
+                        <div class="kpi-num text-[28px] font-bold leading-none text-white">1.48<span class="text-sm font-normal text-accent-gold ml-1">M</span></div>
+                        <div class="text-[11px] text-accent-gold mt-2 font-mono">缓存节约 $48.20</div>
+                    </div>
+
+                    <div class="px-5 py-4">
+                        <div class="text-[11px] text-slate-400 mb-1.5 flex items-center justify-between">
+                            <span>RAG 命中率</span>
+                            <i class="fas fa-bullseye text-accent-emerald text-xs"></i>
+                        </div>
+                        <div class="kpi-num text-[28px] font-bold leading-none text-white">95.6<span class="text-sm font-normal text-accent-emerald ml-1">%</span></div>
+                        <div class="text-[11px] text-slate-400 mt-2">双路重排精准召回</div>
+                    </div>
+                </div>
+
+                <p class="text-[11px] text-slate-500 leading-relaxed pl-1">
+                    数据口径：<b class="text-accent-emerald">「活跃 Agent 集群」为实时端口探测值</b>，其余三项为演示样例数据，非实盘经营指标。
+                </p>
+
+                <!-- 架构拓扑流图 & 实时事件流 -->
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-5">
+                    <!-- 业务拓扑架构 -->
+                    <div class="lg:col-span-3 glass-card p-5">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-network-wired text-accent-emerald text-sm"></i>
+                                <h3 class="font-semibold text-white text-sm">微服务拓扑协同链</h3>
+                            </div>
+                            <span class="tag">单体控制台纳管 8 个子服务</span>
+                        </div>
+
+                        <!-- 拓扑节点矩阵：列表行式布局，比嵌套卡片更省眼、更易扫读 -->
+                        <div class="divide-y divide-dark-border border-t border-dark-border">
+                            {% for s in services %}
+                            <div class="flex items-center gap-3 py-3 group hover:bg-white/[0.02] -mx-2 px-2 rounded-lg transition-colors">
+                                <!-- 状态点：绿=在线 / 灰=离线 -->
+                                {% if s.status == 'online' %}
+                                <span class="relative flex h-2 w-2 flex-shrink-0">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-accent-emerald"></span>
+                                </span>
+                                {% else %}
+                                <span class="w-2 h-2 rounded-full bg-slate-600 flex-shrink-0"></span>
+                                {% endif %}
+
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[13px] text-white font-medium truncate">{{ s.name }}</span>
+                                        <span class="tag flex-shrink-0">{{ s.type }}</span>
+                                    </div>
+                                    <div class="text-[11px] text-slate-400 truncate mt-0.5">{{ s.role }} · {{ s.desc }}</div>
+                                </div>
+
+                                <span class="text-[11px] font-mono text-accent-cyan/90 bg-dark-900/80 px-2 py-0.5 rounded border border-dark-border flex-shrink-0 hidden sm:block">:{{ s.port }}</span>
+
+                                <!-- 服务管控：stop 为真实杀进程；start 需要 services.yaml 配置 start_cmd，没配置就如实禁用，不假装能启动。点击有二次确认。 -->
+                                <div class="flex-shrink-0 w-[68px] text-right">
+                                    {% if s.status == 'online' %}
+                                    <span class="text-[11px] text-accent-emerald font-medium block">运行中</span>
+                                    <button onclick="serviceControl('{{ s.id }}', 'stop', this)"
+                                            title="终止监听 :{{ s.port }} 的进程（真实操作，事件总线将推送下线事件）"
+                                            class="mt-1 w-full py-1 rounded-md text-[11px] border border-dark-border text-slate-400 hover:border-accent-rose/50 hover:text-accent-rose hover:bg-accent-rose/10 transition-colors">
+                                        停止
+                                    </button>
+                                    {% elif s.start_cmd %}
+                                    <span class="text-[11px] text-slate-400 block">冷备</span>
+                                    <button onclick="serviceControl('{{ s.id }}', 'start', this)"
+                                            title="按 services.yaml 配置的 start_cmd 拉起该服务"
+                                            class="mt-1 w-full py-1 rounded-md text-[11px] border border-accent-emerald/40 text-accent-emerald hover:bg-accent-emerald/10 transition-colors">
+                                        启动
+                                    </button>
+                                    {% else %}
+                                    <span class="text-[11px] text-slate-500 block">冷备</span>
+                                    <button disabled
+                                            title="services.yaml 未配置 start_cmd —— 控制台不知道该服务的启动方式"
+                                            class="mt-1 w-full py-1 rounded-md text-[11px] border border-dark-border text-slate-600 cursor-not-allowed">
+                                        启动
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- 实时调度事件流水 (Live Log Ticker) -->
+                    <div class="lg:col-span-2 glass-card p-5 flex flex-col">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-terminal text-accent-emerald text-sm"></i>
+                                <h3 class="font-semibold text-white text-sm">中枢事件总线</h3>
+                            </div>
+                            <span id="event-bus-mode" class="text-[11px] font-mono text-slate-400 flex items-center gap-1.5">
+                                <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-pulse"></span>连接中
+                            </span>
+                        </div>
+                        <div id="event-log-container" class="flex-1 rounded-lg p-3 font-mono text-[11px] leading-relaxed overflow-y-auto space-y-1.5 h-[380px]">
+                            <div class="text-slate-500">正在接入事件总线…</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Labs · 纵深智能体工作台直通 -->
+                <div class="glass-card p-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-flask text-accent-gold text-sm"></i>
+                            <h3 class="font-semibold text-white text-sm">Labs · 纵深专业智能体直通</h3>
+                        </div>
+                        <span class="tag">侧边栏直通实操工作台</span>
+                    </div>
+                    <div id="labs-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <!-- Module 1: 小红书营销流水线 -->
+                        <div class="rounded-xl border border-dark-border bg-dark-900/50 p-4 hover:border-accent-emerald/40 transition-colors flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center gap-2 mb-1.5">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald flex-shrink-0 animate-pulse"></span>
+                                    <span class="text-[13px] text-slate-200 font-medium font-mono">labs/graph-content</span>
+                                    <span class="tag flex-shrink-0">内容工厂</span>
+                                    <span class="ml-auto text-[11px] text-accent-emerald">工作台就绪</span>
+                                </div>
+                                <ul class="text-[11px] text-slate-400 leading-relaxed space-y-1 mt-2">
+                                    <li class="flex gap-2"><span class="text-accent-gold mt-px">·</span><span>基于 LangGraph 1.0 StateGraph 营销文案与图片全流程生成</span></li>
+                                    <li class="flex gap-2"><span class="text-accent-gold mt-px">·</span><span>内置 interrupt() 人在环路 (HITL) 人工审核修改与断点恢复</span></li>
+                                    <li class="flex gap-2"><span class="text-accent-gold mt-px">·</span><span>生产级 PII 日志敏感信息脱敏与 Postgres Checkpointer 状态持久化</span></li>
+                                </ul>
+                                <div class="flex flex-wrap gap-1.5 mt-3">
+                                    <span class="tag">LangGraph 1.0</span>
+                                    <span class="tag">Postgres Checkpointer</span>
+                                    <span class="tag">Vue3 SPA</span>
+                                    <span class="tag">HITL人在环路</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between text-[11px] mt-3 pt-2 border-t border-dark-border/60">
+                                <button onclick="switchTab('xhs')" class="text-accent-emerald hover:underline flex items-center gap-1 font-mono font-medium">
+                                    打开实操工作台 <i class="fas fa-arrow-right text-[10px]"></i>
+                                </button>
+                                <a href="https://github.com/YuHeng-123/OmniAgent-Platform/tree/main/labs/graph-xiaohongshu" target="_blank" class="text-slate-500 hover:text-slate-300 flex items-center gap-1 font-mono text-[10px]">
+                                    源码仓库 <i class="fas fa-arrow-up-right-from-square text-[9px]"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Module 2: 多模态音视频智能体 -->
+                        <div class="rounded-xl border border-dark-border bg-dark-900/50 p-4 hover:border-accent-cyan/40 transition-colors flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center gap-2 mb-1.5">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-accent-cyan flex-shrink-0 animate-pulse"></span>
+                                    <span class="text-[13px] text-slate-200 font-medium font-mono">labs/funclip-studio</span>
+                                    <span class="tag flex-shrink-0">多模态音视频智能体</span>
+                                    <span class="ml-auto text-[11px] text-accent-cyan">工作台就绪</span>
+                                </div>
+                                <ul class="text-[11px] text-slate-400 leading-relaxed space-y-1 mt-2">
+                                    <li class="flex gap-2"><span class="text-accent-gold mt-px">·</span><span>阿里达摩院 FunASR 工业级语音识别与精准毫秒级时间戳对齐</span></li>
+                                    <li class="flex gap-2"><span class="text-accent-gold mt-px">·</span><span>热词感知增强、按说话人分段识别、视频智能自动化切片</span></li>
+                                    <li class="flex gap-2"><span class="text-accent-gold mt-px">·</span><span>中枢统一工程化封装，Windows 跨进程自动化调度与就绪探测</span></li>
+                                </ul>
+                                <div class="flex flex-wrap gap-1.5 mt-3">
+                                    <span class="tag">FunASR</span>
+                                    <span class="tag">PyTorch</span>
+                                    <span class="tag">Gradio</span>
+                                    <span class="tag">达摩院开源</span>
+                                    <span class="tag">音视频切片</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between text-[11px] mt-3 pt-2 border-t border-dark-border/60">
+                                <button onclick="switchTab('funclip')" class="text-accent-cyan hover:underline flex items-center gap-1 font-mono font-medium">
+                                    打开实操工作台 <i class="fas fa-arrow-right text-[10px]"></i>
+                                </button>
+                                <a href="https://github.com/YuHeng-123/OmniAgent-Platform/tree/main/labs/funclip-studio" target="_blank" class="text-slate-500 hover:text-slate-300 flex items-center gap-1 font-mono text-[10px]">
+                                    源码仓库 <i class="fas fa-arrow-up-right-from-square text-[9px]"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>

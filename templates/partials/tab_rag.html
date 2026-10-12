@@ -1,0 +1,42 @@
+            <!-- ------------------------------------------------------------- -->
+            <!-- TAB 6: 知识库检索 (RAG) -->
+            <!-- ------------------------------------------------------------- -->
+            <div id="tab-rag" class="tab-content hidden space-y-5">
+                <div class="glass-card p-5 space-y-4">
+                    <div class="flex items-center justify-between pb-3 border-b border-dark-border">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-book-bookmark text-accent-sand text-sm"></i>
+                            <h3 class="font-semibold text-white text-sm">行业知识切片与双路检索</h3>
+                        </div>
+                        <span class="tag">BM25 + 向量重排 RRF</span>
+                    </div>
+
+                    <div class="flex gap-2.5">
+                        <input id="rag-input" type="text" value="莫桑石日常佩戴会褪色或磨损吗？" class="flex-1 bg-dark-900 border border-dark-border rounded-lg px-4 py-2.5 text-[13px] text-white focus:outline-none" />
+                        <button onclick="handleRagSearch()" class="btn-primary px-5 py-2.5 rounded-lg text-[13px]">
+                            检索切片
+                        </button>
+                    </div>
+
+                    <div id="rag-results" class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+                        <div class="p-3.5 rounded-lg bg-dark-900 border border-dark-border space-y-1.5">
+                            <div class="flex justify-between items-center text-[11px]">
+                                <span class="text-slate-200 font-medium">切片 #381 · 莫桑钻硬度与物理耐久性</span>
+                                <span class="font-mono text-accent-emerald">0.942</span>
+                            </div>
+                            <p class="text-[12px] text-slate-400 leading-relaxed">
+                                莫桑石（碳化硅）莫氏硬度为 9.25，仅次于天然钻石（10）。日常正常佩戴下不会发生划伤、磨损或氧化褪色，其光学色散值高达 0.104，折射率稳定持久。
+                            </p>
+                        </div>
+                        <div class="p-3.5 rounded-lg bg-dark-900 border border-dark-border space-y-1.5">
+                            <div class="flex justify-between items-center text-[11px]">
+                                <span class="text-slate-200 font-medium">切片 #119 · 和田碧玉原矿老料鉴别规范</span>
+                                <span class="font-mono text-accent-gold">0.887</span>
+                            </div>
+                            <p class="text-[12px] text-slate-400 leading-relaxed">
+                                新疆且末与青海老料在强光透射下呈现致密毡状交织结构，油脂光泽感强，黑点分布均匀自然。琼华每一件出库碧玉饰品均经 NGTC 国家级宝玉石质检机构一物一证检验。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>

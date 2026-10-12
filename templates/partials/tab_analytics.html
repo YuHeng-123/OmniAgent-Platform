@@ -1,0 +1,92 @@
+            <!-- ------------------------------------------------------------- -->
+            <!-- TAB 4: 智能数据分析与决策中心 (Data Analytics & Text-to-SQL) -->
+            <!-- ------------------------------------------------------------- -->
+            <div id="tab-analytics" class="tab-content hidden space-y-5">
+                <!-- 概览指标：同样用数据带，数字做主角 -->
+                <div class="glass-card px-2 py-1 grid grid-cols-2 lg:grid-cols-4 divide-x divide-y lg:divide-y-0 divide-dark-border">
+                    <div class="px-5 py-4">
+                        <div class="text-[11px] text-slate-500 mb-1.5">挂载样本量</div>
+                        <div class="kpi-num text-[22px] font-semibold leading-none text-white">2,450<span class="text-sm text-slate-500 ml-1">笔</span></div>
+                        <div class="text-[11px] text-slate-600 mt-2">电商真实交易沉淀</div>
+                    </div>
+                    <div class="px-5 py-4">
+                        <div class="text-[11px] text-slate-500 mb-1.5">累计成交 GMV</div>
+                        <div class="kpi-num text-[22px] font-semibold leading-none text-white">189.4<span class="text-sm text-slate-500 ml-1">万</span></div>
+                        <div class="text-[11px] text-accent-emerald mt-2">月复合增长 9.2%</div>
+                    </div>
+                    <div class="px-5 py-4">
+                        <div class="text-[11px] text-slate-500 mb-1.5">平均客单价</div>
+                        <div class="kpi-num text-[22px] font-semibold leading-none text-white">773.1<span class="text-sm text-slate-500 ml-1">元</span></div>
+                        <div class="text-[11px] text-slate-600 mt-2">私域客单 ¥920</div>
+                    </div>
+                    <div class="px-5 py-4">
+                        <div class="text-[11px] text-slate-500 mb-1.5">完单履约率</div>
+                        <div class="kpi-num text-[22px] font-semibold leading-none text-white">94.2<span class="text-sm text-slate-500 ml-1">%</span></div>
+                        <div class="text-[11px] text-slate-600 mt-2">退款率低于行业均值</div>
+                    </div>
+                </div>
+
+                <!-- 自然语言 Text-to-SQL 交互台 -->
+                <div class="glass-card p-5 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-brain text-accent-emerald text-sm"></i>
+                            <h3 class="font-semibold text-white text-sm">Text-to-SQL 自然语言数据探索</h3>
+                        </div>
+                        <span class="tag">DuckDB In-Memory OLAP</span>
+                    </div>
+
+                    <!-- 搜索栏 -->
+                    <div class="flex gap-2.5">
+                        <input id="sql-query-input" type="text" value="统计各品类销售额占比与订单数" placeholder="用自然语言提问，如「各渠道销售额对比」「近半年月度增长趋势」…" class="flex-1 bg-dark-900 border border-dark-border rounded-lg px-4 py-2.5 text-[13px] text-white focus:outline-none" />
+                        <button onclick="handleAnalyticsQuery()" class="btn-primary px-5 py-2.5 rounded-lg text-[13px]">
+                            执行查询
+                        </button>
+                    </div>
+
+                    <!-- 快捷预设提问：与全局 chip 语言一致 -->
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="text-[11px] text-slate-600">快速洞察</span>
+                        <button onclick="setQueryAndRun('统计各品类销售额占比与订单数')" class="chip">各品类销售占比</button>
+                        <button onclick="setQueryAndRun('各获客渠道成交额与客单价对比')" class="chip">获客渠道构成</button>
+                        <button onclick="setQueryAndRun('近半年月度 GMV 销售走势')" class="chip">月度趋势走势</button>
+                    </div>
+
+                    <!-- SQL 解析与图表展示 -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 pt-1">
+                        <!-- 图表区域 -->
+                        <div class="lg:col-span-7 bg-dark-900/40 p-3 rounded-lg border border-dark-border">
+                            <div class="h-64 relative flex items-center justify-center">
+                                <canvas id="analytics-chart-canvas"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- SQL 语句与结论闭环 -->
+                        <div class="lg:col-span-5 flex flex-col gap-3">
+                            <div>
+                                <div class="text-[11px] text-slate-500 mb-1.5">生成并执行的 SQL</div>
+                                <pre id="sql-display" class="p-3 rounded-lg bg-dark-900 text-accent-gold text-[11px] border border-dark-border overflow-x-auto">SELECT category AS 品类, SUM(amount) AS 销售额 FROM orders GROUP BY category;</pre>
+                            </div>
+
+                            <div class="p-3.5 rounded-lg bg-dark-700/40 border border-dark-border">
+                                <div class="text-[11px] text-slate-400 mb-1 flex items-center gap-1.5">
+                                    <i class="fas fa-lightbulb text-accent-amber"></i> AI 商业洞察
+                                </div>
+                                <p id="sql-conclusion" class="text-[12px] text-slate-400 leading-relaxed">
+                                    天然玉石吊坠与莫桑钻贡献了超过 60% 的总营收；纯银手镯本月环比微跌 6.8%，建议结合营销模块开展专场满减引流。
+                                </p>
+                            </div>
+
+                            <!-- 核心业务闭环按键：直接推送到营销工场 -->
+                            <div class="p-3 rounded-lg bg-accent-amber/10 border border-accent-amber/30 flex items-center justify-between gap-3">
+                                <div class="text-[11px] text-accent-amber min-w-0">
+                                    <span class="font-semibold">发现潜力品：</span><span id="highlight-product-name">纯银国风手镯</span>
+                                </div>
+                                <button onclick="pipeToMarketing()" class="btn-primary px-3 py-1.5 rounded-md text-[11px] flex-shrink-0">
+                                    推送营销工场
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>

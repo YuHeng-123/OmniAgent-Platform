@@ -1,0 +1,61 @@
+            <!-- ------------------------------------------------------------- -->
+            <!-- TAB 7: 历史趋势与回放 (History) —— 2.2 新增 -->
+            <!-- ------------------------------------------------------------- -->
+            <div id="tab-history" class="tab-content hidden space-y-5">
+                <!-- 工具栏：时间范围 + 数据来源标注 -->
+                <div class="glass-card px-4 py-3 flex items-center justify-between flex-wrap gap-3">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <i class="fas fa-clock-rotate-left text-accent-gold text-sm"></i>
+                        <h3 class="font-semibold text-white text-sm">服务可用性与延迟趋势</h3>
+                        <span class="text-[11px] text-slate-600 hidden sm:inline">共享巡检器每 3s 探测并落盘 SQLite</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="flex rounded-lg overflow-hidden border border-dark-border">
+                            <button onclick="setHistoryRange(30, this)" id="hist-range-30" class="hist-range-btn px-3 py-1.5 text-[11px] text-slate-400 hover:text-slate-100 bg-accent-gold/10 text-accent-gold">30 分钟</button>
+                            <button onclick="setHistoryRange(120, this)" id="hist-range-120" class="hist-range-btn px-3 py-1.5 text-[11px] text-slate-400 hover:text-slate-100 border-l border-dark-border">2 小时</button>
+                            <button onclick="setHistoryRange(480, this)" id="hist-range-480" class="hist-range-btn px-3 py-1.5 text-[11px] text-slate-400 hover:text-slate-100 border-l border-dark-border">8 小时</button>
+                        </div>
+                        <span id="history-source-badge" class="text-[11px] font-mono px-2 py-1 rounded-md border border-dark-border bg-dark-900 text-slate-500">加载中</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                    <!-- 在线率阶梯图 -->
+                    <div class="glass-card p-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-heart-pulse text-accent-emerald text-xs"></i>
+                                <h4 class="text-slate-200 text-[13px] font-medium">各服务在线率（窗口内聚合 %）</h4>
+                            </div>
+                            <span class="text-[10px] text-slate-600 font-mono">0 = 离线窗口</span>
+                        </div>
+                        <div class="h-64"><canvas id="history-uptime-canvas"></canvas></div>
+                    </div>
+
+                    <!-- 探测延迟图 -->
+                    <div class="glass-card p-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-stopwatch text-accent-amber text-xs"></i>
+                                <h4 class="text-slate-200 text-[13px] font-medium">TCP 探测延迟（ms 本机回环）</h4>
+                            </div>
+                            <span class="text-[10px] text-slate-600 font-mono">实测值，非预设</span>
+                        </div>
+                        <div class="h-64"><canvas id="history-latency-canvas"></canvas></div>
+                    </div>
+                </div>
+
+                <!-- 事件回放 -->
+                <div class="glass-card p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-receipt text-accent-sand text-xs"></i>
+                            <h4 class="text-slate-200 text-[13px] font-medium">历史事件回放（最近 60 条，倒序）</h4>
+                        </div>
+                        <button onclick="loadHistory(currentHistoryRange)" class="btn-ghost px-2.5 py-1 rounded-md text-[11px]">刷新</button>
+                    </div>
+                    <div id="history-event-list" class="bg-dark-900 rounded-lg p-3 font-mono text-[11px] overflow-y-auto space-y-1.5 border border-dark-border max-h-72">
+                        <div class="text-slate-700">加载中</div>
+                    </div>
+                </div>
+            </div>

@@ -1,0 +1,95 @@
+            <!-- ------------------------------------------------------------- -->
+            <!-- TAB 5: 模型网关与调度中心 (Gateway & Failover) -->
+            <!-- ------------------------------------------------------------- -->
+            <div id="tab-gateway" class="tab-content hidden space-y-5">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                    <div class="lg:col-span-8 glass-card p-5 space-y-4">
+                        <div class="flex items-center justify-between pb-3 border-b border-dark-border">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-shield-halved text-accent-steel text-sm"></i>
+                                <h3 class="font-semibold text-white text-sm">企业统一模型池与权重路由</h3>
+                            </div>
+                            <span class="text-[11px] text-accent-emerald font-mono">ACTIVE MATRIX</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div class="p-3.5 rounded-lg border border-accent-gold/25 bg-accent-gold/5">
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-accent-gold"></span>
+                                        <span class="text-[13px] text-slate-100 font-medium">上游主模型（仿真占位）</span>
+                                    </div>
+                                    <span class="tag tag-accent">PRIMARY</span>
+                                </div>
+                                <p class="text-[11px] text-slate-500">未接入真实模型 API · 仅演示主备形态</p>
+                                <div class="text-[11px] font-mono text-accent-gold mt-2">权重 70% ｜ 熔断阈值 3000ms</div>
+                            </div>
+
+                            <div class="p-3.5 rounded-lg border border-accent-emerald/25 bg-accent-emerald/5">
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald"></span>
+                                        <span class="text-[13px] text-slate-100 font-medium">本地兜底引擎</span>
+                                    </div>
+                                    <span class="tag">BACKUP</span>
+                                </div>
+                                <p class="text-[11px] text-slate-500">极速低延迟与多模态灾备模型</p>
+                                <div class="text-[11px] font-mono text-accent-emerald mt-2">权重 30% ｜ 热切待命 42ms</div>
+                            </div>
+                        </div>
+
+                        <!-- 容灾演练控制台 -->
+                        <div class="p-4 rounded-lg bg-dark-900 border border-dark-border space-y-3">
+                            <div class="flex items-center justify-between gap-3 flex-wrap">
+                                <div class="min-w-0">
+                                    <div class="text-[13px] text-slate-100 font-medium flex items-center gap-2">
+                                        <i class="fas fa-triangle-exclamation text-accent-amber text-xs"></i>
+                                        高可用容灾演练控制器
+                                    </div>
+                                    <p class="text-[11px] text-slate-500 mt-0.5">模拟主节点故障，触发网关断路器（Circuit Breaker）毫秒级自动热切</p>
+                                </div>
+                                <button onclick="triggerQuickFailover()" class="btn-ghost px-3.5 py-2 rounded-md text-[11px] border-accent-rose/30 text-accent-rose hover:bg-accent-rose/10 flex-shrink-0">
+                                    注入主线路故障
+                                </button>
+                            </div>
+
+                            <!-- 热切执行日志 -->
+                            <div id="failover-log-box" class="p-3 rounded-lg bg-dark-900 text-[11px] font-mono text-slate-500 space-y-1 border border-dark-border">
+                                <div>[GATEWAY] 路由心跳检测正常。主节点响应率 99.98%。</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 右侧：虚拟 Key 与 MCP 工具协议 -->
+                    <div class="lg:col-span-4 glass-card p-5 space-y-4">
+                        <div class="text-[13px] text-slate-100 font-medium flex items-center gap-2 pb-2 border-b border-dark-border">
+                            <i class="fas fa-key text-accent-sand text-xs"></i> 虚拟 API Key 配额池
+                        </div>
+                        <div class="space-y-2 text-[11px] font-mono">
+                            <div class="px-3 py-2 rounded-lg bg-dark-900 flex justify-between items-center border border-dark-border">
+                                <div>
+                                    <span class="text-slate-400">sk-omni-prod-***</span>
+                                    <div class="text-[10px] text-slate-600 font-sans">电商业务组</div>
+                                </div>
+                                <span class="text-accent-emerald">82%</span>
+                            </div>
+                            <div class="px-3 py-2 rounded-lg bg-dark-900 flex justify-between items-center border border-dark-border">
+                                <div>
+                                    <span class="text-slate-400">sk-omni-mkt-***</span>
+                                    <div class="text-[10px] text-slate-600 font-sans">爆款营销工场</div>
+                                </div>
+                                <span class="text-accent-gold">94%</span>
+                            </div>
+                        </div>
+
+                        <div class="text-[13px] text-slate-100 font-medium flex items-center gap-2 pt-3 pb-2 border-b border-dark-border">
+                            <i class="fas fa-puzzle-piece text-accent-emerald text-xs"></i> MCP 工具协议挂载
+                        </div>
+                        <div class="text-[11px] text-slate-500 space-y-1.5 font-mono">
+                            <div class="flex items-center gap-2"><span class="text-accent-emerald">✓</span> tools.query_products</div>
+                            <div class="flex items-center gap-2"><span class="text-accent-emerald">✓</span> tools.get_coupons</div>
+                            <div class="flex items-center gap-2"><span class="text-accent-emerald">✓</span> tools.text_to_sql</div>
+                        </div>
+                    </div>
+                </div>
+            </div>

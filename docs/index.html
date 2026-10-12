@@ -1667,30 +1667,56 @@
                                     <span>短视频分镜脚本</span>
                                 </button>
                             </div>
-                            <div class="flex items-center gap-3">
-                                <div class="flex items-center gap-2 text-[12px] font-mono">
-                                    <span id="xhs-meta-status" class="flex items-center gap-1.5 text-accent-emerald">
-                                        <span class="w-2 h-2 rounded-full bg-accent-emerald"></span>
-                                        <span>就绪</span>
-                                    </span>
-                                    <span id="xhs-meta-latency" class="text-slate-400 text-[11px]">耗时: —</span>
-                                    <span id="xhs-meta-thread" class="text-slate-500 hidden sm:inline text-[11px]">Thread: idle</span>
-                                </div>
+                            <div class="flex items-center flex-wrap gap-2">
+                                <button type="button" id="btn-toggle-phone-frame" onclick="togglePhoneFrame()" class="px-2.5 py-1.5 rounded-lg text-[12px] font-mono border border-dark-border bg-dark-900 text-slate-300 hover:text-white flex items-center gap-1.5 transition-colors" title="切换 iPhone 16 Pro 钛金属真机视口外壳">
+                                    <i class="fas fa-mobile-screen text-xs text-accent-cyan"></i>
+                                    <span id="phone-frame-label">真机外壳: 开</span>
+                                </button>
+                                <button type="button" id="btn-generate-poster" onclick="renderXhsPosterModal()" class="px-2.5 py-1.5 rounded-lg text-[12px] font-medium bg-accent-emerald/20 border border-accent-emerald/50 text-accent-emerald hover:bg-accent-emerald/30 flex items-center gap-1.5 transition-all shadow-sm" title="纯前端 HTML5 Canvas 压制生成 1080P 小红书种草长图海报并导出">
+                                    <i class="fas fa-image text-xs"></i>
+                                    <span>导出种草海报</span>
+                                </button>
                                 <button type="button" id="btn-pipe-xhs-to-mkt" onclick="pipeXhsToMarketing()" class="px-2.5 py-1.5 rounded-lg text-[12px] font-medium bg-accent-gold/15 border border-accent-gold/40 text-accent-gold hover:bg-accent-gold/25 flex items-center gap-1.5 transition-colors shadow-sm" title="将此爆款母版一键流转到全渠道营销矩阵，自动派生多平台文案并做广告法质检">
                                     <i class="fas fa-share-nodes text-xs"></i>
-                                    <span>同步至全渠道矩阵 (Coze)</span>
+                                    <span>同步至矩阵</span>
                                 </button>
-                                <button type="button" onclick="copyXhsNote()" class="btn-ghost px-3 py-1.5 rounded-lg text-[12px] flex items-center gap-1.5">
+                                <button type="button" onclick="copyXhsNote()" class="btn-ghost px-2.5 py-1.5 rounded-lg text-[12px] flex items-center gap-1.5">
                                     <i class="fas fa-copy"></i>
-                                    <span>复制当前内容</span>
+                                    <span>复制</span>
                                 </button>
                             </div>
                         </div>
 
                         <!-- 拟真多端内容预览卡片 -->
-                        <div id="xhs-preview-card" class="glass-card p-5 space-y-4 rounded-2xl border border-dark-border">
-                            <!-- 渠道 1: 小红书移动端拟真 -->
-                            <div id="view-channel-xhs" class="space-y-4">
+                        <div id="xhs-preview-card" class="glass-card p-5 space-y-4 rounded-2xl border border-dark-border transition-all">
+                            <!-- 渠道 1: 小红书移动端拟真 (带 iPhone 16 Pro 钛金属外壳与状态栏) -->
+                            <div id="view-channel-xhs" class="space-y-4 max-w-md mx-auto shadow-2xl rounded-3xl overflow-hidden border border-slate-700/60 bg-dark-950/80 p-4 transition-all">
+                                <!-- iPhone 16 Pro 拟真顶栏与灵动岛药丸 -->
+                                <div id="phone-frame-header" class="rounded-t-2xl bg-slate-950/90 border-b border-slate-800/80 pb-2.5 text-[10px] font-mono text-slate-400 select-none">
+                                    <div class="flex items-center justify-between px-2 pt-1">
+                                        <span class="font-bold text-white text-[11px]">9:41</span>
+                                        <!-- 灵动岛药丸 (Dynamic Island) -->
+                                        <div class="w-24 h-5 rounded-full bg-black border border-slate-800 shadow-inner flex items-center justify-between px-2.5">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-slate-800 border border-slate-700"></span>
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500/80 animate-pulse"></span>
+                                        </div>
+                                        <div class="flex items-center gap-1.5 text-white">
+                                            <i class="fas fa-signal text-[9px]"></i>
+                                            <span class="text-[9px]">5G</span>
+                                            <i class="fas fa-battery-full text-[11px] text-emerald-400"></i>
+                                        </div>
+                                    </div>
+                                    <!-- 小红书 App 原生顶栏 -->
+                                    <div class="flex items-center justify-between mt-2 pt-2 border-t border-slate-800/80 px-2 text-[11px]">
+                                        <i class="fas fa-chevron-left text-slate-400"></i>
+                                        <div class="flex items-center gap-4 text-slate-300 font-sans font-medium text-xs">
+                                            <span class="text-slate-500">关注</span>
+                                            <span class="text-white border-b-2 border-red-500 pb-0.5">正文</span>
+                                            <span class="text-slate-500">附近</span>
+                                        </div>
+                                        <i class="fas fa-arrow-up-from-bracket text-slate-400"></i>
+                                    </div>
+                                </div>
                                 <!-- 顶部创作者栏 -->
                                 <div class="flex items-center justify-between pb-3 border-b border-dark-border">
                                     <div class="flex items-center gap-2.5">
@@ -1750,6 +1776,11 @@
                                         <span class="flex items-center gap-1"><i class="fas fa-comment-dots"></i> 368</span>
                                     </div>
                                     <span class="text-[10px] font-mono text-slate-600">小红书移动端拟真</span>
+                                </div>
+
+                                <!-- iPhone 16 Pro 底部 Home 指示条 -->
+                                <div id="phone-frame-footer" class="pt-2 text-center select-none">
+                                    <div class="w-28 h-1 rounded-full bg-slate-600/70 mx-auto"></div>
                                 </div>
                             </div>
 
@@ -1874,9 +1905,58 @@
                         </div>
 
                         <!-- 底层 Checkpointer 信息 -->
-                        <div id="xhs-out-checkpointer" class="p-3 rounded-lg bg-dark-900 border border-dark-border text-[11px] font-mono text-slate-500 flex items-center justify-between">
-                            <span>Postgres Checkpointer: thread_id=xhs_langgraph_8820 · Snapshot Ready</span>
+                        <div id="xhs-out-checkpointer" class="p-3 rounded-lg bg-dark-900 border border-dark-border text-[11px] font-mono text-slate-500 flex flex-wrap items-center justify-between gap-2">
+                            <div class="flex items-center gap-3">
+                                <span id="xhs-meta-status" class="flex items-center gap-1.5 text-accent-emerald"><span class="w-2 h-2 rounded-full bg-accent-emerald"></span><span>就绪</span></span>
+                                <span id="xhs-meta-latency" class="text-slate-400">耗时: --</span>
+                                <span id="xhs-meta-thread" class="text-slate-500 hidden sm:inline">Thread: idle</span>
+                            </div>
                             <span class="text-accent-emerald flex items-center gap-1"><i class="fas fa-shield-halved"></i> PII 脱敏已通过</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============================================================= -->
+                <!-- 1080P 小红书种草长图海报预览与导出模态框 (HTML5 Canvas 压制生成) -->
+                <!-- ============================================================= -->
+                <div id="xhs-poster-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+                    <div id="xhs-poster-box" class="w-full max-w-2xl max-h-[92vh] rounded-2xl bg-dark-950/98 border border-dark-border shadow-2xl shadow-black/95 overflow-hidden flex flex-col text-[12px]">
+                        <!-- 顶栏 -->
+                        <div class="p-3.5 border-b border-dark-border flex items-center justify-between bg-dark-900/60">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-accent-emerald animate-pulse"></span>
+                                <h4 class="font-semibold text-white text-sm">小红书 1080P 高清种草海报</h4>
+                                <span class="tag tag-accent text-[10px] font-mono">1080 × 1440 黄金比例</span>
+                            </div>
+                            <button type="button" onclick="closePosterModal()" class="btn-ghost px-2 py-1 rounded text-slate-400 hover:text-white" title="关闭">
+                                <i class="fas fa-xmark text-xs"></i>
+                            </button>
+                        </div>
+
+                        <!-- 海报图像展示区 -->
+                        <div class="flex-1 overflow-y-auto p-4 flex items-center justify-center bg-dark-900/40">
+                            <div class="max-h-[62vh] rounded-xl overflow-hidden shadow-2xl border border-dark-border/80 bg-black flex items-center justify-center">
+                                <img id="xhs-poster-img" alt="小红书 1080P 高清种草海报" class="max-h-[60vh] object-contain" />
+                            </div>
+                            <!-- 隐藏的渲染 Canvas -->
+                            <canvas id="xhs-poster-canvas" width="1080" height="1440" class="hidden"></canvas>
+                        </div>
+
+                        <!-- 底栏操作区 -->
+                        <div class="p-3.5 border-t border-dark-border bg-dark-900/80 flex items-center justify-between gap-3">
+                            <div class="text-[11px] text-slate-400 font-mono hidden sm:block">
+                                <span>纯前端 Canvas 矢量排版 · 免服务器渲染 · 零跨域损耗</span>
+                            </div>
+                            <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                                <button type="button" id="btn-copy-poster" onclick="copyPosterImage()" class="px-3 py-2 rounded-xl border border-dark-border text-slate-300 hover:text-white hover:bg-dark-800 text-[12px] font-medium flex items-center gap-1.5 transition-colors">
+                                    <i class="fas fa-copy text-xs"></i>
+                                    <span>复制图片</span>
+                                </button>
+                                <button type="button" id="btn-download-poster" onclick="downloadPosterImage()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-accent-emerald to-emerald-600 text-dark-950 hover:brightness-110 text-[12px] font-semibold flex items-center gap-1.5 transition-all shadow-lg shadow-emerald-950/50">
+                                    <i class="fas fa-download text-xs"></i>
+                                    <span>下载高清 PNG (1080P)</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -3698,6 +3778,8 @@
             { id: 'act-failover', title: '执行网关毫秒级容灾热切演练', category: '快捷动作', icon: 'fas fa-bolt text-accent-gold', keywords: '热切 failover 容灾 网关 timeout 限流 熔断', action: () => triggerQuickFailover() },
             { id: 'act-dynamic-island', title: '展开 / 收起灵动岛 HUD 状态诊断抽屉', category: '快捷动作', icon: 'fas fa-server text-accent-cyan', keywords: '灵动岛 hud 抽屉 状态 诊断 端口', action: () => toggleDynamicIsland() },
             { id: 'act-openai', title: '演练统一 OpenAI 规范 Chat Completions 代理', category: '快捷动作', icon: 'fas fa-terminal text-accent-cyan', keywords: 'openai chat completions 代理 模型 api', action: () => openOpenaiRunner() },
+            { id: 'act-export-poster', title: '小红书深度工场：一键导出 1080P 种草长图海报', category: '快捷动作', icon: 'fas fa-image text-accent-emerald', keywords: '海报 导出 图片 1080p 小红书 canvas poster', action: () => renderXhsPosterModal() },
+            { id: 'act-toggle-phone', title: '小红书深度工场：切换 iPhone 16 Pro 拟真真机外壳', category: '快捷动作', icon: 'fas fa-mobile-screen text-accent-cyan', keywords: '真机 外壳 手机 视口 切换 iphone 16 pro', action: () => togglePhoneFrame() },
             { id: 'act-pipe-xhs', title: '工序协同：从小红书深度工场同步至营销矩阵', category: '快捷动作', icon: 'fas fa-share-nodes text-accent-gold', keywords: '流转 同步 协同 小红书 营销 闭环 派生', action: () => pipeXhsToMarketing() },
             { id: 'act-copy-trace', title: '复制最近一条全链路高熵 Trace ID', category: '快捷动作', icon: 'fas fa-fingerprint text-accent-emerald', keywords: 'trace id 复制 审计 追踪 日志', action: () => copyLatestTraceId() },
             { id: 'act-reset-waveform', title: '重置 FunClip 音频波形轨道指针至起点', category: '快捷动作', icon: 'fas fa-rotate-left text-accent-cyan', keywords: '波形 重置 funclip 音频 指针 daw', action: () => resetFunclipWaveform() },
@@ -3811,6 +3893,308 @@
             });
         }
 
+        // -------------------------------------------------------------
+        // 小红书深度工场：iPhone 16 Pro 钛金属真机视口切换
+        // -------------------------------------------------------------
+        let isPhoneFrameEnabled = true;
+
+        function togglePhoneFrame() {
+            isPhoneFrameEnabled = !isPhoneFrameEnabled;
+            const container = document.getElementById('view-channel-xhs');
+            const header = document.getElementById('phone-frame-header');
+            const footer = document.getElementById('phone-frame-footer');
+            const label = document.getElementById('phone-frame-label');
+            if (!container) return;
+
+            if (isPhoneFrameEnabled) {
+                if (header) header.classList.remove('hidden');
+                if (footer) footer.classList.remove('hidden');
+                container.classList.add('max-w-md', 'mx-auto', 'shadow-2xl', 'rounded-3xl', 'border', 'border-slate-700/60', 'bg-dark-950/80', 'p-4');
+                if (label) label.innerText = '真机外壳: 开';
+            } else {
+                if (header) header.classList.add('hidden');
+                if (footer) footer.classList.add('hidden');
+                container.classList.remove('max-w-md', 'mx-auto', 'shadow-2xl', 'rounded-3xl', 'border', 'border-slate-700/60', 'bg-dark-950/80', 'p-4');
+                if (label) label.innerText = '真机外壳: 关';
+            }
+        }
+
+        // -------------------------------------------------------------
+        // 小红书深度工场：HTML5 Canvas 1080P 高清种草长图海报压制生成引擎
+        // -------------------------------------------------------------
+        function closePosterModal() {
+            const modal = document.getElementById('xhs-poster-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function drawCanvasRoundRect(ctx, x, y, w, h, r) {
+            if (ctx.roundRect) {
+                ctx.beginPath();
+                ctx.roundRect(x, y, w, h, r);
+            } else {
+                ctx.beginPath();
+                ctx.moveTo(x + r, y);
+                ctx.arcTo(x + w, y, x + w, y + h, r);
+                ctx.arcTo(x + w, y + h, x, y + h, r);
+                ctx.arcTo(x, y + h, x, y, r);
+                ctx.arcTo(x, y, x + w, y, r);
+                ctx.closePath();
+            }
+        }
+
+        function renderXhsPosterModal() {
+            const canvas = document.getElementById('xhs-poster-canvas');
+            const img = document.getElementById('xhs-poster-img');
+            const modal = document.getElementById('xhs-poster-modal');
+            if (!canvas || !img || !modal) return;
+
+            const ctx = canvas.getContext('2d');
+            const W = 1080;
+            const H = 1440;
+
+            // 1. 曜石暗夜黑与深海微翠渐变底色
+            const bgGrad = ctx.createLinearGradient(0, 0, W, H);
+            bgGrad.addColorStop(0, '#070C14');
+            bgGrad.addColorStop(0.35, '#0B1522');
+            bgGrad.addColorStop(0.75, '#061318');
+            bgGrad.addColorStop(1, '#04080D');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, W, H);
+
+            // 顶部与左下角微光散射辉光
+            const glow1 = ctx.createRadialGradient(W * 0.3, 200, 20, W * 0.3, 200, 480);
+            glow1.addColorStop(0, 'rgba(16, 185, 129, 0.18)');
+            glow1.addColorStop(0.5, 'rgba(6, 182, 212, 0.06)');
+            glow1.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = glow1;
+            ctx.fillRect(0, 0, W, H);
+
+            // 2. 双重古典金丝边框
+            ctx.save();
+            ctx.strokeStyle = 'rgba(212, 175, 55, 0.35)';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(36, 36, W - 72, H - 72);
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(44, 44, W - 88, H - 88);
+            ctx.restore();
+
+            // 3. 顶部品牌微章
+            ctx.save();
+            ctx.font = 'bold 26px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif';
+            ctx.fillStyle = '#D4AF37';
+            ctx.fillText('瓊華東方美學 · 珠寶鑒賞專欄', 72, 102);
+
+            ctx.font = '500 18px "JetBrains Mono", Consolas, monospace';
+            ctx.fillStyle = '#94A3B8';
+            ctx.textAlign = 'right';
+            ctx.fillText('OFFICIAL CERTIFIED CURATION', W - 72, 102);
+            ctx.restore();
+
+            // 4. 视觉艺术画框区 (翡翠平安扣微光意向)
+            const frameX = 72;
+            const frameY = 140;
+            const frameW = W - 144;
+            const frameH = 460;
+            const frameR = 24;
+
+            ctx.save();
+            drawCanvasRoundRect(ctx, frameX, frameY, frameW, frameH, frameR);
+            ctx.clip();
+
+            // 画框内景渐变
+            const artGrad = ctx.createRadialGradient(frameX + frameW/2, frameY + frameH/2, 40, frameX + frameW/2, frameY + frameH/2, 320);
+            artGrad.addColorStop(0, '#134E4A');
+            artGrad.addColorStop(0.5, '#062828');
+            artGrad.addColorStop(1, '#021213');
+            ctx.fillStyle = artGrad;
+            ctx.fillRect(frameX, frameY, frameW, frameH);
+
+            // 绘制同心平安扣几何光环 (温润透光水润肌理)
+            const cx = frameX + frameW / 2;
+            const cy = frameY + frameH / 2 - 10;
+            ctx.lineWidth = 44;
+            const ringGrad = ctx.createLinearGradient(cx - 160, cy - 160, cx + 160, cy + 160);
+            ringGrad.addColorStop(0, 'rgba(52, 211, 153, 0.85)');
+            ringGrad.addColorStop(0.5, 'rgba(16, 185, 129, 0.95)');
+            ringGrad.addColorStop(1, 'rgba(5, 150, 105, 0.8)');
+            ctx.strokeStyle = ringGrad;
+            ctx.beginPath();
+            ctx.arc(cx, cy, 110, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // 平安扣内圈金丝
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#FDE68A';
+            ctx.beginPath();
+            ctx.arc(cx, cy, 86, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(cx, cy, 134, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // 画框叠印大标语
+            ctx.font = 'bold 32px "PingFang SC", "Microsoft YaHei", sans-serif';
+            ctx.fillStyle = '#FFFFFF';
+            ctx.textAlign = 'center';
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+            ctx.shadowBlur = 12;
+            const prodName = (document.getElementById('xhs-product-name')?.value || '天然和田碧玉平安扣吊坠').trim();
+            ctx.fillText('【 ' + prodName + ' 】', cx, cy + 168);
+
+            ctx.font = '18px "PingFang SC", sans-serif';
+            ctx.fillStyle = '#A7F3D0';
+            ctx.fillText('一物一证一码 · 新疆原矿且末老料 · 全国权威机构终身复检', cx, cy + 205);
+            ctx.restore();
+
+            // 5. 爆款大字标题
+            const rawCover = document.getElementById('xhs-out-cover')?.innerText || '真正懂玉的女人，都在悄悄戴天然和田玉';
+            ctx.save();
+            ctx.font = 'bold 44px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif';
+            ctx.fillStyle = '#F8FAFC';
+            ctx.textAlign = 'left';
+            
+            // 自动多行折行处理
+            const maxTextW = W - 144;
+            let line = '';
+            let curY = 660;
+            for (let i = 0; i < rawCover.length; i++) {
+                const testLine = line + rawCover[i];
+                if (ctx.measureText(testLine).width > maxTextW && i > 0) {
+                    ctx.fillText(line, 72, curY);
+                    line = rawCover[i];
+                    curY += 56;
+                } else {
+                    line = testLine;
+                }
+            }
+            ctx.fillText(line, 72, curY);
+            ctx.restore();
+
+            // 6. 核心卖点标签胶囊
+            const tags = ['天然矿料', '原矿老料', '权威证书', '新中式穿搭', '闺蜜真实种草'];
+            let tagX = 72;
+            const tagY = curY + 44;
+            ctx.save();
+            ctx.font = 'bold 18px "PingFang SC", "Microsoft YaHei", sans-serif';
+            tags.forEach(t => {
+                const tw = ctx.measureText('#' + t).width + 30;
+                if (tagX + tw < W - 72) {
+                    ctx.fillStyle = 'rgba(16, 185, 129, 0.16)';
+                    ctx.strokeStyle = 'rgba(16, 185, 129, 0.4)';
+                    ctx.lineWidth = 1.5;
+                    drawCanvasRoundRect(ctx, tagX, tagY - 24, tw, 36, 18);
+                    ctx.fill();
+                    ctx.stroke();
+
+                    ctx.fillStyle = '#34D399';
+                    ctx.fillText('#' + t, tagX + 15, tagY);
+                    tagX += tw + 14;
+                }
+            });
+            ctx.restore();
+
+            // 7. 正文精萃卡片
+            const cardY = tagY + 40;
+            const cardH = 340;
+            ctx.save();
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.65)';
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 1;
+            drawCanvasRoundRect(ctx, 72, cardY, W - 144, cardH, 20);
+            ctx.fill();
+            ctx.stroke();
+
+            // 卡片内容
+            ctx.font = '500 22px "PingFang SC", "Microsoft YaHei", sans-serif';
+            ctx.fillStyle = '#CBD5E1';
+            const paras = [
+                '“救命！真的没有人能拒绝天然玉石温润内敛的高级感吧，冷白皮氛围感直接拉满！”',
+                '🌿 辨料之妙：精选原矿老坑料子，日光下泛着通透水润的油脂光泽，手工双面精抛光。',
+                '💎 品质承诺：附带国家级珠宝玉石质检证书，支持全国权威机构终身复检，假一赔十。',
+                '🎯 穿搭之道：无论是搭法式通勤衬衫还是新中式茶服，锁骨之间恰到好处地点亮温婉气场。'
+            ];
+            let py = cardY + 54;
+            paras.forEach(p => {
+                ctx.fillText(p, 102, py);
+                py += 56;
+            });
+            ctx.restore();
+
+            // 8. 底部背书与朱砂红方印章
+            const botY = H - 110;
+            ctx.save();
+            // 头像徽标
+            ctx.fillStyle = '#10B981';
+            ctx.beginPath();
+            ctx.arc(106, botY, 26, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.font = 'bold 20px "PingFang SC"';
+            ctx.fillStyle = '#041014';
+            ctx.textAlign = 'center';
+            ctx.fillText('瓊', 106, botY + 7);
+
+            // 作者名
+            ctx.textAlign = 'left';
+            ctx.font = 'bold 22px "PingFang SC", sans-serif';
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillText('瓊華東方美學主理人', 146, botY - 2);
+
+            ctx.font = '16px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#64748B';
+            ctx.fillText('小红书官方认证珠宝鉴赏创作者 · LangGraph 1.0 Pipeline', 146, botY + 24);
+
+            // 右侧朱砂红方印章
+            const stampW = 100;
+            const stampH = 46;
+            const stampX = W - 72 - stampW;
+            const stampY = botY - 24;
+
+            ctx.fillStyle = '#991B1B';
+            ctx.strokeStyle = '#FCA5A5';
+            ctx.lineWidth = 2;
+            ctx.fillRect(stampX, stampY, stampW, stampH);
+            ctx.strokeRect(stampX, stampY, stampW, stampH);
+
+            ctx.font = 'bold 20px "Songti SC", "SimSun", serif';
+            ctx.fillStyle = '#FEF2F2';
+            ctx.textAlign = 'center';
+            ctx.fillText('瓊華保真', stampX + stampW / 2, stampY + 31);
+            ctx.restore();
+
+            // 生成 DataURL 并在模态框中展示
+            const dataUrl = canvas.toDataURL('image/png');
+            img.src = dataUrl;
+            modal.classList.remove('hidden');
+        }
+
+        function downloadPosterImage() {
+            const canvas = document.getElementById('xhs-poster-canvas');
+            if (!canvas) return;
+            const a = document.createElement('a');
+            const prod = (document.getElementById('xhs-product-name')?.value || '天然和田玉').trim();
+            a.download = prod + '_小红书1080P种草海报.png';
+            a.href = canvas.toDataURL('image/png');
+            a.click();
+            showToast('【海报导出】1080P 高清种草长图已保存到您的本地下载目录！', 'ok');
+        }
+
+        function copyPosterImage() {
+            const canvas = document.getElementById('xhs-poster-canvas');
+            if (!canvas || !navigator.clipboard || !window.ClipboardItem) {
+                downloadPosterImage();
+                return;
+            }
+            canvas.toBlob(blob => {
+                if (blob) {
+                    navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })])
+                        .then(() => showToast('【海报已复制】高清长图海报已写入系统剪贴板，可在微信/聊天框中直接 Ctrl+V 粘贴！', 'ok'))
+                        .catch(() => downloadPosterImage());
+                }
+            });
+        }
+
         window.addEventListener('keydown', (e) => {
             // Ctrl+K or Cmd+K
             if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
@@ -3853,6 +4237,12 @@
             const box = document.getElementById('command-palette-box');
             if (isCommandPaletteOpen && modal && box && e.target === modal) {
                 toggleCommandPalette();
+            }
+
+            const posterModal = document.getElementById('xhs-poster-modal');
+            const posterBox = document.getElementById('xhs-poster-box');
+            if (posterModal && posterBox && !posterModal.classList.contains('hidden') && e.target === posterModal) {
+                closePosterModal();
             }
         });
 

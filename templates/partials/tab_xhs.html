@@ -147,30 +147,56 @@
                                     <span>短视频分镜脚本</span>
                                 </button>
                             </div>
-                            <div class="flex items-center gap-3">
-                                <div class="flex items-center gap-2 text-[12px] font-mono">
-                                    <span id="xhs-meta-status" class="flex items-center gap-1.5 text-accent-emerald">
-                                        <span class="w-2 h-2 rounded-full bg-accent-emerald"></span>
-                                        <span>就绪</span>
-                                    </span>
-                                    <span id="xhs-meta-latency" class="text-slate-400 text-[11px]">耗时: —</span>
-                                    <span id="xhs-meta-thread" class="text-slate-500 hidden sm:inline text-[11px]">Thread: idle</span>
-                                </div>
+                            <div class="flex items-center flex-wrap gap-2">
+                                <button type="button" id="btn-toggle-phone-frame" onclick="togglePhoneFrame()" class="px-2.5 py-1.5 rounded-lg text-[12px] font-mono border border-dark-border bg-dark-900 text-slate-300 hover:text-white flex items-center gap-1.5 transition-colors" title="切换 iPhone 16 Pro 钛金属真机视口外壳">
+                                    <i class="fas fa-mobile-screen text-xs text-accent-cyan"></i>
+                                    <span id="phone-frame-label">真机外壳: 开</span>
+                                </button>
+                                <button type="button" id="btn-generate-poster" onclick="renderXhsPosterModal()" class="px-2.5 py-1.5 rounded-lg text-[12px] font-medium bg-accent-emerald/20 border border-accent-emerald/50 text-accent-emerald hover:bg-accent-emerald/30 flex items-center gap-1.5 transition-all shadow-sm" title="纯前端 HTML5 Canvas 压制生成 1080P 小红书种草长图海报并导出">
+                                    <i class="fas fa-image text-xs"></i>
+                                    <span>导出种草海报</span>
+                                </button>
                                 <button type="button" id="btn-pipe-xhs-to-mkt" onclick="pipeXhsToMarketing()" class="px-2.5 py-1.5 rounded-lg text-[12px] font-medium bg-accent-gold/15 border border-accent-gold/40 text-accent-gold hover:bg-accent-gold/25 flex items-center gap-1.5 transition-colors shadow-sm" title="将此爆款母版一键流转到全渠道营销矩阵，自动派生多平台文案并做广告法质检">
                                     <i class="fas fa-share-nodes text-xs"></i>
-                                    <span>同步至全渠道矩阵 (Coze)</span>
+                                    <span>同步至矩阵</span>
                                 </button>
-                                <button type="button" onclick="copyXhsNote()" class="btn-ghost px-3 py-1.5 rounded-lg text-[12px] flex items-center gap-1.5">
+                                <button type="button" onclick="copyXhsNote()" class="btn-ghost px-2.5 py-1.5 rounded-lg text-[12px] flex items-center gap-1.5">
                                     <i class="fas fa-copy"></i>
-                                    <span>复制当前内容</span>
+                                    <span>复制</span>
                                 </button>
                             </div>
                         </div>
 
                         <!-- 拟真多端内容预览卡片 -->
-                        <div id="xhs-preview-card" class="glass-card p-5 space-y-4 rounded-2xl border border-dark-border">
-                            <!-- 渠道 1: 小红书移动端拟真 -->
-                            <div id="view-channel-xhs" class="space-y-4">
+                        <div id="xhs-preview-card" class="glass-card p-5 space-y-4 rounded-2xl border border-dark-border transition-all">
+                            <!-- 渠道 1: 小红书移动端拟真 (带 iPhone 16 Pro 钛金属外壳与状态栏) -->
+                            <div id="view-channel-xhs" class="space-y-4 max-w-md mx-auto shadow-2xl rounded-3xl overflow-hidden border border-slate-700/60 bg-dark-950/80 p-4 transition-all">
+                                <!-- iPhone 16 Pro 拟真顶栏与灵动岛药丸 -->
+                                <div id="phone-frame-header" class="rounded-t-2xl bg-slate-950/90 border-b border-slate-800/80 pb-2.5 text-[10px] font-mono text-slate-400 select-none">
+                                    <div class="flex items-center justify-between px-2 pt-1">
+                                        <span class="font-bold text-white text-[11px]">9:41</span>
+                                        <!-- 灵动岛药丸 (Dynamic Island) -->
+                                        <div class="w-24 h-5 rounded-full bg-black border border-slate-800 shadow-inner flex items-center justify-between px-2.5">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-slate-800 border border-slate-700"></span>
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500/80 animate-pulse"></span>
+                                        </div>
+                                        <div class="flex items-center gap-1.5 text-white">
+                                            <i class="fas fa-signal text-[9px]"></i>
+                                            <span class="text-[9px]">5G</span>
+                                            <i class="fas fa-battery-full text-[11px] text-emerald-400"></i>
+                                        </div>
+                                    </div>
+                                    <!-- 小红书 App 原生顶栏 -->
+                                    <div class="flex items-center justify-between mt-2 pt-2 border-t border-slate-800/80 px-2 text-[11px]">
+                                        <i class="fas fa-chevron-left text-slate-400"></i>
+                                        <div class="flex items-center gap-4 text-slate-300 font-sans font-medium text-xs">
+                                            <span class="text-slate-500">关注</span>
+                                            <span class="text-white border-b-2 border-red-500 pb-0.5">正文</span>
+                                            <span class="text-slate-500">附近</span>
+                                        </div>
+                                        <i class="fas fa-arrow-up-from-bracket text-slate-400"></i>
+                                    </div>
+                                </div>
                                 <!-- 顶部创作者栏 -->
                                 <div class="flex items-center justify-between pb-3 border-b border-dark-border">
                                     <div class="flex items-center gap-2.5">
@@ -230,6 +256,11 @@
                                         <span class="flex items-center gap-1"><i class="fas fa-comment-dots"></i> 368</span>
                                     </div>
                                     <span class="text-[10px] font-mono text-slate-600">小红书移动端拟真</span>
+                                </div>
+
+                                <!-- iPhone 16 Pro 底部 Home 指示条 -->
+                                <div id="phone-frame-footer" class="pt-2 text-center select-none">
+                                    <div class="w-28 h-1 rounded-full bg-slate-600/70 mx-auto"></div>
                                 </div>
                             </div>
 
@@ -354,9 +385,58 @@
                         </div>
 
                         <!-- 底层 Checkpointer 信息 -->
-                        <div id="xhs-out-checkpointer" class="p-3 rounded-lg bg-dark-900 border border-dark-border text-[11px] font-mono text-slate-500 flex items-center justify-between">
-                            <span>Postgres Checkpointer: thread_id=xhs_langgraph_8820 · Snapshot Ready</span>
+                        <div id="xhs-out-checkpointer" class="p-3 rounded-lg bg-dark-900 border border-dark-border text-[11px] font-mono text-slate-500 flex flex-wrap items-center justify-between gap-2">
+                            <div class="flex items-center gap-3">
+                                <span id="xhs-meta-status" class="flex items-center gap-1.5 text-accent-emerald"><span class="w-2 h-2 rounded-full bg-accent-emerald"></span><span>就绪</span></span>
+                                <span id="xhs-meta-latency" class="text-slate-400">耗时: --</span>
+                                <span id="xhs-meta-thread" class="text-slate-500 hidden sm:inline">Thread: idle</span>
+                            </div>
                             <span class="text-accent-emerald flex items-center gap-1"><i class="fas fa-shield-halved"></i> PII 脱敏已通过</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============================================================= -->
+                <!-- 1080P 小红书种草长图海报预览与导出模态框 (HTML5 Canvas 压制生成) -->
+                <!-- ============================================================= -->
+                <div id="xhs-poster-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+                    <div id="xhs-poster-box" class="w-full max-w-2xl max-h-[92vh] rounded-2xl bg-dark-950/98 border border-dark-border shadow-2xl shadow-black/95 overflow-hidden flex flex-col text-[12px]">
+                        <!-- 顶栏 -->
+                        <div class="p-3.5 border-b border-dark-border flex items-center justify-between bg-dark-900/60">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-accent-emerald animate-pulse"></span>
+                                <h4 class="font-semibold text-white text-sm">小红书 1080P 高清种草海报</h4>
+                                <span class="tag tag-accent text-[10px] font-mono">1080 × 1440 黄金比例</span>
+                            </div>
+                            <button type="button" onclick="closePosterModal()" class="btn-ghost px-2 py-1 rounded text-slate-400 hover:text-white" title="关闭">
+                                <i class="fas fa-xmark text-xs"></i>
+                            </button>
+                        </div>
+
+                        <!-- 海报图像展示区 -->
+                        <div class="flex-1 overflow-y-auto p-4 flex items-center justify-center bg-dark-900/40">
+                            <div class="max-h-[62vh] rounded-xl overflow-hidden shadow-2xl border border-dark-border/80 bg-black flex items-center justify-center">
+                                <img id="xhs-poster-img" alt="小红书 1080P 高清种草海报" class="max-h-[60vh] object-contain" />
+                            </div>
+                            <!-- 隐藏的渲染 Canvas -->
+                            <canvas id="xhs-poster-canvas" width="1080" height="1440" class="hidden"></canvas>
+                        </div>
+
+                        <!-- 底栏操作区 -->
+                        <div class="p-3.5 border-t border-dark-border bg-dark-900/80 flex items-center justify-between gap-3">
+                            <div class="text-[11px] text-slate-400 font-mono hidden sm:block">
+                                <span>纯前端 Canvas 矢量排版 · 免服务器渲染 · 零跨域损耗</span>
+                            </div>
+                            <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                                <button type="button" id="btn-copy-poster" onclick="copyPosterImage()" class="px-3 py-2 rounded-xl border border-dark-border text-slate-300 hover:text-white hover:bg-dark-800 text-[12px] font-medium flex items-center gap-1.5 transition-colors">
+                                    <i class="fas fa-copy text-xs"></i>
+                                    <span>复制图片</span>
+                                </button>
+                                <button type="button" id="btn-download-poster" onclick="downloadPosterImage()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-accent-emerald to-emerald-600 text-dark-950 hover:brightness-110 text-[12px] font-semibold flex items-center gap-1.5 transition-all shadow-lg shadow-emerald-950/50">
+                                    <i class="fas fa-download text-xs"></i>
+                                    <span>下载高清 PNG (1080P)</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

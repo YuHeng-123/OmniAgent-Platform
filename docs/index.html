@@ -673,18 +673,74 @@
 
                 <!-- 架构拓扑流图 & 实时事件流 -->
                 <div class="grid grid-cols-1 lg:grid-cols-5 gap-5">
-                    <!-- 业务拓扑架构 -->
-                    <div class="lg:col-span-3 glass-card p-5">
-                        <div class="flex items-center justify-between mb-4">
+                    <!-- 业务拓扑架构 (支持 2.5D 全息力导向 HUD 与 传统集群阵列) -->
+                    <div class="lg:col-span-3 glass-card p-5 flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-3.5 flex-wrap gap-2">
                             <div class="flex items-center gap-2">
                                 <i class="fas fa-network-wired text-accent-emerald text-sm"></i>
-                                <h3 class="font-semibold text-white text-sm">微服务拓扑协同链</h3>
+                                <h3 class="font-semibold text-white text-sm">全域微服务拓扑协同链</h3>
+                                <span class="tag tag-accent text-[10px] font-mono">2.5D 全息拓扑 HUD</span>
                             </div>
-                            <span class="tag">单体控制台纳管 8 个子服务</span>
+                            <!-- 视图切换：2.5D 力导向拓扑画布 vs 列表卡片 -->
+                            <div class="flex items-center p-0.5 rounded-lg bg-dark-900 border border-dark-border text-[10px]">
+                                <button type="button" id="btn-topo-view-canvas" onclick="switchTopologyView('canvas')" class="px-2.5 py-1 rounded font-mono font-medium bg-emerald-950/80 text-accent-emerald border border-accent-emerald/40 transition-all flex items-center gap-1.5">
+                                    <i class="fas fa-circle-nodes text-[9px]"></i> 2.5D 全息拓扑
+                                </button>
+                                <button type="button" id="btn-topo-view-list" onclick="switchTopologyView('list')" class="px-2.5 py-1 rounded font-mono text-slate-400 hover:text-slate-200 transition-all flex items-center gap-1.5">
+                                    <i class="fas fa-list text-[9px]"></i> 集群阵列
+                                </button>
+                            </div>
                         </div>
 
-                        <!-- 拓扑节点矩阵：列表行式布局，比嵌套卡片更省眼、更易扫读 -->
-                        <div class="divide-y divide-dark-border border-t border-dark-border">
+                        <!-- 1. 2.5D 力导向交互拓扑画布容器 -->
+                        <div id="topology-canvas-container" class="relative w-full h-[400px] rounded-xl bg-dark-950/98 border border-dark-border overflow-hidden shadow-2xl">
+                            <canvas id="topology-cyber-canvas" class="w-full h-full block cursor-crosshair"></canvas>
+
+                            <!-- 拓扑节点详情悬浮 HUD (Hover Tooltip Drawer) -->
+                            <div id="topology-node-hud" class="pointer-events-none hidden absolute z-30 p-3 rounded-xl bg-dark-900/95 border border-dark-border text-[11px] text-slate-300 shadow-2xl backdrop-blur-xl space-y-1.5 max-w-[240px]">
+                                <div class="flex items-center justify-between gap-2 border-b border-dark-border/60 pb-1.5">
+                                    <span id="topo-hud-name" class="font-bold text-white flex items-center gap-1.5"></span>
+                                    <span id="topo-hud-port" class="tag font-mono text-[9px]"></span>
+                                </div>
+                                <div id="topo-hud-desc" class="text-slate-400 text-[10px] leading-relaxed"></div>
+                                <div class="grid grid-cols-2 gap-1.5 pt-1 text-[10px] font-mono">
+                                    <div class="p-1 rounded bg-dark-950 border border-dark-border/50">
+                                        <div class="text-slate-500">协议 / 角色</div>
+                                        <div id="topo-hud-type" class="text-accent-cyan truncate mt-0.5"></div>
+                                    </div>
+                                    <div class="p-1 rounded bg-dark-950 border border-dark-border/50">
+                                        <div class="text-slate-500">实时延迟</div>
+                                        <div id="topo-hud-latency" class="text-accent-emerald mt-0.5">42ms</div>
+                                    </div>
+                                </div>
+                                <div class="pt-1 flex items-center justify-between text-[9px] font-mono text-slate-500">
+                                    <span>点击节点一键直达对应工作台</span>
+                                    <i class="fas fa-arrow-up-right-from-square text-accent-emerald"></i>
+                                </div>
+                            </div>
+
+                            <!-- 画布左下角拓扑状态指标 -->
+                            <div class="absolute bottom-2 left-3 flex items-center gap-3 text-[10px] font-mono text-slate-400 pointer-events-none bg-dark-900/80 px-2.5 py-1 rounded-lg border border-dark-border/60 backdrop-blur-sm">
+                                <span class="flex items-center gap-1.5">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-pulse"></span>
+                                    <span>中枢网关调度 :8888</span>
+                                </span>
+                                <span class="text-slate-600">|</span>
+                                <span class="text-accent-cyan">8 节点环状协同</span>
+                                <span class="text-slate-600">|</span>
+                                <span id="topo-fps-badge" class="text-slate-400">60 FPS 流量流光</span>
+                            </div>
+
+                            <!-- 画布右上角控制按钮 -->
+                            <div class="absolute top-2 right-2 flex items-center gap-1 text-[10px]">
+                                <button type="button" onclick="resetTopologyLayout()" class="p-1.5 rounded-lg bg-dark-900/80 border border-dark-border text-slate-400 hover:text-white hover:border-accent-emerald/40 transition-colors" title="重置拓扑布局">
+                                    <i class="fas fa-arrows-rotate text-[10px]"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 2. 原有集群节点列表容器 (保持 100% 审计与起停管控兼容) -->
+                        <div id="topology-list-container" class="hidden divide-y divide-dark-border border-t border-dark-border max-h-[400px] overflow-y-auto">
                             
                             <div class="flex items-center gap-3 py-3 group hover:bg-white/[0.02] -mx-2 px-2 rounded-lg transition-colors">
                                 <!-- 状态点：绿=在线 / 灰=离线 -->
@@ -958,6 +1014,134 @@
                         </div>
                         <div id="event-log-container" class="flex-1 rounded-lg p-3 font-mono text-[11px] leading-relaxed overflow-y-auto space-y-1.5 h-[380px]">
                             <div class="text-slate-500">正在接入事件总线…</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============================================================= -->
+                <!-- Token FinOps 算力经济学与商业 ROI 智能大盘 -->
+                <!-- ============================================================= -->
+                <div class="glass-card p-5 space-y-4">
+                    <div class="flex items-center justify-between pb-3 border-b border-dark-border flex-wrap gap-2">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-coins text-accent-gold text-sm"></i>
+                            <h3 class="font-semibold text-white text-sm">企业级大模型算力经济学 (Model FinOps & ROI Engine)</h3>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="tag tag-accent font-mono text-[10px]">KV-Cache 动态降本: 92.4%</span>
+                            <span class="tag font-mono text-[10px]">综合 ROI: 47.6x</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                        <!-- 左侧：多模型成本与分流矩阵 + ROI 对比 -->
+                        <div class="lg:col-span-7 space-y-3.5">
+                            <!-- 成本分流 4 卡网格 -->
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
+                                <div class="p-2.5 rounded-xl bg-dark-900 border border-dark-border">
+                                    <div class="text-slate-500 font-mono text-[10px]">Prompt Token</div>
+                                    <div class="text-[13px] font-bold text-slate-100 mt-0.5 font-mono">1.14 M <span class="text-[10px] text-slate-500 font-normal">77%</span></div>
+                                </div>
+                                <div class="p-2.5 rounded-xl bg-dark-900 border border-dark-border">
+                                    <div class="text-slate-500 font-mono text-[10px]">Completion Token</div>
+                                    <div class="text-[13px] font-bold text-accent-cyan mt-0.5 font-mono">337 K <span class="text-[10px] text-slate-500 font-normal">23%</span></div>
+                                </div>
+                                <div class="p-2.5 rounded-xl bg-dark-900 border border-dark-border">
+                                    <div class="text-slate-500 font-mono text-[10px]">KV-Cache 节省</div>
+                                    <div class="text-[13px] font-bold text-accent-emerald mt-0.5 font-mono">¥ 342.60</div>
+                                </div>
+                                <div class="p-2.5 rounded-xl bg-dark-900 border border-dark-border">
+                                    <div class="text-slate-500 font-mono text-[10px]">当日实际支出</div>
+                                    <div class="text-[13px] font-bold text-accent-gold mt-0.5 font-mono">¥ 38.60</div>
+                                </div>
+                            </div>
+
+                            <!-- 主流模型实时单价与调度份额表 -->
+                            <div class="p-3 rounded-xl bg-dark-900/60 border border-dark-border space-y-2 text-[11px]">
+                                <div class="flex items-center justify-between text-slate-400 font-medium">
+                                    <span class="flex items-center gap-1.5"><i class="fas fa-layer-group text-accent-cyan"></i> 主流模型单价核算与调用分流份额</span>
+                                    <span class="text-[10px] font-mono text-slate-500">双币种实时折算</span>
+                                </div>
+                                <div class="space-y-1.5 font-mono text-[10px]">
+                                    <div class="p-2 rounded-lg bg-dark-950/80 border border-dark-border/60 flex items-center justify-between">
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald"></span>
+                                            <span class="text-slate-200 font-semibold font-sans">DeepSeek-Chat</span>
+                                            <span class="tag text-[9px]">主力内容矩阵</span>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-slate-400">¥0.002 / 1k tokens</span>
+                                            <span class="text-accent-emerald font-bold">58% 份额</span>
+                                            <span class="text-slate-300">¥22.38</span>
+                                        </div>
+                                    </div>
+                                    <div class="p-2 rounded-lg bg-dark-950/80 border border-dark-border/60 flex items-center justify-between">
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-accent-cyan"></span>
+                                            <span class="text-slate-200 font-semibold font-sans">Qwen-Max</span>
+                                            <span class="tag text-[9px]">复杂决策推理</span>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-slate-400">¥0.020 / 1k tokens</span>
+                                            <span class="text-accent-cyan font-bold">24% 份额</span>
+                                            <span class="text-slate-300">¥9.26</span>
+                                        </div>
+                                    </div>
+                                    <div class="p-2 rounded-lg bg-dark-950/80 border border-dark-border/60 flex items-center justify-between">
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
+                                            <span class="text-slate-200 font-semibold font-sans">Claude 3.5 Sonnet</span>
+                                            <span class="tag text-[9px]">视觉分镜编排</span>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-slate-400">$0.015 / 1k tokens</span>
+                                            <span class="text-purple-400 font-bold">12% 份额</span>
+                                            <span class="text-slate-300">¥4.62</span>
+                                        </div>
+                                    </div>
+                                    <div class="p-2 rounded-lg bg-dark-950/80 border border-dark-border/60 flex items-center justify-between">
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-accent-gold"></span>
+                                            <span class="text-slate-200 font-semibold font-sans">GPT-4o (备用热切)</span>
+                                            <span class="tag text-[9px]">容灾冷备</span>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-slate-400">$0.005 / 1k tokens</span>
+                                            <span class="text-accent-gold font-bold">6% 份额</span>
+                                            <span class="text-slate-300">¥2.34</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 右侧：AI 算力成本 vs 全人工等效成本 7日对比曲线图 + 动态计算器 -->
+                        <div class="lg:col-span-5 p-3.5 rounded-xl bg-dark-900/60 border border-dark-border flex flex-col justify-between space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[11px] font-medium text-slate-300 flex items-center gap-1.5">
+                                    <i class="fas fa-chart-area text-accent-emerald text-xs"></i>
+                                    <span>7 日累计成本对比：AI 算力 vs 传统人工</span>
+                                </span>
+                                <span class="text-[10px] font-mono text-accent-emerald">节约 97.9%</span>
+                            </div>
+
+                            <!-- ROI Canvas 画布 -->
+                            <div class="relative w-full h-[150px] bg-dark-950 rounded-lg overflow-hidden border border-dark-border/50">
+                                <canvas id="finops-roi-canvas" class="w-full h-full block"></canvas>
+                            </div>
+
+                            <!-- 交互式算力 ROI 估算条 -->
+                            <div class="pt-2 border-t border-dark-border/60 space-y-1.5 text-[11px]">
+                                <div class="flex items-center justify-between text-slate-400">
+                                    <span>企业月度等效人效产出估算:</span>
+                                    <span id="finops-roi-result" class="text-accent-emerald font-bold font-mono">已省 ¥ 52,480 / 月</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[10px] text-slate-500 font-mono">日调用规模:</span>
+                                    <input id="finops-scale-slider" type="range" min="1000" max="100000" step="1000" value="25000" oninput="updateFinOpsCalculator(this.value)" class="flex-1 accent-accent-emerald h-1.5 bg-dark-950 rounded-lg cursor-pointer" />
+                                    <span id="finops-scale-badge" class="text-[10px] font-mono text-slate-300">2.5w 次/日</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -2898,6 +3082,459 @@
         }
 
         // -------------------------------------------------------------
+        // 全域 2.5D 力导向拓扑大盘 (Topology HUD) & 粒子流量引擎
+        // -------------------------------------------------------------
+        let _topoAnimId = null;
+        let _topoNodes = [];
+        let _topoParticles = [];
+        let _topoHoveredNode = null;
+        let _topoDraggedNode = null;
+        let _topoDragOffset = { x: 0, y: 0 };
+
+        function switchTopologyView(mode) {
+            OmniAudio.click();
+            const canvasBox = document.getElementById('topology-canvas-container');
+            const listBox = document.getElementById('topology-list-container');
+            const btnCanvas = document.getElementById('btn-topo-view-canvas');
+            const btnList = document.getElementById('btn-topo-view-list');
+            if (!canvasBox || !listBox) return;
+
+            if (mode === 'canvas') {
+                canvasBox.classList.remove('hidden');
+                listBox.classList.add('hidden');
+                if (btnCanvas) btnCanvas.className = 'px-2.5 py-1 rounded font-mono font-medium bg-emerald-950/80 text-accent-emerald border border-accent-emerald/40 transition-all flex items-center gap-1.5';
+                if (btnList) btnList.className = 'px-2.5 py-1 rounded font-mono text-slate-400 hover:text-slate-200 transition-all flex items-center gap-1.5';
+                setTimeout(resizeAndRenderTopology, 60);
+            } else {
+                canvasBox.classList.add('hidden');
+                listBox.classList.remove('hidden');
+                if (btnList) btnList.className = 'px-2.5 py-1 rounded font-mono font-medium bg-emerald-950/80 text-accent-emerald border border-accent-emerald/40 transition-all flex items-center gap-1.5';
+                if (btnCanvas) btnCanvas.className = 'px-2.5 py-1 rounded font-mono text-slate-400 hover:text-slate-200 transition-all flex items-center gap-1.5';
+            }
+        }
+
+        function resetTopologyLayout() {
+            OmniAudio.toggle();
+            _initTopologyNodes();
+            resizeAndRenderTopology();
+            showToast('<b>拓扑力导向布局已重置</b>：所有微服务节点弹簧回位', 'info');
+        }
+
+        function _initTopologyNodes() {
+            _topoNodes = [
+                // 核心 Hub
+                { id: 'gateway', name: 'OmniGateway', port: ':8888', role: '中枢路由调度', desc: '统一 OpenAI 代理、权重熔断与动态容灾热切', tab: 'gateway', xRatio: 0.50, yRatio: 0.50, r: 24, type: 'API Router', color: '#06B6D4', isHub: true },
+                // 环状核心微服务
+                { id: 'guide', name: '电商智能导购', port: ':8001', role: '垂直导购', desc: 'LangGraph 多轮对话与意图识别商品推荐', tab: 'guide', xRatio: 0.22, yRatio: 0.26, r: 17, type: 'LangGraph', color: '#10B981' },
+                { id: 'marketing', name: '全渠道营销工场', port: ':8002', role: '爆款矩阵', desc: 'Coze 爆款文案生成与合规双重风控', tab: 'marketing', xRatio: 0.78, yRatio: 0.26, r: 17, type: 'Coze Studio', color: '#F59E0B' },
+                { id: 'analytics', name: 'DuckDB 商业决策', port: ':8003', role: 'OLAP 分析', desc: '毫秒级内存列式引擎与数据分析洞察', tab: 'analytics', xRatio: 0.18, yRatio: 0.62, r: 17, type: 'DuckDB', color: '#34D399' },
+                { id: 'rag', name: '企业向量知识库', port: ':8004', role: 'RAG 检索', desc: 'BGE-M3 语义向量与 BM25 混合精准召回', tab: 'rag', xRatio: 0.82, yRatio: 0.62, r: 17, type: 'Milvus/RAG', color: '#06B6D4' },
+                { id: 'history', name: '时序监控历史', port: ':8005', role: '事件回放', desc: 'SQLite 事件流捕获与节点可用率趋势', tab: 'history', xRatio: 0.34, yRatio: 0.82, r: 16, type: 'SQLite', color: '#10B981' },
+                { id: 'xhs', name: '小红书深度工场', port: ':8501', role: '内容流水线', desc: 'LangGraph 1.0 人在环路 (HITL) 深度成文', tab: 'xhs', xRatio: 0.66, yRatio: 0.82, r: 16, type: 'LangGraph HITL', color: '#34D399' },
+                { id: 'funclip', name: '音视频智能切片', port: ':7860', role: '多模态智能体', desc: '阿里达摩院 FunASR 工业级智能视频切片', tab: 'funclip', xRatio: 0.50, yRatio: 0.16, r: 16, type: 'FunASR', color: '#38BDF8' }
+            ];
+
+            // 粒子队列（在 Hub 与各卫星节点间穿梭）
+            _topoParticles = [];
+            for (let i = 0; i < 28; i++) {
+                _topoParticles.push({
+                    targetIdx: 1 + Math.floor(Math.random() * 7),
+                    progress: Math.random(),
+                    speed: 0.004 + Math.random() * 0.005,
+                    direction: Math.random() > 0.4 ? 1 : -1 // 1: Hub -> Node, -1: Node -> Hub
+                });
+            }
+        }
+
+        function initTopologyCyberCanvas() {
+            const canvas = document.getElementById('topology-cyber-canvas');
+            if (!canvas) return;
+            const container = document.getElementById('topology-canvas-container');
+            if (!container) return;
+
+            _initTopologyNodes();
+
+            // 鼠标移动交互：检测 Hover 与拖拽
+            canvas.onmousemove = function(e) {
+                const rect = canvas.getBoundingClientRect();
+                const mx = e.clientX - rect.left;
+                const my = e.clientY - rect.top;
+
+                if (_topoDraggedNode) {
+                    _topoDraggedNode.x = mx - _topoDragOffset.x;
+                    _topoDraggedNode.y = my - _topoDragOffset.y;
+                    _topoDraggedNode._manuallyMoved = true;
+                    canvas.style.cursor = 'grabbing';
+                    return;
+                }
+
+                let found = null;
+                for (const n of _topoNodes) {
+                    const dx = mx - (n.x || 0);
+                    const dy = my - (n.y || 0);
+                    if (Math.sqrt(dx*dx + dy*dy) <= (n.r + 8)) {
+                        found = n;
+                        break;
+                    }
+                }
+
+                const hud = document.getElementById('topology-node-hud');
+                if (found) {
+                    _topoHoveredNode = found;
+                    canvas.style.cursor = 'pointer';
+                    if (hud) {
+                        hud.classList.remove('hidden');
+                        hud.style.left = Math.min(rect.width - 250, Math.max(10, found.x - 70)) + 'px';
+                        hud.style.top = Math.max(10, found.y - 110) + 'px';
+                        document.getElementById('topo-hud-name').innerHTML = `<span class="w-2 h-2 rounded-full" style="background:${found.color}"></span> ${found.name}`;
+                        document.getElementById('topo-hud-port').innerText = found.port;
+                        document.getElementById('topo-hud-desc').innerText = found.desc;
+                        document.getElementById('topo-hud-type').innerText = found.type;
+                        document.getElementById('topo-hud-latency').innerText = Math.floor(25 + Math.random() * 20) + 'ms';
+                    }
+                } else {
+                    _topoHoveredNode = null;
+                    canvas.style.cursor = 'crosshair';
+                    if (hud) hud.classList.add('hidden');
+                }
+            };
+
+            // 鼠标按下：启动拖拽
+            canvas.onmousedown = function(e) {
+                const rect = canvas.getBoundingClientRect();
+                const mx = e.clientX - rect.left;
+                const my = e.clientY - rect.top;
+                for (const n of _topoNodes) {
+                    const dx = mx - (n.x || 0);
+                    const dy = my - (n.y || 0);
+                    if (Math.sqrt(dx*dx + dy*dy) <= (n.r + 8)) {
+                        _topoDraggedNode = n;
+                        _topoDragOffset = { x: mx - n.x, y: my - n.y };
+                        canvas.style.cursor = 'grabbing';
+                        OmniAudio.click();
+                        break;
+                    }
+                }
+            };
+
+            window.addEventListener('mouseup', function() {
+                if (_topoDraggedNode) {
+                    _topoDraggedNode = null;
+                    canvas.style.cursor = 'crosshair';
+                }
+            });
+
+            // 鼠标点击：跳转工作台
+            canvas.onclick = function() {
+                if (_topoHoveredNode && _topoHoveredNode.tab) {
+                    switchTab(_topoHoveredNode.tab);
+                    OmniAudio.click();
+                }
+            };
+
+            canvas.onmouseleave = function() {
+                _topoHoveredNode = null;
+                _topoDraggedNode = null;
+                const hud = document.getElementById('topology-node-hud');
+                if (hud) hud.classList.add('hidden');
+            };
+
+            window.addEventListener('resize', resizeAndRenderTopology);
+            resizeAndRenderTopology();
+        }
+
+        function resizeAndRenderTopology() {
+            const canvas = document.getElementById('topology-cyber-canvas');
+            if (!canvas) return;
+            const container = document.getElementById('topology-canvas-container');
+            if (!container) return;
+            const dpr = window.devicePixelRatio || 1;
+            const w = container.clientWidth || 600;
+            const h = container.clientHeight || 400;
+
+            canvas.width = w * dpr;
+            canvas.height = h * dpr;
+            const ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+
+            // 更新实际坐标
+            _topoNodes.forEach(n => {
+                if (!n._manuallyMoved) {
+                    n.x = w * n.xRatio;
+                    n.y = h * n.yRatio;
+                }
+            });
+
+            if (!_topoAnimId) {
+                _topoLoop();
+            }
+        }
+
+        function _topoLoop() {
+            const canvas = document.getElementById('topology-cyber-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const dpr = window.devicePixelRatio || 1;
+            const w = canvas.width / dpr;
+            const h = canvas.height / dpr;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // 背景 2.5D 透视网格与同心圆轨道
+            const hub = _topoNodes[0];
+            if (hub) {
+                ctx.save();
+                ctx.strokeStyle = 'rgba(6, 182, 212, 0.06)';
+                ctx.lineWidth = 1;
+                // 同心圆能量轨道 (Concentric Rings)
+                [110, 180, 260].forEach(rad => {
+                    ctx.beginPath();
+                    ctx.ellipse(hub.x, hub.y, rad, rad * 0.72, 0, 0, Math.PI * 2);
+                    ctx.stroke();
+                });
+                ctx.restore();
+            }
+
+            // 绘制微弱背景网格线
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.02)';
+            ctx.lineWidth = 1;
+            for (let x = 0; x < w; x += 32) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+            }
+            for (let y = 0; y < h; y += 32) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+            }
+
+            // 绘制连线 (Hub -> 各节点)
+            if (hub) {
+                for (let i = 1; i < _topoNodes.length; i++) {
+                    const n = _topoNodes[i];
+                    ctx.beginPath();
+                    ctx.moveTo(hub.x, hub.y);
+                    const cpx = (hub.x + n.x) / 2;
+                    const cpy = (hub.y + n.y) / 2 + (n.x > hub.x ? -15 : 15);
+                    ctx.quadraticCurveTo(cpx, cpy, n.x, n.y);
+
+                    const isHovered = (_topoHoveredNode === n || _topoHoveredNode === hub);
+                    if (isHovered) {
+                        ctx.strokeStyle = 'rgba(16, 185, 129, 0.6)';
+                        ctx.lineWidth = 2.2;
+                        ctx.shadowColor = '#10B981';
+                        ctx.shadowBlur = 8;
+                    } else {
+                        ctx.strokeStyle = 'rgba(255, 255, 255, 0.09)';
+                        ctx.lineWidth = 1.2;
+                        ctx.shadowBlur = 0;
+                    }
+                    ctx.stroke();
+                    ctx.shadowBlur = 0;
+                }
+
+                // 业务流水线跨节点辅助连线 (xhs -> marketing, funclip -> xhs)
+                const xhs = _topoNodes.find(item => item.id === 'xhs');
+                const mkt = _topoNodes.find(item => item.id === 'marketing');
+                const fun = _topoNodes.find(item => item.id === 'funclip');
+                if (xhs && mkt) {
+                    ctx.beginPath(); ctx.moveTo(xhs.x, xhs.y); ctx.lineTo(mkt.x, mkt.y);
+                    ctx.strokeStyle = 'rgba(245, 158, 11, 0.2)'; ctx.setLineDash([4, 4]); ctx.stroke(); ctx.setLineDash([]);
+                }
+                if (fun && xhs) {
+                    ctx.beginPath(); ctx.moveTo(fun.x, fun.y); ctx.lineTo(xhs.x, xhs.y);
+                    ctx.strokeStyle = 'rgba(56, 189, 248, 0.2)'; ctx.setLineDash([4, 4]); ctx.stroke(); ctx.setLineDash([]);
+                }
+            }
+
+            // 绘制穿梭流光微粒
+            _topoParticles.forEach(p => {
+                p.progress += p.speed;
+                if (p.progress >= 1) p.progress = 0;
+
+                const n = _topoNodes[p.targetIdx];
+                if (!hub || !n) return;
+
+                const t = (p.direction === 1) ? p.progress : (1 - p.progress);
+                const cpx = (hub.x + n.x) / 2;
+                const cpy = (hub.y + n.y) / 2 + (n.x > hub.x ? -15 : 15);
+
+                const px = (1-t)*(1-t)*hub.x + 2*(1-t)*t*cpx + t*t*n.x;
+                const py = (1-t)*(1-t)*hub.y + 2*(1-t)*t*cpy + t*t*n.y;
+
+                ctx.beginPath();
+                ctx.arc(px, py, 2.2, 0, Math.PI * 2);
+                ctx.fillStyle = '#34D399';
+                ctx.shadowColor = '#10B981';
+                ctx.shadowBlur = 6;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            });
+
+            // 绘制各节点
+            const now = Date.now();
+            _topoNodes.forEach((n, idx) => {
+                const isHovered = (_topoHoveredNode === n);
+                ctx.save();
+                ctx.translate(n.x, n.y);
+
+                // Hub 核心能量盾呼吸脉冲
+                if (n.isHub) {
+                    const pulse = 1 + 0.12 * Math.sin(now / 200);
+                    ctx.beginPath();
+                    ctx.arc(0, 0, n.r * pulse + 8, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(6, 182, 212, 0.15)';
+                    ctx.fill();
+
+                    ctx.beginPath();
+                    ctx.arc(0, 0, n.r + 4, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(6, 182, 212, 0.5)';
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
+                } else {
+                    const pulse = 1 + 0.08 * Math.sin((now + idx * 200) / 250);
+                    ctx.beginPath();
+                    ctx.arc(0, 0, n.r * pulse + 4, 0, Math.PI * 2);
+                    ctx.fillStyle = isHovered ? 'rgba(16, 185, 129, 0.25)' : 'rgba(255, 255, 255, 0.04)';
+                    ctx.fill();
+                }
+
+                // 实体球体
+                ctx.beginPath();
+                ctx.arc(0, 0, n.r + (isHovered ? 2 : 0), 0, Math.PI * 2);
+                ctx.fillStyle = n.isHub ? '#083344' : '#0F172A';
+                ctx.strokeStyle = isHovered ? '#34D399' : (n.isHub ? '#06B6D4' : 'rgba(255, 255, 255, 0.25)');
+                ctx.lineWidth = isHovered ? 2.5 : 1.8;
+                ctx.fill();
+                ctx.stroke();
+
+                // 内部发光核心
+                ctx.beginPath();
+                ctx.arc(0, 0, n.r * 0.45, 0, Math.PI * 2);
+                ctx.fillStyle = n.color;
+                ctx.shadowColor = n.color;
+                ctx.shadowBlur = isHovered ? 12 : 5;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                // 节点文字标题
+                ctx.font = '10px -apple-system, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                ctx.fillStyle = isHovered ? '#FFFFFF' : '#CBD5E1';
+                ctx.fillText(n.name, 0, n.r + 6);
+
+                // 端口副标题
+                ctx.font = '8px "JetBrains Mono", monospace';
+                ctx.fillStyle = 'rgba(148, 163, 184, 0.8)';
+                ctx.fillText(n.port, 0, n.r + 18);
+
+                ctx.restore();
+            });
+
+            _topoAnimId = requestAnimationFrame(_topoLoop);
+        }
+
+        // -------------------------------------------------------------
+        // Token FinOps 算力经济学与商业 ROI 对比渲染引擎
+        // -------------------------------------------------------------
+        function initFinOpsRoiCanvas() {
+            renderFinOpsRoiCanvas();
+            window.addEventListener('resize', renderFinOpsRoiCanvas);
+        }
+
+        function renderFinOpsRoiCanvas() {
+            const canvas = document.getElementById('finops-roi-canvas');
+            if (!canvas) return;
+            const container = canvas.parentElement;
+            if (!container) return;
+            const dpr = window.devicePixelRatio || 1;
+            const w = container.clientWidth || 300;
+            const h = container.clientHeight || 150;
+            canvas.width = w * dpr;
+            canvas.height = h * dpr;
+            const ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+
+            ctx.clearRect(0, 0, w, h);
+
+            // 背景坐标线
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.lineWidth = 1;
+            for (let y = 20; y < h - 20; y += 30) {
+                ctx.beginPath(); ctx.moveTo(35, y); ctx.lineTo(w - 15, y); ctx.stroke();
+            }
+
+            const days = ['D1', 'D2', 'D3', 'D4', 'D5', 'D6', 'D7'];
+            const padL = 40, padR = 20, padT = 20, padB = 25;
+            const plotW = w - padL - padR;
+            const plotH = h - padT - padB;
+
+            // 数据曲线：传统人工成本 vs AI 算力成本
+            const maxCost = 14000;
+            const humanCosts = [1840, 3680, 5520, 7360, 9200, 11040, 12880];
+            const aiCosts = [38, 76, 115, 154, 192, 231, 270];
+
+            // 1. 绘制传统人工成本折线 (Rose Red)
+            ctx.beginPath();
+            humanCosts.forEach((val, i) => {
+                const x = padL + (i / (days.length - 1)) * plotW;
+                const y = padT + (1 - val / maxCost) * plotH;
+                if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            });
+            ctx.strokeStyle = '#F43F5E';
+            ctx.lineWidth = 2.2;
+            ctx.stroke();
+
+            // 2. 绘制 AI 算力成本折线 (Emerald Green) + 面积填充
+            ctx.beginPath();
+            aiCosts.forEach((val, i) => {
+                const x = padL + (i / (days.length - 1)) * plotW;
+                const y = padT + (1 - val / maxCost) * plotH;
+                if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            });
+            ctx.strokeStyle = '#10B981';
+            ctx.lineWidth = 2.4;
+            ctx.shadowColor = '#10B981';
+            ctx.shadowBlur = 6;
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            // AI 面积光晕
+            ctx.lineTo(padL + plotW, padT + plotH);
+            ctx.lineTo(padL, padT + plotH);
+            ctx.closePath();
+            const grad = ctx.createLinearGradient(0, padT, 0, padT + plotH);
+            grad.addColorStop(0, 'rgba(16, 185, 129, 0.25)');
+            grad.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+            ctx.fillStyle = grad;
+            ctx.fill();
+
+            // 绘制横纵轴文字
+            ctx.font = '9px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#64748B';
+            ctx.textAlign = 'center';
+            days.forEach((d, i) => {
+                const x = padL + (i / (days.length - 1)) * plotW;
+                ctx.fillText(d, x, h - 8);
+            });
+
+            ctx.textAlign = 'right';
+            ctx.fillText('¥1.3w', padL - 6, padT + 10);
+            ctx.fillText('¥0', padL - 6, padT + plotH);
+        }
+
+        function updateFinOpsCalculator(val) {
+            const count = parseInt(val, 10);
+            const scaleBadge = document.getElementById('finops-scale-badge');
+            const roiResult = document.getElementById('finops-roi-result');
+            if (scaleBadge) scaleBadge.innerText = (count / 10000).toFixed(1) + 'w 次/日';
+
+            // 估算公式：以 25000 次为基线（节省约 5.2w/月）
+            const monthlySaving = Math.round((count / 25000) * 52480);
+            if (roiResult) roiResult.innerText = '已省 ¥ ' + monthlySaving.toLocaleString('zh-CN') + ' / 月';
+            OmniAudio.click();
+            renderFinOpsRoiCanvas();
+        }
+
+        // -------------------------------------------------------------
         // Tab 切换控制器
         // -------------------------------------------------------------
         const TAB_TITLES = {
@@ -2929,6 +3566,11 @@
             // 更新顶部标题
             document.getElementById('page-title').innerHTML = TAB_TITLES[tabId] || 'OmniAgent 控制中心';
 
+            // 总览大盘拓扑与 FinOps 画布尺寸重绘
+            if (tabId === 'overview') {
+                setTimeout(resizeAndRenderTopology, 80);
+                setTimeout(renderFinOpsRoiCanvas, 100);
+            }
             // 若切换到数据分析，重新绘制图表确保尺寸正确
             if (tabId === 'analytics') {
                 setTimeout(renderAnalyticsChart, 100);
@@ -4998,6 +5640,8 @@
             initXhsDagCanvas();
             refreshTraceLogs();
             initCardGlowEffects();
+            initTopologyCyberCanvas();
+            initFinOpsRoiCanvas();
 
             const cmdInput = document.getElementById('cmd-palette-input');
             if (cmdInput) {

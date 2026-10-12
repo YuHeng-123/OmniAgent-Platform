@@ -47,3 +47,9 @@ class LabsFunclipSliceRequest(BaseModel):
     sample_id: str = "sample-1"
     hotwords: str = ""
     diarization: bool = True
+
+
+class AuthTokenRequest(BaseModel):
+    tenant_id: str = "tenant-enterprise-01"
+    role: str = "operator"
+    user_id: str = "usr-ops-01"

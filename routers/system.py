@@ -22,8 +22,15 @@ from core.config import (
     SERVICES_META,
     STARTED_AT,
 )
+from core.models import AuthTokenRequest
 from core.process import start_service_process, stop_port_processes
+from core.security import (
+    create_tenant_jwt,
+    enforce_sensitive_action_role,
+    get_tenant_context,
+)
 from core.state import MONITOR, is_port_online, scan_ports
+from core.tasks import get_task_by_id, list_tasks
 from core.templates import templates
 
 router = APIRouter()
@@ -135,11 +142,15 @@ async def control_capabilities():
 
 
 @router.post("/api/v1/services/{service_id}/stop")
-async def service_stop(service_id: str):
+async def service_stop(service_id: str, request: Request):
+    """敏感操作：终止微服务进程（具备企业级 RBAC 权限校验与租户审计）"""
     meta = _service_or_404(service_id)
+    ctx = enforce_sensitive_action_role(request, allowed_roles=["admin", "operator"])
     result = await asyncio.to_thread(stop_port_processes, meta["port"])
     return {
         "status": "ok",
+        "tenant_id": ctx["tenant_id"],
+        "operator": ctx["user_id"],
         "service_id": meta["id"],
         "name": meta["name"],
         "port": meta["port"],
@@ -151,13 +162,17 @@ async def service_stop(service_id: str):
 
 
 @router.post("/api/v1/services/{service_id}/start")
-async def service_start(service_id: str):
+async def service_start(service_id: str, request: Request):
+    """敏感操作：拉起微服务进程（具备企业级 RBAC 权限校验与租户审计）"""
     meta = _service_or_404(service_id)
+    ctx = enforce_sensitive_action_role(request, allowed_roles=["admin", "operator"])
     if await is_port_online(meta["port"], PROBE_TIMEOUT):
         return {
             "status": "ok",
             "started": False,
             "reason": "already-online",
+            "tenant_id": ctx["tenant_id"],
+            "operator": ctx["user_id"],
             "service_id": meta["id"],
             "name": meta["name"],
             "port": meta["port"],
@@ -166,8 +181,75 @@ async def service_start(service_id: str):
     result = await asyncio.to_thread(start_service_process, meta)
     return {
         "status": "ok",
+        "tenant_id": ctx["tenant_id"],
+        "operator": ctx["user_id"],
         "service_id": meta["id"],
         "name": meta["name"],
         "port": meta["port"],
         **result,
+    }
+
+
+# --------------------------------------------------------------------------- #
+# 企业准入鉴权与租户上下文端点 (Auth & Multi-Tenant Endpoints)
+# --------------------------------------------------------------------------- #
+@router.post("/api/v1/auth/token")
+async def issue_auth_token(req: AuthTokenRequest):
+    """企业准入：颁发带租户标识与角色的 JWT Token"""
+    token = create_tenant_jwt(
+        tenant_id=req.tenant_id,
+        role=req.role,
+        user_id=req.user_id,
+        expires_in_sec=86400 * 7,
+    )
+    return {
+        "status": "ok",
+        "access_token": token,
+        "token_type": "Bearer",
+        "tenant_id": req.tenant_id,
+        "role": req.role,
+        "user_id": req.user_id,
+        "expires_in": 86400 * 7,
+    }
+
+
+@router.get("/api/v1/auth/me")
+async def get_current_user_tenant(request: Request):
+    """查询当前请求的租户上下文与权限"""
+    ctx = get_tenant_context(request)
+    return {
+        "status": "ok",
+        "tenant_context": ctx,
+    }
+
+
+# --------------------------------------------------------------------------- #
+# 异步后台任务队列与状态机端点 (Async Tasks Query Endpoints)
+# --------------------------------------------------------------------------- #
+@router.get("/api/v1/tasks/{task_id}")
+async def get_task_status(task_id: str, request: Request):
+    """查询后台异步任务状态机流转 (PENDING/RUNNING/COMPLETED/FAILED) 与执行产物"""
+    ctx = get_tenant_context(request)
+    task = get_task_by_id(task_id, tenant_id=ctx["tenant_id"])
+    if not task:
+        raise HTTPException(
+            status_code=404,
+            detail={"status": "not_found", "task_id": task_id, "hint": "异步任务不存在或无权访问"},
+        )
+    return {
+        "status": "ok",
+        "task": task,
+    }
+
+
+@router.get("/api/v1/tasks")
+async def list_recent_tasks(request: Request, limit: int = 20):
+    """查询当前租户最近排队或完成的异步任务流水"""
+    ctx = get_tenant_context(request)
+    tasks = list_tasks(tenant_id=ctx["tenant_id"], limit=limit)
+    return {
+        "status": "ok",
+        "tenant_id": ctx["tenant_id"],
+        "total": len(tasks),
+        "tasks": tasks,
     }

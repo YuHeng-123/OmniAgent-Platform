@@ -1,16 +1,21 @@
 """
 OmniAgent Platform - Labs 纵深实验台路由 (Labs Router)
 包含 Labs 收编模块索引、LangGraph 小红书流水线生成、达摩院 FunClip 语音与视频智能切片。
+支持企业级多租户隔离与后台分布式异步任务调度队列 (PENDING/RUNNING/COMPLETED/FAILED)。
 """
 
+import asyncio
 import os
 import time
+from typing import Any, Dict
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 
 from core.config import BASE_DIR
 from core.models import LabsFunclipSliceRequest, LabsXhsGenerateRequest
+from core.security import get_tenant_context
 from core.state import scan_ports
+from core.tasks import create_task_ticket, dispatch_background_task, update_task_state
 
 router = APIRouter()
 
@@ -80,9 +85,10 @@ async def get_labs():
     return {"status": "ok", "modules": modules}
 
 
-@router.post("/api/v1/labs/xhs/generate")
-async def labs_xhs_generate(req: LabsXhsGenerateRequest):
-    """LangGraph 1.0 小红书营销流水线后端调度与状态机生成"""
+# --------------------------------------------------------------------------- #
+# LangGraph 小红书流水线核心执行逻辑
+# --------------------------------------------------------------------------- #
+async def _execute_xhs_generate(req: LabsXhsGenerateRequest) -> Dict[str, Any]:
     t0 = time.perf_counter()
     pname = (req.product_name or "").strip() or "天然和田碧玉平安扣吊坠"
     tone = req.tone or "闺蜜真实种草"
@@ -241,9 +247,40 @@ async def labs_xhs_generate(req: LabsXhsGenerateRequest):
     }
 
 
-@router.post("/api/v1/labs/funclip/slice")
-async def labs_funclip_slice(req: LabsFunclipSliceRequest):
-    """达摩院 FunClip 语音识别与智能音视频切片"""
+@router.post("/api/v1/labs/xhs/generate")
+async def labs_xhs_generate(
+    req: LabsXhsGenerateRequest,
+    request: Request,
+    async_task: bool = False,
+):
+    """LangGraph 1.0 小红书营销流水线后端调度与状态机生成（支持同步与异步后台两种模式）"""
+    is_async = async_task or (request.headers.get("x-async-task") == "true")
+    ctx = get_tenant_context(request)
+    payload = req.model_dump() if hasattr(req, "model_dump") else req.dict()
+
+    if is_async:
+        task_id = create_task_ticket("xhs-generate", ctx["tenant_id"], payload)
+        asyncio.create_task(dispatch_background_task(task_id, _execute_xhs_generate, req))
+        return {
+            "status": "accepted",
+            "async": True,
+            "task_id": task_id,
+            "state": "PENDING",
+            "tenant_id": ctx["tenant_id"],
+            "poll_url": f"/api/v1/tasks/{task_id}",
+        }
+
+    res = await _execute_xhs_generate(req)
+    task_id = create_task_ticket("xhs-generate", ctx["tenant_id"], payload)
+    update_task_state(task_id, "COMPLETED", progress=100, result=res)
+    res["task_id"] = task_id
+    return res
+
+
+# --------------------------------------------------------------------------- #
+# 达摩院 FunClip 语音识别与智能音视频切片核心执行逻辑
+# --------------------------------------------------------------------------- #
+async def _execute_funclip_slice(req: LabsFunclipSliceRequest) -> Dict[str, Any]:
     t0 = time.perf_counter()
     sample_id = req.sample_id or "sample-1"
     hotwords = req.hotwords or "冰种, 玻璃种, 帝王绿, 极品阳绿, 缅甸老坑, 和田碧玉"
@@ -433,3 +470,33 @@ async def labs_funclip_slice(req: LabsFunclipSliceRequest):
         "srt_content": srt_content,
         "latency_ms": int((time.perf_counter() - t0) * 1000),
     }
+
+
+@router.post("/api/v1/labs/funclip/slice")
+async def labs_funclip_slice(
+    req: LabsFunclipSliceRequest,
+    request: Request,
+    async_task: bool = False,
+):
+    """达摩院 FunClip 语音识别与智能音视频切片（支持同步与异步后台两种模式）"""
+    is_async = async_task or (request.headers.get("x-async-task") == "true")
+    ctx = get_tenant_context(request)
+    payload = req.model_dump() if hasattr(req, "model_dump") else req.dict()
+
+    if is_async:
+        task_id = create_task_ticket("funclip-slice", ctx["tenant_id"], payload)
+        asyncio.create_task(dispatch_background_task(task_id, _execute_funclip_slice, req))
+        return {
+            "status": "accepted",
+            "async": True,
+            "task_id": task_id,
+            "state": "PENDING",
+            "tenant_id": ctx["tenant_id"],
+            "poll_url": f"/api/v1/tasks/{task_id}",
+        }
+
+    res = await _execute_funclip_slice(req)
+    task_id = create_task_ticket("funclip-slice", ctx["tenant_id"], payload)
+    update_task_state(task_id, "COMPLETED", progress=100, result=res)
+    res["task_id"] = task_id
+    return res

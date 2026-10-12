@@ -260,8 +260,12 @@ async def trace_id_middleware(request: Request, call_next):
         elif "rag" in path:
             svc = "rag-retrieval"
 
+        from core.security import get_tenant_context
+        tenant_ctx = get_tenant_context(request)
+
         TRACE_AUDIT_LOGS.appendleft({
             "trace_id": trace_id,
+            "tenant_id": tenant_ctx.get("tenant_id", "default"),
             "timestamp": datetime.datetime.now().strftime("%H:%M:%S"),
             "method": request.method,
             "path": path,

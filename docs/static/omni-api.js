@@ -18,11 +18,31 @@
     var timeoutMs = (options && options.timeoutMs) || TIMEOUT_MS;
     var ctrl = new AbortController();
     var timer = setTimeout(function () { ctrl.abort(); }, timeoutMs);
-    var opts = Object.assign({}, options || {}, { signal: ctrl.signal });
+    var headers = Object.assign({}, (options && options.headers) || {});
+    if (typeof window !== 'undefined' && window.OmniStore) {
+      try {
+        var currentTenant = window.OmniStore.get('tenant') || 'tenant-hq';
+        var currentRole = window.OmniStore.get('role') || 'admin';
+        headers['X-Tenant-ID'] = currentTenant;
+        headers['X-Role'] = currentRole;
+        var jwt = window.OmniStore.get('jwtToken');
+        if (jwt) {
+          headers['Authorization'] = 'Bearer ' + jwt;
+        }
+      } catch (e) {}
+    }
+    var opts = Object.assign({}, options || {}, { signal: ctrl.signal, headers: headers });
     delete opts.timeoutMs;
     return fetch(path, opts)
       .then(function (r) {
-        if (!r.ok) throw new Error('HTTP ' + r.status);
+        if (!r.ok) {
+          return r.json().catch(function () { return null; }).then(function (errBody) {
+            var err = new Error('HTTP ' + r.status);
+            err.status = r.status;
+            err.body = errBody;
+            throw err;
+          });
+        }
         return r.json();
       })
       .finally(function () { clearTimeout(timer); });
@@ -605,20 +625,46 @@
       }).catch(function () { return localMarketing(payload); });
     },
 
-    xhsGenerate: function (payload) {
-      return apiCall('/api/v1/labs/xhs/generate', {
+    xhsGenerate: function (payload, asyncTask) {
+      var isAsync = !!asyncTask;
+      var body = typeof payload === 'string' ? { topic: payload } : (payload || {});
+      var path = '/api/v1/labs/xhs/generate' + (isAsync ? '?async_task=true' : '');
+      return apiCall(path, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      }).catch(function () { return localXhsGenerate(payload); });
+        body: JSON.stringify(body)
+      }).catch(function () {
+        if (isAsync) {
+          return {
+            status: 'ok',
+            async: true,
+            task_id: 'task-offline-' + Math.random().toString(36).substring(2, 9),
+            message: '离线演示：异步任务已创建并推入本地模拟状态机'
+          };
+        }
+        return localXhsGenerate(body);
+      });
     },
 
-    funclipSlice: function (payload) {
-      return apiCall('/api/v1/labs/funclip/slice', {
+    funclipSlice: function (payload, asyncTask) {
+      var isAsync = !!asyncTask;
+      var body = typeof payload === 'string' ? { video_name: payload } : (payload || {});
+      var path = '/api/v1/labs/funclip/slice' + (isAsync ? '?async_task=true' : '');
+      return apiCall(path, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      }).catch(function () { return localFunclipSlice(payload); });
+        body: JSON.stringify(body)
+      }).catch(function () {
+        if (isAsync) {
+          return {
+            status: 'ok',
+            async: true,
+            task_id: 'task-offline-' + Math.random().toString(36).substring(2, 9),
+            message: '离线演示：FunClip 视频切片任务已生成'
+          };
+        }
+        return localFunclipSlice(body);
+      });
     },
 
     analysisQuery: function (queryText) {
@@ -682,6 +728,70 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       }).catch(function () { return localOpenaiChat(payload); });
+    },
+
+    /** 企业级后台异步任务流水查询 */
+    fetchTasks: function (limit) {
+      var n = limit || 20;
+      return apiCall('/api/v1/tasks?limit=' + n, { timeoutMs: 5000 })
+        .catch(function () {
+          var tId = (typeof window !== 'undefined' && window.OmniStore && window.OmniStore.get('tenant')) || 'tenant-hq';
+          return {
+            status: 'ok',
+            tenant_id: tId,
+            total: 2,
+            tasks: [
+              {
+                id: 'task-sim-8801',
+                task_type: 'funclip_slice',
+                tenant_id: tId,
+                status: 'RUNNING',
+                progress: 68.5,
+                elapsed_ms: 1240,
+                created_at: new Date(Date.now() - 15000).toISOString(),
+                payload: { video_name: 'luxury_ring_macro_4k.mp4', time_range: [0.0, 15.0] }
+              },
+              {
+                id: 'task-sim-8802',
+                task_type: 'xhs_generate',
+                tenant_id: tId,
+                status: 'COMPLETED',
+                progress: 100.0,
+                elapsed_ms: 820,
+                created_at: new Date(Date.now() - 60000).toISOString(),
+                payload: { topic: 'Moissanite Engagement Ring #7701', channel: 'instagram' }
+              }
+            ]
+          };
+        });
+    },
+
+    /** 查询特定异步任务状态机进度与执行成果 */
+    fetchTaskDetail: function (taskId) {
+      return apiCall('/api/v1/tasks/' + encodeURIComponent(taskId), { timeoutMs: 5000 })
+        .catch(function () {
+          return { status: 'not_found', task: null };
+        });
+    },
+
+    /** 申请签发企业级 JWT Token */
+    requestAuthToken: function (tenantId, role, userId) {
+      return apiCall('/api/v1/auth/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tenant_id: tenantId || 'tenant-hq',
+          role: role || 'admin',
+          user_id: userId || 'usr-default'
+        })
+      }).catch(function () {
+        return {
+          status: 'ok',
+          access_token: 'mock-jwt-token-offline',
+          tenant_id: tenantId,
+          role: role
+        };
+      });
     }
   };
 

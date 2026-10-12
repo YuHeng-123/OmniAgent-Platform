@@ -413,6 +413,79 @@
     </div>
 
     <!-- ================================================================= -->
+    <!-- 企业级后台异步任务中心抽屉 (Distributed Task Center Drawer) -->
+    <!-- ================================================================= -->
+    <div id="job-center-modal" class="hidden fixed inset-0 z-50 flex items-stretch justify-end bg-black/80 backdrop-blur-md">
+        <!-- 点击背景蒙层关闭 -->
+        <div class="flex-1 cursor-pointer" onclick="closeJobCenterDrawer()"></div>
+        <!-- 抽屉内容容器 (从右侧滑出) -->
+        <div class="w-full max-w-2xl bg-dark-950/98 border-l border-dark-border shadow-2xl shadow-black/90 flex flex-col text-[12px] h-full overflow-hidden animate-in slide-in-from-right duration-200">
+            <!-- 抽屉头部 -->
+            <div class="p-4 sm:p-5 border-b border-dark-border/80 bg-gradient-to-r from-dark-900/90 to-dark-950 flex items-start justify-between gap-3 flex-shrink-0">
+                <div class="space-y-1 min-w-0">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="tag tag-accent text-[9px] font-mono">TASK QUEUE ENGINE</span>
+                        <span id="job-center-tenant-tag" class="tag font-mono text-[9px] text-accent-cyan">TENANT: tenant-hq</span>
+                        <span class="tag text-[9px] font-mono text-emerald-400">分布式状态机</span>
+                    </div>
+                    <h3 class="text-base sm:text-lg font-bold text-white tracking-wide truncate flex items-center gap-2">
+                        <i class="fas fa-microchip text-accent-cyan"></i>
+                        企业分布式异步任务中心
+                    </h3>
+                    <div class="text-[11px] text-slate-400 font-mono flex items-center gap-2 flex-wrap">
+                        <span>在途任务: <b id="job-center-active-count" class="text-accent-gold">0</b> 个</span>
+                        <span class="text-slate-600">|</span>
+                        <span>累计完成: <b id="job-center-completed-count" class="text-accent-emerald">0</b> 个</span>
+                        <span class="text-slate-600">|</span>
+                        <span class="text-slate-400">短视频长耗时切片 / 批量内容并发解耦</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 flex-shrink-0">
+                    <button type="button" id="btn-refresh-jobs" onclick="refreshJobCenter()" class="px-2.5 py-1.5 rounded-lg bg-dark-900 border border-dark-border text-slate-400 hover:text-white font-mono text-[11px] transition-colors flex items-center gap-1.5" title="立即刷新任务队列">
+                        <i class="fas fa-arrows-rotate text-[11px]"></i> <span>刷新</span>
+                    </button>
+                    <button type="button" onclick="closeJobCenterDrawer()" class="px-2.5 py-1.5 rounded-lg bg-dark-900 border border-dark-border text-slate-400 hover:text-white font-mono text-[11px] transition-colors flex items-center gap-1 flex-shrink-0">
+                        <i class="fas fa-xmark"></i> <span>ESC</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 快捷触发与派发条 -->
+            <div class="px-4 sm:px-5 py-2.5 bg-dark-900/60 border-b border-dark-border/60 flex items-center justify-between gap-2 flex-shrink-0 flex-wrap">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <span class="text-[11px] text-slate-400 font-mono">快速派发:</span>
+                    <button type="button" onclick="dispatchDemoAsyncTask('funclip')" class="btn-ghost px-2.5 py-1 rounded text-[11px] font-mono text-accent-cyan border border-accent-cyan/40 hover:bg-accent-cyan/10 flex items-center gap-1">
+                        <i class="fas fa-scissors text-[10px]"></i> 派发视频切片任务
+                    </button>
+                    <button type="button" onclick="dispatchDemoAsyncTask('xhs')" class="btn-ghost px-2.5 py-1 rounded text-[11px] font-mono text-accent-gold border border-accent-gold/40 hover:bg-accent-gold/10 flex items-center gap-1">
+                        <i class="fas fa-pen-nib text-[10px]"></i> 派发文案批处理
+                    </button>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span id="job-center-poll-status" class="text-[10px] font-mono text-slate-500">自动轮询: 4s</span>
+                </div>
+            </div>
+
+            <!-- 任务列表容器 (动态渲染) -->
+            <div id="job-center-list" class="p-4 sm:p-5 overflow-y-auto flex-1 space-y-3 font-mono">
+                <!-- 由 JS 动态装填 -->
+            </div>
+
+            <!-- 抽屉底栏 -->
+            <div class="p-3.5 sm:p-4 bg-dark-900/95 border-t border-dark-border/80 flex items-center justify-between gap-3 flex-shrink-0 flex-wrap">
+                <div class="text-[11px] text-slate-500 font-mono flex items-center gap-2">
+                    <i class="fas fa-shield-halved text-accent-emerald"></i>
+                    <span>HMAC-SHA256 JWT 多租户数据隔离 · 幂等执行保障</span>
+                </div>
+                <button type="button" onclick="clearCompletedJobsUi()" class="btn-ghost px-3 py-1.5 rounded-lg text-[11px] font-mono text-slate-400 hover:text-white border border-dark-border flex items-center gap-1.5">
+                    <i class="fas fa-trash-can text-slate-400"></i>
+                    <span>清理视图</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================= -->
     <!-- 统一侧边栏导航 (Sidebar) -->
     <!-- ================================================================= -->
     <aside class="w-60 bg-dark-800 border-r border-dark-border flex flex-col justify-between z-30 select-none flex-shrink-0">
@@ -666,6 +739,13 @@
                     </select>
                 </div>
 
+                <!-- 企业后台异步任务中心快捷入口 -->
+                <button id="btn-job-center" type="button" onclick="openJobCenterDrawer()" class="btn-ghost px-2.5 py-1.5 rounded-md text-[11px] font-mono flex items-center gap-1.5 border border-dark-border text-slate-300 hover:text-white hover:border-accent-cyan/40 relative" title="打开企业后台分布式任务中心">
+                    <i class="fas fa-microchip text-[11px] text-accent-cyan"></i>
+                    <span class="hidden xl:inline text-slate-300">任务中心</span>
+                    <span id="job-center-badge" class="px-1.5 py-0.2 rounded-full bg-accent-cyan/20 border border-accent-cyan/40 text-[9px] font-mono text-accent-cyan">0</span>
+                </button>
+
                 <button type="button" onclick="toggleCommandPalette()" class="btn-ghost px-2.5 py-1.5 rounded-md text-[11px] font-mono flex items-center gap-1.5 border border-dark-border text-slate-300 hover:text-white hover:border-accent-cyan/40" title="呼出全局指令中枢 (Ctrl + K / Cmd + K)">
                     <i class="fas fa-terminal text-[10px] text-accent-cyan"></i>
                     <span class="hidden md:inline text-slate-400">指令</span>
@@ -767,6 +847,7 @@
                 getTenantLabel: function(tenant) { return TENANT_LABELS[tenant || _state.tenant] || (tenant || _state.tenant); }
             };
         })();
+        window.OmniStore = OmniStore;
 
         // =============================================================
         // 2. 纯零资产 Web Audio API 原生拟真音频合成器 (OmniAudio)
@@ -899,6 +980,7 @@
             const failoverBadge = OmniStore.can('failover') ? '<span class="text-accent-gold">✓容灾热切</span>' : '<span class="text-slate-500">✗无热切权</span>';
             const writeBadge = OmniStore.can('write') ? '<span class="text-accent-cyan">✓图文生成</span>' : '<span class="text-slate-500">✗禁止写操作</span>';
             showToast(`<b>RBAC 角色权限已切换</b>: ${label}<br><div class="mt-1 font-mono text-[11px] space-x-2">${ctrlBadge} · ${failoverBadge} · ${writeBadge}</div>`, 'info');
+            syncAuthTokenAndRefreshJobs();
         }
 
         function switchTenantWorkspace(tenantId) {
@@ -906,6 +988,184 @@
             OmniAudio.click();
             const label = OmniStore.getTenantLabel(tenantId);
             showToast(`<b>工作空间已挂载</b>: ${label}<br><span class="text-slate-400 font-mono text-[11px]">向量数据库与私域模型路由隔离生效</span>`, 'ok');
+            syncAuthTokenAndRefreshJobs();
+        }
+
+        // =============================================================
+        // 企业级分布式异步任务中心控制器 (Job Center Drawer Controllers)
+        // =============================================================
+        let _allTasksCache = [];
+        let _isJobCenterOpen = false;
+
+        function openJobCenterDrawer() {
+            const modal = document.getElementById('job-center-modal');
+            if (!modal) return;
+            OmniAudio.click();
+            modal.classList.remove('hidden');
+            _isJobCenterOpen = true;
+            refreshJobCenter();
+        }
+
+        function closeJobCenterDrawer() {
+            const modal = document.getElementById('job-center-modal');
+            if (!modal) return;
+            OmniAudio.click();
+            modal.classList.add('hidden');
+            _isJobCenterOpen = false;
+        }
+
+        function clearCompletedJobsUi() {
+            OmniAudio.click();
+            _allTasksCache = _allTasksCache.filter(t => t.status === 'RUNNING' || t.status === 'PENDING');
+            updateJobCenterStats();
+            renderJobCenterList(_allTasksCache);
+            showToast('已清理已完成任务历史视图缓存', 'info');
+        }
+
+        function syncAuthTokenAndRefreshJobs() {
+            const tenant = OmniStore.get('tenant') || 'tenant-hq';
+            const role = OmniStore.get('role') || 'admin';
+            const tenantTag = document.getElementById('job-center-tenant-tag');
+            if (tenantTag) {
+                tenantTag.textContent = 'TENANT: ' + tenant;
+            }
+            OmniAPI.requestAuthToken(tenant, role, 'usr-' + role).then(res => {
+                if (res && res.access_token) {
+                    OmniStore.set('jwtToken', res.access_token);
+                }
+                refreshJobCenter(true);
+            }).catch(() => {
+                refreshJobCenter(true);
+            });
+        }
+
+        async function refreshJobCenter(silent) {
+            const currentTenant = OmniStore.get('tenant') || 'tenant-hq';
+            try {
+                const res = await OmniAPI.fetchTasks(20);
+                if (res && res.tasks) {
+                    _allTasksCache = res.tasks;
+                }
+            } catch (err) {
+                // keep cache
+            }
+            updateJobCenterStats();
+            if (!silent || _isJobCenterOpen) {
+                renderJobCenterList(_allTasksCache);
+            }
+        }
+
+        function updateJobCenterStats() {
+            const activeCount = _allTasksCache.filter(t => t.status === 'RUNNING' || t.status === 'PENDING').length;
+            const completedCount = _allTasksCache.filter(t => t.status === 'COMPLETED').length;
+            const badge = document.getElementById('job-center-badge');
+            if (badge) {
+                badge.textContent = activeCount;
+                if (activeCount > 0) {
+                    badge.className = 'px-1.5 py-0.2 rounded-full bg-accent-gold/20 border border-accent-gold/60 text-[9px] font-mono text-accent-gold animate-pulse';
+                } else {
+                    badge.className = 'px-1.5 py-0.2 rounded-full bg-accent-cyan/20 border border-accent-cyan/40 text-[9px] font-mono text-accent-cyan';
+                }
+            }
+            const activeEl = document.getElementById('job-center-active-count');
+            if (activeEl) activeEl.textContent = activeCount;
+            const compEl = document.getElementById('job-center-completed-count');
+            if (compEl) compEl.textContent = completedCount;
+        }
+
+        function renderJobCenterList(tasks) {
+            const listEl = document.getElementById('job-center-list');
+            if (!listEl) return;
+            if (!tasks || tasks.length === 0) {
+                listEl.innerHTML = `
+                    <div class="p-8 text-center border border-dashed border-dark-border rounded-xl space-y-2">
+                        <i class="fas fa-inbox text-slate-600 text-2xl"></i>
+                        <div class="text-slate-400 text-xs">当前工作空间暂无在途异步任务</div>
+                        <div class="text-[10px] text-slate-500 font-sans">点击上方「快速派发」按钮，模拟视频长耗时切片或多语言文案批量任务</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const statusColors = {
+                'PENDING': 'border-amber-500/40 bg-amber-950/20 text-accent-gold',
+                'RUNNING': 'border-cyan-500/50 bg-cyan-950/30 text-accent-cyan animate-pulse',
+                'COMPLETED': 'border-emerald-500/40 bg-emerald-950/20 text-accent-emerald',
+                'FAILED': 'border-rose-500/40 bg-rose-950/20 text-accent-rose'
+            };
+
+            const statusIcons = {
+                'PENDING': 'fa-hourglass-half text-accent-gold',
+                'RUNNING': 'fa-circle-notch fa-spin text-accent-cyan',
+                'COMPLETED': 'fa-circle-check text-accent-emerald',
+                'FAILED': 'fa-circle-exclamation text-accent-rose'
+            };
+
+            listEl.innerHTML = tasks.map(t => {
+                const sColor = statusColors[t.status] || 'border-dark-border bg-dark-900 text-slate-400';
+                const sIcon = statusIcons[t.status] || 'fa-info';
+                const progressPct = t.status === 'COMPLETED' ? 100 : (t.status === 'RUNNING' ? Math.max(35, Math.floor(t.progress || 50)) : 10);
+                const elapsedStr = (t.elapsed_ms != null ? t.elapsed_ms : 0) + 'ms';
+                const taskTypeLabel = t.task_type === 'funclip_slice' ? 'FunClip 视频智能切片' : (t.task_type === 'xhs_generate' ? '出海社媒文案生成' : t.task_type);
+
+                return `
+                    <div class="p-3.5 rounded-xl border ${sColor} bg-dark-900/90 space-y-2 transition-all">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <i class="fas ${sIcon} text-xs"></i>
+                                <span class="text-white font-semibold text-[11px] font-sans">${escapeHtml(taskTypeLabel)}</span>
+                                <span class="tag text-[9px] font-mono text-slate-400">${escapeHtml(t.id)}</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-[10px]">
+                                <span class="tag font-mono ${sColor}">${t.status}</span>
+                                <span class="text-slate-500">${elapsedStr}</span>
+                            </div>
+                        </div>
+
+                        <!-- 进度条 -->
+                        <div class="w-full h-1.5 bg-dark-950 rounded-full overflow-hidden border border-dark-border/50">
+                            <div class="h-full bg-gradient-to-r from-accent-cyan to-accent-emerald transition-all duration-300" style="width: ${progressPct}%"></div>
+                        </div>
+
+                        <!-- 任务附注与租户信息 -->
+                        <div class="flex items-center justify-between text-[10px] text-slate-400 pt-0.5">
+                            <div class="truncate max-w-[360px]">
+                                <span class="text-slate-500">参数:</span> ${escapeHtml(JSON.stringify(t.payload || {}))}
+                            </div>
+                            <div class="flex items-center gap-1.5 font-mono text-slate-500">
+                                <span>租户: ${escapeHtml(t.tenant_id || 'default')}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function dispatchDemoAsyncTask(type) {
+            OmniAudio.click();
+            const currentTenant = OmniStore.get('tenant') || 'tenant-hq';
+            showToast(`<b>正在派发异步任务...</b><br><span class="font-mono text-[10px] text-slate-400">Worker 队列就绪 · 租户隔离: ${currentTenant}</span>`, 'info');
+
+            try {
+                let res = null;
+                if (type === 'funclip') {
+                    res = await OmniAPI.funclipSlice({ video_name: 'vid_demo_7701.mp4', time_range: [0.0, 15.0] }, true);
+                } else {
+                    res = await OmniAPI.xhsGenerate({ topic: 'Moissanite Luxury Solitaire Ring #7701', channel: 'instagram' }, true);
+                }
+
+                if (res && res.task_id) {
+                    OmniAudio.success();
+                    showToast(`<b>异步任务创建成功</b><br><span class="font-mono text-[10px] text-accent-emerald">Task ID: ${res.task_id}</span><br><span class="text-slate-400 text-[10px]">状态机流转: PENDING ➔ RUNNING</span>`, 'ok');
+                    refreshJobCenter();
+                } else {
+                    OmniAudio.alert();
+                    showToast('派发返回: ' + JSON.stringify(res), 'warn');
+                }
+            } catch (err) {
+                OmniAudio.alert();
+                showToast('派发异常: ' + (err && err.message || err), 'err');
+            }
         }
 
         function closeTraceSpanModal() {
@@ -2245,7 +2505,12 @@
                 }
             } catch (e) {
                 OmniAudio.alert();
-                showToast('<b>请求失败</b>：' + (e && e.message ? e.message : e), 'err');
+                if (e && e.status === 403) {
+                    const detail = (e.body && e.body.detail) || '当前租户或角色缺乏敏感操作权限 (PERMISSION_DENIED)';
+                    showToast('<b>服务端 RBAC 权限守卫拦截 (HTTP 403)</b>：<br><span class="font-mono text-[11px] text-rose-300">' + escapeHtml(detail) + '</span>', 'err');
+                } else {
+                    showToast('<b>请求失败</b>：' + (e && e.message ? e.message : e), 'err');
+                }
             } finally {
                 btn.disabled = false;
             }
@@ -3721,6 +3986,7 @@
             { id: 'act-copy-trace', title: '复制最近一条全链路高熵 Trace ID', category: '快捷动作', icon: 'fas fa-fingerprint text-accent-emerald', keywords: 'trace id 复制 审计 追踪 日志', action: () => copyLatestTraceId() },
             { id: 'act-reset-waveform', title: '重置 FunClip 音频波形轨道指针至起点', category: '快捷动作', icon: 'fas fa-rotate-left text-accent-cyan', keywords: '波形 重置 funclip 音频 指针 daw', action: () => resetFunclipWaveform() },
             { id: 'act-clear-guide', title: '清空电商智能导购会话历史', category: '快捷动作', icon: 'fas fa-trash-can text-slate-400', keywords: '清空 导购 对话 消息 聊天', action: () => clearGuideChat() },
+            { id: 'act-job-center', title: '呼出：企业级分布式异步任务中心 (Task Queue)', category: '快捷动作', icon: 'fas fa-microchip text-accent-cyan', keywords: '任务 任务中心 job center queue 异步 状态机 worker 视频切片 文案', action: () => openJobCenterDrawer() },
 
             // 工作台直达
             { id: 'tab-overview', title: '跳转：全域智能体调度总览大盘', category: '工作台直达', icon: 'fas fa-layer-group text-accent-emerald', keywords: '大盘 监控 总览 overview 概览 集群', action: () => switchTab('overview') },
@@ -4141,6 +4407,12 @@
                     closeSkuAttribution();
                     return;
                 }
+                const jobModal = document.getElementById('job-center-modal');
+                if (jobModal && !jobModal.classList.contains('hidden')) {
+                    e.preventDefault();
+                    closeJobCenterDrawer();
+                    return;
+                }
                 const traceModal = document.getElementById('trace-span-modal');
                 if (traceModal && !traceModal.classList.contains('hidden')) {
                     e.preventDefault();
@@ -4209,6 +4481,8 @@
             initCardGlowEffects();
             initTopologyCyberCanvas();
             initFinOpsRoiCanvas();
+            syncAuthTokenAndRefreshJobs();
+            setInterval(() => { refreshJobCenter(true); }, 4000);
 
             const cmdInput = document.getElementById('cmd-palette-input');
             if (cmdInput) {

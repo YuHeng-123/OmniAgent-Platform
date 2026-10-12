@@ -3,16 +3,16 @@
 ========================================================================
 
 [1] OmniAPI 调用 vs 实现
-    页面调用    : analysisQuery, controlService, fetchHistory, fetchRecentEvents, fetchTraces, funclipSlice, gatewayFailover, guideChat, marketingGenerate, openaiChat, probe, startEvents, xhsGenerate
+    页面调用    : analysisQuery, controlService, fetchHistory, fetchRecentEvents, fetchTasks, fetchTraces, funclipSlice, gatewayFailover, guideChat, marketingGenerate, openaiChat, probe, requestAuthToken, startEvents, xhsGenerate
     缺失        : 无 ✅
 
 [2] getElementById 引用 vs 已定义 id（含动态创建）
-    已知 id 数  : 206
-    被引用 id 数: 150
+    已知 id 数  : 215
+    被引用 id 数: 156
     悬空引用    : 无 ✅
 
 [3] onclick 调用 vs 已定义函数
-    onclick 函数: clearGuideChat, closePosterModal, closeSidebarOnMobile, closeSkuAttribution, closeTraceSpanModal, copyFunclipSrt, copyMarketingContent, copyPosterImage, copyTraceId, copyXhsNote, deriveSkuVariants, downloadPosterImage, executeCommand, exportSkuReport, handleAnalyticsQuery, handleFunclipSlice, handleMarketingGenerate, handleRagSearch, handleXhsGenerate, handleXhsHitlApprove, inspectTraceSpan, loadHistory, openSkuAttribution, pipeFunclipToXhs, pipeToMarketing, pipeXhsToMarketing, playFunclipSegment, refreshTraceLogs, renderXhsPosterModal, resetFunclipWaveform, resetTopologyLayout, sendOpenaiProxyTest, sendQuickPrompt, serviceControl, setFunclipPreset, setHistoryRange, setQueryAndRun, setXhsPreset, switchChannel, switchOverviewPersona, switchSkuDrawerTab, switchTab, switchTopologyView, switchXhsDagView, syncSkuToGuide, toggleAudioSound, toggleCommandPalette, toggleDynamicIsland, toggleFunclipPlayback, togglePhoneFrame, toggleSidebar, triggerQuickFailover, zoomFunclipWaveform
+    onclick 函数: clearCompletedJobsUi, clearGuideChat, closeJobCenterDrawer, closePosterModal, closeSidebarOnMobile, closeSkuAttribution, closeTraceSpanModal, copyFunclipSrt, copyMarketingContent, copyPosterImage, copyTraceId, copyXhsNote, deriveSkuVariants, dispatchDemoAsyncTask, downloadPosterImage, executeCommand, exportSkuReport, handleAnalyticsQuery, handleFunclipSlice, handleMarketingGenerate, handleRagSearch, handleXhsGenerate, handleXhsHitlApprove, inspectTraceSpan, loadHistory, openJobCenterDrawer, openSkuAttribution, pipeFunclipToXhs, pipeToMarketing, pipeXhsToMarketing, playFunclipSegment, refreshJobCenter, refreshTraceLogs, renderXhsPosterModal, resetFunclipWaveform, resetTopologyLayout, sendOpenaiProxyTest, sendQuickPrompt, serviceControl, setFunclipPreset, setHistoryRange, setQueryAndRun, setXhsPreset, switchChannel, switchOverviewPersona, switchSkuDrawerTab, switchTab, switchTopologyView, switchXhsDagView, syncSkuToGuide, toggleAudioSound, toggleCommandPalette, toggleDynamicIsland, toggleFunclipPlayback, togglePhoneFrame, toggleSidebar, triggerQuickFailover, zoomFunclipWaveform
     未定义      : 无 ✅
 
 [4] templates/index.html 2.2 标记齐全 = ✅

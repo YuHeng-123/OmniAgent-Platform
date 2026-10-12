@@ -65,6 +65,21 @@
         * { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; }
         code, pre, .font-mono { font-family: "JetBrains Mono", "Cascadia Code", Consolas, monospace; }
 
+        /* ---- 高精度数字防抖 (Tabular Figures) ---- */
+        .tabular-nums, .font-mono, .kpi-num, [id^="stat-"], [id^="hud-"], #sql-display, #failover-log-box {
+            font-variant-numeric: tabular-nums;
+            font-feature-settings: "tnum" 1;
+        }
+
+        /* 3D 悬浮视差物理质感 */
+        .card-perspective {
+            transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease;
+        }
+        .card-perspective:hover {
+            transform: translateY(-2px) scale(1.005);
+            box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.6), 0 0 20px -2px rgba(16, 185, 129, 0.15);
+        }
+
         /* ---- 语义高保真极光色阶（暗夜晶体） ---- */
         :root {
             --ink-white: #FFFFFF;
@@ -310,6 +325,28 @@
     </div>
 
     <!-- ================================================================= -->
+    <!-- 全链路 Trace Waterfall 甘特调用链诊断抽屉 (Jaeger/Datadog 风格) -->
+    <!-- ================================================================= -->
+    <div id="trace-span-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+        <div class="w-full max-w-2xl rounded-2xl bg-dark-950/98 border border-dark-border shadow-2xl shadow-black/90 overflow-hidden flex flex-col text-[12px]">
+            <div class="p-3.5 border-b border-dark-border/80 flex items-center justify-between bg-dark-900/60">
+                <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-accent-cyan shadow-sm shadow-cyan-400"></span>
+                    <h3 class="font-semibold text-white text-[13px] flex items-center gap-1.5">
+                        <span>全链路分布式调用链 (Trace Span Waterfall)</span>
+                    </h3>
+                </div>
+                <button type="button" onclick="closeTraceSpanModal()" class="px-2 py-1 rounded bg-dark-950 border border-dark-border text-slate-400 hover:text-white font-mono text-[11px] transition-colors">
+                    <i class="fas fa-xmark mr-1"></i> 关闭
+                </button>
+            </div>
+            <div id="trace-span-modal-body" class="p-4 max-h-[70vh] overflow-y-auto space-y-3 font-mono text-[11px]">
+                <!-- 动态瀑布流渲染 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================= -->
     <!-- 统一侧边栏导航 (Sidebar) -->
     <!-- ================================================================= -->
     <aside class="w-60 bg-dark-800 border-r border-dark-border flex flex-col justify-between z-30 select-none flex-shrink-0">
@@ -424,6 +461,15 @@
                     <i class="fas fa-layer-group text-accent-emerald mr-2 text-sm"></i>
                     全域智能体调度总览大盘
                 </h1>
+                <!-- 企业级多租户 / 空间隔离切换器 -->
+                <div class="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-dark-950/80 border border-dark-border text-xs ml-2 flex-shrink-0">
+                    <i class="fas fa-building text-accent-cyan text-[11px]"></i>
+                    <select id="tenant-workspace-select" onchange="switchTenantWorkspace(this.value)" class="bg-transparent text-slate-200 text-xs focus:outline-none cursor-pointer font-sans">
+                        <option value="tenant-hq" class="bg-dark-900 text-slate-200">深圳南山总店 · 旗舰中枢</option>
+                        <option value="tenant-tiktok" class="bg-dark-900 text-slate-200">TikTok 跨境出海矩阵</option>
+                        <option value="tenant-embroidery" class="bg-dark-900 text-slate-200">非遗国风苏绣文创部</option>
+                    </select>
+                </div>
             </div>
 
             <!-- 中间：灵动岛 HUD 状态胶囊 (Dynamic Island Capsule) -->
@@ -535,8 +581,25 @@
                 </div>
             </div>
 
-            <!-- 右侧：容灾热切演示按钮与指令中枢 -->
-            <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+            <!-- 右侧：音效触感、RBAC 角色、指令中枢与容灾热切演示 -->
+            <div class="flex items-center gap-2 sm:gap-2.5 flex-shrink-0">
+                <!-- UI 拟真音频交互反馈 (Web Audio Synthesizer) -->
+                <button id="btn-sound-toggle" onclick="toggleAudioSound()" class="btn-ghost px-2.5 py-1.5 rounded-md text-[11px] font-mono flex items-center gap-1.5 border border-dark-border text-slate-300 hover:text-white hover:border-accent-emerald/40" title="切换 UI 拟真音频交互反馈">
+                    <i id="icon-sound-toggle" class="fas fa-volume-high text-[11px] text-accent-emerald"></i>
+                    <span id="label-sound-toggle" class="hidden lg:inline text-slate-400">音效:开</span>
+                </button>
+
+                <!-- 4-Tier 企业级 RBAC 角色身份切换 -->
+                <div class="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-md bg-dark-950/80 border border-dark-border text-xs">
+                    <i class="fas fa-user-shield text-accent-gold text-[11px]"></i>
+                    <select id="rbac-role-select" onchange="switchRbacRole(this.value)" class="bg-transparent text-slate-200 text-[11px] focus:outline-none cursor-pointer font-mono">
+                        <option value="admin" class="bg-dark-900 text-slate-200">系统总管 (Admin)</option>
+                        <option value="operator" class="bg-dark-900 text-slate-200">运营专家 (Operator)</option>
+                        <option value="analyst" class="bg-dark-900 text-slate-200">数据分析师 (Analyst)</option>
+                        <option value="auditor" class="bg-dark-900 text-slate-200">合规审计员 (Auditor)</option>
+                    </select>
+                </div>
+
                 <button type="button" onclick="toggleCommandPalette()" class="btn-ghost px-2.5 py-1.5 rounded-md text-[11px] font-mono flex items-center gap-1.5 border border-dark-border text-slate-300 hover:text-white hover:border-accent-cyan/40" title="呼出全局指令中枢 (Ctrl + K / Cmd + K)">
                     <i class="fas fa-terminal text-[10px] text-accent-cyan"></i>
                     <span class="hidden md:inline text-slate-400">指令</span>
@@ -1576,13 +1639,42 @@
                             <span>启动 LangGraph 1.0 流水线</span>
                         </button>
 
-                        <!-- StateGraph 状态机流转视窗 -->
-                        <div class="pt-3 border-t border-dark-border">
-                            <div class="flex items-center justify-between text-[11px] text-slate-500 mb-2">
-                                <span class="font-mono">StateGraph 节点执行流</span>
-                                <span id="xhs-graph-status" class="text-accent-emerald font-mono">就绪</span>
+                        <!-- StateGraph 状态机流转视窗 (支持 DAG 贝塞尔曲线动态画布 与 节点清单视图) -->
+                        <div class="pt-3 border-t border-dark-border space-y-2.5">
+                            <div class="flex items-center justify-between text-[11px] text-slate-500">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-mono font-medium text-slate-300">StateGraph 节点执行流</span>
+                                    <span id="xhs-graph-status" class="text-accent-emerald font-mono">就绪</span>
+                                </div>
+                                <!-- 视图切换器 -->
+                                <div class="flex items-center p-0.5 rounded-lg bg-dark-900 border border-dark-border text-[10px]">
+                                    <button type="button" id="btn-dag-view-graph" onclick="switchXhsDagView('graph')" class="px-2 py-0.5 rounded font-mono font-medium bg-emerald-950/80 text-accent-emerald border border-accent-emerald/40 transition-all flex items-center gap-1">
+                                        <i class="fas fa-diagram-project text-[9px]"></i> DAG 画布
+                                    </button>
+                                    <button type="button" id="btn-dag-view-list" onclick="switchXhsDagView('list')" class="px-2 py-0.5 rounded font-mono text-slate-400 hover:text-slate-200 transition-all flex items-center gap-1">
+                                        <i class="fas fa-list-ol text-[9px]"></i> 节点清单
+                                    </button>
+                                </div>
                             </div>
-                            <div class="space-y-1.5">
+
+                            <!-- 1. DAG 动态粒子交互画布容器 -->
+                            <div id="xhs-dag-canvas-container" class="relative w-full h-[210px] rounded-xl bg-dark-950/95 border border-dark-border overflow-hidden shadow-inner">
+                                <canvas id="xhs-dag-canvas" class="w-full h-full block cursor-crosshair"></canvas>
+                                <!-- 悬停节点实时信息浮层 HUD -->
+                                <div id="xhs-dag-tooltip" class="pointer-events-none hidden absolute z-20 px-2.5 py-1.5 rounded-lg bg-dark-900/95 border border-dark-border text-[10px] text-slate-300 shadow-xl backdrop-blur-md space-y-0.5 max-w-[200px]">
+                                    <div id="xhs-dag-tooltip-title" class="font-bold text-white flex items-center gap-1.5"></div>
+                                    <div id="xhs-dag-tooltip-desc" class="text-slate-400 leading-tight"></div>
+                                    <div id="xhs-dag-tooltip-status" class="font-mono text-accent-emerald text-[9px]"></div>
+                                </div>
+                                <!-- 底部微缩状态指示 -->
+                                <div class="absolute bottom-1.5 left-2.5 right-2.5 flex items-center justify-between text-[9px] font-mono text-slate-500 pointer-events-none">
+                                    <span>LangGraph 1.0 StateGraph · Postgres Checkpointer</span>
+                                    <span id="xhs-dag-fps-badge" class="text-slate-600">60 FPS · 贝塞尔流</span>
+                                </div>
+                            </div>
+
+                            <!-- 2. 原有节点清单容器 (列表视图模式) -->
+                            <div id="xhs-dag-list-container" class="hidden space-y-1.5">
                                 <div id="xhs-node-topic" class="p-2 rounded-lg bg-dark-900/60 border border-dark-border flex items-center justify-between text-[11px]">
                                     <div class="flex items-center gap-2">
                                         <span class="w-2 h-2 rounded-full bg-slate-600"></span>
@@ -2244,6 +2336,567 @@
     <!-- 前端核心交互脚本 (SPA Controller) -->
     <!-- ================================================================= -->
     <script>
+        // =============================================================
+        // 1. 全局单向轻量响应式状态中心 (OmniStore) & 4-Tier RBAC 矩阵
+        // =============================================================
+        const OmniStore = (function() {
+            const _state = {
+                currentTab: 'overview',
+                currentChannel: 'xhs',
+                tenant: 'tenant-hq',
+                role: 'admin',
+                soundEnabled: true,
+                subscribers: []
+            };
+
+            const ROLE_PERMISSIONS = {
+                admin: ['read', 'write', 'control', 'failover', 'audit', 'export'],
+                operator: ['read', 'write', 'export'],
+                analyst: ['read', 'export'],
+                auditor: ['read', 'audit']
+            };
+
+            const ROLE_LABELS = {
+                admin: '系统总管 (Admin · 全权管控)',
+                operator: '运营专家 (Operator · 业务流转)',
+                analyst: '数据分析师 (Analyst · 只读决策)',
+                auditor: '合规审计员 (Auditor · 审查归档)'
+            };
+
+            const TENANT_LABELS = {
+                'tenant-hq': '深圳南山总店 · 旗舰中枢',
+                'tenant-tiktok': 'TikTok 跨境出海矩阵',
+                'tenant-embroidery': '非遗国风苏绣文创部'
+            };
+
+            return {
+                getState: function() { return Object.assign({}, _state); },
+                get: function(key) { return _state[key]; },
+                set: function(key, val) {
+                    const oldVal = _state[key];
+                    _state[key] = val;
+                    _state.subscribers.forEach(cb => {
+                        try { cb(key, val, oldVal); } catch (err) { console.error('Store callback error:', err); }
+                    });
+                },
+                subscribe: function(cb) {
+                    _state.subscribers.push(cb);
+                    return function() { _state.subscribers = _state.subscribers.filter(s => s !== cb); };
+                },
+                can: function(action) {
+                    const allowed = ROLE_PERMISSIONS[_state.role] || [];
+                    return allowed.includes(action);
+                },
+                getRoleLabel: function(role) { return ROLE_LABELS[role || _state.role] || (role || _state.role); },
+                getTenantLabel: function(tenant) { return TENANT_LABELS[tenant || _state.tenant] || (tenant || _state.tenant); }
+            };
+        })();
+
+        // =============================================================
+        // 2. 纯零资产 Web Audio API 原生拟真音频合成器 (OmniAudio)
+        // =============================================================
+        const OmniAudio = (function() {
+            let ctx = null;
+            function getContext() {
+                if (!ctx && (window.AudioContext || window.webkitAudioContext)) {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    ctx = new AudioCtx();
+                }
+                if (ctx && ctx.state === 'suspended') {
+                    ctx.resume().catch(() => {});
+                }
+                return ctx;
+            }
+
+            function isMuted() {
+                return !OmniStore.get('soundEnabled');
+            }
+
+            return {
+                click: function() {
+                    if (isMuted()) return;
+                    const c = getContext();
+                    if (!c) return;
+                    try {
+                        const now = c.currentTime;
+                        const osc = c.createOscillator();
+                        const gain = c.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(1100, now);
+                        osc.frequency.exponentialRampToValueAtTime(700, now + 0.025);
+                        gain.gain.setValueAtTime(0.04, now);
+                        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.025);
+                        osc.connect(gain);
+                        gain.connect(c.destination);
+                        osc.start(now);
+                        osc.stop(now + 0.025);
+                    } catch (e) {}
+                },
+                success: function() {
+                    if (isMuted()) return;
+                    const c = getContext();
+                    if (!c) return;
+                    try {
+                        const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
+                        notes.forEach((freq, idx) => {
+                            const now = c.currentTime + idx * 0.04;
+                            const osc = c.createOscillator();
+                            const gain = c.createGain();
+                            osc.type = 'triangle';
+                            osc.frequency.setValueAtTime(freq, now);
+                            gain.gain.setValueAtTime(0.045, now);
+                            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
+                            osc.connect(gain);
+                            gain.connect(c.destination);
+                            osc.start(now);
+                            osc.stop(now + 0.18);
+                        });
+                    } catch (e) {}
+                },
+                alert: function() {
+                    if (isMuted()) return;
+                    const c = getContext();
+                    if (!c) return;
+                    try {
+                        const now = c.currentTime;
+                        const osc = c.createOscillator();
+                        const gain = c.createGain();
+                        osc.type = 'sawtooth';
+                        osc.frequency.setValueAtTime(260, now);
+                        osc.frequency.exponentialRampToValueAtTime(130, now + 0.15);
+                        gain.gain.setValueAtTime(0.05, now);
+                        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.15);
+                        osc.connect(gain);
+                        gain.connect(c.destination);
+                        osc.start(now);
+                        osc.stop(now + 0.15);
+                    } catch (e) {}
+                },
+                toggle: function() {
+                    if (isMuted()) return;
+                    const c = getContext();
+                    if (!c) return;
+                    try {
+                        const now = c.currentTime;
+                        const osc = c.createOscillator();
+                        const gain = c.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(880, now);
+                        osc.frequency.setValueAtTime(1320, now + 0.02);
+                        gain.gain.setValueAtTime(0.045, now);
+                        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.04);
+                        osc.connect(gain);
+                        gain.connect(c.destination);
+                        osc.start(now);
+                        osc.stop(now + 0.04);
+                    } catch (e) {}
+                }
+            };
+        })();
+
+        // -------------------------------------------------------------
+        // 全局交互与 RBAC / 租户控制台 Top-level 封装函数
+        // -------------------------------------------------------------
+        function toggleAudioSound() {
+            const cur = OmniStore.get('soundEnabled');
+            const next = !cur;
+            OmniStore.set('soundEnabled', next);
+            const icon = document.getElementById('icon-sound-toggle');
+            const label = document.getElementById('label-sound-toggle');
+            if (next) {
+                if (icon) icon.className = 'fas fa-volume-high text-[11px] text-accent-emerald';
+                if (label) label.textContent = '音效:开';
+                OmniAudio.toggle();
+                showToast('<b>拟真音频反馈已启用</b>：Web Audio 原生合成引擎就绪', 'ok');
+            } else {
+                if (icon) icon.className = 'fas fa-volume-xmark text-[11px] text-slate-500';
+                if (label) label.textContent = '音效:关';
+                showToast('<b>拟真音频反馈已静音</b>', 'info');
+            }
+        }
+
+        function switchRbacRole(role) {
+            OmniStore.set('role', role);
+            OmniAudio.click();
+            const label = OmniStore.getRoleLabel(role);
+            const ctrlBadge = OmniStore.can('control') ? '<span class="text-accent-emerald">✓起停微服务</span>' : '<span class="text-slate-500">✗只读微服务</span>';
+            const failoverBadge = OmniStore.can('failover') ? '<span class="text-accent-gold">✓容灾热切</span>' : '<span class="text-slate-500">✗无热切权</span>';
+            const writeBadge = OmniStore.can('write') ? '<span class="text-accent-cyan">✓图文生成</span>' : '<span class="text-slate-500">✗禁止写操作</span>';
+            showToast(`<b>RBAC 角色权限已切换</b>: ${label}<br><div class="mt-1 font-mono text-[11px] space-x-2">${ctrlBadge} · ${failoverBadge} · ${writeBadge}</div>`, 'info');
+        }
+
+        function switchTenantWorkspace(tenantId) {
+            OmniStore.set('tenant', tenantId);
+            OmniAudio.click();
+            const label = OmniStore.getTenantLabel(tenantId);
+            showToast(`<b>工作空间已挂载</b>: ${label}<br><span class="text-slate-400 font-mono text-[11px]">向量数据库与私域模型路由隔离生效</span>`, 'ok');
+        }
+
+        function closeTraceSpanModal() {
+            const m = document.getElementById('trace-span-modal');
+            if (m) m.classList.add('hidden');
+            OmniAudio.click();
+        }
+
+        function inspectTraceSpan(traceId) {
+            const modal = document.getElementById('trace-span-modal');
+            const body = document.getElementById('trace-span-modal-body');
+            if (!modal || !body) return;
+            OmniAudio.click();
+            modal.classList.remove('hidden');
+
+            const totalMs = 42;
+            const spans = [
+                { name: 'gw.http.ingress', svc: 'OmniGateway', start: 0, dur: 4, color: 'bg-cyan-500', note: 'TLS 握手解包与鉴权 Token 校验' },
+                { name: 'rbac.enforce_policy', svc: 'OmniSecurity', start: 4, dur: 3, color: 'bg-indigo-500', note: 'RBAC 4-Tier 角色策略矩阵校验' },
+                { name: 'rag.milvus.hybrid_recall', svc: 'OmniRAG', start: 7, dur: 12, color: 'bg-emerald-500', note: 'BGE-M3 语义向量与 BM25 混合召回' },
+                { name: 'llm.qwen.chat_stream', svc: 'ModelProvider', start: 19, dur: 19, color: 'bg-amber-500', note: '流式 Token 首包解算 (TTFT 19ms)' },
+                { name: 'pii.mask_filter', svc: 'ComplianceEngine', start: 38, dur: 4, color: 'bg-rose-500', note: '手机号/敏感实体合规脱敏拦截' }
+            ];
+
+            body.innerHTML = `
+                <div class="p-3 rounded-xl bg-dark-900 border border-dark-border space-y-2">
+                    <div class="flex items-center justify-between text-[11px]">
+                        <span class="text-white font-semibold">Trace ID: <span class="text-accent-cyan font-mono">${escapeHtml(traceId)}</span></span>
+                        <span class="text-slate-400 font-mono">总耗时: ${totalMs}ms · 5 个 Spans · 零异常</span>
+                    </div>
+                    <div class="text-[10px] text-slate-500">分布式追踪标准: OpenTelemetry v1.28 / W3C TraceContext</div>
+                </div>
+
+                <div class="space-y-2 pt-2">
+                    <div class="flex items-center justify-between text-[10px] text-slate-500 px-1 border-b border-dark-border/50 pb-1">
+                        <span>Span 调用链拓扑</span>
+                        <span>时序跨度 (0ms ~ ${totalMs}ms)</span>
+                    </div>
+                    ${spans.map(s => {
+                        const leftPct = (s.start / totalMs) * 100;
+                        const widthPct = Math.max(4, (s.dur / totalMs) * 100);
+                        return `
+                            <div class="p-2 rounded-lg bg-dark-900/60 border border-dark-border space-y-1 hover:border-accent-cyan/30 transition-colors">
+                                <div class="flex items-center justify-between text-[11px]">
+                                    <div class="flex items-center gap-2 truncate">
+                                        <span class="w-2 h-2 rounded-full ${s.color}"></span>
+                                        <span class="font-medium text-slate-200">${s.name}</span>
+                                        <span class="tag text-[9px]">${s.svc}</span>
+                                    </div>
+                                    <span class="text-slate-400 font-mono text-[10px]">+${s.start}ms ~ +${s.start+s.dur}ms (${s.dur}ms)</span>
+                                </div>
+                                <div class="relative w-full h-2 bg-dark-950 rounded-full overflow-hidden border border-dark-border/40">
+                                    <div class="absolute h-full ${s.color} rounded-full" style="left: ${leftPct}%; width: ${widthPct}%;"></div>
+                                </div>
+                                <div class="text-[10px] text-slate-500">${s.note}</div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        // -------------------------------------------------------------
+        // LangGraph 1.0 StateGraph 动态交互 DAG 拓扑粒子引擎 (Pure Canvas 2D)
+        // -------------------------------------------------------------
+        let _dagCanvasAnimId = null;
+        let _dagNodes = [];
+        let _dagParticles = [];
+        let _dagHoveredNode = null;
+
+        function switchXhsDagView(mode) {
+            OmniAudio.click();
+            const canvasBox = document.getElementById('xhs-dag-canvas-container');
+            const listBox = document.getElementById('xhs-dag-list-container');
+            const btnGraph = document.getElementById('btn-dag-view-graph');
+            const btnList = document.getElementById('btn-dag-view-list');
+            if (!canvasBox || !listBox) return;
+            if (mode === 'graph') {
+                canvasBox.classList.remove('hidden');
+                listBox.classList.add('hidden');
+                if (btnGraph) btnGraph.className = 'px-2 py-0.5 rounded font-mono font-medium bg-emerald-950/80 text-accent-emerald border border-accent-emerald/40 transition-all flex items-center gap-1';
+                if (btnList) btnList.className = 'px-2 py-0.5 rounded font-mono text-slate-400 hover:text-slate-200 transition-all flex items-center gap-1';
+                setTimeout(resizeAndRenderXhsDag, 50);
+            } else {
+                canvasBox.classList.add('hidden');
+                listBox.classList.remove('hidden');
+                if (btnList) btnList.className = 'px-2 py-0.5 rounded font-mono font-medium bg-emerald-950/80 text-accent-emerald border border-accent-emerald/40 transition-all flex items-center gap-1';
+                if (btnGraph) btnGraph.className = 'px-2 py-0.5 rounded font-mono text-slate-400 hover:text-slate-200 transition-all flex items-center gap-1';
+            }
+        }
+
+        function initXhsDagCanvas() {
+            const canvas = document.getElementById('xhs-dag-canvas');
+            if (!canvas) return;
+            const container = document.getElementById('xhs-dag-canvas-container');
+            if (!container) return;
+
+            // 节点拓扑定义 (LangGraph 1.0 StateGraph 标准节点结构)
+            _dagNodes = [
+                { id: 'start', key: 'start', label: 'START', title: '起点入口', desc: '接收初始产品与调性提示词', state: 'completed', xRatio: 0.08, yRatio: 0.5, r: 14 },
+                { id: 'topic', key: 'topic', label: '选题挖掘', title: '1. Topic Miner', desc: '聚类爆款痛点与搜索热词子图', state: 'idle', xRatio: 0.23, yRatio: 0.5, r: 18 },
+                { id: 'hitl', key: 'hitl', label: 'HITL门控', title: '2. HITL Interrupt', desc: '人在环路中断审查与策略干预', state: 'idle', xRatio: 0.40, yRatio: 0.28, r: 19 },
+                { id: 'writer', key: 'writer', label: '成文子图', title: '3. Copywriter', desc: '结构化正文与钩子框架生成', state: 'idle', xRatio: 0.57, yRatio: 0.5, r: 18 },
+                { id: 'visual', key: 'visual', label: '视觉排版', title: '4. Visual Prompts', desc: '小红书封面卡片与分镜提示词', state: 'idle', xRatio: 0.74, yRatio: 0.5, r: 18 },
+                { id: 'checkpointer', key: 'checkpointer', label: '快照脱敏', title: '5. Postgres Snapshot', desc: '持久化状态快照与敏感词过滤', state: 'idle', xRatio: 0.88, yRatio: 0.5, r: 18 },
+                { id: 'end', key: 'end', label: 'END', title: '终点落盘', desc: '工作流汇聚并输出至多渠道分发', state: 'idle', xRatio: 0.96, yRatio: 0.5, r: 12 }
+            ];
+
+            // 粒子流动队列
+            _dagParticles = [];
+            for (let i = 0; i < 20; i++) {
+                _dagParticles.push({
+                    progress: Math.random(),
+                    speed: 0.003 + Math.random() * 0.004,
+                    edgeIdx: Math.floor(Math.random() * 6)
+                });
+            }
+
+            // 监听鼠标悬停 tooltip
+            canvas.onmousemove = function(e) {
+                const rect = canvas.getBoundingClientRect();
+                const mx = e.clientX - rect.left;
+                const my = e.clientY - rect.top;
+                let found = null;
+                for (const n of _dagNodes) {
+                    const dx = mx - (n.x || 0);
+                    const dy = my - (n.y || 0);
+                    if (Math.sqrt(dx*dx + dy*dy) <= (n.r + 6)) {
+                        found = n;
+                        break;
+                    }
+                }
+                const tooltip = document.getElementById('xhs-dag-tooltip');
+                if (found && tooltip) {
+                    _dagHoveredNode = found;
+                    tooltip.classList.remove('hidden');
+                    tooltip.style.left = Math.min(rect.width - 210, Math.max(10, (found.x - 60))) + 'px';
+                    tooltip.style.top = Math.max(10, (found.y - 65)) + 'px';
+                    const tTitle = document.getElementById('xhs-dag-tooltip-title');
+                    const tDesc = document.getElementById('xhs-dag-tooltip-desc');
+                    const tStatus = document.getElementById('xhs-dag-tooltip-status');
+                    if (tTitle) tTitle.innerHTML = `<i class="fas fa-microchip text-accent-cyan"></i> ${found.title}`;
+                    if (tDesc) tDesc.textContent = found.desc;
+                    if (tStatus) tStatus.textContent = `状态: ${found.state.toUpperCase()}`;
+                } else if (tooltip) {
+                    _dagHoveredNode = null;
+                    tooltip.classList.add('hidden');
+                }
+            };
+
+            canvas.onmouseleave = function() {
+                _dagHoveredNode = null;
+                const tooltip = document.getElementById('xhs-dag-tooltip');
+                if (tooltip) tooltip.classList.add('hidden');
+            };
+
+            window.addEventListener('resize', resizeAndRenderXhsDag);
+            resizeAndRenderXhsDag();
+        }
+
+        function resizeAndRenderXhsDag() {
+            const canvas = document.getElementById('xhs-dag-canvas');
+            if (!canvas) return;
+            const container = document.getElementById('xhs-dag-canvas-container');
+            if (!container) return;
+            const dpr = window.devicePixelRatio || 1;
+            const w = container.clientWidth || 400;
+            const h = container.clientHeight || 210;
+            canvas.width = w * dpr;
+            canvas.height = h * dpr;
+            const ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+
+            // 更新各节点实际像素坐标
+            _dagNodes.forEach(n => {
+                n.x = w * n.xRatio;
+                n.y = h * n.yRatio;
+            });
+
+            if (!_dagCanvasAnimId) {
+                _dagLoop();
+            }
+        }
+
+        function _dagLoop() {
+            const canvas = document.getElementById('xhs-dag-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const dpr = window.devicePixelRatio || 1;
+            const w = canvas.width / dpr;
+            const h = canvas.height / dpr;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // 背景微弱科技网格
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.025)';
+            ctx.lineWidth = 1;
+            const step = 24;
+            for (let x = 0; x < w; x += step) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+            }
+            for (let y = 0; y < h; y += step) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+            }
+
+            // 边连接定义 (Edge List)
+            const edges = [
+                { from: 0, to: 1 }, // start -> topic
+                { from: 1, to: 2 }, // topic -> hitl (conditional jump)
+                { from: 2, to: 3 }, // hitl -> writer (resume)
+                { from: 3, to: 4 }, // writer -> visual
+                { from: 4, to: 5 }, // visual -> checkpointer
+                { from: 5, to: 6 }  // checkpointer -> end
+            ];
+
+            // 绘制贝塞尔流线
+            edges.forEach(e => {
+                const fn = _dagNodes[e.from];
+                const tn = _dagNodes[e.to];
+                if (!fn || !tn) return;
+
+                const isEdgeActive = (fn.state === 'running' || fn.state === 'completed') && (tn.state === 'running' || tn.state === 'interrupted' || tn.state === 'completed');
+
+                ctx.beginPath();
+                ctx.moveTo(fn.x, fn.y);
+                const cpx1 = fn.x + (tn.x - fn.x) * 0.5;
+                const cpy1 = fn.y;
+                const cpx2 = fn.x + (tn.x - fn.x) * 0.5;
+                const cpy2 = tn.y;
+                ctx.bezierCurveTo(cpx1, cpy1, cpx2, cpy2, tn.x, tn.y);
+
+                if (isEdgeActive) {
+                    ctx.strokeStyle = 'rgba(16, 185, 129, 0.55)';
+                    ctx.lineWidth = 2.2;
+                    ctx.shadowColor = 'rgba(16, 185, 129, 0.6)';
+                    ctx.shadowBlur = 6;
+                } else {
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+                    ctx.lineWidth = 1.2;
+                    ctx.shadowBlur = 0;
+                }
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+            });
+
+            // 绘制在贝塞尔曲线上穿梭的光子微粒
+            const anyActive = _dagNodes.some(n => n.state === 'running' || n.state === 'interrupted');
+            _dagParticles.forEach(p => {
+                p.progress += p.speed * (anyActive ? 1.6 : 0.8);
+                if (p.progress >= 1) p.progress = 0;
+
+                const e = edges[p.edgeIdx % edges.length];
+                const fn = _dagNodes[e.from];
+                const tn = _dagNodes[e.to];
+                if (!fn || !tn) return;
+
+                const t = p.progress;
+                const cpx1 = fn.x + (tn.x - fn.x) * 0.5;
+                const cpy1 = fn.y;
+                const cpx2 = fn.x + (tn.x - fn.x) * 0.5;
+                const cpy2 = tn.y;
+
+                const px = (1-t)*(1-t)*(1-t)*fn.x + 3*(1-t)*(1-t)*t*cpx1 + 3*(1-t)*t*t*cpx2 + t*t*t*tn.x;
+                const py = (1-t)*(1-t)*(1-t)*fn.y + 3*(1-t)*(1-t)*t*cpy1 + 3*(1-t)*t*t*cpy2 + t*t*t*tn.y;
+
+                ctx.beginPath();
+                ctx.arc(px, py, 1.8, 0, Math.PI * 2);
+                ctx.fillStyle = anyActive ? '#34D399' : 'rgba(56, 189, 248, 0.7)';
+                ctx.shadowColor = '#10B981';
+                ctx.shadowBlur = 4;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            });
+
+            // 绘制各节点
+            const now = Date.now();
+            _dagNodes.forEach(n => {
+                const isHovered = (_dagHoveredNode && _dagHoveredNode.id === n.id);
+                ctx.save();
+                ctx.translate(n.x, n.y);
+
+                // 运行态光晕呼吸效果
+                if (n.state === 'running') {
+                    const pulse = 1 + 0.15 * Math.sin(now / 150);
+                    ctx.beginPath();
+                    ctx.arc(0, 0, n.r * pulse + 5, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(16, 185, 129, 0.2)';
+                    ctx.fill();
+                } else if (n.state === 'interrupted') {
+                    const pulse = 1 + 0.18 * Math.sin(now / 120);
+                    ctx.beginPath();
+                    ctx.arc(0, 0, n.r * pulse + 6, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(245, 158, 11, 0.25)';
+                    ctx.fill();
+                }
+
+                // 节点圆球外圈
+                ctx.beginPath();
+                ctx.arc(0, 0, n.r + (isHovered ? 2 : 0), 0, Math.PI * 2);
+                if (n.state === 'completed') {
+                    ctx.fillStyle = '#064E3B';
+                    ctx.strokeStyle = '#34D399';
+                } else if (n.state === 'running') {
+                    ctx.fillStyle = '#065F46';
+                    ctx.strokeStyle = '#6EE7B7';
+                } else if (n.state === 'interrupted') {
+                    ctx.fillStyle = '#78350F';
+                    ctx.strokeStyle = '#FBBF24';
+                } else {
+                    ctx.fillStyle = '#0F172A';
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+                }
+                ctx.lineWidth = (n.state === 'running' || n.state === 'interrupted') ? 2.2 : 1.5;
+                ctx.fill();
+                ctx.stroke();
+
+                // 节点文字 / 标签
+                ctx.font = '9px "JetBrains Mono", monospace';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                if (n.state === 'completed') ctx.fillStyle = '#A7F3D0';
+                else if (n.state === 'running') ctx.fillStyle = '#FFFFFF';
+                else if (n.state === 'interrupted') ctx.fillStyle = '#FDE68A';
+                else ctx.fillStyle = '#94A3B8';
+                ctx.fillText(n.label, 0, 0);
+
+                // 节点下方微标签
+                if (n.id !== 'start' && n.id !== 'end') {
+                    ctx.font = '8px -apple-system, sans-serif';
+                    ctx.fillStyle = 'rgba(148, 163, 184, 0.7)';
+                    ctx.fillText(n.state.toUpperCase(), 0, n.r + 10);
+                }
+
+                ctx.restore();
+            });
+
+            _dagCanvasAnimId = requestAnimationFrame(_dagLoop);
+        }
+
+        function updateXhsDagState(nodeKey, state) {
+            const n = _dagNodes.find(item => item.key === nodeKey);
+            if (n) n.state = state;
+
+            const nodeEl = document.getElementById('xhs-node-' + nodeKey);
+            if (nodeEl) {
+                const dot = nodeEl.querySelector('span:first-child');
+                const badge = nodeEl.querySelector('span:last-child');
+                if (state === 'running') {
+                    nodeEl.className = 'p-2 rounded-lg bg-emerald-950/40 border border-accent-emerald flex items-center justify-between text-[11px] animate-pulse';
+                    if (dot) dot.className = 'w-2 h-2 rounded-full bg-accent-emerald animate-ping';
+                    if (badge) { badge.className = 'text-accent-emerald font-mono text-[10px]'; badge.innerText = 'RUNNING'; }
+                } else if (state === 'interrupted') {
+                    nodeEl.className = 'p-2 rounded-lg bg-amber-950/40 border border-accent-amber flex items-center justify-between text-[11px] animate-pulse';
+                    if (dot) dot.className = 'w-2 h-2 rounded-full bg-accent-amber animate-ping';
+                    if (badge) { badge.className = 'text-accent-amber font-mono text-[10px]'; badge.innerText = 'INTERRUPTED'; }
+                } else if (state === 'completed') {
+                    nodeEl.className = 'p-2 rounded-lg bg-dark-900/80 border border-dark-border flex items-center justify-between text-[11px]';
+                    if (dot) dot.className = 'w-2 h-2 rounded-full bg-accent-emerald';
+                    if (badge) { badge.className = 'text-accent-emerald font-mono text-[10px]'; badge.innerText = 'OK'; }
+                } else {
+                    nodeEl.className = 'p-2 rounded-lg bg-dark-900/60 border border-dark-border flex items-center justify-between text-[11px]';
+                    if (dot) dot.className = 'w-2 h-2 rounded-full bg-slate-600';
+                    if (badge) { badge.className = 'text-slate-500 font-mono text-[10px]'; badge.innerText = 'IDLE'; }
+                }
+            }
+        }
+
         // -------------------------------------------------------------
         // Tab 切换控制器
         // -------------------------------------------------------------
@@ -2260,6 +2913,9 @@
         };
 
         function switchTab(tabId) {
+            OmniAudio.click();
+            OmniStore.set('currentTab', tabId);
+
             // 隐藏所有 tabs
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             const target = document.getElementById('tab-' + tabId);
@@ -2280,6 +2936,10 @@
             // 历史趋势：切到该页时拉一次数据（切走再切回会刷新）
             if (tabId === 'history') {
                 setTimeout(loadHistory, 60);
+            }
+            // 小红书 DAG 画布重绘以适应当前视口尺寸
+            if (tabId === 'xhs') {
+                setTimeout(resizeAndRenderXhsDag, 80);
             }
         }
 
@@ -2351,6 +3011,14 @@
         }
 
         async function serviceControl(serviceId, action, btn) {
+            // RBAC 权限守卫
+            if (!OmniStore.can('control')) {
+                OmniAudio.alert();
+                showToast('<b>权限拦截</b>: 当前身份角色 [' + OmniStore.getRoleLabel() + '] 无权启停集群核心微服务', 'err');
+                return;
+            }
+            OmniAudio.click();
+
             const key = serviceId + ':' + action;
             // 第一击：变身为「确认」态，3 秒不点就还原 —— 不用原生 confirm()，体验更贴近产品
             if (!btn.dataset.armed) {
@@ -2375,12 +3043,15 @@
             try {
                 const r = await OmniAPI.controlService(serviceId, action);
                 if (r && (r.stopped || r.started)) {
+                    OmniAudio.success();
                     showToast('<b>' + (action === 'stop' ? '已停止' : '已拉起') + '</b> ' + (r.detail || '') + (r.event_hint ? '<br>' + r.event_hint : ''), 'ok');
                     // 状态与事件都交给巡检器 + 事件总线自然刷新，这里不抢跑 —— 这正是演示点
                 } else {
+                    OmniAudio.alert();
                     showToast('<b>' + (action === 'stop' ? '停止' : '启动') + '未执行</b>：' + (r && r.detail ? r.detail : '原因未知'), 'warn');
                 }
             } catch (e) {
+                OmniAudio.alert();
                 showToast('<b>请求失败</b>：' + (e && e.message ? e.message : e), 'err');
             } finally {
                 btn.disabled = false;
@@ -2779,15 +3450,25 @@
         // （后端三场景轮换：504 超时 / 429 限流 / 质量降级；静态模式走本地仿真镜像）
         // -------------------------------------------------------------
         async function triggerQuickFailover() {
+            // RBAC 权限守卫
+            if (!OmniStore.can('failover')) {
+                OmniAudio.alert();
+                showToast('<b>权限拦截</b>: 当前身份角色 [' + OmniStore.getRoleLabel() + '] 无权触发高可用核心路由热切演练', 'err');
+                return;
+            }
+            OmniAudio.click();
+
             const logBox = document.getElementById('failover-log-box');
             const f = (d) => '[' + d.toLocaleTimeString('zh-CN', { hour12: false }) + ']';
             let data;
             try {
                 data = await OmniAPI.gatewayFailover();
             } catch (e) {
+                OmniAudio.alert();
                 logBox.innerHTML = `<div class="text-accent-rose">${f(new Date())} 网关仿真调用失败：${escapeHtml(String(e && e.message || e))}</div>`;
                 return;
             }
+            OmniAudio.success();
             const t1 = new Date();
             const t2 = new Date(t1.getTime() + 2000);
             const scenName = { 'upstream-timeout': '上游超时熔断', 'rate-limit': '限流分流', 'quality-degrade': '质量降级重生成' }[data.scenario] || data.scenario;
@@ -3005,6 +3686,13 @@
         }
 
         async function handleXhsGenerate() {
+            if (!OmniStore.can('write')) {
+                OmniAudio.alert();
+                showToast('<b>权限拦截</b>: 当前身份角色 [' + OmniStore.getRoleLabel() + '] 为只读权限，无权生成内容', 'err');
+                return;
+            }
+            OmniAudio.click();
+
             const btn = document.getElementById('btn-xhs-run');
             const pName = document.getElementById('xhs-product-name').value.trim() || '天然和田碧玉平安扣吊坠';
             const tone = document.getElementById('xhs-tone').value;
@@ -3029,13 +3717,17 @@
 
             // 1. Topic Miner
             activeNode('xhs-node-topic', '1. 爆款选题子图 (Topic Miner)');
+            updateXhsDagState('topic', 'running');
             await new Promise(r => setTimeout(r, 260));
             completeNode('xhs-node-topic', '1. 爆款选题子图 (Topic Miner)', 32);
+            updateXhsDagState('topic', 'completed');
 
             // 2. HITL Interrupt 触发
             const hitlNode = document.getElementById('xhs-node-hitl');
             hitlNode.className = 'p-2 rounded-lg bg-amber-950/40 border border-accent-amber/60 flex items-center justify-between text-[11px]';
             hitlNode.innerHTML = '<div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-accent-amber animate-pulse"></span><span class="text-accent-amber font-medium">2. 人在环路中断 (HITL Interrupt)</span></div><span class="text-accent-amber font-mono text-[10px]">INTERRUPT</span>';
+            updateXhsDagState('hitl', 'interrupted');
+            OmniAudio.alert();
 
             hitlBox.classList.remove('hidden');
             document.getElementById('xhs-hitl-topic').value = '一眼沦陷！被闺蜜连环追问链接的【' + pName + '】到底有多绝✨';
@@ -3047,6 +3739,7 @@
         }
 
         async function handleXhsHitlApprove() {
+            OmniAudio.click();
             const hitlBox = document.getElementById('xhs-hitl-box');
             const approvedTopic = document.getElementById('xhs-hitl-topic').value.trim();
             const btn = document.getElementById('btn-xhs-run');
@@ -3070,9 +3763,11 @@
             };
 
             completeNode('xhs-node-hitl', '2. 人在环路中断 (HITL Approved)', 15);
+            updateXhsDagState('hitl', 'completed');
 
             // 3. Copywriter 启动流式生成
             activeNode('xhs-node-writer', '3. 深度成文子图 (Copywriter 打字机流式输出)');
+            updateXhsDagState('writer', 'running');
 
             try {
                 const data = await OmniAPI.xhsGenerate({
@@ -3137,14 +3832,21 @@
                 }
 
                 completeNode('xhs-node-writer', '3. 深度成文子图 (Copywriter)', 86);
+                updateXhsDagState('writer', 'completed');
 
                 // 4. Visual Prompts
+                updateXhsDagState('visual', 'running');
                 await new Promise(r => setTimeout(r, 120));
                 completeNode('xhs-node-visual', '4. AI 视觉排版 (Visual Prompts)', 41);
+                updateXhsDagState('visual', 'completed');
 
                 // 5. Checkpointer
+                updateXhsDagState('checkpointer', 'running');
                 await new Promise(r => setTimeout(r, 100));
                 completeNode('xhs-node-checkpointer', '5. Postgres 快照持久化 & PII 脱敏', 18);
+                updateXhsDagState('checkpointer', 'completed');
+                updateXhsDagState('end', 'completed');
+                OmniAudio.success();
 
                 document.getElementById('xhs-meta-latency').innerText = '耗时: ' + (data.latency_ms || 180) + 'ms';
                 document.getElementById('xhs-meta-thread').innerText = 'Thread: ' + (data.thread_id || 'xhs_run_8492');
@@ -3736,15 +4438,24 @@
                             ? 'bg-blue-950/70 text-blue-400 border border-blue-800/60'
                             : 'bg-emerald-950/70 text-emerald-400 border border-emerald-800/60';
                         return `
-                            <div class="p-2 rounded-lg bg-dark-900/90 border border-dark-border flex items-center justify-between gap-2 hover:border-accent-cyan/40 transition-colors">
-                                <div class="flex items-center gap-2 truncate">
-                                    <span class="px-1.5 py-0.5 rounded text-[9px] ${badgeClass}">${t.method}</span>
-                                    <span onclick="copyTraceId('${t.trace_id}')" class="text-accent-cyan hover:underline cursor-pointer" title="点击复制 Trace ID">${t.trace_id}</span>
-                                    <span class="text-slate-500 truncate max-w-[140px] text-[10px]">${t.path}</span>
+                            <div class="p-2 rounded-lg bg-dark-900/90 border border-dark-border space-y-1.5 hover:border-accent-cyan/40 transition-colors">
+                                <div class="flex items-center justify-between gap-2">
+                                    <div class="flex items-center gap-2 truncate">
+                                        <span class="px-1.5 py-0.5 rounded text-[9px] ${badgeClass}">${t.method}</span>
+                                        <span onclick="copyTraceId('${t.trace_id}')" class="text-accent-cyan hover:underline cursor-pointer" title="点击复制 Trace ID">${t.trace_id}</span>
+                                        <span class="text-slate-500 truncate max-w-[130px] text-[10px]">${t.path}</span>
+                                    </div>
+                                    <div class="flex items-center gap-1.5 flex-shrink-0 text-[10px]">
+                                        <span class="text-slate-400 font-mono">${t.latency_ms}ms</span>
+                                        <span class="px-1 py-0.5 rounded ${t.status_code < 400 ? 'text-emerald-400 bg-emerald-950/60' : 'text-amber-400 bg-amber-950/60'}">${t.status_code}</span>
+                                        <button type="button" onclick="inspectTraceSpan('${t.trace_id}')" class="px-1.5 py-0.5 rounded bg-dark-950 border border-dark-border text-slate-400 hover:text-accent-cyan text-[9px] font-mono transition-colors" title="展开分布式 Span 瀑布流">甘特</button>
+                                    </div>
                                 </div>
-                                <div class="flex items-center gap-2 flex-shrink-0 text-[10px]">
-                                    <span class="text-slate-400 font-mono">${t.latency_ms}ms</span>
-                                    <span class="px-1 py-0.5 rounded ${t.status_code < 400 ? 'text-emerald-400 bg-emerald-950/60' : 'text-amber-400 bg-amber-950/60'}">${t.status_code}</span>
+                                <div class="w-full bg-dark-950 rounded-full h-1 flex overflow-hidden border border-dark-border/40">
+                                    <div class="bg-cyan-500/80 h-full" style="width: 20%" title="网关鉴权: ~20%"></div>
+                                    <div class="bg-indigo-500/80 h-full" style="width: 15%" title="RBAC策略: ~15%"></div>
+                                    <div class="bg-emerald-500/80 h-full" style="width: 30%" title="RAG检索: ~30%"></div>
+                                    <div class="bg-amber-500/80 h-full" style="width: 35%" title="模型解码: ~35%"></div>
                                 </div>
                             </div>
                         `;
@@ -4284,6 +4995,7 @@
             renderAnalyticsChart();
             initFunclipCanvasInteractions();
             drawFunclipWaveform();
+            initXhsDagCanvas();
             refreshTraceLogs();
             initCardGlowEffects();
 

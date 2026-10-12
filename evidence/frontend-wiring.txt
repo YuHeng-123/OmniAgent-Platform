@@ -7,12 +7,12 @@
     缺失        : 无 ✅
 
 [2] getElementById 引用 vs 已定义 id（含动态创建）
-    已知 id 数  : 186
-    被引用 id 数: 130
+    已知 id 数  : 206
+    被引用 id 数: 150
     悬空引用    : 无 ✅
 
 [3] onclick 调用 vs 已定义函数
-    onclick 函数: clearGuideChat, closePosterModal, closeSidebarOnMobile, closeTraceSpanModal, copyFunclipSrt, copyMarketingContent, copyPosterImage, copyTraceId, copyXhsNote, downloadPosterImage, executeCommand, handleAnalyticsQuery, handleFunclipSlice, handleMarketingGenerate, handleRagSearch, handleXhsGenerate, handleXhsHitlApprove, inspectTraceSpan, loadHistory, pipeFunclipToXhs, pipeToMarketing, pipeXhsToMarketing, playFunclipSegment, refreshTraceLogs, renderXhsPosterModal, resetFunclipWaveform, resetTopologyLayout, sendOpenaiProxyTest, sendQuickPrompt, serviceControl, setFunclipPreset, setHistoryRange, setQueryAndRun, setXhsPreset, switchChannel, switchTab, switchTopologyView, switchXhsDagView, toggleAudioSound, toggleCommandPalette, toggleDynamicIsland, toggleFunclipPlayback, togglePhoneFrame, toggleSidebar, triggerQuickFailover, zoomFunclipWaveform
+    onclick 函数: clearGuideChat, closePosterModal, closeSidebarOnMobile, closeSkuAttribution, closeTraceSpanModal, copyFunclipSrt, copyMarketingContent, copyPosterImage, copyTraceId, copyXhsNote, deriveSkuVariants, downloadPosterImage, executeCommand, exportSkuReport, handleAnalyticsQuery, handleFunclipSlice, handleMarketingGenerate, handleRagSearch, handleXhsGenerate, handleXhsHitlApprove, inspectTraceSpan, loadHistory, openSkuAttribution, pipeFunclipToXhs, pipeToMarketing, pipeXhsToMarketing, playFunclipSegment, refreshTraceLogs, renderXhsPosterModal, resetFunclipWaveform, resetTopologyLayout, sendOpenaiProxyTest, sendQuickPrompt, serviceControl, setFunclipPreset, setHistoryRange, setQueryAndRun, setXhsPreset, switchChannel, switchOverviewPersona, switchSkuDrawerTab, switchTab, switchTopologyView, switchXhsDagView, syncSkuToGuide, toggleAudioSound, toggleCommandPalette, toggleDynamicIsland, toggleFunclipPlayback, togglePhoneFrame, toggleSidebar, triggerQuickFailover, zoomFunclipWaveform
     未定义      : 无 ✅
 
 [4] templates/index.html 2.2 标记齐全 = ✅

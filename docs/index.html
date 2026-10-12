@@ -347,6 +347,72 @@
     </div>
 
     <!-- ================================================================= -->
+    <!-- 爆款 SKU 深度实效归因与经营深度抽屉 (SKU Attribution Drawer) -->
+    <!-- ================================================================= -->
+    <div id="sku-drawer-modal" class="hidden fixed inset-0 z-50 flex items-stretch justify-end bg-black/80 backdrop-blur-md">
+        <!-- 点击背景蒙层关闭 -->
+        <div class="flex-1 cursor-pointer" onclick="closeSkuAttribution()"></div>
+        <!-- 抽屉内容容器 (从右侧滑出) -->
+        <div class="w-full max-w-2xl bg-dark-950/98 border-l border-dark-border shadow-2xl shadow-black/90 flex flex-col text-[12px] h-full overflow-hidden animate-in slide-in-from-right duration-200">
+            <!-- 抽屉头部 -->
+            <div class="p-4 sm:p-5 border-b border-dark-border/80 bg-gradient-to-r from-dark-900/90 to-dark-950 flex items-start justify-between gap-3 flex-shrink-0">
+                <div class="space-y-1 min-w-0">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span id="sku-drawer-tag" class="tag tag-accent text-[9px] font-mono">TOP 1 爆款</span>
+                        <span id="sku-drawer-code" class="tag font-mono text-[9px] text-accent-gold">SKU: MR-7701-DIA</span>
+                        <span id="sku-drawer-channel" class="tag text-[9px] font-sans">Shopify 北美旗舰独立站</span>
+                    </div>
+                    <h3 id="sku-drawer-title" class="text-base sm:text-lg font-bold text-white tracking-wide truncate">Moissanite Solitaire Engagement Ring</h3>
+                    <div class="text-[11px] text-slate-400 font-mono flex items-center gap-2 flex-wrap">
+                        <span>标价: <b id="sku-drawer-price" class="text-accent-gold text-sm">$399</b> USD</span>
+                        <span class="text-slate-600">|</span>
+                        <span class="text-accent-emerald flex items-center gap-1"><i class="fas fa-chart-line text-[10px]"></i> AI 全域实效提升 +75%</span>
+                    </div>
+                </div>
+                <button type="button" onclick="closeSkuAttribution()" class="px-2.5 py-1.5 rounded-lg bg-dark-900 border border-dark-border text-slate-400 hover:text-white font-mono text-[11px] transition-colors flex items-center gap-1 flex-shrink-0">
+                    <i class="fas fa-xmark"></i> <span>ESC 关闭</span>
+                </button>
+            </div>
+
+            <!-- 抽屉二级子标签导航 (3 大业务视角) -->
+            <div class="px-4 sm:px-5 py-2.5 bg-dark-900/60 border-b border-dark-border/60 flex items-center gap-2 flex-shrink-0 overflow-x-auto">
+                <button type="button" id="sku-tab-funnel" onclick="switchSkuDrawerTab('funnel')" class="sku-tab-btn px-3 py-1.5 rounded-lg font-mono text-[11px] font-medium transition-all bg-emerald-950/80 text-accent-emerald border border-accent-emerald/40 shadow-sm flex items-center gap-1.5 flex-shrink-0">
+                    <i class="fas fa-filter text-[10px]"></i> 转化漏斗与 ROAS 归因
+                </button>
+                <button type="button" id="sku-tab-prompt" onclick="switchSkuDrawerTab('prompt')" class="sku-tab-btn px-3 py-1.5 rounded-lg font-mono text-[11px] text-slate-400 hover:text-white transition-all flex items-center gap-1.5 border border-transparent flex-shrink-0">
+                    <i class="fas fa-code-compare text-[10px]"></i> Prompt 演进与 A/B 测试
+                </button>
+                <button type="button" id="sku-tab-retention" onclick="switchSkuDrawerTab('retention')" class="sku-tab-btn px-3 py-1.5 rounded-lg font-mono text-[11px] text-slate-400 hover:text-white transition-all flex items-center gap-1.5 border border-transparent flex-shrink-0">
+                    <i class="fas fa-chart-area text-[10px]"></i> 短视频 15s 完播留存
+                </button>
+            </div>
+
+            <!-- 抽屉核心内容区 (动态渲染) -->
+            <div id="sku-drawer-body" class="p-4 sm:p-5 overflow-y-auto flex-1 space-y-4">
+                <!-- 由 JS 动态装填 -->
+            </div>
+
+            <!-- 抽屉底部工业级实操动作栏 (Action Bar) -->
+            <div class="p-3.5 sm:p-4 bg-dark-900/95 border-t border-dark-border/80 flex items-center justify-between gap-3 flex-shrink-0 flex-wrap">
+                <button type="button" onclick="exportSkuReport()" class="btn-ghost px-3 py-1.5 rounded-lg text-[11px] font-mono text-slate-400 hover:text-white border border-dark-border flex items-center gap-1.5">
+                    <i class="fas fa-file-arrow-down text-slate-400"></i>
+                    <span>导出实效报告 (JSON)</span>
+                </button>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="syncSkuToGuide()" class="btn-ghost px-3 py-1.5 rounded-lg text-[11px] font-mono text-accent-cyan hover:bg-accent-cyan/10 border border-accent-cyan/40 flex items-center gap-1.5">
+                        <i class="fas fa-store text-xs"></i>
+                        <span>同步至导购知识库</span>
+                    </button>
+                    <button type="button" onclick="deriveSkuVariants()" class="px-3.5 py-1.5 rounded-lg text-[11px] font-mono font-medium text-dark-950 bg-gradient-to-r from-amber-400 to-accent-gold hover:brightness-110 shadow-lg shadow-amber-950/40 flex items-center gap-1.5 transition-all">
+                        <i class="fas fa-wand-magic-sparkles text-xs"></i>
+                        <span>一键派生 3 套新变体</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================= -->
     <!-- 统一侧边栏导航 (Sidebar) -->
     <!-- ================================================================= -->
     <aside class="w-60 bg-dark-800 border-r border-dark-border flex flex-col justify-between z-30 select-none flex-shrink-0">
@@ -644,16 +710,20 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-3 text-[11px] font-mono text-slate-400">
-                <span class="flex items-center gap-1.5 text-accent-emerald">
-                    <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-pulse"></span>
-                    <span>北美 &amp; 欧洲 DTC 独立站直连</span>
-                </span>
-                <span class="text-slate-600 hidden sm:inline">|</span>
-                <span class="text-slate-300 hidden sm:flex items-center gap-1">
-                    <i class="fas fa-bolt text-accent-gold text-[10px]"></i>
-                    <span>AI 调度护航中</span>
-                </span>
+            <!-- 核心：企业级 4 角色视窗切换器 (Persona Views) -->
+            <div class="flex items-center p-0.5 rounded-xl bg-dark-950/90 border border-dark-border text-[11px]">
+                <button type="button" id="btn-persona-all" onclick="switchOverviewPersona('all')" class="persona-btn px-2.5 py-1 rounded-lg transition-all font-mono font-medium bg-emerald-950/80 text-accent-emerald border border-accent-emerald/40 shadow-sm flex items-center gap-1.5">
+                    <i class="fas fa-border-all text-[10px]"></i> <span>全域综合视窗</span>
+                </button>
+                <button type="button" id="btn-persona-executive" onclick="switchOverviewPersona('executive')" class="persona-btn px-2.5 py-1 rounded-lg transition-all font-mono text-slate-400 hover:text-white flex items-center gap-1.5 border border-transparent">
+                    <i class="fas fa-crown text-accent-gold text-[10px]"></i> <span>经营决策大盘</span>
+                </button>
+                <button type="button" id="btn-persona-ops" onclick="switchOverviewPersona('ops')" class="persona-btn px-2.5 py-1 rounded-lg transition-all font-mono text-slate-400 hover:text-white flex items-center gap-1.5 border border-transparent">
+                    <i class="fas fa-bolt text-cyan-400 text-[10px]"></i> <span>出海运营工场</span>
+                </button>
+                <button type="button" id="btn-persona-devops" onclick="switchOverviewPersona('devops')" class="persona-btn px-2.5 py-1 rounded-lg transition-all font-mono text-slate-400 hover:text-white flex items-center gap-1.5 border border-transparent">
+                    <i class="fas fa-network-wired text-accent-emerald text-[10px]"></i> <span>架构运维拓扑</span>
+                </button>
             </div>
         </div>
 
@@ -738,7 +808,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
 
         <!-- 栏 1 (左 3 栏)：E-commerce Conversion (商品转化漏斗) -->
-        <div class="lg:col-span-3 glass-card p-4 flex flex-col justify-between space-y-3.5 border-amber-500/20">
+        <div id="overview-col-funnel" class="lg:col-span-3 glass-card p-4 flex flex-col justify-between space-y-3.5 border-amber-500/20">
             <div class="flex items-center justify-between pb-2 border-b border-dark-border/70">
                 <div class="flex items-center gap-2">
                     <i class="fas fa-filter text-accent-gold text-xs"></i>
@@ -823,7 +893,7 @@
         </div>
 
         <!-- 栏 2 (中 5 栏)：Top-Selling Luxury Jewelry Items (爆款单品与实效 ROI) -->
-        <div class="lg:col-span-5 glass-card p-4 space-y-3.5 border-amber-500/20 flex flex-col justify-between">
+        <div id="overview-col-products" class="lg:col-span-5 glass-card p-4 space-y-3.5 border-amber-500/20 flex flex-col justify-between">
             <div class="flex items-center justify-between pb-2 border-b border-dark-border/70">
                 <div class="flex items-center gap-2">
                     <i class="fas fa-crown text-accent-gold text-xs"></i>
@@ -837,7 +907,7 @@
             <!-- 两张高定奢品卡片并排 (莫桑石订婚钻戒 & 天然翡翠平安扣) -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <!-- 单品 1: Moissanite Engagement Ring -->
-                <div class="p-3 rounded-xl bg-dark-950/90 border border-amber-500/30 hover:border-amber-400/60 transition-all flex flex-col justify-between space-y-2.5 group">
+                <div onclick="openSkuAttribution('moissanite')" class="p-3 rounded-xl bg-dark-950/90 border border-amber-500/30 hover:border-amber-400/60 transition-all flex flex-col justify-between space-y-2.5 group cursor-pointer shadow-lg hover:shadow-amber-950/40">
                     <!-- 商品视觉图容器 (矢量高精实景渲染) -->
                     <div class="relative w-full h-32 rounded-lg overflow-hidden border border-white/5 bg-dark-900 group-hover:scale-[1.01] transition-transform">
                         <svg viewBox="0 0 240 150" class="w-full h-full object-cover select-none" xmlns="http://www.w3.org/2000/svg">
@@ -956,7 +1026,7 @@
                 </div>
 
                 <!-- 单品 2: Natural Jade Pendant -->
-                <div class="p-3 rounded-xl bg-dark-950/90 border border-emerald-500/30 hover:border-emerald-400/60 transition-all flex flex-col justify-between space-y-2.5 group">
+                <div onclick="openSkuAttribution('jade')" class="p-3 rounded-xl bg-dark-950/90 border border-emerald-500/30 hover:border-emerald-400/60 transition-all flex flex-col justify-between space-y-2.5 group cursor-pointer shadow-lg hover:shadow-emerald-950/40">
                     <!-- 商品视觉图容器 (天然翡翠平安扣) -->
                     <div class="relative w-full h-32 rounded-lg overflow-hidden border border-white/5 bg-dark-900 group-hover:scale-[1.01] transition-transform">
                         <svg viewBox="0 0 240 150" class="w-full h-full object-cover select-none" xmlns="http://www.w3.org/2000/svg">
@@ -1064,7 +1134,7 @@
         </div>
 
         <!-- 栏 3 (右 4 栏)：AI Content Factory (出海内容工场流水线 & 视频实时渲染) -->
-        <div class="lg:col-span-4 glass-card p-4 space-y-3.5 border-amber-500/20 flex flex-col justify-between">
+        <div id="overview-col-factory" class="lg:col-span-4 glass-card p-4 space-y-3.5 border-amber-500/20 flex flex-col justify-between">
             <div class="flex items-center justify-between pb-2 border-b border-dark-border/70">
                 <div class="flex items-center gap-2">
                     <i class="fas fa-video text-accent-gold text-xs"></i>
@@ -1264,7 +1334,7 @@
     <!-- ============================================================= -->
     <!-- 架构拓扑流图 & 实时事件流 (2.5D 力导向 HUD + 中枢事件总线) -->
     <!-- ============================================================= -->
-    <div class="grid grid-cols-1 lg:grid-cols-5 gap-5">
+    <div id="overview-section-topology" class="grid grid-cols-1 lg:grid-cols-5 gap-5">
         <!-- 业务拓扑架构 (支持 2.5D 全息力导向 HUD 与 传统集群阵列) -->
         <div class="lg:col-span-3 glass-card p-5 flex flex-col justify-between">
             <div class="flex items-center justify-between mb-3.5 flex-wrap gap-2">
@@ -1613,7 +1683,7 @@
     <!-- ============================================================= -->
     <!-- Token FinOps 算力经济学与商业 ROI 智能大盘 -->
     <!-- ============================================================= -->
-    <div class="glass-card p-5 space-y-4">
+    <div id="overview-section-finops" class="glass-card p-5 space-y-4">
         <div class="flex items-center justify-between pb-3 border-b border-dark-border flex-wrap gap-2">
             <div class="flex items-center gap-2">
                 <i class="fas fa-coins text-accent-gold text-sm"></i>
@@ -1741,7 +1811,7 @@
     <!-- ============================================================= -->
     <!-- Labs · 纵深智能体工作台直通 -->
     <!-- ============================================================= -->
-    <div class="glass-card p-5">
+    <div id="overview-section-labs" class="glass-card p-5">
         <div class="flex items-center justify-between mb-4">
             <div class="flex items-center gap-2">
                 <i class="fas fa-flask text-accent-gold text-sm"></i>
@@ -3368,6 +3438,365 @@
                     }).join('')}
                 </div>
             `;
+        }
+
+        // =============================================================
+        // 角色视窗切换器 (Persona Views) 与 爆款 SKU 深度实效归因抽屉
+        // =============================================================
+        let currentOverviewPersona = 'all';
+
+        function switchOverviewPersona(mode) {
+            currentOverviewPersona = mode;
+            OmniAudio.click();
+
+            const btns = {
+                'all': document.getElementById('btn-persona-all'),
+                'executive': document.getElementById('btn-persona-executive'),
+                'ops': document.getElementById('btn-persona-ops'),
+                'devops': document.getElementById('btn-persona-devops')
+            };
+
+            Object.keys(btns).forEach(k => {
+                if (!btns[k]) return;
+                if (k === mode) {
+                    btns[k].className = 'persona-btn px-2.5 py-1 rounded-lg transition-all font-mono font-medium bg-emerald-950/80 text-accent-emerald border border-accent-emerald/40 shadow-sm flex items-center gap-1.5';
+                } else {
+                    btns[k].className = 'persona-btn px-2.5 py-1 rounded-lg transition-all font-mono text-slate-400 hover:text-white flex items-center gap-1.5 border border-transparent';
+                }
+            });
+
+            const colFunnel = document.getElementById('overview-col-funnel');
+            const colProducts = document.getElementById('overview-col-products');
+            const colFactory = document.getElementById('overview-col-factory');
+            const secTopo = document.getElementById('overview-section-topology');
+            const secFinops = document.getElementById('overview-section-finops');
+            const secLabs = document.getElementById('overview-section-labs');
+
+            if (mode === 'executive') {
+                if (colFunnel) { colFunnel.classList.remove('hidden'); colFunnel.className = 'lg:col-span-4 glass-card p-4 flex flex-col justify-between space-y-3.5 border-amber-500/20'; }
+                if (colProducts) { colProducts.classList.remove('hidden'); colProducts.className = 'lg:col-span-8 glass-card p-4 space-y-3.5 border-amber-500/20 flex flex-col justify-between'; }
+                if (colFactory) colFactory.classList.add('hidden');
+                if (secTopo) secTopo.classList.add('hidden');
+                if (secFinops) secFinops.classList.remove('hidden');
+                if (secLabs) secLabs.classList.add('hidden');
+                showToast('<b>经营决策视窗</b>：聚焦全渠道 GMV、成单漏斗与核心爆款 ROI', 'info');
+            } else if (mode === 'ops') {
+                if (colFunnel) { colFunnel.classList.remove('hidden'); colFunnel.className = 'lg:col-span-3 glass-card p-4 flex flex-col justify-between space-y-3.5 border-amber-500/20'; }
+                if (colProducts) { colProducts.classList.remove('hidden'); colProducts.className = 'lg:col-span-4 glass-card p-4 space-y-3.5 border-amber-500/20 flex flex-col justify-between'; }
+                if (colFactory) { colFactory.classList.remove('hidden'); colFactory.className = 'lg:col-span-5 glass-card p-4 space-y-3.5 border-amber-500/20 flex flex-col justify-between'; }
+                if (secTopo) secTopo.classList.add('hidden');
+                if (secFinops) secFinops.classList.add('hidden');
+                if (secLabs) secLabs.classList.remove('hidden');
+                showToast('<b>出海运营视窗</b>：聚焦社媒内容工场生产队列与视频渲染流', 'ok');
+            } else if (mode === 'devops') {
+                if (colFunnel) colFunnel.classList.add('hidden');
+                if (colProducts) colProducts.classList.add('hidden');
+                if (colFactory) colFactory.classList.add('hidden');
+                if (secTopo) secTopo.classList.remove('hidden');
+                if (secFinops) secFinops.classList.remove('hidden');
+                if (secLabs) secLabs.classList.remove('hidden');
+                setTimeout(resizeAndRenderTopology, 60);
+                showToast('<b>架构运维视窗</b>：聚焦 2.5D 力导向拓扑、服务管控与事件总线', 'warn');
+            } else {
+                if (colFunnel) { colFunnel.classList.remove('hidden'); colFunnel.className = 'lg:col-span-3 glass-card p-4 flex flex-col justify-between space-y-3.5 border-amber-500/20'; }
+                if (colProducts) { colProducts.classList.remove('hidden'); colProducts.className = 'lg:col-span-5 glass-card p-4 space-y-3.5 border-amber-500/20 flex flex-col justify-between'; }
+                if (colFactory) { colFactory.classList.remove('hidden'); colFactory.className = 'lg:col-span-4 glass-card p-4 space-y-3.5 border-amber-500/20 flex flex-col justify-between'; }
+                if (secTopo) secTopo.classList.remove('hidden');
+                if (secFinops) secFinops.classList.remove('hidden');
+                if (secLabs) secLabs.classList.remove('hidden');
+                setTimeout(resizeAndRenderTopology, 60);
+                showToast('<b>全域综合大盘</b>：全域指标与架构拓扑并行巡视', 'info');
+            }
+        }
+
+        let currentSkuId = 'moissanite';
+        let currentSkuDrawerTab = 'funnel';
+
+        const SKU_DATA = {
+            'moissanite': {
+                title: 'Moissanite Solitaire Engagement Ring',
+                sub: '经典六爪莫桑石订婚钻戒 · 4K 微距微光火彩',
+                tag: 'TOP 1 爆款',
+                code: 'SKU: MR-7701-DIA',
+                price: '$399',
+                channel: 'Shopify 北美旗舰独立站',
+                lift: '+75% lift',
+                sales: '129,480 件',
+                gmv: '$51.6M',
+                ctr: '14.8%',
+                roas: '5.84x',
+                prompts: [
+                    { ver: 'V1.0 基础直叙版', desc: '传统货架式商品描述', ctr: '2.8%', roas: '1.2x', status: '已淘汰', text: 'Classic moissanite engagement ring, 2ct brilliant round cut, platinum plated 925 sterling silver, fast shipping.' },
+                    { ver: 'V2.0 仪式感故事版', desc: '融入纽约独立女性节日礼遇叙事', ctr: '8.4%', roas: '3.4x', status: '对照组', text: 'Why compromise on elegance? Discover ethical, conflict-free brilliance crafted for the modern love story. Sparkling brighter than mined diamonds without the luxury markup.' },
+                    { ver: 'V3.0 🌟 线上冠军方案', desc: '达摩院微距火彩分镜 + 情绪价值高频促单', ctr: '14.8%', roas: '5.84x', status: '线上领跑', text: '[Visual] 4K 60fps macro lens sweep across 6-prong brilliant cut facets, refractive dispersion flare at 0:03; [Audio] Whispered luxury ASMR voiceover on ring box velvet click; [Hook] "Why smart brides in Manhattan are quietly switching from mined diamonds to certified moissanite..." [CTA] Tap below to unlock holiday private tier with overnight insured shipping.' }
+                ],
+                retention: [
+                    { sec: '0s 进入帧', pct: 100, label: '曝光展示 (3.2M 播放)' },
+                    { sec: '3s 黄金 Hook', pct: 78.4, label: '首屏微距火彩抓人眼球' },
+                    { sec: '8s 核心卖点', pct: 62.1, label: 'GIA 测钻笔秒过比对测试' },
+                    { sec: '15s CTA 促单', pct: 42.6, label: '完播率超同行平均 3.2 倍' }
+                ]
+            },
+            'jade': {
+                title: 'Natural Jadeite Donut Pendant',
+                sub: '老坑冰透翡翠平安扣 · 东方雅物轻奢传承',
+                tag: '欧洲轻奢 TOP 2',
+                code: 'SKU: JP-8802-JAD',
+                price: '$1,280',
+                channel: '欧洲独立站 & TikTok 欧美轻奢',
+                lift: '+70% lift',
+                sales: '32,150 件',
+                gmv: '$41.1M',
+                ctr: '12.4%',
+                roas: '6.12x',
+                prompts: [
+                    { ver: 'V1.0 传统玉石词汇', desc: '老坑冰种平安扣直叙', ctr: '1.9%', roas: '1.1x', status: '已淘汰', text: 'Natural Grade-A green jade pendant, smooth surface, traditional craftsmanship, good luck amulet.' },
+                    { ver: 'V2.0 东方美学穿搭版', desc: '新中式高级穿搭色彩美学', ctr: '6.8%', roas: '3.2x', status: '对照组', text: 'Timeless serenity. Elevate your everyday wardrobe with certified icy-green jadeite. Hand-carved minimalism inspired by thousand-year dynasties.' },
+                    { ver: 'V3.0 🌟 线上冠军方案', desc: 'GIA/NGTC 保真一石一证 + 18K 黄金包镶质感', ctr: '12.4%', roas: '6.12x', status: '线上领跑', text: '[Visual] Macro soft lighting revealing natural emerald translucency with floating clouds; [Certification] NGTC/GIA QR-code laser certificate verification zoom; [Story] "Not just jewelry, but an heirloom of peace..." [CTA] Limited batch of 50 numbered pieces for North America & Europe.' }
+                ],
+                retention: [
+                    { sec: '0s 进入帧', pct: 100, label: '曝光展示 (2.8M 播放)' },
+                    { sec: '3s 黄金 Hook', pct: 81.2, label: '水头通透光线穿透质感' },
+                    { sec: '8s 证书防伪', pct: 66.5, label: 'GIA 权威鉴定一石一证' },
+                    { sec: '15s CTA 促单', pct: 45.8, label: '欧美高净值客群深度种草' }
+                ]
+            }
+        };
+
+        function openSkuAttribution(skuId) {
+            currentSkuId = skuId || 'moissanite';
+            OmniAudio.click();
+            const modal = document.getElementById('sku-drawer-modal');
+            if (!modal) return;
+            modal.classList.remove('hidden');
+
+            const data = SKU_DATA[currentSkuId] || SKU_DATA['moissanite'];
+            const titleEl = document.getElementById('sku-drawer-title');
+            const codeEl = document.getElementById('sku-drawer-code');
+            const tagEl = document.getElementById('sku-drawer-tag');
+            const priceEl = document.getElementById('sku-drawer-price');
+            const chEl = document.getElementById('sku-drawer-channel');
+            if (titleEl) titleEl.textContent = data.title;
+            if (codeEl) codeEl.textContent = data.code;
+            if (tagEl) tagEl.textContent = data.tag;
+            if (priceEl) priceEl.textContent = data.price;
+            if (chEl) chEl.textContent = data.channel;
+
+            switchSkuDrawerTab(currentSkuDrawerTab || 'funnel');
+        }
+
+        function closeSkuAttribution() {
+            OmniAudio.click();
+            const modal = document.getElementById('sku-drawer-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function switchSkuDrawerTab(tab) {
+            currentSkuDrawerTab = tab;
+            OmniAudio.click();
+
+            const tabs = {
+                'funnel': document.getElementById('sku-tab-funnel'),
+                'prompt': document.getElementById('sku-tab-prompt'),
+                'retention': document.getElementById('sku-tab-retention')
+            };
+
+            Object.keys(tabs).forEach(k => {
+                if (!tabs[k]) return;
+                if (k === tab) {
+                    tabs[k].className = 'sku-tab-btn px-3 py-1.5 rounded-lg font-mono text-[11px] font-medium transition-all bg-emerald-950/80 text-accent-emerald border border-accent-emerald/40 shadow-sm flex items-center gap-1.5';
+                } else {
+                    tabs[k].className = 'sku-tab-btn px-3 py-1.5 rounded-lg font-mono text-[11px] text-slate-400 hover:text-white transition-all flex items-center gap-1.5 border border-transparent';
+                }
+            });
+
+            renderSkuDrawerBody();
+        }
+
+        function renderSkuDrawerBody() {
+            const body = document.getElementById('sku-drawer-body');
+            if (!body) return;
+            const data = SKU_DATA[currentSkuId] || SKU_DATA['moissanite'];
+
+            if (currentSkuDrawerTab === 'funnel') {
+                body.innerHTML = `
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                        <div class="p-3 rounded-xl bg-dark-900 border border-dark-border">
+                            <div class="text-[10px] text-slate-500 font-mono">总成单销量</div>
+                            <div class="text-base font-bold text-white font-mono mt-0.5">${data.sales}</div>
+                            <div class="text-[10px] text-accent-emerald mt-1">达成率 128%</div>
+                        </div>
+                        <div class="p-3 rounded-xl bg-dark-900 border border-dark-border">
+                            <div class="text-[10px] text-slate-500 font-mono">累计全域 GMV</div>
+                            <div class="text-base font-bold text-accent-gold font-mono mt-0.5">${data.gmv}</div>
+                            <div class="text-[10px] text-accent-gold mt-1">折合 ¥ 3.68 亿</div>
+                        </div>
+                        <div class="p-3 rounded-xl bg-dark-900 border border-dark-border">
+                            <div class="text-[10px] text-slate-500 font-mono">广告投产比 (ROAS)</div>
+                            <div class="text-base font-bold text-accent-emerald font-mono mt-0.5">${data.roas}</div>
+                            <div class="text-[10px] text-accent-emerald mt-1">行业均值 2.2x</div>
+                        </div>
+                        <div class="p-3 rounded-xl bg-dark-900 border border-dark-border">
+                            <div class="text-[10px] text-slate-500 font-mono">AI 转化净增益</div>
+                            <div class="text-base font-bold text-cyan-400 font-mono mt-0.5">${data.lift}</div>
+                            <div class="text-[10px] text-cyan-400 mt-1">归因模型 Shapley</div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 rounded-xl bg-dark-900/70 border border-dark-border space-y-3">
+                        <div class="flex items-center justify-between text-[11px]">
+                            <span class="font-semibold text-white flex items-center gap-1.5">
+                                <i class="fas fa-layer-group text-accent-gold"></i>
+                                <span>该 SKU 出海全域漏斗微观转化率</span>
+                            </span>
+                            <span class="tag tag-accent text-[9px] font-mono">实时归因</span>
+                        </div>
+                        <div class="space-y-2 text-[11px] font-mono">
+                            <div class="flex justify-between items-center text-slate-400">
+                                <span>1. 社媒微距短视频曝光</span>
+                                <span class="text-slate-200 font-bold">3,200,000 views</span>
+                            </div>
+                            <div class="w-full bg-dark-950 h-1.5 rounded-full overflow-hidden">
+                                <div class="bg-accent-gold h-full rounded-full" style="width: 100%"></div>
+                            </div>
+
+                            <div class="flex justify-between items-center text-slate-400 pt-1">
+                                <span>2. 独立站产品落地页进店 (PDP CTR: ${data.ctr})</span>
+                                <span class="text-cyan-400 font-bold">473,600 UV</span>
+                            </div>
+                            <div class="w-full bg-dark-950 h-1.5 rounded-full overflow-hidden">
+                                <div class="bg-accent-cyan h-full rounded-full" style="width: 58%"></div>
+                            </div>
+
+                            <div class="flex justify-between items-center text-slate-400 pt-1">
+                                <span>3. AI 导购交互问答接待 (高意向咨询)</span>
+                                <span class="text-accent-emerald font-bold">135,450 会话</span>
+                            </div>
+                            <div class="w-full bg-dark-950 h-1.5 rounded-full overflow-hidden">
+                                <div class="bg-accent-emerald h-full rounded-full" style="width: 38%"></div>
+                            </div>
+
+                            <div class="flex justify-between items-center text-slate-400 pt-1">
+                                <span>4. 独立站完成结账支付 (出海履约)</span>
+                                <span class="text-accent-gold font-bold">${data.sales}</span>
+                            </div>
+                            <div class="w-full bg-dark-950 h-1.5 rounded-full overflow-hidden">
+                                <div class="bg-gradient-to-r from-accent-gold to-accent-emerald h-full rounded-full" style="width: 27%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (currentSkuDrawerTab === 'prompt') {
+                body.innerHTML = `
+                    <div class="p-3 rounded-xl bg-dark-900 border border-dark-border text-[11px] text-slate-400 leading-relaxed">
+                        <div class="font-semibold text-white mb-1 flex items-center gap-1.5">
+                            <i class="fas fa-lightbulb text-accent-gold"></i>
+                            <span>AI 脚本 Prompt 演化实验记录 (3 次大版本迭代)</span>
+                        </div>
+                        通过多轮 A/B 测试对比，线上冠军方案 (V3.0) 针对海外高净值客户群体融入了微距火彩特写与 ASMR 沉浸式听觉锚点，成单转化率较初始版本暴涨 428%。
+                    </div>
+
+                    <div class="space-y-3">
+                        ${data.prompts.map(p => `
+                            <div class="p-3.5 rounded-xl ${p.status.includes('冠军') || p.status.includes('领跑') ? 'bg-amber-950/20 border border-amber-500/40 shadow-lg' : 'bg-dark-900/60 border border-dark-border'} space-y-2">
+                                <div class="flex items-center justify-between text-[11px]">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-bold ${p.status.includes('冠军') ? 'text-accent-gold' : 'text-slate-200'}">${p.ver}</span>
+                                        <span class="text-slate-500 text-[10px]">(${p.desc})</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 font-mono text-[10px]">
+                                        <span class="tag ${p.status.includes('冠军') ? 'tag-accent' : ''}">${p.status}</span>
+                                        <span class="text-slate-400">CTR: <b class="text-white">${p.ctr}</b></span>
+                                        <span class="text-slate-400">ROAS: <b class="text-accent-emerald">${p.roas}</b></span>
+                                    </div>
+                                </div>
+                                <div class="p-2.5 rounded-lg bg-dark-950/90 border border-dark-border/60 font-mono text-[11px] text-slate-300 leading-relaxed select-all">
+                                    ${escapeHtml(p.text)}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } else {
+                body.innerHTML = `
+                    <div class="p-3 rounded-xl bg-dark-900 border border-dark-border text-[11px] text-slate-400 leading-relaxed">
+                        <div class="font-semibold text-white mb-1 flex items-center gap-1.5">
+                            <i class="fas fa-video text-rose-400"></i>
+                            <span>TikTok &amp; Reels 15秒短视频分秒完播流失分析</span>
+                        </div>
+                        基于达摩院 FunClip 自动化音频切片与热点捕捉，分析 320 万次播放的用户留存衰减瀑布流。黄金前 3 秒微距火彩折射成功遏制了滑走率。
+                    </div>
+
+                    <div class="space-y-3">
+                        ${data.retention.map(r => `
+                            <div class="p-3 rounded-xl bg-dark-900/60 border border-dark-border space-y-1.5">
+                                <div class="flex items-center justify-between text-[11px]">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-bold text-white font-mono">${r.sec}</span>
+                                        <span class="text-slate-400">${r.label}</span>
+                                    </div>
+                                    <span class="font-mono font-bold text-accent-emerald">${r.pct}% 留存</span>
+                                </div>
+                                <div class="w-full bg-dark-950 h-2 rounded-full overflow-hidden border border-dark-border/50">
+                                    <div class="bg-gradient-to-r from-accent-emerald to-cyan-400 h-full rounded-full" style="width: ${r.pct}%"></div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+        }
+
+        function deriveSkuVariants() {
+            OmniAudio.success();
+            const data = SKU_DATA[currentSkuId] || SKU_DATA['moissanite'];
+            closeSkuAttribution();
+            switchTab('xhs');
+            setXhsPreset(data.title, '海外轻奢高端感 (Luxury Haute)', '火彩折射, GIA认证, 礼遇季, 独立站现货, 4K微距');
+            showToast(`<b>已一键载入出海内容工场</b>: 为 [${data.title}] 生成 3 套新图文变体`, 'ok');
+        }
+
+        function syncSkuToGuide() {
+            OmniAudio.success();
+            const data = SKU_DATA[currentSkuId] || SKU_DATA['moissanite'];
+            closeSkuAttribution();
+            switchTab('guide');
+            const input = document.getElementById('guide-input');
+            if (input) {
+                input.value = `请详细介绍这款 ${data.title} 的材质、火彩参数、证书认证与独立站配送时效`;
+            }
+            showToast(`<b>已联动智能导购智能体</b>: 知识库已对齐 [${data.code}]`, 'ok');
+        }
+
+        function exportSkuReport() {
+            OmniAudio.success();
+            const data = SKU_DATA[currentSkuId] || SKU_DATA['moissanite'];
+            const report = {
+                sku_id: data.code,
+                product: data.title,
+                price: data.price,
+                channel: data.channel,
+                generated_at: new Date().toISOString(),
+                metrics: {
+                    sales: data.sales,
+                    gmv: data.gmv,
+                    ctr: data.ctr,
+                    roas: data.roas,
+                    ai_lift: data.lift
+                },
+                prompt_versions: data.prompts,
+                retention_funnel: data.retention
+            };
+            const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `SKU_Attribution_${currentSkuId}_${Date.now()}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast(`<b>SKU 归因分析报告已导出</b>: ${a.download}`, 'ok');
         }
 
         // -------------------------------------------------------------
@@ -6176,6 +6605,22 @@
         }
 
         window.addEventListener('keydown', (e) => {
+            // ESC key closes modals/drawers
+            if (e.key === 'Escape') {
+                const skuModal = document.getElementById('sku-drawer-modal');
+                if (skuModal && !skuModal.classList.contains('hidden')) {
+                    e.preventDefault();
+                    closeSkuAttribution();
+                    return;
+                }
+                const traceModal = document.getElementById('trace-span-modal');
+                if (traceModal && !traceModal.classList.contains('hidden')) {
+                    e.preventDefault();
+                    closeTraceSpanModal();
+                    return;
+                }
+            }
+
             // Ctrl+K or Cmd+K
             if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
                 e.preventDefault();

@@ -22,16 +22,20 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-3 text-[11px] font-mono text-slate-400">
-                <span class="flex items-center gap-1.5 text-accent-emerald">
-                    <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-pulse"></span>
-                    <span>北美 &amp; 欧洲 DTC 独立站直连</span>
-                </span>
-                <span class="text-slate-600 hidden sm:inline">|</span>
-                <span class="text-slate-300 hidden sm:flex items-center gap-1">
-                    <i class="fas fa-bolt text-accent-gold text-[10px]"></i>
-                    <span>AI 调度护航中</span>
-                </span>
+            <!-- 核心：企业级 4 角色视窗切换器 (Persona Views) -->
+            <div class="flex items-center p-0.5 rounded-xl bg-dark-950/90 border border-dark-border text-[11px]">
+                <button type="button" id="btn-persona-all" onclick="switchOverviewPersona('all')" class="persona-btn px-2.5 py-1 rounded-lg transition-all font-mono font-medium bg-emerald-950/80 text-accent-emerald border border-accent-emerald/40 shadow-sm flex items-center gap-1.5">
+                    <i class="fas fa-border-all text-[10px]"></i> <span>全域综合视窗</span>
+                </button>
+                <button type="button" id="btn-persona-executive" onclick="switchOverviewPersona('executive')" class="persona-btn px-2.5 py-1 rounded-lg transition-all font-mono text-slate-400 hover:text-white flex items-center gap-1.5 border border-transparent">
+                    <i class="fas fa-crown text-accent-gold text-[10px]"></i> <span>经营决策大盘</span>
+                </button>
+                <button type="button" id="btn-persona-ops" onclick="switchOverviewPersona('ops')" class="persona-btn px-2.5 py-1 rounded-lg transition-all font-mono text-slate-400 hover:text-white flex items-center gap-1.5 border border-transparent">
+                    <i class="fas fa-bolt text-cyan-400 text-[10px]"></i> <span>出海运营工场</span>
+                </button>
+                <button type="button" id="btn-persona-devops" onclick="switchOverviewPersona('devops')" class="persona-btn px-2.5 py-1 rounded-lg transition-all font-mono text-slate-400 hover:text-white flex items-center gap-1.5 border border-transparent">
+                    <i class="fas fa-network-wired text-accent-emerald text-[10px]"></i> <span>架构运维拓扑</span>
+                </button>
             </div>
         </div>
 
@@ -116,7 +120,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
 
         <!-- 栏 1 (左 3 栏)：E-commerce Conversion (商品转化漏斗) -->
-        <div class="lg:col-span-3 glass-card p-4 flex flex-col justify-between space-y-3.5 border-amber-500/20">
+        <div id="overview-col-funnel" class="lg:col-span-3 glass-card p-4 flex flex-col justify-between space-y-3.5 border-amber-500/20">
             <div class="flex items-center justify-between pb-2 border-b border-dark-border/70">
                 <div class="flex items-center gap-2">
                     <i class="fas fa-filter text-accent-gold text-xs"></i>
@@ -201,7 +205,7 @@
         </div>
 
         <!-- 栏 2 (中 5 栏)：Top-Selling Luxury Jewelry Items (爆款单品与实效 ROI) -->
-        <div class="lg:col-span-5 glass-card p-4 space-y-3.5 border-amber-500/20 flex flex-col justify-between">
+        <div id="overview-col-products" class="lg:col-span-5 glass-card p-4 space-y-3.5 border-amber-500/20 flex flex-col justify-between">
             <div class="flex items-center justify-between pb-2 border-b border-dark-border/70">
                 <div class="flex items-center gap-2">
                     <i class="fas fa-crown text-accent-gold text-xs"></i>
@@ -215,7 +219,7 @@
             <!-- 两张高定奢品卡片并排 (莫桑石订婚钻戒 & 天然翡翠平安扣) -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <!-- 单品 1: Moissanite Engagement Ring -->
-                <div class="p-3 rounded-xl bg-dark-950/90 border border-amber-500/30 hover:border-amber-400/60 transition-all flex flex-col justify-between space-y-2.5 group">
+                <div onclick="openSkuAttribution('moissanite')" class="p-3 rounded-xl bg-dark-950/90 border border-amber-500/30 hover:border-amber-400/60 transition-all flex flex-col justify-between space-y-2.5 group cursor-pointer shadow-lg hover:shadow-amber-950/40">
                     <!-- 商品视觉图容器 (矢量高精实景渲染) -->
                     <div class="relative w-full h-32 rounded-lg overflow-hidden border border-white/5 bg-dark-900 group-hover:scale-[1.01] transition-transform">
                         <svg viewBox="0 0 240 150" class="w-full h-full object-cover select-none" xmlns="http://www.w3.org/2000/svg">
@@ -334,7 +338,7 @@
                 </div>
 
                 <!-- 单品 2: Natural Jade Pendant -->
-                <div class="p-3 rounded-xl bg-dark-950/90 border border-emerald-500/30 hover:border-emerald-400/60 transition-all flex flex-col justify-between space-y-2.5 group">
+                <div onclick="openSkuAttribution('jade')" class="p-3 rounded-xl bg-dark-950/90 border border-emerald-500/30 hover:border-emerald-400/60 transition-all flex flex-col justify-between space-y-2.5 group cursor-pointer shadow-lg hover:shadow-emerald-950/40">
                     <!-- 商品视觉图容器 (天然翡翠平安扣) -->
                     <div class="relative w-full h-32 rounded-lg overflow-hidden border border-white/5 bg-dark-900 group-hover:scale-[1.01] transition-transform">
                         <svg viewBox="0 0 240 150" class="w-full h-full object-cover select-none" xmlns="http://www.w3.org/2000/svg">
@@ -442,7 +446,7 @@
         </div>
 
         <!-- 栏 3 (右 4 栏)：AI Content Factory (出海内容工场流水线 & 视频实时渲染) -->
-        <div class="lg:col-span-4 glass-card p-4 space-y-3.5 border-amber-500/20 flex flex-col justify-between">
+        <div id="overview-col-factory" class="lg:col-span-4 glass-card p-4 space-y-3.5 border-amber-500/20 flex flex-col justify-between">
             <div class="flex items-center justify-between pb-2 border-b border-dark-border/70">
                 <div class="flex items-center gap-2">
                     <i class="fas fa-video text-accent-gold text-xs"></i>
@@ -642,7 +646,7 @@
     <!-- ============================================================= -->
     <!-- 架构拓扑流图 & 实时事件流 (2.5D 力导向 HUD + 中枢事件总线) -->
     <!-- ============================================================= -->
-    <div class="grid grid-cols-1 lg:grid-cols-5 gap-5">
+    <div id="overview-section-topology" class="grid grid-cols-1 lg:grid-cols-5 gap-5">
         <!-- 业务拓扑架构 (支持 2.5D 全息力导向 HUD 与 传统集群阵列) -->
         <div class="lg:col-span-3 glass-card p-5 flex flex-col justify-between">
             <div class="flex items-center justify-between mb-3.5 flex-wrap gap-2">
@@ -783,7 +787,7 @@
     <!-- ============================================================= -->
     <!-- Token FinOps 算力经济学与商业 ROI 智能大盘 -->
     <!-- ============================================================= -->
-    <div class="glass-card p-5 space-y-4">
+    <div id="overview-section-finops" class="glass-card p-5 space-y-4">
         <div class="flex items-center justify-between pb-3 border-b border-dark-border flex-wrap gap-2">
             <div class="flex items-center gap-2">
                 <i class="fas fa-coins text-accent-gold text-sm"></i>
@@ -911,7 +915,7 @@
     <!-- ============================================================= -->
     <!-- Labs · 纵深智能体工作台直通 -->
     <!-- ============================================================= -->
-    <div class="glass-card p-5">
+    <div id="overview-section-labs" class="glass-card p-5">
         <div class="flex items-center justify-between mb-4">
             <div class="flex items-center gap-2">
                 <i class="fas fa-flask text-accent-gold text-sm"></i>

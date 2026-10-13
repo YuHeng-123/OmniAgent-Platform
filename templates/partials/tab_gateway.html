@@ -7,7 +7,7 @@
                         <div class="flex items-center justify-between pb-3 border-b border-dark-border">
                             <div class="flex items-center gap-2">
                                 <i class="fas fa-shield-halved text-accent-steel text-sm"></i>
-                                <h3 class="font-semibold text-white text-sm">企业统一模型池与权重路由</h3>
+                                <h3 id="gw-matrix-title" class="font-semibold text-white text-sm">企业统一模型池与权重路由</h3>
                             </div>
                             <span class="text-[11px] text-accent-emerald font-mono">ACTIVE MATRIX</span>
                         </div>
@@ -17,24 +17,24 @@
                                 <div class="flex items-center justify-between mb-1.5">
                                     <div class="flex items-center gap-2">
                                         <span class="w-1.5 h-1.5 rounded-full bg-accent-gold"></span>
-                                        <span class="text-[13px] text-slate-100 font-medium">上游主模型（仿真占位）</span>
+                                        <span id="gw-primary-name" class="text-[13px] text-slate-100 font-medium">上游主模型（仿真占位）</span>
                                     </div>
                                     <span class="tag tag-accent">PRIMARY</span>
                                 </div>
-                                <p class="text-[11px] text-slate-500">未接入真实模型 API · 仅演示主备形态</p>
-                                <div class="text-[11px] font-mono text-accent-gold mt-2">权重 70% ｜ 熔断阈值 3000ms</div>
+                                <p id="gw-primary-desc" class="text-[11px] text-slate-500">未接入真实模型 API · 仅演示主备形态</p>
+                                <div id="gw-primary-weight" class="text-[11px] font-mono text-accent-gold mt-2">权重 70% ｜ 熔断阈值 3000ms</div>
                             </div>
 
                             <div class="p-3.5 rounded-lg border border-accent-emerald/25 bg-accent-emerald/5">
                                 <div class="flex items-center justify-between mb-1.5">
                                     <div class="flex items-center gap-2">
                                         <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald"></span>
-                                        <span class="text-[13px] text-slate-100 font-medium">本地兜底引擎</span>
+                                        <span id="gw-backup-name" class="text-[13px] text-slate-100 font-medium">本地兜底引擎</span>
                                     </div>
                                     <span class="tag">BACKUP</span>
                                 </div>
-                                <p class="text-[11px] text-slate-500">极速低延迟与多模态灾备模型</p>
-                                <div class="text-[11px] font-mono text-accent-emerald mt-2">权重 30% ｜ 热切待命 42ms</div>
+                                <p id="gw-backup-desc" class="text-[11px] text-slate-500">极速低延迟与多模态灾备模型</p>
+                                <div id="gw-backup-weight" class="text-[11px] font-mono text-accent-emerald mt-2">权重 30% ｜ 热切待命 42ms</div>
                             </div>
                         </div>
 
@@ -44,12 +44,12 @@
                                 <div class="min-w-0">
                                     <div class="text-[13px] text-slate-100 font-medium flex items-center gap-2">
                                         <i class="fas fa-triangle-exclamation text-accent-amber text-xs"></i>
-                                        高可用容灾演练控制器
+                                        <span id="gw-drill-title">高可用容灾演练控制器</span>
                                     </div>
-                                    <p class="text-[11px] text-slate-500 mt-0.5">模拟主节点故障，触发网关断路器（Circuit Breaker）毫秒级自动热切</p>
+                                    <p id="gw-drill-desc" class="text-[11px] text-slate-500 mt-0.5">模拟主节点故障，触发网关断路器（Circuit Breaker）毫秒级自动热切</p>
                                 </div>
                                 <button onclick="triggerQuickFailover()" class="btn-ghost px-3.5 py-2 rounded-md text-[11px] border-accent-rose/30 text-accent-rose hover:bg-accent-rose/10 flex-shrink-0">
-                                    注入主线路故障
+                                    <span id="gw-drill-btn">注入主线路故障</span>
                                 </button>
                             </div>
 
@@ -63,7 +63,7 @@
                     <!-- 右侧：虚拟 Key 与 MCP 工具协议 -->
                     <div class="lg:col-span-4 glass-card p-5 space-y-4">
                         <div class="text-[13px] text-slate-100 font-medium flex items-center gap-2 pb-2 border-b border-dark-border">
-                            <i class="fas fa-key text-accent-sand text-xs"></i> 虚拟 API Key 配额池
+                            <i class="fas fa-key text-accent-sand text-xs"></i> <span id="gw-vkey-title">虚拟 API Key 配额池</span>
                         </div>
                         <div class="space-y-2 text-[11px] font-mono">
                             <div class="px-3 py-2 rounded-lg bg-dark-900 flex justify-between items-center border border-dark-border">
@@ -83,7 +83,7 @@
                         </div>
 
                         <div class="text-[13px] text-slate-100 font-medium flex items-center gap-2 pt-3 pb-2 border-b border-dark-border">
-                            <i class="fas fa-puzzle-piece text-accent-emerald text-xs"></i> MCP 工具协议挂载
+                            <i class="fas fa-puzzle-piece text-accent-emerald text-xs"></i> <span id="gw-mcp-title">MCP 工具协议挂载</span>
                         </div>
                         <div class="text-[11px] text-slate-500 space-y-1.5 font-mono">
                             <div class="flex items-center gap-2"><span class="text-accent-emerald">✓</span> tools.query_products</div>

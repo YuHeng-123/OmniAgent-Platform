@@ -635,60 +635,154 @@
 
   function localXhsGenerate(req) {
     var t0 = performance.now();
-    var pname = ((req && req.product_name) || '').trim() || '天然和田碧玉平安扣吊坠';
-    var tone = (req && req.tone) || '闺蜜真实种草';
-    var kw = ((req && req.keywords) || '').trim() || '温润细腻, 原矿老料, 权威证书, 新中式穿搭';
-
-    var title, hook;
-    if (tone.indexOf('避坑') >= 0 || tone.indexOf('科普') >= 0) {
-      title = '珠宝店员工打死不说的实话！买【' + pname + '】千万别踩这3个雷💣';
-      hook = '很多人以为玉石水深，其实只要看懂这三点，新手也能闭眼入！';
-    } else if (tone.indexOf('评测') >= 0 || tone.indexOf('专业') >= 0) {
-      title = '硬核拆解！千元内能买到真正老坑【' + pname + '】吗？微距实测报告🔍';
-      hook = '今天拿卡尺、强光手电和密度计，带大家微距解构一条真正标杆级老坑料。';
-    } else {
-      title = '一眼沦陷！被闺蜜连环追问链接的【' + pname + '】到底有多绝✨';
-      hook = '救命！真的没有人能拒绝天然玉石温润内敛的高级感吧，冷白皮拉满！';
+    var isEn = isLangEn();
+    var rawPname = ((req && req.product_name) || '').trim();
+    var pname = rawPname || (isEn ? 'Natural Hetian Nephrite Jade Amulet' : '天然和田碧玉平安扣吊坠');
+    if (isEn && (pname === '天然冰种和田碧玉平安扣吊坠' || pname === '天然和田碧玉平安扣吊坠')) {
+      pname = 'Natural Hetian Nephrite Jade Amulet';
+    }
+    var tone = (req && req.tone) || (isEn ? '闺蜜真实种草' : '闺蜜真实种草');
+    var rawKw = ((req && req.keywords) || '').trim();
+    var kw = rawKw || (isEn ? 'Untreated old-mine rough, lustrous oily sheen, serialized gem certificate, quiet luxury' : '温润细腻, 原矿老料, 权威证书, 新中式穿搭');
+    if (isEn && (kw.indexOf('温润细腻') >= 0)) {
+      kw = 'Untreated old-mine rough, lustrous oily sheen, serialized gem certificate, quiet luxury';
     }
 
-    var content = hook + '\n\n' +
-      '最近私信问得最多的就是这款【' + pname + '】，今天把实测感受和细节全部分享给大家：\n\n' +
-      '🌿 选料与工艺：\n' +
-      '精选原矿老坑料子，日光下泛着通透温润的油脂光泽。手工双面精抛光，佩戴在锁骨处极具呼吸感，不管是搭法式通勤衬衫还是新中式新茶服都温婉典雅！\n\n' +
-      '💎 品质与证书保障：\n' +
-      '一物一证，附带国家级宝玉石质检证书，支持全国权威机构终身复检。无胶无酸洗，佩戴更安心。\n\n' +
-      '🎯 核心亮点提炼：\n' +
-      '· 核心卖点：' + kw + '\n' +
-      '· 适用场景：日常通勤轻奢、闺蜜纪念日送礼、自我犒赏\n\n' +
-    var wechatContent = '【导语】\n很多朋友私信问我，预算有限的前提下，想要一件既有东方气韵又耐看百搭的珠宝，到底该选什么？我的答案始终如一：选一块老坑天然玉料制作的经典平安扣。\n\n一、辨料之妙：什么是真正的“老坑温润”？\n【' + pname + '】精选新疆原矿老料，日光下泛着油脂般内敛的光泽。它不靠火彩夺目，而靠时间沉淀出的水润肌理。手工双面精抛，贴近肌肤处温润如凝脂。\n\n二、搭配之道：新中式美学的画龙点睛\n无论是搭法式通勤衬衫的随性利落，还是新中式茶服的清冷淡雅，一枚平安扣在锁骨之间，恰到好处地点亮了整个人的温婉气场。\n\n三、品质承诺：一物一证，假一赔十\n每一件均附带国家级珠宝玉石质检证书，支持全国权威机构复检。岁月赠礼，长久相伴。';
+    var title, hook, content, wechatContent, videoShots, channels, visualPrompts, nodes;
 
-    var videoShots = [
-      { num: '分镜 01', type: '【大特写】', time: '0-3s', visual: '45度角强光微距照射' + pname + '，展示透光油脂感与胶质感，镜头慢速推入。', audio: '（情绪抓人）“姐妹们，别再花冤枉钱买酸洗注胶了！真正懂玉的行家，只看这一抹老料油脂光…”', sfx: '清脆玉石轻叩声' },
-      { num: '分镜 02', type: '【对比中景】', time: '3-10s', visual: '主播双手对比：左手市场普通染色料，右手且末老矿天然A料，展示证书防伪钢印与一石一码。', audio: '“很多人以为玉石水深，其实认准一石一证一码，全国终身复检，假一赔十！”', sfx: '权威证书盖章音效' },
-      { num: '分镜 03', type: '【近景上身】', time: '10-22s', visual: '模特佩戴在锁骨处，搭配白色棉麻新中式上衣，窗边自然光慢动作展示。', audio: '“不挑肤色不挑年龄，戴在颈间是说不出的温润高级。不管是日常通勤还是见长辈，贵气由内而外。”', sfx: '舒缓新中式国风背景音乐' },
-      { num: '分镜 04', type: '【促单特写】', time: '22-30s', visual: '精装国风锦盒包装展示，附赠擦玉布与证书，左下角购物车手势指引。', audio: '“今天专场特惠仅放20条，抢完立即下架。点击左下角小黄车，直接结缘带回家！”', sfx: '倒计时心跳声，上链接提示音' }
-    ];
-
-    var channels = {
-      xhs: {
-        cover_headline: '真正懂玉的女人，都在悄悄戴【' + pname + '】',
-        title: title,
-        content: content,
-        tags: ['我的首饰分享', '好物推荐', '新中式穿搭', '天然玉石', pname]
-      },
-      wechat: {
-        title: '真正懂玉的女人，都在悄悄佩戴【' + pname + '】',
-        author: '琼华东方美学',
-        quote: '「玉之美，有如君子之德；温润内敛，胜过一切繁复堆叠。」',
-        content: wechatContent,
-        stats: { reads: '10万+', wow: '890', likes: '1.2k' }
-      },
-      video: {
-        title: '【爆款短视频带货分镜】30秒讲透' + pname,
-        meta: '预期时长: 30s · 节奏: 黄金3秒留人 · BGM: 新中式清冷琵琶',
-        shots: videoShots
+    if (isEn) {
+      if (tone.indexOf('避坑') >= 0 || tone.indexOf('guide') >= 0 || tone.indexOf('Guide') >= 0) {
+        title = 'The Truth Jewelers Won’t Tell You! 3 Traps to Avoid with [' + pname + '] 💣';
+        hook = 'Many assume jade is intimidating. Master these 3 rules, and you can shop like a veteran connoisseur!';
+      } else if (tone.indexOf('评测') >= 0 || tone.indexOf('review') >= 0 || tone.indexOf('Expert') >= 0) {
+        title = 'Hardcore Teardown: Can You Buy Real Old-Mine [' + pname + '] Under $1,000? Macro Lab Report 🔍';
+        hook = 'Armed with a micrometer, UV 365nm torch, and hydrostatic density balance, let’s deconstruct true benchmark old-mine jadeite.';
+      } else {
+        title = 'Absolute Obsession! The Story Behind Our Signature [' + pname + '] ✨';
+        hook = 'Obsessed! Nothing compares to the subtle, lustrous elegance of natural Hetian jade against warm skin tones, zero filter needed!';
       }
-    };
+
+      content = hook + '\n\n' +
+        'The most frequent DM question this week is about our signature [' + pname + ']. Here is our honest field review and macro breakdown:\n\n' +
+        '🌿 Material & Craftsmanship:\n' +
+        'Sculpted from untreated old-mine rough, radiating an organic oily luster under sunlight. Hand-polished on both sides for featherlight breathability. Pairs effortlessly with French silk blouses or modern minimalist evening wear!\n\n' +
+        '💎 Authenticity & Certification:\n' +
+        'Individually serialized with nationally recognized gemological certification. Lifetime re-inspection guaranteed. 100% natural, untreated, and acid-free.\n\n' +
+        '🎯 Key Value Highlights:\n' +
+        '· Signature Points: ' + kw + '\n' +
+        '· Occasions: Everyday quiet luxury, anniversary keepsake, curated self-reward\n\n';
+
+      wechatContent = '[Introduction]\nClients often ask: with an investment mindset, which piece delivers both cultural soul and everyday versatility? My answer is always: a classic amulet sculpted from old-mine natural jade.\n\n1. Appreciating Old-Mine Texture\n[' + pname + '] is selected from untreated natural roughs. It reflects an organic luster rather than artificial glare—quietly capturing depth that only geological time can forge.\n\n2. Styling Versatility\nWhether framing a crisp work shirt or minimalist formal wear, a solitary jade amulet subtly elevates your presence with effortless composure.\n\n3. Guarantee of Authenticity\nEvery piece includes certified lab identification and lifetime verification. An heirloom crafted to accompany life journeys.';
+
+      videoShots = [
+        { num: 'Shot 01', type: '[Macro Closeup]', time: '0-3s', visual: '45-degree angle beam on ' + pname + ', showing oily gelatinous translucency as camera pushes in slowly.', audio: '(Hook) "Stop wasting budget on bleached resin! True jade lovers only look for this oily, old-mine glow…"', sfx: 'Crisp jade chime ring' },
+        { num: 'Shot 02', type: '[Comparison Med]', time: '3-10s', visual: 'Side-by-side comparison: left hand market-dyed imitation, right hand certified natural jade with embossed hologram cert.', audio: '"Avoid synthetic imitations. Always verify serialized laboratory certificates with lifetime authenticity guarantee!"', sfx: 'Official seal stamp SFX' },
+        { num: 'Shot 03', type: '[Model Wearing]', time: '10-22s', visual: 'Model collarbone closeup wearing natural linen blouse, slow-motion natural daylight tracking.', audio: '"Flattering on every skin tone and occasion. Elegant for daily office wear and captivating at formal galas."', sfx: 'Warm ambient lo-fi strings' },
+        { num: 'Shot 04', type: '[CTA Closeup]', time: '22-30s', visual: 'Luxury velvet presentation box with polishing cloth and serialized cert. In-feed shopping tag highlighted.', audio: '"Exclusive atelier drop: only 20 pieces curated for this showcase. Tap the shopping tag below to claim yours!"', sfx: 'Countdown heartbeat, cart ping' }
+      ];
+
+      channels = {
+        xhs: {
+          cover_headline: "The Connoisseur's Choice: " + pname,
+          title: title,
+          content: content,
+          tags: ['FineJewelry', 'QuietLuxury', 'NaturalJade', 'DailyWear', pname.replace(/\s+/g, '')]
+        },
+        wechat: {
+          title: "Why True Connoisseurs Quietly Choose " + pname,
+          author: 'Qionghua Fine Jewelry',
+          quote: '"The beauty of jade reflects virtue—subtle and timeless, transcending transient trends."',
+          content: wechatContent,
+          stats: { reads: '100k+', wow: '890', likes: '1.2k' }
+        },
+        video: {
+          title: '[Viral Video Script] 30s Master Guide to ' + pname,
+          meta: 'Est. 30s · Golden 3-sec Hook · Audio: Modern Lo-fi Strings',
+          shots: videoShots
+        }
+      };
+
+      visualPrompts = [
+        'Cover Concept: Soft window daylight, macro close-up of jade pendant resting on raw linen texture with bold luxury serif typography',
+        'Frame 2: 45-degree angle beam macro revealing flawless oily gelatinous translucency and zero synthetic resin inclusions',
+        'Frame 3: Model styled in Parisian raw silk collar blouse, highlighting collarbone silhouette and gentle drape',
+        'Frame 4: Macro close-up of serialized gemological lab certificate with embossed QR code and holographic seal'
+      ];
+
+      nodes = [
+        { node: 'topic_miner', name: 'Topic Miner Subgraph', status: 'completed', latency_ms: 32, desc: 'Extract high-converting search trends & customer queries' },
+        { node: 'hitl_interrupt', name: 'Human-in-the-Loop Interrupt (HITL)', status: 'approved', latency_ms: 15, desc: 'Merchandiser validates strategy and approves pipeline' },
+        { node: 'article_writer', name: 'Copywriter Subgraph', status: 'completed', latency_ms: 86, desc: '3-tier emotional storytelling structure with luxury typography' },
+        { node: 'visual_prompt', name: 'AI Visual Prompt Director', status: 'completed', latency_ms: 41, desc: 'Generates high-CTR cover hooks and macro shooting directives' },
+        { node: 'checkpointer', name: 'Postgres State Checkpointer', status: 'completed', latency_ms: 18, desc: 'Snapshots state history with zero-knowledge PII sanitization' }
+      ];
+    } else {
+      if (tone.indexOf('避坑') >= 0 || tone.indexOf('科普') >= 0) {
+        title = '珠宝店员工打死不说的实话！买【' + pname + '】千万别踩这3个雷💣';
+        hook = '很多人以为玉石水深，其实只要看懂这三点，新手也能闭眼入！';
+      } else if (tone.indexOf('评测') >= 0 || tone.indexOf('专业') >= 0) {
+        title = '硬核拆解！千元内能买到真正老坑【' + pname + '】吗？微距实测报告🔍';
+        hook = '今天拿卡尺、强光手电和密度计，带大家微距解构一条真正标杆级老坑料。';
+      } else {
+        title = '一眼沦陷！被闺蜜连环追问链接的【' + pname + '】到底有多绝✨';
+        hook = '救命！真的没有人能拒绝天然玉石温润内敛的高级感吧，冷白皮拉满！';
+      }
+
+      content = hook + '\n\n' +
+        '最近私信问得最多的就是这款【' + pname + '】，今天把实测感受和细节全部分享给大家：\n\n' +
+        '🌿 选料与工艺：\n' +
+        '精选原矿老坑料子，日光下泛着通透温润的油脂光泽。手工双面精抛光，佩戴在锁骨处极具呼吸感，不管是搭法式通勤衬衫还是新中式新茶服都温婉典雅！\n\n' +
+        '💎 品质与证书保障：\n' +
+        '一物一证，附带国家级宝玉石质检证书，支持全国权威机构终身复检。无胶无酸洗，佩戴更安心。\n\n' +
+        '🎯 核心亮点提炼：\n' +
+        '· 核心卖点：' + kw + '\n' +
+        '· 适用场景：日常通勤轻奢、闺蜜纪念日送礼、自我犒赏\n\n';
+
+      wechatContent = '【导语】\n很多朋友私信问我，预算有限的前提下，想要一件既有东方气韵又耐看百搭的珠宝，到底该选什么？我的答案始终如一：选一块老坑天然玉料制作的经典平安扣。\n\n一、辨料之妙：什么是真正的“老坑温润”？\n【' + pname + '】精选新疆原矿老料，日光下泛着油脂般内敛的光泽。它不靠火彩夺目，而靠时间沉淀出的水润肌理。手工双面精抛，贴近肌肤处温润如凝脂。\n\n二、搭配之道：新中式美学的画龙点睛\n无论是搭法式通勤衬衫的随性利落，还是新中式茶服的清冷淡雅，一枚平安扣在锁骨之间，恰到好处地点亮了整个人的温婉气场。\n\n三、品质承诺：一物一证，假一赔十\n每一件均附带国家级珠宝玉石质检证书，支持全国权威机构复检。岁月赠礼，长久相伴。';
+
+      videoShots = [
+        { num: '分镜 01', type: '【大特写】', time: '0-3s', visual: '45度角强光微距照射' + pname + '，展示透光油脂感与胶质感，镜头慢速推入。', audio: '（情绪抓人）“姐妹们，别再花冤枉钱买酸洗注胶了！真正懂玉的行家，只看这一抹老料油脂光…”', sfx: '清脆玉石轻叩声' },
+        { num: '分镜 02', type: '【对比中景】', time: '3-10s', visual: '主播双手对比：左手市场普通染色料，右手且末老矿天然A料，展示证书防伪钢印与一石一码。', audio: '“很多人以为玉石水深，其实认准一石一证一码，全国终身复检，假一赔十！”', sfx: '权威证书盖章音效' },
+        { num: '分镜 03', type: '【近景上身】', time: '10-22s', visual: '模特佩戴在锁骨处，搭配白色棉麻新中式上衣，窗边自然光慢动作展示。', audio: '“不挑肤色不挑年龄，戴在颈间是说不出的温润高级。不管是日常通勤还是见长辈，贵气由内而外。”', sfx: '舒缓新中式国风背景音乐' },
+        { num: '分镜 04', type: '【促单特写】', time: '22-30s', visual: '精装国风锦盒包装展示，附赠擦玉布与证书，左下角购物车手势指引。', audio: '“今天专场特惠仅放20条，抢完立即下架。点击左下角小黄车，直接结缘带回家！”', sfx: '倒计时心跳声，上链接提示音' }
+      ];
+
+      channels = {
+        xhs: {
+          cover_headline: '真正懂玉的女人，都在悄悄戴【' + pname + '】',
+          title: title,
+          content: content,
+          tags: ['我的首饰分享', '好物推荐', '新中式穿搭', '天然玉石', pname]
+        },
+        wechat: {
+          title: '真正懂玉的女人，都在悄悄佩戴【' + pname + '】',
+          author: '琼华东方美学',
+          quote: '「玉之美，有如君子之德；温润内敛，胜过一切繁复堆叠。」',
+          content: wechatContent,
+          stats: { reads: '10万+', wow: '890', likes: '1.2k' }
+        },
+        video: {
+          title: '【爆款短视频带货分镜】30秒讲透' + pname,
+          meta: '预期时长: 30s · 节奏: 黄金3秒留人 · BGM: 新中式清冷琵琶',
+          shots: videoShots
+        }
+      };
+
+      visualPrompts = [
+        '首图方案：自然窗边柔光拍摄，手持平安扣特写，背景搭配淡青色茶席，打大字标语',
+        '图2：强光手电45度角打灯微距，展示内部细腻无杂质的胶质感',
+        '图3：新中式棉麻衬衫佩戴全身效果，展示锁骨与颈部线条',
+        '图4：国家级权威珠宝质检证书特写与钢印防伪码'
+      ];
+
+      nodes = [
+        { node: 'topic_miner', name: '爆款选题子图', status: 'completed', latency_ms: 32, desc: '提取小红书大盘热搜词与用户痛点' },
+        { node: 'hitl_interrupt', name: '人在环路中断 (HITL)', status: 'approved', latency_ms: 15, desc: '运营人员确认选题大纲并批准流转' },
+        { node: 'article_writer', name: '深度成文子图', status: 'completed', latency_ms: 86, desc: '三段式情绪爆款结构与 Emoji 排版' },
+        { node: 'visual_prompt', name: 'AI视觉排版方案', status: 'completed', latency_ms: 41, desc: '生成首图高点击封面标语与多图脚本建议' },
+        { node: 'checkpointer', name: 'Postgres快照持久化', status: 'completed', latency_ms: 18, desc: '状态持久化落库与 PII 敏感信息脱敏校验' }
+      ];
+    }
 
     return Promise.resolve({
       status: 'ok',
@@ -696,74 +790,110 @@
       checkpoint_status: 'persisted_in_postgres',
       title: title,
       content: content,
-      tags: ['我的首饰分享', '新中式穿搭', '天然玉石', '小红书爆款', pname],
-      cover_headline: '真正懂玉的女人，都在悄悄戴【' + pname + '】',
+      tags: isEn ? ['FineJewelry', 'QuietLuxury', 'NaturalJade', 'DailyWear', pname.replace(/\s+/g, '')] : ['我的首饰分享', '新中式穿搭', '天然玉石', '小红书爆款', pname],
+      cover_headline: isEn ? ("The Connoisseur's Choice: " + pname) : ('真正懂玉的女人，都在悄悄戴【' + pname + '】'),
       channels: channels,
-      visual_prompts: [
-        '首图方案：自然窗边柔光拍摄，手持平安扣特写，背景搭配淡青色茶席，打大字标语',
-        '图2：强光手电45度角打灯微距，展示内部细腻无杂质的胶质感',
-        '图3：新中式棉麻衬衫佩戴全身效果，展示锁骨与颈部线条',
-        '图4：国家级权威珠宝质检证书特写与钢印防伪码'
-      ],
+      visual_prompts: visualPrompts,
       pii_safe: true,
-      nodes: [
-        { node: 'topic_miner', name: '爆款选题子图', status: 'completed', latency_ms: 32, desc: '提取小红书大盘热搜词与用户痛点' },
-        { node: 'hitl_interrupt', name: '人在环路中断 (HITL)', status: 'approved', latency_ms: 15, desc: '运营人员确认选题大纲并批准流转' },
-        { node: 'article_writer', name: '深度成文子图', status: 'completed', latency_ms: 86, desc: '三段式情绪爆款结构与 Emoji 排版' },
-        { node: 'visual_prompt', name: 'AI视觉排版方案', status: 'completed', latency_ms: 41, desc: '生成首图高点击封面标语与多图脚本建议' },
-        { node: 'checkpointer', name: 'Postgres快照持久化', status: 'completed', latency_ms: 18, desc: '状态持久化落库与 PII 敏感信息脱敏校验' }
-      ],
+      nodes: nodes,
       latency_ms: Math.round(performance.now() - t0)
     });
   }
 
   function localFunclipSlice(req) {
     var t0 = performance.now();
+    var isEn = isLangEn();
     var sampleId = (req && req.sample_id) || 'sample-1';
-    var hotwords = (req && req.hotwords) || '冰种, 玻璃种, 帝王绿, 极品阳绿, 缅甸老坑, 和田碧玉';
+    var hotwords = (req && req.hotwords) || (isEn ? 'Imperial Green, Translucent, Grade-A, Untreated, Hetian Jade' : '冰种, 玻璃种, 帝王绿, 极品阳绿, 缅甸老坑, 和田碧玉');
 
     var sampleTitle, durationStr, clips, dialogue, srtContent;
-    if (sampleId === 'sample-2') {
-      sampleTitle = '【专业鉴宝】缅甸老坑冰种辨伪与荧光起胶实物解说';
-      durationStr = '01:18:45';
-      clips = [
-        { id: 1, title: '老坑料起胶与注胶酸洗鉴别要点', start: '00:04:12', end: '00:05:30', duration: '01:18', confidence: 0.988, hotwords: ['冰种', '起胶', '老坑'] },
-        { id: 2, title: '紫外荧光灯下荧光反应实测对比', start: '00:12:05', end: '00:13:40', duration: '01:35', confidence: 0.992, hotwords: ['荧光反应', '天然A货'] },
-        { id: 3, title: '国检证书钢印与防伪查询全流程', start: '00:25:30', end: '00:26:45', duration: '01:15', confidence: 0.985, hotwords: ['一石一证', '质检证书'] }
-      ];
-      dialogue = [
-        { time: '00:04:12.300 -> 00:04:20.100', speaker: 'Spk 1 (鉴宝专家)', text: '注意看这块老坑冰种手镯在自然光下的油脂感，真正的起胶是自然内敛的光晕。' },
-        { time: '00:04:20.500 -> 00:04:28.400', speaker: 'Spk 2 (求鉴藏友)', text: '那老师如果用紫光灯照，市面上那种B货和注胶手镯会有什么明显的区别吗？' },
-        { time: '00:04:28.800 -> 00:04:36.900', speaker: 'Spk 1 (鉴宝专家)', text: '问到关键了！注胶充填的环氧树脂在365nm波长下会产生强烈的蓝色荧光残留，而天然A货通体纯净。' }
-      ];
-      srtContent = '1\n00:04:12,300 --> 00:04:20,100\n[Spk 1] 注意看这块老坑冰种手镯在自然光下的油脂感，真正的起胶是自然内敛的光晕。\n\n2\n00:04:20,500 --> 00:04:28,400\n[Spk 2] 那老师如果用紫光灯照，市面上那种B货和注胶手镯会有什么明显的区别吗？\n\n3\n00:04:28,800 --> 00:04:36,900\n[Spk 1] 问到关键了！注胶充填的环氧树脂在365nm波长下会产生强烈的蓝色荧光残留，而天然A货通体纯净。';
-    } else if (sampleId === 'sample-3') {
-      sampleTitle = '【工艺微距】非遗手工金丝镶嵌和田玉制作工序全记录';
-      durationStr = '00:54:20';
-      clips = [
-        { id: 1, title: '0.1mm极细纯金丝手工压嵌凹槽工序', start: '00:02:10', end: '00:03:35', duration: '01:25', confidence: 0.986, hotwords: ['金丝镶嵌', '非遗手工'] },
-        { id: 2, title: '和田碧玉打磨抛光与金玉生辉特写', start: '00:15:20', end: '00:16:45', duration: '01:25', confidence: 0.995, hotwords: ['和田碧玉', '金玉良缘'] },
-        { id: 3, title: '匠人解说中国传统宫廷错金银技艺传承', start: '00:31:00', end: '00:32:15', duration: '01:15', confidence: 0.978, hotwords: ['错金银', '宫廷古法'] }
-      ];
-      dialogue = [
-        { time: '00:02:10.150 -> 00:02:18.400', speaker: 'Spk 1 (非遗大师)', text: '压金丝必须一气耗成，力度稍微不均就会伤及玉器底胎，这是手艺人几十年的功夫。' },
-        { time: '00:02:18.800 -> 00:02:26.500', speaker: 'Spk 2 (纪录采访)', text: '这块选用的是新疆且末的天然和田碧玉，与纯金搭配有金玉满堂的吉祥寓意。' }
-      ];
-      srtContent = '1\n00:02:10,150 --> 00:02:18,400\n[Spk 1] 压金丝必须一气耗成，力度稍微不均就会伤及玉器底胎，这是手艺人几十年的功夫。\n\n2\n00:02:18,800 --> 00:02:26,500\n[Spk 2] 这块选用的是新疆且末的天然和田碧玉，与纯金搭配有金玉满堂的吉祥寓意。';
+
+    if (isEn) {
+      if (sampleId === 'sample-2') {
+        sampleTitle = '[Expert Appraisal] Burmese Old-Mine Jadeite: Identifying Bleaching vs. Natural Fluorescence';
+        durationStr = '01:18:45';
+        clips = [
+          { id: 1, title: 'Natural Gel Texture vs. Acid Resin Bleaching Indicators', start: '00:04:12', end: '00:05:30', duration: '01:18', confidence: 0.988, hotwords: ['Jadeite', 'Natural Glow', 'Old-Mine'] },
+          { id: 2, title: 'Ultraviolet 365nm Lamp Fluorescence Verification', start: '00:12:05', end: '00:13:40', duration: '01:35', confidence: 0.992, hotwords: ['UV Reaction', 'Grade-A Jade'] },
+          { id: 3, title: 'National Laboratory Serialized Seal Verification Flow', start: '00:25:30', end: '00:26:45', duration: '01:15', confidence: 0.985, hotwords: ['Serialized Cert', 'Lab Verified'] }
+        ];
+        dialogue = [
+          { time: '00:04:12.300 -> 00:04:20.100', speaker: 'Spk 1 (Senior Appraiser)', text: 'Observe the subdued oily luster under natural daylight. True old-mine gelatinous glow is restrained and organic.' },
+          { time: '00:04:20.500 -> 00:04:28.400', speaker: 'Spk 2 (Collector)', text: 'What is the most telling sign under 365nm UV light for treated or polymer-injected bangles?' },
+          { time: '00:04:28.800 -> 00:04:36.900', speaker: 'Spk 1 (Senior Appraiser)', text: 'Polymer epoxy fluoresces bright chalky blue along structural fractures, whereas untreated Grade-A remains completely inert.' }
+        ];
+        srtContent = '1\n00:04:12,300 --> 00:04:20,100\n[Spk 1] Observe the subdued oily luster under natural daylight. True old-mine gelatinous glow is restrained and organic.\n\n2\n00:04:20,500 --> 00:04:28,400\n[Spk 2] What is the most telling sign under 365nm UV light for treated or polymer-injected bangles?\n\n3\n00:04:28,800 --> 00:04:36,900\n[Spk 1] Polymer epoxy fluoresces bright chalky blue along structural fractures, whereas untreated Grade-A remains completely inert.';
+      } else if (sampleId === 'sample-3') {
+        sampleTitle = '[Atelier Macro] Heritage Gold Wire Inlay on Hetian Jade Masterclass';
+        durationStr = '00:54:20';
+        clips = [
+          { id: 1, title: '0.1mm Ultra-Fine 24K Gold Wire Manual Groove Embedding', start: '00:02:10', end: '00:03:35', duration: '01:25', confidence: 0.986, hotwords: ['Gold Inlay', 'Master Heritage'] },
+          { id: 2, title: 'Nephrite Polishing and Harmonious Gold-Jade Lustrous Finish', start: '00:15:20', end: '00:16:45', duration: '01:25', confidence: 0.995, hotwords: ['Hetian Jade', 'Gold & Jade'] },
+          { id: 3, title: 'Master Craftsman on Ancient Palace Inlay Preservation', start: '00:31:00', end: '00:32:15', duration: '01:15', confidence: 0.978, hotwords: ['Palace Craft', 'Imperial Inlay'] }
+        ];
+        dialogue = [
+          { time: '00:02:10.150 -> 00:02:18.400', speaker: 'Spk 1 (Master Artisan)', text: 'Embedding the pure gold filament requires continuous pressure in a single breath; uneven force risks cracking the jade base.' },
+          { time: '00:02:18.800 -> 00:02:26.500', speaker: 'Spk 2 (Documentary Host)', text: 'This batch utilizes untreated Qiemo green nephrite, harmonizing with 24K gold to symbolize enduring fortune.' }
+        ];
+        srtContent = '1\n00:02:10,150 --> 00:02:18,400\n[Spk 1] Embedding the pure gold filament requires continuous pressure in a single breath; uneven force risks cracking the jade base.\n\n2\n00:02:18,800 --> 00:02:26,500\n[Spk 2] This batch utilizes untreated Qiemo green nephrite, harmonizing with 24K gold to symbolize enduring fortune.';
+      } else {
+        sampleTitle = '[Live Highlight] 3-Hour Gemstone Live Auction & Raw Stone Bidding';
+        durationStr = '03:12:48';
+        clips = [
+          { id: 1, title: 'Raw Rough Sliced: Imperial Vivid Green Revealed', start: '00:00:15', end: '00:01:42', duration: '01:27', confidence: 0.994, hotwords: ['Imperial Green', 'Grade-A Rough'] },
+          { id: 2, title: 'High-Stakes Live Price Negotiation & Deal Locked', start: '00:03:10', end: '00:04:25', duration: '01:15', confidence: 0.989, hotwords: ['Direct Source', 'Collector Drop'] },
+          { id: 3, title: 'National Laboratory Serialized Certificate Showcase', start: '00:07:05', end: '00:08:18', duration: '01:13', confidence: 0.981, hotwords: ['Lab Certificate', 'QR Verification'] }
+        ];
+        dialogue = [
+          { time: '00:00:15.240 -> 00:00:23.810', speaker: 'Spk 1 (Lead Host)', text: 'Look at the light penetration! Intense fluorescence throughout; the entire rough has melted into top-tier Imperial Green!' },
+          { time: '00:00:24.100 -> 00:00:31.500', speaker: 'Spk 2 (Co-Host)', text: 'Type 1 in chat to reserve right now! Only one piece carved from this boulder, all middlemen fees completely cut!' },
+          { time: '00:00:31.900 -> 00:00:39.400', speaker: 'Spk 1 (Lead Host)', text: 'Accompanied by national laboratory certificate, lifetime verification, 10x guarantee. 3, 2, 1, link is live!' }
+        ];
+        srtContent = '1\n00:00:15,240 --> 00:00:23,810\n[Spk 1] Look at the light penetration! Intense fluorescence throughout; the entire rough has melted into top-tier Imperial Green!\n\n2\n00:00:24,100 --> 00:00:31,500\n[Spk 2] Type 1 in chat to reserve right now! Only one piece carved from this boulder, all middlemen fees completely cut!\n\n3\n00:00:31,900 --> 00:00:39,400\n[Spk 1] Accompanied by national laboratory certificate, lifetime verification, 10x guarantee. 3, 2, 1, link is live!';
+      }
     } else {
-      sampleTitle = '【直播高光】3小时珠宝原石砍价开石现场 (主播 vs 货主激情拉扯)';
-      durationStr = '03:12:48';
-      clips = [
-        { id: 1, title: '原石切开爆出极品阳绿高光解说', start: '00:00:15', end: '00:01:42', duration: '01:27', confidence: 0.994, hotwords: ['极品阳绿', '帝王绿', '冰种'] },
-        { id: 2, title: '主播与货主封箱砍价极限拉扯', start: '00:03:10', end: '00:04:25', duration: '01:15', confidence: 0.989, hotwords: ['缅甸老坑', '放漏'] },
-        { id: 3, title: '一石一卡国检防伪证书展示', start: '00:07:05', end: '00:08:18', duration: '01:13', confidence: 0.981, hotwords: ['国检证书', '一石一证'] }
-      ];
-      dialogue = [
-        { time: '00:00:15.240 -> 00:00:23.810', speaker: 'Spk 1 (主讲主播)', text: '家人们注意看打灯后的表现！荧光非常强，整块老坑料子已经完全化开了，是难得的极品阳绿！' },
-        { time: '00:00:24.100 -> 00:00:31.500', speaker: 'Spk 2 (带货助播)', text: '公屏扣 1 的粉丝直接锁单，今天只有这一块老坑料，中间商差价全部砍到底！' },
-        { time: '00:00:31.900 -> 00:00:39.400', speaker: 'Spk 1 (主讲主播)', text: '附带国家级质检证书，支持全国终身复检，假一赔十！3、2、1，直接上链接！' }
-      ];
-      srtContent = '1\n00:00:15,240 --> 00:00:23,810\n[Spk 1] 家人们注意看打灯后的表现！荧光非常强，整块老坑料子已经完全化开了，是难得的极品阳绿！\n\n2\n00:00:24,100 --> 00:00:31,500\n[Spk 2] 公屏扣 1 的粉丝直接锁单，今天只有这一块老坑料，中间商差价全部砍到底！\n\n3\n00:00:31,900 --> 00:00:39,400\n[Spk 1] 附带国家级质检证书，支持全国终身复检，假一赔十！3、2、1，直接上链接！';
+      if (sampleId === 'sample-2') {
+        sampleTitle = '【专业鉴宝】缅甸老坑冰种辨伪与荧光起胶实物解说';
+        durationStr = '01:18:45';
+        clips = [
+          { id: 1, title: '老坑料起胶与注胶酸洗鉴别要点', start: '00:04:12', end: '00:05:30', duration: '01:18', confidence: 0.988, hotwords: ['冰种', '起胶', '老坑'] },
+          { id: 2, title: '紫外荧光灯下荧光反应实测对比', start: '00:12:05', end: '00:13:40', duration: '01:35', confidence: 0.992, hotwords: ['荧光反应', '天然A货'] },
+          { id: 3, title: '国检证书钢印与防伪查询全流程', start: '00:25:30', end: '00:26:45', duration: '01:15', confidence: 0.985, hotwords: ['一石一证', '质检证书'] }
+        ];
+        dialogue = [
+          { time: '00:04:12.300 -> 00:04:20.100', speaker: 'Spk 1 (鉴宝专家)', text: '注意看这块老坑冰种手镯在自然光下的油脂感，真正的起胶是自然内敛的光晕。' },
+          { time: '00:04:20.500 -> 00:04:28.400', speaker: 'Spk 2 (求鉴藏友)', text: '那老师如果用紫光灯照，市面上那种B货和注胶手镯会有什么明显的区别吗？' },
+          { time: '00:04:28.800 -> 00:04:36.900', speaker: 'Spk 1 (鉴宝专家)', text: '问到关键了！注胶充填的环氧树脂在365nm波长下会产生强烈的蓝色荧光残留，而天然A货通体纯净。' }
+        ];
+        srtContent = '1\n00:04:12,300 --> 00:04:20,100\n[Spk 1] 注意看这块老坑冰种手镯在自然光下的油脂感，真正的起胶是自然内敛的光晕。\n\n2\n00:04:20,500 --> 00:04:28,400\n[Spk 2] 那老师如果用紫光灯照，市面上那种B货和注胶手镯会有什么明显的区别吗？\n\n3\n00:04:28,800 --> 00:04:36,900\n[Spk 1] 问到关键了！注胶充填的环氧树脂在365nm波长下会产生强烈的蓝色荧光残留，而天然A货通体纯净。';
+      } else if (sampleId === 'sample-3') {
+        sampleTitle = '【工艺微距】非遗手工金丝镶嵌和田玉制作工序全记录';
+        durationStr = '00:54:20';
+        clips = [
+          { id: 1, title: '0.1mm极细纯金丝手工压嵌凹槽工序', start: '00:02:10', end: '00:03:35', duration: '01:25', confidence: 0.986, hotwords: ['金丝镶嵌', '非遗手工'] },
+          { id: 2, title: '和田碧玉打磨抛光与金玉生辉特写', start: '00:15:20', end: '00:16:45', duration: '01:25', confidence: 0.995, hotwords: ['和田碧玉', '金玉良缘'] },
+          { id: 3, title: '匠人解说中国传统宫廷错金银技艺传承', start: '00:31:00', end: '00:32:15', duration: '01:15', confidence: 0.978, hotwords: ['错金银', '宫廷古法'] }
+        ];
+        dialogue = [
+          { time: '00:02:10.150 -> 00:02:18.400', speaker: 'Spk 1 (非遗大师)', text: '压金丝必须一气耗成，力度稍微不均就会伤及玉器底胎，这是手艺人几十年的功夫。' },
+          { time: '00:02:18.800 -> 00:02:26.500', speaker: 'Spk 2 (纪录采访)', text: '这块选用的是新疆且末的天然和田碧玉，与纯金搭配有金玉满堂的吉祥寓意。' }
+        ];
+        srtContent = '1\n00:02:10,150 --> 00:02:18,400\n[Spk 1] 压金丝必须一气耗成，力度稍微不均就会伤及玉器底胎，这是手艺人几十年的功夫。\n\n2\n00:02:18,800 --> 00:02:26,500\n[Spk 2] 这块选用的是新疆且末的天然和田碧玉，与纯金搭配有金玉满堂的吉祥寓意。';
+      } else {
+        sampleTitle = '【直播高光】3小时珠宝原石砍价开石现场 (主播 vs 货主激情拉扯)';
+        durationStr = '03:12:48';
+        clips = [
+          { id: 1, title: '原石切开爆出极品阳绿高光解说', start: '00:00:15', end: '00:01:42', duration: '01:27', confidence: 0.994, hotwords: ['极品阳绿', '帝王绿', '冰种'] },
+          { id: 2, title: '主播与货主封箱砍价极限拉扯', start: '00:03:10', end: '00:04:25', duration: '01:15', confidence: 0.989, hotwords: ['缅甸老坑', '放漏'] },
+          { id: 3, title: '一石一卡国检防伪证书展示', start: '00:07:05', end: '00:08:18', duration: '01:13', confidence: 0.981, hotwords: ['国检证书', '一石一证'] }
+        ];
+        dialogue = [
+          { time: '00:00:15.240 -> 00:00:23.810', speaker: 'Spk 1 (主讲主播)', text: '家人们注意看打灯后的表现！荧光非常强，整块老坑料子已经完全化开了，是难得的极品阳绿！' },
+          { time: '00:00:24.100 -> 00:00:31.500', speaker: 'Spk 2 (带货助播)', text: '公屏扣 1 的粉丝直接锁单，今天只有这一块老坑料，中间商差价全部砍到底！' },
+          { time: '00:00:31.900 -> 00:00:39.400', speaker: 'Spk 1 (主讲主播)', text: '附带国家级质检证书，支持全国终身复检，假一赔十！3、2、1，直接上链接！' }
+        ];
+        srtContent = '1\n00:00:15,240 --> 00:00:23,810\n[Spk 1] 家人们注意看打灯后的表现！荧光非常强，整块老坑料子已经完全化开了，是难得的极品阳绿！\n\n2\n00:00:24,100 --> 00:00:31,500\n[Spk 2] 公屏扣 1 的粉丝直接锁单，今天只有这一块老坑料，中间商差价全部砍到底！\n\n3\n00:00:31,900 --> 00:00:39,400\n[Spk 1] 附带国家级质检证书，支持全国终身复检，假一赔十！3、2、1，直接上链接！';
+      }
     }
 
     return Promise.resolve({
@@ -772,7 +902,7 @@
       sample_title: sampleTitle,
       duration: durationStr,
       hotwords_hit: hotwords.split(',').map(function (w) { return w.trim(); }).filter(Boolean).slice(0, 5),
-      speech_engine: 'FunASR Paraformer Offline (Industrial Level)',
+      speech_engine: isEn ? 'FunASR Paraformer Offline (Industrial Level)' : 'FunASR Paraformer 离线高精引擎 (工业级)',
       accuracy_rate: '99.2%',
       clips: clips,
       dialogue: dialogue,

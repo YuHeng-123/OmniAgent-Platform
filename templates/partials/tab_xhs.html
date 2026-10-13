@@ -1,4 +1,4 @@
-            <!-- ------------------------------------------------------------- -->
+             <!-- ------------------------------------------------------------- -->
             <!-- TAB 8: Instagram & TikTok 出海工场 (LangGraph 1.0) -->
             <!-- ------------------------------------------------------------- -->
             <div id="tab-xhs" class="tab-content hidden space-y-5">
@@ -6,12 +6,12 @@
                 <div class="glass-card px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 text-[11px] border-l-4 border-accent-emerald">
                     <div class="flex items-center gap-2 text-slate-300">
                         <span class="w-2 h-2 rounded-full bg-accent-emerald animate-pulse"></span>
-                        <span class="font-medium text-white">工序定位：第一道 · 单品爆款长文深度打透 (LangGraph 1.0 StateGraph)</span>
+                        <span id="xhs-banner-step" class="font-medium text-white">工序定位：第一道 · 单品爆款长文深度打透 (LangGraph 1.0 StateGraph)</span>
                         <span class="text-slate-500 hidden sm:inline">|</span>
                         <span id="xhs-source-badge" class="text-slate-400 font-mono">打通选题、人在环路审查与视觉分镜；成文后可一键流转至全渠道矩阵</span>
                     </div>
                     <button type="button" onclick="pipeXhsToMarketing()" class="text-accent-gold hover:underline flex items-center gap-1 font-mono font-medium">
-                        <span>流转至全渠道矩阵</span> <i class="fas fa-arrow-right text-[10px]"></i>
+                        <span id="xhs-banner-pipe-btn">流转至全渠道矩阵</span> <i class="fas fa-arrow-right text-[10px]"></i>
                     </button>
                 </div>
 
@@ -21,66 +21,66 @@
                         <div class="flex items-center justify-between pb-3 border-b border-dark-border">
                             <div class="flex items-center gap-2">
                                 <i class="fas fa-feather-pointed text-accent-emerald text-sm"></i>
-                                <h3 class="font-semibold text-white text-sm">Instagram &amp; TikTok 出海工场</h3>
+                                <h3 id="xhs-panel-title" class="font-semibold text-white text-sm">Instagram &amp; TikTok 出海工场</h3>
                             </div>
                             <span class="tag tag-accent text-[11px] font-mono">LangGraph 1.0 (HITL)</span>
                         </div>
 
                         <!-- 快速预设模板 -->
                         <div>
-                            <label class="block text-[11px] text-slate-500 mb-1.5">快速实操预设</label>
+                            <label id="xhs-preset-label" class="block text-[11px] text-slate-500 mb-1.5">快速实操预设</label>
                             <div class="flex flex-wrap gap-1.5">
-                                <button type="button" onclick="setXhsPreset('天然冰种和田碧玉平安扣', '闺蜜真实种草', '新疆且末老料，油脂感通透显白，附权威证书，新中式百搭')" class="btn-ghost px-2 py-1 rounded text-[11px]">
+                                <button type="button" id="xhs-btn-preset-1" onclick="applyXhsPresetByIndex(0)" class="btn-ghost px-2 py-1 rounded text-[11px]">
                                     💎 碧玉平安扣 (闺蜜种草)
                                 </button>
-                                <button type="button" onclick="setXhsPreset('老坑冰飘花翡翠手镯', '专业博主深度评测', '缅甸天然A货，冰透水润起胶，带国检一石一证，假一赔十')" class="btn-ghost px-2 py-1 rounded text-[11px]">
+                                <button type="button" id="xhs-btn-preset-2" onclick="applyXhsPresetByIndex(1)" class="btn-ghost px-2 py-1 rounded text-[11px]">
                                     📿 翡翠手镯 (专业评测)
                                 </button>
-                                <button type="button" onclick="setXhsPreset('国风异形珍珠锁骨链', '避坑教学与选购指南', '正圆无瑕与天然巴洛克对比，手工金丝镶嵌，法式复古小众设计')" class="btn-ghost px-2 py-1 rounded text-[11px]">
+                                <button type="button" id="xhs-btn-preset-3" onclick="applyXhsPresetByIndex(2)" class="btn-ghost px-2 py-1 rounded text-[11px]">
                                     🌸 珍珠锁骨链 (避坑科普)
                                 </button>
                             </div>
                         </div>
 
                         <div>
-                            <label class="block text-[11px] text-slate-500 mb-1.5">主推产品 / 内容主题</label>
+                            <label id="xhs-lbl-product" class="block text-[11px] text-slate-500 mb-1.5">主推产品 / 内容主题</label>
                             <input id="xhs-product-name" type="text" value="天然冰种和田碧玉平安扣吊坠" class="w-full bg-dark-900 border border-dark-border rounded-lg px-3.5 py-2 text-[13px] text-white focus:outline-none" />
                         </div>
 
                         <div>
-                            <label class="block text-[11px] text-slate-500 mb-1.5">叙事风格与受众调性</label>
+                            <label id="xhs-lbl-tone" class="block text-[11px] text-slate-500 mb-1.5">叙事风格与受众调性</label>
                             <select id="xhs-tone" class="w-full bg-dark-900 border border-dark-border rounded-lg px-3.5 py-2 text-[13px] text-white focus:outline-none">
-                                <option value="闺蜜真实种草">闺蜜真实种草（高共鸣、强情绪价值、高转化率）</option>
-                                <option value="专业博主深度评测">专业珠宝博主深度评测（微距实拍、硬核参数、高客单信任）</option>
-                                <option value="避坑教学与选购指南">避坑教学与选购指南（直击行业内幕、强收藏点赞率）</option>
+                                <option id="xhs-tone-opt-0" value="闺蜜真实种草">闺蜜真实种草（高共鸣、强情绪价值、高转化率）</option>
+                                <option id="xhs-tone-opt-1" value="专业博主深度评测">专业珠宝博主深度评测（微距实拍、硬核参数、高客单信任）</option>
+                                <option id="xhs-tone-opt-2" value="避坑教学与选购指南">避坑教学与选购指南（直击行业内幕、强收藏点赞率）</option>
                             </select>
                         </div>
 
                         <div>
-                            <label class="block text-[11px] text-slate-500 mb-1.5">核心卖点与搜索热词</label>
+                            <label id="xhs-lbl-keywords" class="block text-[11px] text-slate-500 mb-1.5">核心卖点与搜索热词</label>
                             <textarea id="xhs-keywords" rows="2" class="w-full bg-dark-900 border border-dark-border rounded-lg px-3.5 py-2 text-[12px] text-white focus:outline-none resize-none">温润细腻, 原矿老料, 权威证书, 新中式穿搭, 闺蜜送礼</textarea>
                         </div>
 
                         <!-- 启动流水线按钮 -->
                         <button id="btn-xhs-run" onclick="handleXhsGenerate()" class="w-full py-2.5 px-4 rounded-xl font-medium text-[13px] bg-gradient-to-r from-accent-emerald to-emerald-600 text-dark-950 hover:brightness-110 shadow-lg shadow-emerald-950/40 transition-all flex items-center justify-center gap-2">
                             <i class="fas fa-play text-xs"></i>
-                            <span>启动 LangGraph 1.0 流水线</span>
+                            <span id="xhs-btn-run-text">启动 LangGraph 1.0 流水线</span>
                         </button>
 
                         <!-- StateGraph 状态机流转视窗 (支持 DAG 贝塞尔曲线动态画布 与 节点清单视图) -->
                         <div class="pt-3 border-t border-dark-border space-y-2.5">
                             <div class="flex items-center justify-between text-[11px] text-slate-500">
                                 <div class="flex items-center gap-2">
-                                    <span class="font-mono font-medium text-slate-300">StateGraph 节点执行流</span>
+                                    <span id="xhs-dag-title" class="font-mono font-medium text-slate-300">StateGraph 节点执行流</span>
                                     <span id="xhs-graph-status" class="text-accent-emerald font-mono">就绪</span>
                                 </div>
                                 <!-- 视图切换器 -->
                                 <div class="flex items-center p-0.5 rounded-lg bg-dark-900 border border-dark-border text-[10px]">
                                     <button type="button" id="btn-dag-view-graph" onclick="switchXhsDagView('graph')" class="px-2 py-0.5 rounded font-mono font-medium bg-emerald-950/80 text-accent-emerald border border-accent-emerald/40 transition-all flex items-center gap-1">
-                                        <i class="fas fa-diagram-project text-[9px]"></i> DAG 画布
+                                        <i class="fas fa-diagram-project text-[9px]"></i> <span id="xhs-btn-dag-graph-text">DAG 画布</span>
                                     </button>
                                     <button type="button" id="btn-dag-view-list" onclick="switchXhsDagView('list')" class="px-2 py-0.5 rounded font-mono text-slate-400 hover:text-slate-200 transition-all flex items-center gap-1">
-                                        <i class="fas fa-list-ol text-[9px]"></i> 节点清单
+                                        <i class="fas fa-list-ol text-[9px]"></i> <span id="xhs-btn-dag-list-text">节点清单</span>
                                     </button>
                                 </div>
                             </div>
@@ -106,35 +106,35 @@
                                 <div id="xhs-node-topic" class="p-2 rounded-lg bg-dark-900/60 border border-dark-border flex items-center justify-between text-[11px]">
                                     <div class="flex items-center gap-2">
                                         <span class="w-2 h-2 rounded-full bg-slate-600"></span>
-                                        <span class="text-slate-300">1. 爆款选题子图 (Topic Miner)</span>
+                                        <span id="xhs-node-topic-text" class="text-slate-300">1. 爆款选题子图 (Topic Miner)</span>
                                     </div>
                                     <span class="text-slate-500 font-mono text-[10px]">IDLE</span>
                                 </div>
                                 <div id="xhs-node-hitl" class="p-2 rounded-lg bg-dark-900/60 border border-dark-border flex items-center justify-between text-[11px]">
                                     <div class="flex items-center gap-2">
                                         <span class="w-2 h-2 rounded-full bg-slate-600"></span>
-                                        <span class="text-slate-300">2. 人在环路中断 (HITL Interrupt)</span>
+                                        <span id="xhs-node-hitl-text" class="text-slate-300">2. 人在环路中断 (HITL Interrupt)</span>
                                     </div>
                                     <span class="text-slate-500 font-mono text-[10px]">IDLE</span>
                                 </div>
                                 <div id="xhs-node-writer" class="p-2 rounded-lg bg-dark-900/60 border border-dark-border flex items-center justify-between text-[11px]">
                                     <div class="flex items-center gap-2">
                                         <span class="w-2 h-2 rounded-full bg-slate-600"></span>
-                                        <span class="text-slate-300">3. 深度成文子图 (Copywriter)</span>
+                                        <span id="xhs-node-writer-text" class="text-slate-300">3. 深度成文子图 (Copywriter)</span>
                                     </div>
                                     <span class="text-slate-500 font-mono text-[10px]">IDLE</span>
                                 </div>
                                 <div id="xhs-node-visual" class="p-2 rounded-lg bg-dark-900/60 border border-dark-border flex items-center justify-between text-[11px]">
                                     <div class="flex items-center gap-2">
                                         <span class="w-2 h-2 rounded-full bg-slate-600"></span>
-                                        <span class="text-slate-300">4. AI 视觉排版 (Visual Prompts)</span>
+                                        <span id="xhs-node-visual-text" class="text-slate-300">4. AI 视觉排版 (Visual Prompts)</span>
                                     </div>
                                     <span class="text-slate-500 font-mono text-[10px]">IDLE</span>
                                 </div>
                                 <div id="xhs-node-checkpointer" class="p-2 rounded-lg bg-dark-900/60 border border-dark-border flex items-center justify-between text-[11px]">
                                     <div class="flex items-center gap-2">
                                         <span class="w-2 h-2 rounded-full bg-slate-600"></span>
-                                        <span class="text-slate-300">5. Postgres 快照持久化 & PII 脱敏</span>
+                                        <span id="xhs-node-checkpointer-text" class="text-slate-300">5. Postgres 快照持久化 & PII 脱敏</span>
                                     </div>
                                     <span class="text-slate-500 font-mono text-[10px]">IDLE</span>
                                 </div>
@@ -145,15 +145,15 @@
                         <div id="xhs-hitl-box" class="hidden p-3.5 rounded-xl border border-accent-amber/50 bg-accent-amber/10 space-y-2.5 transition-all">
                             <div class="flex items-center gap-2 text-accent-amber text-[12px] font-medium">
                                 <span class="w-2 h-2 rounded-full bg-accent-amber animate-pulse"></span>
-                                <span>⏸️ 触发 interrupt() 中断 · 等待运营人员审核选题策略</span>
+                                <span id="xhs-hitl-notice-text">⏸️ 触发 interrupt() 中断 · 等待运营人员审核选题策略</span>
                             </div>
-                            <p class="text-[11px] text-slate-300 leading-relaxed">
+                            <p id="xhs-hitl-desc-text" class="text-[11px] text-slate-300 leading-relaxed">
                                 StateGraph 状态已暂存至 Postgres Checkpointer。您可以在此修改爆款选题切入角度，点击批准后状态机将恢复继续向下流转：
                             </p>
                             <input id="xhs-hitl-topic" type="text" value="一眼沦陷！被闺蜜连环追问链接的【天然和田碧玉平安扣】到底有多绝✨" class="w-full bg-dark-900 border border-accent-amber/40 rounded-lg px-3 py-1.5 text-[12px] text-white focus:outline-none" />
                             <button id="btn-xhs-hitl-approve" onclick="handleXhsHitlApprove()" class="w-full py-2 px-3 rounded-lg bg-accent-amber text-dark-950 font-medium text-[12px] hover:brightness-110 flex items-center justify-center gap-1.5">
                                 <i class="fas fa-check"></i>
-                                <span>批准选题并恢复流水线执行 (Resume Graph)</span>
+                                <span id="xhs-btn-hitl-approve-text">批准选题并恢复流水线执行 (Resume Graph)</span>
                             </button>
                         </div>
                     </div>
@@ -165,15 +165,15 @@
                             <div class="flex items-center gap-1.5 p-1 rounded-xl bg-dark-900 border border-dark-border">
                                 <button type="button" id="channel-tab-xhs" onclick="switchChannel('xhs')" class="channel-btn px-3 py-1.5 rounded-lg text-[12px] font-medium flex items-center gap-1.5 transition-all bg-emerald-950/70 text-accent-emerald border border-accent-emerald/40">
                                     <i class="fab fa-instagram text-xs text-pink-400"></i>
-                                    <span>Instagram 视觉图文</span>
+                                    <span id="channel-tab-xhs-text">Instagram 视觉图文</span>
                                 </button>
                                 <button type="button" id="channel-tab-wechat" onclick="switchChannel('wechat')" class="channel-btn px-3 py-1.5 rounded-lg text-[12px] font-medium text-slate-400 hover:text-white flex items-center gap-1.5 transition-all">
                                     <i class="fab fa-facebook text-blue-400 text-xs"></i>
-                                    <span>Facebook &amp; Meta 长文</span>
+                                    <span id="channel-tab-wechat-text">Facebook &amp; Meta 长文</span>
                                 </button>
                                 <button type="button" id="channel-tab-video" onclick="switchChannel('video')" class="channel-btn px-3 py-1.5 rounded-lg text-[12px] font-medium text-slate-400 hover:text-white flex items-center gap-1.5 transition-all">
                                     <i class="fab fa-tiktok text-cyan-400 text-xs"></i>
-                                    <span>TikTok / Reels 分镜脚本</span>
+                                    <span id="channel-tab-video-text">TikTok / Reels 分镜脚本</span>
                                 </button>
                             </div>
                             <div class="flex items-center flex-wrap gap-2">
@@ -183,15 +183,15 @@
                                 </button>
                                 <button type="button" id="btn-generate-poster" onclick="renderXhsPosterModal()" class="px-2.5 py-1.5 rounded-lg text-[12px] font-medium bg-accent-emerald/20 border border-accent-emerald/50 text-accent-emerald hover:bg-accent-emerald/30 flex items-center gap-1.5 transition-all shadow-sm" title="纯前端 HTML5 Canvas 压制生成 1080P Instagram 视觉海报并导出">
                                     <i class="fas fa-image text-xs"></i>
-                                    <span>导出视觉海报</span>
+                                    <span id="btn-generate-poster-text">导出视觉海报</span>
                                 </button>
                                 <button type="button" id="btn-pipe-xhs-to-mkt" onclick="pipeXhsToMarketing()" class="px-2.5 py-1.5 rounded-lg text-[12px] font-medium bg-accent-gold/15 border border-accent-gold/40 text-accent-gold hover:bg-accent-gold/25 flex items-center gap-1.5 transition-colors shadow-sm" title="将此爆款母版一键流转到全渠道营销矩阵，自动派生多平台文案并做广告法质检">
                                     <i class="fas fa-share-nodes text-xs"></i>
-                                    <span>同步至矩阵</span>
+                                    <span id="btn-pipe-xhs-to-mkt-text">同步至矩阵</span>
                                 </button>
                                 <button type="button" onclick="copyXhsNote()" class="btn-ghost px-2.5 py-1.5 rounded-lg text-[12px] flex items-center gap-1.5">
                                     <i class="fas fa-copy"></i>
-                                    <span>复制</span>
+                                    <span id="btn-copy-xhs-text">复制</span>
                                 </button>
                             </div>
                         </div>
@@ -229,23 +229,23 @@
                                 <!-- 顶部创作者栏 -->
                                 <div class="flex items-center justify-between pb-3 border-b border-dark-border">
                                     <div class="flex items-center gap-2.5">
-                                        <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-accent-emerald to-accent-cyan flex items-center justify-center text-dark-950 font-bold text-xs">
+                                        <div id="xhs-author-avatar" class="w-8 h-8 rounded-full bg-gradient-to-tr from-accent-emerald to-accent-cyan flex items-center justify-center text-dark-950 font-bold text-xs">
                                             琼
                                         </div>
                                         <div>
                                             <div class="text-[12px] font-medium text-white flex items-center gap-1">
-                                                <span>琼华东方美学主理人</span>
+                                                <span id="xhs-author-name">琼华东方美学主理人</span>
                                                 <i class="fas fa-certificate text-accent-gold text-[10px]"></i>
                                             </div>
-                                            <div class="text-[10px] text-slate-500 font-mono">官方认证珠宝鉴赏创作者</div>
+                                            <div id="xhs-author-sub" class="text-[10px] text-slate-500 font-mono">官方认证珠宝鉴赏创作者</div>
                                         </div>
                                     </div>
-                                    <button type="button" class="px-2.5 py-1 rounded-full bg-accent-emerald/20 text-accent-emerald text-[11px] font-medium border border-accent-emerald/40">+ 关注</button>
+                                    <button type="button" id="xhs-btn-follow" class="px-2.5 py-1 rounded-full bg-accent-emerald/20 text-accent-emerald text-[11px] font-medium border border-accent-emerald/40">+ 关注</button>
                                 </div>
 
                                 <!-- 封面标语卡片 -->
                                 <div class="p-4 rounded-xl bg-gradient-to-r from-emerald-950/60 via-dark-900 to-teal-950/40 border border-accent-emerald/30">
-                                    <div class="text-[10px] text-accent-emerald font-mono uppercase tracking-wider mb-1">封面爆款大字标题</div>
+                                    <div id="xhs-cover-tag" class="text-[10px] text-accent-emerald font-mono uppercase tracking-wider mb-1">封面爆款大字标题</div>
                                     <h3 id="xhs-out-cover" class="text-base font-bold text-white tracking-wide">
                                         真正懂玉的女人，都在悄悄戴【天然和田碧玉平安扣】
                                     </h3>
@@ -284,7 +284,7 @@
                                         <span class="flex items-center gap-1 hover:text-accent-gold transition-colors"><i class="fas fa-star text-accent-gold"></i> 1.8k</span>
                                         <span class="flex items-center gap-1"><i class="fas fa-comment-dots"></i> 368</span>
                                     </div>
-                                    <span class="text-[10px] font-mono text-slate-600">Instagram 移动端拟真</span>
+                                    <span id="xhs-sim-badge" class="text-[10px] font-mono text-slate-600">Instagram 移动端拟真</span>
                                 </div>
 
                                 <!-- iPhone 16 Pro 底部 Home 指示条 -->
@@ -302,7 +302,7 @@
                                         <span class="text-white font-medium">Qionghua High Jewelry</span>
                                         <span class="text-slate-500">· 3 min read</span>
                                     </div>
-                                    <span class="text-slate-500 font-mono text-[10px]">Meta 商业图文规范</span>
+                                    <span id="wechat-sim-badge" class="text-slate-500 font-mono text-[10px]">Meta 商业图文规范</span>
                                 </div>
 
                                 <!-- 文章大标题 -->
@@ -313,7 +313,7 @@
                                 <div class="flex items-center gap-2 text-[11px] text-slate-500 pb-1">
                                     <span id="wechat-out-author">作者: 琼华东方美学</span>
                                     <span>·</span>
-                                    <span>发布于 专栏 · 东方珠宝美学</span>
+                                    <span id="wechat-out-col">发布于 专栏 · 东方珠宝美学</span>
                                 </div>
 
                                 <!-- 经典公众号金句引用框 -->
@@ -343,7 +343,7 @@
                                         <span>在看 <strong class="text-slate-300">890</strong></span>
                                         <span>点赞 <strong class="text-slate-300">1.2k</strong></span>
                                     </div>
-                                    <span class="text-[10px] font-mono text-slate-600">公众号文章拟真</span>
+                                    <span id="wechat-footer-badge" class="text-[10px] font-mono text-slate-600">公众号文章拟真</span>
                                 </div>
                             </div>
 
@@ -403,7 +403,7 @@
                         <div class="glass-card p-4 space-y-2">
                             <div class="flex items-center gap-2 text-xs font-medium text-slate-300">
                                 <i class="fas fa-images text-accent-cyan"></i>
-                                <span>AI 视觉排版方案与拍摄机位建议</span>
+                                <span id="xhs-visual-guide-title">AI 视觉排版方案与拍摄机位建议</span>
                             </div>
                             <div id="xhs-out-visuals" class="text-[11px] text-slate-400 space-y-1 font-mono leading-relaxed">
                                 <div>· 首图方案：自然窗边柔光拍摄，手持平安扣特写，背景搭配淡青色茶席，打大字标语</div>
@@ -420,7 +420,7 @@
                                 <span id="xhs-meta-latency" class="text-slate-400">耗时: --</span>
                                 <span id="xhs-meta-thread" class="text-slate-500 hidden sm:inline">Thread: idle</span>
                             </div>
-                            <span class="text-accent-emerald flex items-center gap-1"><i class="fas fa-shield-halved"></i> PII 脱敏已通过</span>
+                            <span id="xhs-pii-badge" class="text-accent-emerald flex items-center gap-1"><i class="fas fa-shield-halved"></i> PII 脱敏已通过</span>
                         </div>
                     </div>
                 </div>
@@ -434,8 +434,8 @@
                         <div class="p-3.5 border-b border-dark-border flex items-center justify-between bg-dark-900/60">
                             <div class="flex items-center gap-2">
                                 <span class="w-2.5 h-2.5 rounded-full bg-accent-emerald animate-pulse"></span>
-                                <h4 class="font-semibold text-white text-sm">Instagram 1080P 高清视觉海报</h4>
-                                <span class="tag tag-accent text-[10px] font-mono">1080 × 1440 黄金比例</span>
+                                <h4 id="xhs-poster-title" class="font-semibold text-white text-sm">Instagram 1080P 高清视觉海报</h4>
+                                <span id="xhs-poster-ratio" class="tag tag-accent text-[10px] font-mono">1080 × 1440 黄金比例</span>
                             </div>
                             <button type="button" onclick="closePosterModal()" class="btn-ghost px-2 py-1 rounded text-slate-400 hover:text-white" title="关闭">
                                 <i class="fas fa-xmark text-xs"></i>
@@ -454,16 +454,16 @@
                         <!-- 底栏操作区 -->
                         <div class="p-3.5 border-t border-dark-border bg-dark-900/80 flex items-center justify-between gap-3">
                             <div class="text-[11px] text-slate-400 font-mono hidden sm:block">
-                                <span>纯前端 Canvas 矢量排版 · 免服务器渲染 · 零跨域损耗</span>
+                                <span id="xhs-poster-note">纯前端 Canvas 矢量排版 · 免服务器渲染 · 零跨域损耗</span>
                             </div>
                             <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
                                 <button type="button" id="btn-copy-poster" onclick="copyPosterImage()" class="px-3 py-2 rounded-xl border border-dark-border text-slate-300 hover:text-white hover:bg-dark-800 text-[12px] font-medium flex items-center gap-1.5 transition-colors">
                                     <i class="fas fa-copy text-xs"></i>
-                                    <span>复制图片</span>
+                                    <span id="btn-copy-poster-text">复制图片</span>
                                 </button>
                                 <button type="button" id="btn-download-poster" onclick="downloadPosterImage()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-accent-emerald to-emerald-600 text-dark-950 hover:brightness-110 text-[12px] font-semibold flex items-center gap-1.5 transition-all shadow-lg shadow-emerald-950/50">
                                     <i class="fas fa-download text-xs"></i>
-                                    <span>下载高清 PNG (1080P)</span>
+                                    <span id="btn-download-poster-text">下载高清 PNG (1080P)</span>
                                 </button>
                             </div>
                         </div>

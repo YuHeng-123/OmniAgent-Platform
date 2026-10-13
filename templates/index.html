@@ -574,7 +574,7 @@
             <div class="px-3 py-2 text-[11px] flex items-center justify-between">
                 <div class="flex items-center gap-2">
                     <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald"></span>
-                    <span class="text-slate-400">中枢就绪</span>
+                    <span id="sidebar-status-text" class="text-slate-400">中枢就绪</span>
                 </div>
                 <span class="text-slate-600 font-mono text-[10px]">:8888</span>
             </div>
@@ -620,7 +620,7 @@
                             <span class="relative inline-flex rounded-full h-2 w-2 bg-accent-emerald"></span>
                         </span>
                         
-                        <span class="text-[11px] font-mono font-medium text-slate-200 hidden sm:inline flex-shrink-0">中枢 HUD</span>
+                        <span id="hud-title-badge" class="text-[11px] font-mono font-medium text-slate-200 hidden sm:inline flex-shrink-0">中枢 HUD</span>
                         <span class="h-3 w-[1px] bg-dark-border hidden sm:inline flex-shrink-0"></span>
                         
                         <div class="flex items-center gap-2 text-[11px] font-mono flex-shrink-0 whitespace-nowrap">
@@ -754,14 +754,14 @@
 
                 <button type="button" onclick="toggleCommandPalette()" class="btn-ghost px-2.5 py-1.5 rounded-md text-[11px] font-mono flex items-center gap-1.5 border border-dark-border text-slate-300 hover:text-white hover:border-accent-cyan/40" title="呼出全局指令中枢 (Ctrl + K / Cmd + K)">
                     <i class="fas fa-terminal text-[10px] text-accent-cyan"></i>
-                    <span class="hidden md:inline text-slate-400">指令</span>
+                    <span id="btn-cmd-palette-label" class="hidden md:inline text-slate-400">指令</span>
                     <kbd class="px-1.5 py-0.5 rounded bg-dark-950 border border-dark-border text-[9px] text-slate-400 font-mono">⌘K</kbd>
                 </button>
 
                 <button onclick="triggerQuickFailover()" class="btn-ghost px-3 py-1.5 rounded-md text-[11px] whitespace-nowrap flex items-center gap-1.5 border border-accent-gold/40 text-accent-gold hover:bg-accent-gold/10">
                     <i class="fas fa-bolt text-[10px]"></i>
-                    <span class="hidden sm:inline">容灾热切演示</span>
-                    <span class="sm:hidden">热切</span>
+                    <span id="btn-failover-label" class="hidden sm:inline">容灾热切演示</span>
+                    <span id="btn-failover-sublabel" class="sm:hidden">热切</span>
                 </button>
             </div>
         </header>
@@ -1149,7 +1149,119 @@
                 'job-tab-failed': '失败/告警',
                 'job-clear-btn': '清理视图',
                 'job-footer-note': 'HMAC-SHA256 JWT 多租户数据隔离 · 幂等执行保障',
-                'cmd-input-placeholder': '输入指令或搜索功能 (如: 导购, 容灾, 营销, 分析, 指令)...'
+                'cmd-input-placeholder': '输入指令或搜索功能 (如: 导购, 容灾, 营销, 分析, 指令)...',
+
+                // --- Topbar / HUD ---
+                'sidebar-status-text': '中枢就绪',
+                'hud-title-badge': '中枢 HUD',
+                'btn-cmd-palette-label': '指令',
+                'btn-failover-label': '容灾热切演示',
+                'btn-failover-sublabel': '热切',
+
+                // --- Tab 8: Instagram & TikTok 出海工场 ---
+                'xhs-banner-step': '工序定位：第一道 · 单品爆款长文深度打透 (LangGraph 1.0 StateGraph)',
+                'xhs-source-badge': '打通选题、人在环路审查与视觉分镜；成文后可一键流转至全渠道矩阵',
+                'xhs-banner-pipe-btn': '流转至全渠道矩阵',
+                'xhs-panel-title': 'Instagram & TikTok 出海工场',
+                'xhs-preset-label': '快速实操预设',
+                'xhs-btn-preset-1': '💎 碧玉平安扣 (闺蜜种草)',
+                'xhs-btn-preset-2': '📿 翡翠手镯 (专业评测)',
+                'xhs-btn-preset-3': '🌸 珍珠锁骨链 (避坑科普)',
+                'xhs-lbl-product': '主推产品 / 内容主题',
+                'xhs-lbl-tone': '叙事风格与受众调性',
+                'xhs-tone-opt-0': '闺蜜真实种草（高共鸣、强情绪价值、高转化率）',
+                'xhs-tone-opt-1': '专业珠宝博主深度评测（微距实拍、硬核参数、高客单信任）',
+                'xhs-tone-opt-2': '避坑教学与选购指南（直击行业内幕、强收藏点赞率）',
+                'xhs-lbl-keywords': '核心卖点与搜索热词',
+                'xhs-btn-run-text': '启动 LangGraph 1.0 流水线',
+                'xhs-dag-title': 'StateGraph 节点执行流',
+                'xhs-btn-dag-graph-text': 'DAG 画布',
+                'xhs-btn-dag-list-text': '节点清单',
+                'xhs-dag-fps-badge': '60 FPS · 贝塞尔流',
+                'xhs-node-topic-text': '1. 爆款选题子图 (Topic Miner)',
+                'xhs-node-hitl-text': '2. 人在环路中断 (HITL Interrupt)',
+                'xhs-node-writer-text': '3. 深度成文子图 (Copywriter)',
+                'xhs-node-visual-text': '4. AI 视觉排版 (Visual Prompts)',
+                'xhs-node-checkpointer-text': '5. Postgres 快照持久化 & PII 脱敏',
+                'xhs-hitl-notice-text': '⏸️ 触发 interrupt() 中断 · 等待运营人员审核选题策略',
+                'xhs-hitl-desc-text': 'StateGraph 状态已暂存至 Postgres Checkpointer。您可以在此修改爆款选题切入角度，点击批准后状态机将恢复继续向下流转：',
+                'xhs-btn-hitl-approve-text': '批准选题并恢复流水线执行 (Resume Graph)',
+                'channel-tab-xhs-text': 'Instagram 视觉图文',
+                'channel-tab-wechat-text': 'Facebook & Meta 长文',
+                'channel-tab-video-text': 'TikTok / Reels 分镜脚本',
+                'btn-generate-poster-text': '导出视觉海报',
+                'btn-pipe-xhs-to-mkt-text': '同步至矩阵',
+                'btn-copy-xhs-text': '复制',
+                'xhs-author-avatar': '琼',
+                'xhs-author-name': '琼华东方美学主理人',
+                'xhs-author-sub': '官方认证珠宝鉴赏创作者',
+                'xhs-btn-follow': '+ 关注',
+                'xhs-cover-tag': '封面爆款大字标题',
+                'xhs-sim-badge': 'Instagram 移动端拟真',
+                'wechat-sim-badge': 'Meta 商业图文规范',
+                'wechat-footer-badge': '官方认证发布 · 原创保护',
+                'xhs-visual-guide-title': 'AI 视觉排版与拍摄脚本建议',
+                'xhs-pii-badge': 'Postgres Checkpointer: 自动打通 PII 脱敏过滤',
+                'xhs-poster-title': '社交传播海报画布渲染',
+                'xhs-poster-ratio': '9:16 黄金比例',
+                'xhs-poster-note': '双击或拖拽可缩放海报 · 支持一键复制位图或高保真 PNG 下载',
+                'btn-copy-poster-text': '复制海报图片',
+                'btn-download-poster-text': '下载高保真 PNG',
+
+                // --- Tab 9: FunASR 短视频切片 ---
+                'funclip-title': 'FunASR 工业级离线语音端点检测与音视频高光切片',
+                'funclip-tag': 'Paraformer + CAM++ 说话人日志',
+                'funclip-samples-label': '长视频切片任务样例 (3-5小时长音频毫秒级检索)',
+                'funclip-sample-1-title': '珠宝原石开石带货现场 (3小时)',
+                'funclip-sample-1-desc': '包含货主砍价拉扯、切开爆色瞬间',
+                'funclip-sample-2-title': '缅甸冰种手镯真伪鉴别 (1.5小时)',
+                'funclip-sample-2-desc': '含荧光反应、起胶特征与国检讲解',
+                'funclip-sample-3-title': '非遗金丝镶嵌制作工艺 (1小时)',
+                'funclip-sample-3-desc': '微距展示凹槽压金丝与细磨抛光',
+                'funclip-lbl-cur-file': '当前切片文件',
+                'funclip-lbl-stream-spec': '音频流规格: 16kHz / 16bit 单声道 PCM · 模型: Paraformer-Offline-Large',
+                'funclip-lbl-hotwords': '领域热词增强 (Contextual Biasing)',
+                'funclip-lbl-hotwords-hint': '以英文逗号分隔热词，大幅提升专业珠宝术语在嘈杂直播间的识别率',
+                'funclip-lbl-diarization': '开启 CAM++ 说话人日志 (区分主播/助播/货主)',
+                'funclip-btn-run-text': '执行 FunASR 智能高光切片',
+                'funclip-lbl-engine': '语音引擎:',
+                'funclip-lbl-ts': '时间戳精度:',
+                'funclip-lbl-format': '字幕格式:',
+                'funclip-meta-status-text': '未切片',
+                'funclip-btn-copy-srt-text': '复制 SRT 字幕',
+
+                // --- Tab 3: Marketing ---
+                'mkt-plat-insta-text': 'Instagram 视觉帖',
+                'mkt-plat-tiktok-text': 'TikTok 爆款脚本',
+                'mkt-plat-wa-text': 'WhatsApp / 私域',
+                'mkt-plat-shopify-text': 'Shopify 详情页',
+                'mkt-plat-x-text': 'Pinterest / 短推',
+                'mkt-btn-run-text': '一键生成爆款内容并质检',
+                'mkt-btn-copy-text': '复制文案',
+                'mkt-compliance-title': '内容合规与广告法风控',
+                'mkt-compliance-score-label': '合规评分',
+
+                // --- Tab 5: Gateway ---
+                'gw-matrix-title': '企业统一模型池与权重路由',
+                'gw-primary-name': '上游主模型（仿真占位）',
+                'gw-primary-desc': '未接入真实模型 API · 仅演示主备形态',
+                'gw-primary-weight': '权重 70% ｜ 熔断阈值 3000ms',
+                'gw-backup-name': '本地兜底引擎',
+                'gw-backup-desc': '极速低延迟与多模态灾备模型',
+                'gw-backup-weight': '权重 30% ｜ 热切待命 42ms',
+                'gw-drill-title': '高可用容灾演练控制器',
+                'gw-drill-desc': '模拟主节点故障，触发网关断路器（Circuit Breaker）毫秒级自动热切',
+                'gw-drill-btn': '注入主线路故障',
+                'gw-vkey-title': '虚拟 API Key 配额池',
+                'gw-mcp-title': 'MCP 工具协议挂载',
+
+                // --- Tab 7: History ---
+                'hist-tab-title': '服务可用性与延迟趋势',
+                'hist-tab-desc': '共享巡检器每 3s 探测并落盘 SQLite',
+                'hist-uptime-title': '各服务在线率（窗口内聚合 %）',
+                'hist-latency-title': 'TCP 探测延迟（ms 本机回环）',
+                'hist-events-title': '历史事件回放（最近 60 条，倒序）',
+                'hist-refresh-btn-text': '刷新'
             },
             en: {
                 'label-lang-toggle': '<span class="text-accent-cyan font-bold">EN</span><span class="text-slate-500 text-[10px]">/中文</span>',
@@ -1262,7 +1374,119 @@
                 'job-tab-failed': 'Failed / Alerts',
                 'job-clear-btn': 'Clear View',
                 'job-footer-note': 'HMAC-SHA256 JWT Multi-Tenant Isolation · Idempotent Execution',
-                'cmd-input-placeholder': 'Type a command or search feature (e.g. guide, failover, marketing, sql)...'
+                'cmd-input-placeholder': 'Type a command or search feature (e.g. guide, failover, marketing, sql)...',
+
+                // --- Topbar / HUD ---
+                'sidebar-status-text': 'Hub Ready',
+                'hud-title-badge': 'Core HUD',
+                'btn-cmd-palette-label': 'Commands',
+                'btn-failover-label': 'Failover Demo',
+                'btn-failover-sublabel': 'Failover',
+
+                // --- Tab 8: Instagram & TikTok Studio ---
+                'xhs-banner-step': 'Stage 1 · High-Converting Deep Narrative & Multi-Shot Pipeline (LangGraph 1.0)',
+                'xhs-source-badge': 'Connects topic mining, HITL gate & visual storyboards; seamlessly pipes to Omnichannel Matrix',
+                'xhs-banner-pipe-btn': 'Pipe to Omnichannel Matrix',
+                'xhs-panel-title': 'Instagram & TikTok Studio',
+                'xhs-preset-label': 'Quick Presets',
+                'xhs-btn-preset-1': '💎 Jade Pendant (Influencer Review)',
+                'xhs-btn-preset-2': '📿 Jadeite Bangle (Expert Teardown)',
+                'xhs-btn-preset-3': '🌸 Pearl Choker (Buyer Guide)',
+                'xhs-lbl-product': 'Featured Product / Topic',
+                'xhs-lbl-tone': 'Tone & Audience Framing',
+                'xhs-tone-opt-0': 'Influencer Review (Emotional Connection, High Viral Conversion)',
+                'xhs-tone-opt-1': 'Expert Teardown (Macro Inspection, Gemological Rigor, High-Ticket Trust)',
+                'xhs-tone-opt-2': 'Buyer Guide & Pitfalls (Insider Insights, High Save/Bookmark CTR)',
+                'xhs-lbl-keywords': 'Core Selling Points & High-CTR Keywords',
+                'xhs-btn-run-text': 'Run LangGraph 1.0 Pipeline',
+                'xhs-dag-title': 'StateGraph Execution Flow',
+                'xhs-btn-dag-graph-text': 'DAG Canvas',
+                'xhs-btn-dag-list-text': 'Node List',
+                'xhs-dag-fps-badge': '60 FPS · Bézier Curves',
+                'xhs-node-topic-text': '1. Topic Miner Subgraph',
+                'xhs-node-hitl-text': '2. HITL Interrupt Gate',
+                'xhs-node-writer-text': '3. Copywriter Subgraph',
+                'xhs-node-visual-text': '4. Visual Prompts Director',
+                'xhs-node-checkpointer-text': '5. Postgres Snapshot Checkpoint & PII Sanitization',
+                'xhs-hitl-notice-text': '⏸️ interrupt() Triggered · Waiting for Merchandiser Approval',
+                'xhs-hitl-desc-text': 'StateGraph paused at checkpoint. Review or refine the AI-generated hook below. Approving resumes the pipeline:',
+                'xhs-btn-hitl-approve-text': 'Approve Topic & Resume Pipeline (Resume Graph)',
+                'channel-tab-xhs-text': 'Instagram Visual Post',
+                'channel-tab-wechat-text': 'Facebook & Meta Longform',
+                'channel-tab-video-text': 'TikTok / Reels Storyboard',
+                'btn-generate-poster-text': 'Export Poster',
+                'btn-pipe-xhs-to-mkt-text': 'Pipe to Matrix',
+                'btn-copy-xhs-text': 'Copy Copy',
+                'xhs-author-avatar': 'Q',
+                'xhs-author-name': 'Qionghua Fine Jewelry',
+                'xhs-author-sub': 'Certified Luxury Jewelry Atelier',
+                'xhs-btn-follow': '+ Follow',
+                'xhs-cover-tag': 'Cover Hook Headline',
+                'xhs-sim-badge': 'Instagram Simulator · 9:16 Aspect',
+                'wechat-sim-badge': 'Meta Longform Guidelines',
+                'wechat-footer-badge': 'Official Atelier · Copyright Protected',
+                'xhs-visual-guide-title': 'AI Visual Direction & Filming Script Suggestions',
+                'xhs-pii-badge': 'Postgres Checkpointer: Zero-Knowledge PII Sanitization Active',
+                'xhs-poster-title': 'Social Poster Canvas Render',
+                'xhs-poster-ratio': '9:16 Golden Ratio',
+                'xhs-poster-note': 'Double-click/drag to inspect · Copy bitmap or download high-res PNG',
+                'btn-copy-poster-text': 'Copy Poster Image',
+                'btn-download-poster-text': 'Download PNG',
+
+                // --- Tab 9: FunASR Clipper ---
+                'funclip-title': 'FunASR Industrial Offline Voice Activity Detection & Reel Slicing',
+                'funclip-tag': 'Paraformer + CAM++ Diarization',
+                'funclip-samples-label': 'Long-Form Video Samples (3-5h Audio with Millisecond VAD)',
+                'funclip-sample-1-title': 'Live Gemstone Auction & Slicing (3h)',
+                'funclip-sample-1-desc': 'High-stakes bidding & raw stone reveal',
+                'funclip-sample-2-title': 'Burmese Jadeite Authentication (1.5h)',
+                'funclip-sample-2-desc': 'UV fluorescence, gel glow & lab certs',
+                'funclip-sample-3-title': 'Heritage Gold Inlay Craftsmanship (1h)',
+                'funclip-sample-3-desc': 'Macro 24K gold filament inlay & finishing',
+                'funclip-lbl-cur-file': 'Current Media File',
+                'funclip-lbl-stream-spec': 'Audio Spec: 16kHz / 16bit Mono PCM · Engine: Paraformer-Offline-Large',
+                'funclip-lbl-hotwords': 'Contextual Biasing Hotwords',
+                'funclip-lbl-hotwords-hint': 'Comma-separated hotwords to boost jewelry terminology in noisy streams',
+                'funclip-lbl-diarization': 'Enable CAM++ Speaker Diarization (Host / Co-Host / Seller)',
+                'funclip-btn-run-text': 'Run FunASR Reel Slicing',
+                'funclip-lbl-engine': 'Engine:',
+                'funclip-lbl-ts': 'Precision:',
+                'funclip-lbl-format': 'Subtitle Format:',
+                'funclip-meta-status-text': 'Unprocessed',
+                'funclip-btn-copy-srt-text': 'Copy SRT Subtitles',
+
+                // --- Tab 3: Marketing ---
+                'mkt-plat-insta-text': 'Instagram Visual Post',
+                'mkt-plat-tiktok-text': 'TikTok Viral Script',
+                'mkt-plat-wa-text': 'WhatsApp Concierge',
+                'mkt-plat-shopify-text': 'Shopify Listing',
+                'mkt-plat-x-text': 'Pinterest / Social',
+                'mkt-btn-run-text': 'Generate Viral Copy & Audit Compliance',
+                'mkt-btn-copy-text': 'Copy Text',
+                'mkt-compliance-title': 'Content Compliance & Risk Audit',
+                'mkt-compliance-score-label': 'Compliance Score',
+
+                // --- Tab 5: Gateway ---
+                'gw-matrix-title': 'Enterprise Unified Model Pool & Weighted Routing',
+                'gw-primary-name': 'Primary LLM Cluster (Upstream)',
+                'gw-primary-desc': 'Live upstream cluster with auto-circuit breaker',
+                'gw-primary-weight': 'Weight 70% | Tripping Threshold 3000ms',
+                'gw-backup-name': 'Disaster Recovery Local Fallback',
+                'gw-backup-desc': 'Ultra-low latency fallback & zero-loss routing',
+                'gw-backup-weight': 'Weight 30% | Standby Latency 42ms',
+                'gw-drill-title': 'High-Availability Disaster Drill Controller',
+                'gw-drill-desc': 'Inject primary failure to trigger circuit breaker hot-failover',
+                'gw-drill-btn': 'Inject Upstream Outage',
+                'gw-vkey-title': 'Virtual API Key Quota Pool',
+                'gw-mcp-title': 'MCP Tool Protocol Mounts',
+
+                // --- Tab 7: History ---
+                'hist-tab-title': 'Service Availability & Latency Trends',
+                'hist-tab-desc': 'Prober inspects every 3s and persists to SQLite',
+                'hist-uptime-title': 'Service Uptime Rate (% in Window)',
+                'hist-latency-title': 'TCP Probe Latency (ms Loopback)',
+                'hist-events-title': 'Historical Event Replay (Latest 60, Reverse)',
+                'hist-refresh-btn-text': 'Refresh'
             }
         };
 
@@ -1478,6 +1702,123 @@
                     badge.textContent = (l === 'en') ? ('Connected Local Backend · ' + counts) : ('已连接本地后端 · ' + counts);
                 } else if (badge.textContent.includes('静态') || badge.textContent.includes('Static')) {
                     badge.textContent = (l === 'en') ? 'Static Demo Mode · Built-in Samples' : '静态演示模式 · 内置样例数据';
+                }
+            }
+
+            // 13. Comprehensive element text replacement from I18N_PACK
+            [
+                'sidebar-status-text', 'hud-title-badge', 'btn-cmd-palette-label', 'btn-failover-label', 'btn-failover-sublabel',
+                'xhs-banner-step', 'xhs-source-badge', 'xhs-banner-pipe-btn', 'xhs-panel-title', 'xhs-preset-label',
+                'xhs-btn-preset-1', 'xhs-btn-preset-2', 'xhs-btn-preset-3',
+                'xhs-lbl-product', 'xhs-lbl-tone', 'xhs-tone-opt-0', 'xhs-tone-opt-1', 'xhs-tone-opt-2',
+                'xhs-lbl-keywords', 'xhs-btn-run-text', 'xhs-dag-title', 'xhs-btn-dag-graph-text', 'xhs-btn-dag-list-text',
+                'xhs-dag-fps-badge', 'xhs-node-topic-text', 'xhs-node-hitl-text', 'xhs-node-writer-text',
+                'xhs-node-visual-text', 'xhs-node-checkpointer-text', 'xhs-hitl-notice-text', 'xhs-hitl-desc-text',
+                'xhs-btn-hitl-approve-text', 'channel-tab-xhs-text', 'channel-tab-wechat-text', 'channel-tab-video-text',
+                'btn-generate-poster-text', 'btn-pipe-xhs-to-mkt-text', 'btn-copy-xhs-text',
+                'xhs-author-avatar', 'xhs-author-name', 'xhs-author-sub', 'xhs-btn-follow',
+                'xhs-cover-tag', 'xhs-sim-badge', 'wechat-sim-badge', 'wechat-footer-badge',
+                'xhs-visual-guide-title', 'xhs-pii-badge', 'xhs-poster-title', 'xhs-poster-ratio', 'xhs-poster-note',
+                'btn-copy-poster-text', 'btn-download-poster-text',
+                'funclip-title', 'funclip-tag', 'funclip-samples-label',
+                'funclip-sample-1-title', 'funclip-sample-1-desc', 'funclip-sample-2-title', 'funclip-sample-2-desc',
+                'funclip-sample-3-title', 'funclip-sample-3-desc',
+                'funclip-lbl-cur-file', 'funclip-lbl-stream-spec', 'funclip-lbl-hotwords', 'funclip-lbl-hotwords-hint',
+                'funclip-lbl-diarization', 'funclip-btn-run-text', 'funclip-lbl-engine', 'funclip-lbl-ts',
+                'funclip-lbl-format', 'funclip-meta-status-text', 'funclip-btn-copy-srt-text',
+                'mkt-plat-insta-text', 'mkt-plat-tiktok-text', 'mkt-plat-wa-text', 'mkt-plat-shopify-text', 'mkt-plat-x-text',
+                'mkt-btn-run-text', 'mkt-btn-copy-text', 'mkt-compliance-title', 'mkt-compliance-score-label',
+                'gw-matrix-title', 'gw-primary-name', 'gw-primary-desc', 'gw-primary-weight',
+                'gw-backup-name', 'gw-backup-desc', 'gw-backup-weight', 'gw-drill-title', 'gw-drill-desc', 'gw-drill-btn',
+                'gw-vkey-title', 'gw-mcp-title',
+                'hist-tab-title', 'hist-tab-desc', 'hist-uptime-title', 'hist-latency-title', 'hist-events-title', 'hist-refresh-btn-text'
+            ].forEach(id => {
+                const el = document.getElementById(id);
+                if (el && p[id]) {
+                    el.innerText = p[id];
+                }
+            });
+
+            // 14. Tab 8 (Studio) Form and Preview Initial State Localization
+            const xhsPName = document.getElementById('xhs-product-name');
+            if (xhsPName) {
+                if (l === 'en' && (xhsPName.value === '天然冰种和田碧玉平安扣吊坠' || xhsPName.value === '天然和田碧玉平安扣吊坠' || !xhsPName.value)) {
+                    xhsPName.value = 'Natural Hetian Nephrite Jade Amulet';
+                } else if (l === 'zh' && (xhsPName.value === 'Natural Hetian Nephrite Jade Amulet' || !xhsPName.value)) {
+                    xhsPName.value = '天然冰种和田碧玉平安扣吊坠';
+                }
+            }
+            const xhsKw = document.getElementById('xhs-keywords');
+            if (xhsKw) {
+                if (l === 'en' && (xhsKw.value.indexOf('温润细腻') >= 0 || !xhsKw.value)) {
+                    xhsKw.value = 'Untreated old-mine rough, lustrous oily sheen, serialized gem certificate, quiet luxury';
+                } else if (l === 'zh' && (xhsKw.value.indexOf('Untreated old-mine rough') >= 0 || !xhsKw.value)) {
+                    xhsKw.value = '温润细腻, 原矿老料, 权威证书, 新中式穿搭, 闺蜜送礼';
+                }
+            }
+            const xhsGraphStatus = document.getElementById('xhs-graph-status');
+            if (xhsGraphStatus && (xhsGraphStatus.innerText === '就绪' || xhsGraphStatus.innerText === 'READY')) {
+                xhsGraphStatus.innerText = (l === 'en') ? 'READY' : '就绪';
+            }
+            const xhsMetaStatus = document.getElementById('xhs-meta-status');
+            if (xhsMetaStatus && (xhsMetaStatus.innerText.includes('就绪') || xhsMetaStatus.innerText.includes('READY'))) {
+                xhsMetaStatus.innerHTML = '<span class="w-2 h-2 rounded-full bg-accent-emerald"></span><span>' + (l === 'en' ? 'READY' : '就绪') + '</span>';
+            }
+
+            // Tab 8 Mobile Preview Card Localization
+            const xhsCover = document.getElementById('xhs-out-cover');
+            if (xhsCover) {
+                if (l === 'en' && (xhsCover.innerText.includes('真正懂玉') || !xhsCover.innerText)) {
+                    xhsCover.innerText = "The Connoisseur's Choice: Natural Hetian Jade Amulet";
+                } else if (l === 'zh' && (xhsCover.innerText.includes("The Connoisseur's Choice") || !xhsCover.innerText)) {
+                    xhsCover.innerText = '真正懂玉的女人，都在悄悄戴【天然和田碧玉平安扣】';
+                }
+            }
+            const xhsTitle = document.getElementById('xhs-out-title');
+            if (xhsTitle) {
+                if (l === 'en' && (xhsTitle.innerText.includes('一眼沦陷') || !xhsTitle.innerText)) {
+                    xhsTitle.innerText = 'Absolute Obsession! The Story Behind Our Signature Jade Amulet ✨';
+                } else if (l === 'zh' && (xhsTitle.innerText.includes('Absolute Obsession') || !xhsTitle.innerText)) {
+                    xhsTitle.innerText = '一眼沦陷！被闺蜜连环追问链接的【天然和田碧玉平安扣】到底有多绝✨';
+                }
+            }
+            const xhsContent = document.getElementById('xhs-out-content');
+            if (xhsContent) {
+                if (l === 'en' && (xhsContent.innerText.includes('救命！') || !xhsContent.innerText)) {
+                    xhsContent.innerText = 'Obsessed! Nothing compares to the subtle, lustrous elegance of natural Hetian jade against warm skin tones, zero filter needed!\n\nThe most frequent DM question this week is about our signature Natural Hetian Nephrite Jade Amulet. Here is our honest field review and macro breakdown:\n\n🌿 Material & Craftsmanship:\nSculpted from untreated old-mine rough, radiating an organic oily luster under sunlight. Hand-polished on both sides for featherlight breathability. Pairs effortlessly with French silk blouses or modern minimalist evening wear!\n\n💎 Authenticity & Certification:\nIndividually serialized with nationally recognized gemological certification. Lifetime re-inspection guaranteed. 100% natural, untreated, and acid-free.\n\n🎯 Key Value Highlights:\n· Signature Points: Untreated old-mine rough, lustrous oily sheen, serialized gem certificate, quiet luxury\n· Occasions: Everyday quiet luxury, anniversary keepsake, curated self-reward';
+                } else if (l === 'zh' && (xhsContent.innerText.includes('Obsessed!') || !xhsContent.innerText)) {
+                    xhsContent.innerText = '救命！真的没有人能拒绝天然玉石温润内敛的高级感吧，冷白皮拉满！\n\n最近私信问得最多的就是这款【天然和田碧玉平安扣吊坠】，今天把实测感受和细节全部分享给大家：\n\n🌿 选料与工艺：\n精选原矿老坑料子，日光下泛着通透温润的油脂光泽。手工双面精抛光，佩戴在锁骨处极具呼吸感，不管是搭法式通勤衬衫还是新中式新茶服都温婉典雅！\n\n💎 品质与证书保障：\n一物一证，附带国家级宝玉石质检证书，支持全国权威机构终身复检。无胶无酸洗，佩戴更安心。';
+                }
+            }
+            const xhsTags = document.getElementById('xhs-out-tags');
+            if (xhsTags) {
+                if (l === 'en' && (xhsTags.innerHTML.includes('#我的首饰分享') || xhsTags.innerHTML.includes('我的首饰分享'))) {
+                    xhsTags.innerHTML = '<span class="tag">#FineJewelry</span><span class="tag">#QuietLuxury</span><span class="tag">#NaturalJade</span><span class="tag">#DailyWear</span>';
+                } else if (l === 'zh' && xhsTags.innerHTML.includes('#FineJewelry')) {
+                    xhsTags.innerHTML = '<span class="tag">#我的首饰分享</span><span class="tag">#好物推荐</span><span class="tag">#新中式穿搭</span><span class="tag">#天然玉石</span>';
+                }
+            }
+            const xhsVisuals = document.getElementById('xhs-out-visuals');
+            if (xhsVisuals) {
+                if (l === 'en' && (xhsVisuals.innerHTML.includes('首图方案') || !xhsVisuals.innerText)) {
+                    xhsVisuals.innerHTML = '<div>· Cover Concept: Soft window daylight, macro close-up of jade pendant resting on raw linen texture with bold luxury serif typography</div><div>· Frame 2: 45-degree angle beam macro revealing flawless oily gelatinous translucency and zero synthetic resin inclusions</div><div>· Frame 3: Model styled in Parisian raw silk collar blouse, highlighting collarbone silhouette and gentle drape</div><div>· Frame 4: Macro close-up of serialized gemological lab certificate with embossed QR code and holographic seal</div>';
+                } else if (l === 'zh' && (xhsVisuals.innerHTML.includes('Cover Concept') || !xhsVisuals.innerText)) {
+                    xhsVisuals.innerHTML = '<div>· 首图方案：自然窗边柔光拍摄，手持平安扣特写，背景搭配淡青色茶席，打大字标语</div><div>· 图2：强光手电45度角打灯微距，展示内部细腻无杂质的胶质感</div><div>· 图3：新中式棉麻衬衫佩戴全身效果，展示锁骨与颈部线条</div><div>· 图4：国家级权威珠宝质检证书特写与钢印防伪码</div>';
+                }
+            }
+
+            // 15. Tab 9 (FunClip) Current Preset Label Localization
+            if (typeof FUNCLIP_SAMPLES_EN !== 'undefined') {
+                const funSample = (l === 'en' ? FUNCLIP_SAMPLES_EN : FUNCLIP_SAMPLES)[currentFunclipSample];
+                if (funSample) {
+                    const vidName = document.getElementById('funclip-video-name');
+                    if (vidName) vidName.innerText = funSample.name;
+                    const vidMeta = document.getElementById('funclip-video-meta');
+                    if (vidMeta) vidMeta.innerText = funSample.meta;
+                    const hotwordsEl = document.getElementById('funclip-hotwords');
+                    if (hotwordsEl && (hotwordsEl.value.indexOf('冰种') >= 0 || hotwordsEl.value.indexOf('Imperial Green') >= 0)) {
+                        hotwordsEl.value = funSample.hotwords;
+                    }
                 }
             }
         }
@@ -3809,24 +4150,47 @@
             });
         }
 
+        function applyXhsPresetByIndex(idx) {
+            OmniAudio.click();
+            const isEn = (OmniStore.get('lang') === 'en');
+            const pNameEl = document.getElementById('xhs-product-name');
+            const toneEl = document.getElementById('xhs-tone');
+            const kwEl = document.getElementById('xhs-keywords');
+            if (idx === 1) {
+                if (pNameEl) pNameEl.value = isEn ? 'Burmese Old-Mine Grade-A Jadeite Bangle' : '缅甸老坑天然A货翡翠冰种手镯';
+                if (toneEl) toneEl.selectedIndex = 1;
+                if (kwEl) kwEl.value = isEn ? 'Icy translucent jadeite, zero acid bleaching, hydrostatic density 3.33, micro inclusions' : '起胶起荧, 通透冰润, 附质检钢印, 传世收藏, 密度3.33';
+            } else if (idx === 2) {
+                if (pNameEl) pNameEl.value = isEn ? 'Akoya Pearl Choker & Diamond Clasp' : '海水Akoya珍珠满天星锁骨链';
+                if (toneEl) toneEl.selectedIndex = 2;
+                if (kwEl) kwEl.value = isEn ? 'Mirror aurora luster, zero core exposure, roundness 9.5mm, seawater cultivation' : '极光极亮皮光, 正圆微瑕, 避开淡水染色珠, 锁骨点缀, 防伪一石一证';
+            } else {
+                if (pNameEl) pNameEl.value = isEn ? 'Natural Hetian Nephrite Jade Amulet' : '天然冰种和田碧玉平安扣吊坠';
+                if (toneEl) toneEl.selectedIndex = 0;
+                if (kwEl) kwEl.value = isEn ? 'Untreated old-mine rough, lustrous oily sheen, serialized gem certificate, quiet luxury' : '温润细腻, 原矿老料, 权威证书, 新中式穿搭, 闺蜜送礼';
+            }
+        }
+
         async function handleXhsGenerate() {
             if (!OmniStore.can('write')) {
                 OmniAudio.alert();
-                showToast('<b>权限拦截</b>: 当前身份角色 [' + OmniStore.getRoleLabel() + '] 为只读权限，无权生成内容', 'err');
+                const isEn = (OmniStore.get('lang') === 'en');
+                showToast(isEn ? ('<b>Access Denied</b>: Role [' + OmniStore.getRoleLabel() + '] is read-only') : ('<b>权限拦截</b>: 当前身份角色 [' + OmniStore.getRoleLabel() + '] 为只读权限，无权生成内容'), 'err');
                 return;
             }
             OmniAudio.click();
 
+            const isEn = (OmniStore.get('lang') === 'en');
             const btn = document.getElementById('btn-xhs-run');
-            const pName = document.getElementById('xhs-product-name').value.trim() || '天然和田碧玉平安扣吊坠';
+            const pName = document.getElementById('xhs-product-name').value.trim() || (isEn ? 'Natural Hetian Nephrite Jade Amulet' : '天然和田碧玉平安扣吊坠');
             const tone = document.getElementById('xhs-tone').value;
             const kw = document.getElementById('xhs-keywords').value.trim();
             const hitlBox = document.getElementById('xhs-hitl-box');
 
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin text-xs"></i> <span>StateGraph 节点图流转中...</span>';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin text-xs"></i> <span>' + (isEn ? 'StateGraph Flowing...' : 'StateGraph 节点图流转中...') + '</span>';
             document.getElementById('xhs-graph-status').innerText = 'RUNNING';
-            document.getElementById('xhs-meta-status').innerHTML = '<span class="w-2 h-2 rounded-full bg-accent-amber animate-pulse"></span><span>流转中</span>';
+            document.getElementById('xhs-meta-status').innerHTML = '<span class="w-2 h-2 rounded-full bg-accent-amber animate-pulse"></span><span>' + (isEn ? 'Running' : '流转中') + '</span>';
 
             const activeNode = (id, label) => {
                 const el = document.getElementById(id);
@@ -3840,40 +4204,41 @@
             };
 
             // 1. Topic Miner
-            activeNode('xhs-node-topic', '1. 爆款选题子图 (Topic Miner)');
+            activeNode('xhs-node-topic', isEn ? '1. Topic Miner Subgraph' : '1. 爆款选题子图 (Topic Miner)');
             updateXhsDagState('topic', 'running');
             await new Promise(r => setTimeout(r, 260));
-            completeNode('xhs-node-topic', '1. 爆款选题子图 (Topic Miner)', 32);
+            completeNode('xhs-node-topic', isEn ? '1. Topic Miner Subgraph' : '1. 爆款选题子图 (Topic Miner)', 32);
             updateXhsDagState('topic', 'completed');
 
             // 2. HITL Interrupt 触发
             const hitlNode = document.getElementById('xhs-node-hitl');
             hitlNode.className = 'p-2 rounded-lg bg-amber-950/40 border border-accent-amber/60 flex items-center justify-between text-[11px]';
-            hitlNode.innerHTML = '<div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-accent-amber animate-pulse"></span><span class="text-accent-amber font-medium">2. 人在环路中断 (HITL Interrupt)</span></div><span class="text-accent-amber font-mono text-[10px]">INTERRUPT</span>';
+            hitlNode.innerHTML = '<div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-accent-amber animate-pulse"></span><span class="text-accent-amber font-medium">' + (isEn ? '2. HITL Interrupt Gate' : '2. 人在环路中断 (HITL Interrupt)') + '</span></div><span class="text-accent-amber font-mono text-[10px]">INTERRUPT</span>';
             updateXhsDagState('hitl', 'interrupted');
             OmniAudio.alert();
 
             hitlBox.classList.remove('hidden');
-            document.getElementById('xhs-hitl-topic').value = '一眼沦陷！被闺蜜连环追问链接的【' + pName + '】到底有多绝✨';
+            document.getElementById('xhs-hitl-topic').value = isEn ? ('Absolute Obsession! The Story Behind Our Signature [' + pName + '] ✨') : ('一眼沦陷！被闺蜜连环追问链接的【' + pName + '】到底有多绝✨');
 
             btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-pause text-xs text-accent-amber"></i> <span>等待人在环路 (HITL) 审核</span>';
+            btn.innerHTML = '<i class="fas fa-pause text-xs text-accent-amber"></i> <span>' + (isEn ? 'Waiting for HITL Review' : '等待人在环路 (HITL) 审核') + '</span>';
             document.getElementById('xhs-graph-status').innerText = 'PAUSED (HITL)';
-            document.getElementById('xhs-meta-status').innerHTML = '<span class="w-2 h-2 rounded-full bg-accent-amber"></span><span>等待审核</span>';
+            document.getElementById('xhs-meta-status').innerHTML = '<span class="w-2 h-2 rounded-full bg-accent-amber"></span><span>' + (isEn ? 'Awaiting Review' : '等待审核') + '</span>';
         }
 
         async function handleXhsHitlApprove() {
             OmniAudio.click();
+            const isEn = (OmniStore.get('lang') === 'en');
             const hitlBox = document.getElementById('xhs-hitl-box');
             const approvedTopic = document.getElementById('xhs-hitl-topic').value.trim();
             const btn = document.getElementById('btn-xhs-run');
-            const pName = document.getElementById('xhs-product-name').value.trim() || '天然和田碧玉平安扣吊坠';
+            const pName = document.getElementById('xhs-product-name').value.trim() || (isEn ? 'Natural Hetian Nephrite Jade Amulet' : '天然和田碧玉平安扣吊坠');
             const tone = document.getElementById('xhs-tone').value;
             const kw = document.getElementById('xhs-keywords').value.trim();
 
             hitlBox.classList.add('hidden');
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin text-xs"></i> <span>恢复状态机流转 (Resuming)...</span>';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin text-xs"></i> <span>' + (isEn ? 'Resuming StateGraph...' : '恢复状态机流转 (Resuming)...') + '</span>';
 
             const activeNode = (id, label) => {
                 const el = document.getElementById(id);
@@ -3886,11 +4251,11 @@
                 el.innerHTML = '<div class="flex items-center gap-2"><i class="fas fa-check text-accent-emerald text-xs"></i><span class="text-slate-200">' + label + '</span></div><span class="text-slate-400 font-mono text-[10px]">' + ms + 'ms</span>';
             };
 
-            completeNode('xhs-node-hitl', '2. 人在环路中断 (HITL Approved)', 15);
+            completeNode('xhs-node-hitl', isEn ? '2. HITL Approved' : '2. 人在环路中断 (HITL Approved)', 15);
             updateXhsDagState('hitl', 'completed');
 
             // 3. Copywriter 启动流式生成
-            activeNode('xhs-node-writer', '3. 深度成文子图 (Copywriter 打字机流式输出)');
+            activeNode('xhs-node-writer', isEn ? '3. Copywriter Subgraph (Streaming...)' : '3. 深度成文子图 (Copywriter 打字机流式输出)');
             updateXhsDagState('writer', 'running');
 
             try {
@@ -3903,7 +4268,7 @@
                 currentXhsData = data;
 
                 // 填充标题与基础元数据
-                document.getElementById('xhs-out-cover').innerText = data.cover_headline || ('真正懂玉的女人，都在悄悄戴【' + pName + '】');
+                document.getElementById('xhs-out-cover').innerText = data.cover_headline || (isEn ? ("The Connoisseur's Choice: " + pName) : ('真正懂玉的女人，都在悄悄戴【' + pName + '】'));
                 document.getElementById('xhs-out-title').innerText = approvedTopic || data.title;
 
                 const tagsContainer = document.getElementById('xhs-out-tags');
@@ -3918,7 +4283,7 @@
                     const wTitle = document.getElementById('wechat-out-title');
                     if (wTitle) wTitle.innerText = wc.title;
                     const wAuthor = document.getElementById('wechat-out-author');
-                    if (wAuthor) wAuthor.innerText = '作者: ' + (wc.author || '琼华东方美学');
+                    if (wAuthor) wAuthor.innerText = (isEn ? 'Author: ' : '作者: ') + (wc.author || (isEn ? 'Qionghua Fine Jewelry' : '琼华东方美学'));
                     const wQuote = document.getElementById('wechat-out-quote');
                     if (wQuote) wQuote.innerText = wc.quote;
                     const wContent = document.getElementById('wechat-out-content');
@@ -3938,10 +4303,10 @@
                             '<div class="p-3 rounded-xl bg-dark-900/60 border border-dark-border/80 space-y-1.5">' +
                                 '<div class="flex items-center justify-between text-[11px] text-accent-cyan font-mono font-medium">' +
                                     '<span>' + s.num + ' · ' + s.type + ' (' + s.time + ')</span>' +
-                                    '<span class="text-slate-500">音效: ' + s.sfx + '</span>' +
+                                    '<span class="text-slate-500">' + (isEn ? 'Audio: ' : '音效: ') + s.sfx + '</span>' +
                                 '</div>' +
-                                '<div class="text-slate-400"><strong class="text-slate-300">画面:</strong> ' + s.visual + '</div>' +
-                                '<div class="text-emerald-300 font-mono"><strong class="text-slate-300">台词:</strong> ' + s.audio + '</div>' +
+                                '<div class="text-slate-400"><strong class="text-slate-300">' + (isEn ? 'Visual:' : '画面:') + '</strong> ' + s.visual + '</div>' +
+                                '<div class="text-emerald-300 font-mono"><strong class="text-slate-300">' + (isEn ? 'Script:' : '台词:') + '</strong> ' + s.audio + '</div>' +
                             '</div>'
                         ).join('');
                     }
@@ -3955,46 +4320,47 @@
                     await streamTypewriter(document.getElementById('xhs-out-content'), data.content);
                 }
 
-                completeNode('xhs-node-writer', '3. 深度成文子图 (Copywriter)', 86);
+                completeNode('xhs-node-writer', isEn ? '3. Copywriter Subgraph' : '3. 深度成文子图 (Copywriter)', 86);
                 updateXhsDagState('writer', 'completed');
 
                 // 4. Visual Prompts
                 updateXhsDagState('visual', 'running');
                 await new Promise(r => setTimeout(r, 120));
-                completeNode('xhs-node-visual', '4. AI 视觉排版 (Visual Prompts)', 41);
+                completeNode('xhs-node-visual', isEn ? '4. Visual Prompts Director' : '4. AI 视觉排版 (Visual Prompts)', 41);
                 updateXhsDagState('visual', 'completed');
 
                 // 5. Checkpointer
                 updateXhsDagState('checkpointer', 'running');
                 await new Promise(r => setTimeout(r, 100));
-                completeNode('xhs-node-checkpointer', '5. Postgres 快照持久化 & PII 脱敏', 18);
+                completeNode('xhs-node-checkpointer', isEn ? '5. Postgres Snapshot Checkpoint & PII' : '5. Postgres 快照持久化 & PII 脱敏', 18);
                 updateXhsDagState('checkpointer', 'completed');
                 updateXhsDagState('end', 'completed');
                 OmniAudio.success();
 
-                document.getElementById('xhs-meta-latency').innerText = '耗时: ' + (data.latency_ms || 180) + 'ms';
+                document.getElementById('xhs-meta-latency').innerText = (isEn ? 'Latency: ' : '耗时: ') + (data.latency_ms || 180) + 'ms';
                 document.getElementById('xhs-meta-thread').innerText = 'Thread: ' + (data.thread_id || 'xhs_run_8492');
-                document.getElementById('xhs-meta-status').innerHTML = '<span class="w-2 h-2 rounded-full bg-accent-emerald"></span><span>完成 (已落库)</span>';
+                document.getElementById('xhs-meta-status').innerHTML = '<span class="w-2 h-2 rounded-full bg-accent-emerald"></span><span>' + (isEn ? 'Completed (Persisted)' : '完成 (已落库)') + '</span>';
                 document.getElementById('xhs-graph-status').innerText = 'COMPLETED';
             } catch (e) {
                 console.error(e);
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-play text-xs"></i> <span>重新启动流水线</span>';
+                btn.innerHTML = '<i class="fas fa-play text-xs"></i> <span>' + (isEn ? 'Rerun Pipeline' : '重新启动流水线') + '</span>';
             }
         }
 
         function copyXhsNote() {
             let text = '';
-            let channelName = 'Instagram 视觉图文';
+            const isEn = (OmniStore.get('lang') === 'en');
+            let channelName = isEn ? 'Instagram Visual Post' : 'Instagram 视觉图文';
             if (currentChannel === 'wechat') {
-                channelName = 'Facebook & Meta 长文';
+                channelName = isEn ? 'Facebook & Meta Longform' : 'Facebook & Meta 长文';
                 const title = document.getElementById('wechat-out-title') ? document.getElementById('wechat-out-title').innerText : '';
                 const quote = document.getElementById('wechat-out-quote') ? document.getElementById('wechat-out-quote').innerText : '';
                 const content = document.getElementById('wechat-out-content') ? document.getElementById('wechat-out-content').innerText : '';
                 text = title + '\n\n' + quote + '\n\n' + content;
             } else if (currentChannel === 'video') {
-                channelName = '短视频分镜脚本';
+                channelName = isEn ? 'Short Video Storyboard' : '短视频分镜脚本';
                 const title = document.getElementById('video-out-title') ? document.getElementById('video-out-title').innerText : '';
                 const shots = document.getElementById('video-out-shots') ? document.getElementById('video-out-shots').innerText : '';
                 text = title + '\n\n' + shots;
@@ -4004,9 +4370,9 @@
                 text = title + '\n\n' + content;
             }
             navigator.clipboard.writeText(text).then(() => {
-                alert('已复制当前【' + channelName + '】内容到剪贴板！');
+                alert(isEn ? ('Copied [' + channelName + '] content to clipboard!') : ('已复制当前【' + channelName + '】内容到剪贴板！'));
             }).catch(() => {
-                alert('复制失败，请手动选择复制。');
+                alert(isEn ? 'Failed to copy, please select and copy manually.' : '复制失败，请手动选择复制。');
             });
         }
 
@@ -4054,6 +4420,54 @@
                 ]
             }
         };
+
+        const FUNCLIP_SAMPLES_EN = {
+            'sample-1': {
+                name: '[Live Highlight] Gemstone Live Auction & Raw Stone Slicing',
+                meta: '03:12:48 · 1080P · 16kHz PCM · H.264',
+                totalTimeStr: '03:12:48',
+                durationSec: 600,
+                hotwords: 'Imperial Green, Translucent, Grade-A, Untreated, Hetian Jade',
+                pName: 'Old-Mine Imperial Green Pendant',
+                clips: [
+                    { id: 1, title: 'Raw Rough Sliced: Imperial Vivid Green Revealed', start: '00:00:15', end: '00:01:42', startSec: 15, endSec: 102, duration: '01:27', confidence: 0.994, color: '#06b6d4', hotwords: ['Imperial Green', 'Grade-A Rough'] },
+                    { id: 2, title: 'High-Stakes Live Price Negotiation & Deal Locked', start: '00:03:10', end: '00:04:25', startSec: 190, endSec: 265, duration: '01:15', confidence: 0.989, color: '#f59e0b', hotwords: ['Direct Source', 'Collector Drop'] },
+                    { id: 3, title: 'National Laboratory Serialized Certificate Showcase', start: '00:07:05', end: '00:08:18', startSec: 425, endSec: 498, duration: '01:13', confidence: 0.981, color: '#10b981', hotwords: ['Lab Certificate', 'QR Verification'] }
+                ]
+            },
+            'sample-2': {
+                name: '[Expert Appraisal] Burmese Old-Mine Jadeite: Identifying Bleaching',
+                meta: '01:18:45 · 1080P · 16kHz PCM · H.264',
+                totalTimeStr: '01:18:45',
+                durationSec: 1800,
+                hotwords: 'Jadeite, Natural Glow, UV Reaction, Grade-A, Serialized Cert',
+                pName: 'Natural Old-Mine Jadeite Bangle',
+                clips: [
+                    { id: 1, title: 'Natural Gel Texture vs. Acid Resin Bleaching Indicators', start: '00:04:12', end: '00:05:30', startSec: 252, endSec: 330, duration: '01:18', confidence: 0.988, color: '#06b6d4', hotwords: ['Jadeite', 'Natural Glow', 'Old-Mine'] },
+                    { id: 2, title: 'Ultraviolet 365nm Lamp Fluorescence Verification', start: '00:12:05', end: '00:13:40', startSec: 725, endSec: 820, duration: '01:35', confidence: 0.992, color: '#f59e0b', hotwords: ['UV Reaction', 'Grade-A Jade'] },
+                    { id: 3, title: 'National Laboratory Serialized Seal Verification Flow', start: '00:25:30', end: '00:26:45', startSec: 1530, endSec: 1605, duration: '01:15', confidence: 0.985, color: '#10b981', hotwords: ['Serialized Cert', 'Lab Verified'] }
+                ]
+            },
+            'sample-3': {
+                name: '[Atelier Macro] Heritage Gold Wire Inlay on Hetian Jade',
+                meta: '00:54:20 · 4K · 16kHz PCM · H.264',
+                totalTimeStr: '00:54:20',
+                durationSec: 2100,
+                hotwords: 'Gold Inlay, Master Heritage, Hetian Jade, Gold & Jade, Imperial Craft',
+                pName: 'Heritage Gold Inlay Nephrite Choker',
+                clips: [
+                    { id: 1, title: '0.1mm Ultra-Fine 24K Gold Wire Manual Groove Embedding', start: '00:02:10', end: '00:03:35', startSec: 130, endSec: 215, duration: '01:25', confidence: 0.986, color: '#06b6d4', hotwords: ['Gold Inlay', 'Master Heritage'] },
+                    { id: 2, title: 'Nephrite Polishing and Harmonious Gold-Jade Lustrous Finish', start: '00:15:20', end: '00:16:45', startSec: 920, endSec: 1005, duration: '01:25', confidence: 0.995, color: '#f59e0b', hotwords: ['Hetian Jade', 'Gold & Jade'] },
+                    { id: 3, title: 'Master Craftsman on Ancient Palace Inlay Preservation', start: '00:31:00', end: '00:32:15', startSec: 1860, endSec: 1935, duration: '01:15', confidence: 0.978, color: '#10b981', hotwords: ['Palace Craft', 'Imperial Inlay'] }
+                ]
+            }
+        };
+
+        function getActiveFunclipSample(key) {
+            const isEn = (OmniStore.get('lang') === 'en');
+            const dict = isEn ? FUNCLIP_SAMPLES_EN : FUNCLIP_SAMPLES;
+            return dict[key] || FUNCLIP_SAMPLES[key] || FUNCLIP_SAMPLES['sample-1'];
+        }
 
         let currentFunclipSample = 'sample-1';
         let currentFunclipData = null;
@@ -4269,7 +4683,8 @@
         }
 
         function setFunclipPreset(sampleId) {
-            const sample = FUNCLIP_SAMPLES[sampleId];
+            const isEn = (OmniStore.get('lang') === 'en');
+            const sample = getActiveFunclipSample(sampleId);
             if (!sample) return;
             currentFunclipSample = sampleId;
             currentFunclipData = null;
@@ -4282,7 +4697,7 @@
             document.getElementById('funclip-hotwords').value = sample.hotwords;
             document.getElementById('funclip-total-time').innerText = sample.totalTimeStr || '03:12:48';
             document.getElementById('funclip-cur-time').innerText = secToTimeString(funclipCurrentTime);
-            document.getElementById('funclip-now-playing').innerText = '片段预览: ' + (sample.clips[0] ? (sample.clips[0].start + ' - ' + sample.clips[0].end + '【' + sample.clips[0].title + '】') : sample.name);
+            document.getElementById('funclip-now-playing').innerText = (isEn ? 'Preview Clip: ' : '片段预览: ') + (sample.clips[0] ? (sample.clips[0].start + ' - ' + sample.clips[0].end + ' [' + sample.clips[0].title + ']') : sample.name);
             drawFunclipWaveform();
         }
 
@@ -4305,7 +4720,7 @@
                     funclipLastFrameTs = now;
                     funclipCurrentTime += dt * 1.5;
 
-                    const sample = FUNCLIP_SAMPLES[currentFunclipSample] || FUNCLIP_SAMPLES['sample-1'];
+                    const sample = getActiveFunclipSample(currentFunclipSample);
                     const activeClip = sample.clips.find(c => c.id === funclipActiveClipId);
                     if (activeClip && funclipCurrentTime >= activeClip.endSec) {
                         funclipCurrentTime = activeClip.startSec;
@@ -4332,7 +4747,8 @@
 
         function playFunclipSegment(segId) {
             funclipActiveClipId = segId;
-            const sample = FUNCLIP_SAMPLES[currentFunclipSample] || FUNCLIP_SAMPLES['sample-1'];
+            const isEn = (OmniStore.get('lang') === 'en');
+            const sample = getActiveFunclipSample(currentFunclipSample);
             const clip = ((currentFunclipData && currentFunclipData.clips) ? currentFunclipData.clips.find(c => c.id === segId) : null) || sample.clips.find(c => c.id === segId) || sample.clips[0];
 
             funclipCurrentTime = clip.startSec || parseTimeStringToSec(clip.start);
@@ -4340,7 +4756,7 @@
             if (timeEl) timeEl.innerText = secToTimeString(funclipCurrentTime);
 
             const bar = document.getElementById('funclip-now-playing');
-            if (bar) bar.innerText = '片段预览: ' + clip.start + ' - ' + clip.end + '【' + clip.title + '】';
+            if (bar) bar.innerText = (isEn ? 'Preview Clip: ' : '片段预览: ') + clip.start + ' - ' + clip.end + ' [' + clip.title + ']';
 
             if (!funclipIsPlaying) toggleFunclipPlayback();
             else drawFunclipWaveform();
@@ -4357,13 +4773,14 @@
         }
 
         async function handleFunclipSlice() {
+            const isEn = (OmniStore.get('lang') === 'en');
             const btn = document.getElementById('btn-funclip-run');
             const hotwords = document.getElementById('funclip-hotwords').value.trim();
             const diar = document.getElementById('funclip-diarization').checked;
 
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin text-xs"></i> <span>达摩院 FunASR 识别切片中...</span>';
-            document.getElementById('funclip-meta-status').innerHTML = '<span class="w-2 h-2 rounded-full bg-accent-amber animate-pulse"></span><span>识别中</span>';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin text-xs"></i> <span>' + (isEn ? 'FunASR Slicing & Diarizing...' : '达摩院 FunASR 识别切片中...') + '</span>';
+            document.getElementById('funclip-meta-status').innerHTML = '<span class="w-2 h-2 rounded-full bg-accent-amber animate-pulse"></span><span>' + (isEn ? 'Processing' : '识别中') + '</span>';
 
             try {
                 const data = await OmniAPI.funclipSlice({
@@ -4380,19 +4797,19 @@
                         <div>
                             <div class="flex items-center gap-2">
                                 <span class="w-1.5 h-1.5 rounded-full bg-accent-cyan"></span>
-                                <span class="text-[13px] font-medium text-white">切片 ${c.id} · ${c.title}</span>
-                                <span class="tag">置信度 ${(c.confidence * 100).toFixed(1)}%</span>
+                                <span class="text-[13px] font-medium text-white">${isEn ? 'Clip' : '切片'} ${c.id} · ${c.title}</span>
+                                <span class="tag">${isEn ? 'Confidence' : '置信度'} ${(c.confidence * 100).toFixed(1)}%</span>
                             </div>
                             <div class="text-[11px] text-slate-400 font-mono mt-1">
-                                区间: ${c.start} - ${c.end} · 时长: ${c.duration} · 命中热词: ${(c.hotwords || []).join(', ')}
+                                ${isEn ? 'Time' : '区间'}: ${c.start} - ${c.end} · ${isEn ? 'Duration' : '时长'}: ${c.duration} · ${isEn ? 'Hotwords' : '命中热词'}: ${(c.hotwords || []).join(', ')}
                             </div>
                         </div>
                         <div class="flex items-center gap-2 flex-shrink-0">
                             <button onclick="playFunclipSegment(${c.id})" class="btn-ghost px-2.5 py-1 rounded text-[11px]">
-                                <i class="fas fa-play text-[10px] mr-1"></i> 试听预览
+                                <i class="fas fa-play text-[10px] mr-1"></i> ${isEn ? 'Preview' : '试听预览'}
                             </button>
                             <button onclick="pipeFunclipToXhs(${c.id})" class="px-2.5 py-1 rounded bg-accent-emerald/20 border border-accent-emerald/40 text-accent-emerald hover:bg-accent-emerald/30 text-[11px] flex items-center gap-1">
-                                <i class="fas fa-feather-pointed text-[10px]"></i> 推送到内容工厂
+                                <i class="fas fa-feather-pointed text-[10px]"></i> ${isEn ? 'Pipe to Studio' : '推送到内容工厂'}
                             </button>
                         </div>
                     </div>
@@ -4407,8 +4824,8 @@
 
                 // 渲染 SRT
                 document.getElementById('funclip-srt-content').innerText = data.srt_content || '';
-                document.getElementById('funclip-meta-latency').innerText = '耗时: ' + (data.latency_ms || 240) + 'ms';
-                document.getElementById('funclip-meta-status').innerHTML = '<span class="w-2 h-2 rounded-full bg-accent-cyan"></span><span>切片就绪 (' + (data.clips ? data.clips.length : 3) + ' 段高光)</span>';
+                document.getElementById('funclip-meta-latency').innerText = (isEn ? 'Latency: ' : '耗时: ') + (data.latency_ms || 240) + 'ms';
+                document.getElementById('funclip-meta-status').innerHTML = '<span class="w-2 h-2 rounded-full bg-accent-cyan"></span><span>' + (isEn ? ('Slices Ready (' + (data.clips ? data.clips.length : 3) + ' Highlights)') : ('切片就绪 (' + (data.clips ? data.clips.length : 3) + ' 段高光)')) + '</span>';
 
                 // 刷新 Canvas 波形
                 drawFunclipWaveform();
@@ -4416,21 +4833,24 @@
                 console.error(e);
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-scissors text-xs"></i> <span>执行 FunASR 识别与精准切片</span>';
+                btn.innerHTML = '<i class="fas fa-scissors text-xs"></i> <span>' + (isEn ? 'Run FunASR Reel Slicing' : '执行 FunASR 识别与精准切片') + '</span>';
             }
         }
 
         function pipeFunclipToXhs(segId) {
-            const sample = FUNCLIP_SAMPLES[currentFunclipSample] || FUNCLIP_SAMPLES['sample-1'];
+            const isEn = (OmniStore.get('lang') === 'en');
+            const sample = getActiveFunclipSample(currentFunclipSample);
             switchTab('xhs');
-            document.getElementById('xhs-product-name').value = sample.pName || '天然原矿翡翠珠宝';
-            document.getElementById('xhs-tone').value = '专业博主深度评测';
+            document.getElementById('xhs-product-name').value = sample.pName || (isEn ? 'Natural Fine Jewelry' : '天然原矿翡翠珠宝');
+            document.getElementById('xhs-tone').value = isEn ? '专业珠宝博主深度评测' : '专业博主深度评测';
             document.getElementById('xhs-keywords').value = sample.hotwords;
             const xhsBadge = document.getElementById('xhs-source-badge');
             if (xhsBadge) {
-                xhsBadge.innerHTML = '<span class="text-accent-cyan font-medium">已继承 FunClip 视频切片高光热词：</span> ' + (sample.pName || '珠宝热词');
+                xhsBadge.innerHTML = isEn
+                    ? ('<span class="text-accent-cyan font-medium">Inherited FunClip Reel Hotwords:</span> ' + (sample.pName || 'Fine Jewelry'))
+                    : ('<span class="text-accent-cyan font-medium">已继承 FunClip 视频切片高光热词：</span> ' + (sample.pName || '珠宝热词'));
             }
-            showToast('【工序协同联动】已从短视频切片导入高光热词并进入出海社媒工场！', 'info');
+            showToast(isEn ? '<b>Pipelined</b>: Inherited FunClip keywords into Studio!' : '【工序协同联动】已从短视频切片导入高光热词并进入出海社媒工场！', 'info');
             handleXhsGenerate();
         }
 

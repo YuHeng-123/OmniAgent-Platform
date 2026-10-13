@@ -6,13 +6,13 @@
                 <div class="glass-card px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 text-[11px] border-l-4 border-accent-gold">
                     <div class="flex items-center gap-2 text-slate-300">
                         <span class="w-2 h-2 rounded-full bg-accent-gold animate-pulse"></span>
-                        <span class="font-medium text-white">工序定位：第二道 · 全渠道矩阵分发与合规风控 (Coze)</span>
+                        <span id="mkt-banner-step" class="font-medium text-white">工序定位：第二道 · 全渠道矩阵分发与合规风控 (Coze)</span>
                         <span class="text-slate-500 hidden sm:inline">|</span>
                         <span id="mkt-source-badge" class="text-slate-400 font-mono">接收来自「出海社媒工场 (LangGraph)」或「短视频切片 (FunASR)」的母版内容进行 5 大海外渠道派生</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <button onclick="switchTab('xhs')" class="text-accent-emerald hover:underline flex items-center gap-1 font-mono">
-                            <i class="fas fa-arrow-left text-[10px]"></i> 返回深度创作工场
+                            <i class="fas fa-arrow-left text-[10px]"></i> <span id="mkt-banner-back-text">返回深度创作工场</span>
                         </button>
                     </div>
                 </div>
@@ -22,63 +22,63 @@
                     <div class="lg:col-span-5 glass-card p-5 space-y-5">
                         <div class="flex items-center gap-2 pb-3 border-b border-dark-border">
                             <i class="fas fa-wand-magic-sparkles text-accent-gold text-sm"></i>
-                            <h3 class="font-semibold text-white text-sm">全渠道爆款营销与合规风控</h3>
+                            <h3 id="mkt-form-title" class="font-semibold text-white text-sm">全渠道爆款营销与合规风控</h3>
                         </div>
 
                         <div>
-                            <label class="block text-[11px] text-slate-500 mb-2">主推产品 / 主题名称</label>
+                            <label id="mkt-label-pname" class="block text-[11px] text-slate-500 mb-2">主推产品 / 主题名称</label>
                             <input id="mkt-product-name" type="text" value="天然和田碧玉平安扣吊坠" class="w-full bg-dark-900 border border-dark-border rounded-lg px-3.5 py-2.5 text-[13px] text-white focus:outline-none" />
                         </div>
 
                         <div>
-                            <label class="block text-[11px] text-slate-500 mb-2">发布渠道矩阵</label>
+                            <label id="mkt-label-platform" class="block text-[11px] text-slate-500 mb-2">发布渠道矩阵</label>
                             <!-- 5 个渠道统一为同一套中性样式，选中态只有一种金色 -->
                             <div class="grid grid-cols-3 sm:grid-cols-5 gap-2">
                                 <label class="cursor-pointer">
                                     <input type="radio" name="mkt-platform" value="xiaohongshu" checked class="peer sr-only">
                                     <div class="py-2.5 px-1 rounded-lg border border-dark-border text-center transition-colors peer-checked:border-accent-gold/50 peer-checked:bg-accent-gold/10 peer-checked:text-accent-gold">
                                         <i class="fab fa-instagram block text-sm mb-1"></i>
-                                        <span class="text-[11px]">Instagram 视觉帖</span>
+                                        <span id="mkt-plat-insta-text" class="text-[11px]">Instagram 视觉帖</span>
                                     </div>
                                 </label>
                                 <label class="cursor-pointer">
                                     <input type="radio" name="mkt-platform" value="douyin" class="peer sr-only">
                                     <div class="py-2.5 px-1 rounded-lg border border-dark-border text-center transition-colors peer-checked:border-accent-gold/50 peer-checked:bg-accent-gold/10 peer-checked:text-accent-gold">
                                         <i class="fab fa-tiktok block text-sm mb-1"></i>
-                                        <span class="text-[11px]">TikTok 爆款脚本</span>
+                                        <span id="mkt-plat-tiktok-text" class="text-[11px]">TikTok 爆款脚本</span>
                                     </div>
                                 </label>
                                 <label class="cursor-pointer">
                                     <input type="radio" name="mkt-platform" value="wechat" class="peer sr-only">
                                     <div class="py-2.5 px-1 rounded-lg border border-dark-border text-center transition-colors peer-checked:border-accent-gold/50 peer-checked:bg-accent-gold/10 peer-checked:text-accent-gold">
                                         <i class="fab fa-whatsapp block text-sm mb-1"></i>
-                                        <span class="text-[11px]">WhatsApp / 私域</span>
+                                        <span id="mkt-plat-wa-text" class="text-[11px]">WhatsApp / 私域</span>
                                     </div>
                                 </label>
                                 <label class="cursor-pointer">
                                     <input type="radio" name="mkt-platform" value="tmall" class="peer sr-only">
                                     <div class="py-2.5 px-1 rounded-lg border border-dark-border text-center transition-colors peer-checked:border-accent-gold/50 peer-checked:bg-accent-gold/10 peer-checked:text-accent-gold">
                                         <i class="fas fa-shopping-bag block text-sm mb-1"></i>
-                                        <span class="text-[11px]">Shopify 详情页</span>
+                                        <span id="mkt-plat-shopify-text" class="text-[11px]">Shopify 详情页</span>
                                     </div>
                                 </label>
                                 <label class="cursor-pointer">
                                     <input type="radio" name="mkt-platform" value="moments" class="peer sr-only">
                                     <div class="py-2.5 px-1 rounded-lg border border-dark-border text-center transition-colors peer-checked:border-accent-gold/50 peer-checked:bg-accent-gold/10 peer-checked:text-accent-gold">
                                         <i class="fab fa-x-twitter block text-sm mb-1"></i>
-                                        <span class="text-[11px]">X / 跨境短推</span>
+                                        <span id="mkt-plat-x-text" class="text-[11px]">X / 跨境短推</span>
                                     </div>
                                 </label>
                             </div>
                         </div>
 
                         <div>
-                            <label class="block text-[11px] text-slate-500 mb-2">核心卖点关键词</label>
+                            <label id="mkt-label-kw" class="block text-[11px] text-slate-500 mb-2">核心卖点关键词</label>
                             <input id="mkt-keywords" type="text" value="温润细腻, 原矿老料, 附权威证书, 送礼高阶" class="w-full bg-dark-900 border border-dark-border rounded-lg px-3.5 py-2.5 text-[13px] text-white focus:outline-none" />
                         </div>
 
                         <button id="btn-marketing-run" onclick="handleMarketingGenerate()" class="btn-primary w-full py-2.5 rounded-lg text-[13px] flex items-center justify-center gap-2">
-                            一键生成爆款内容并质检
+                            <span id="mkt-btn-run-text">一键生成爆款内容并质检</span>
                         </button>
                     </div>
 
@@ -89,7 +89,7 @@
                             <div class="flex items-center justify-between pb-3 border-b border-dark-border mb-4 gap-3">
                                 <h4 id="mkt-result-title" class="font-medium text-white text-[13px] leading-snug">一眼惊艳！被闺蜜追着要链接的【天然和田碧玉平安扣吊坠】到底有多绝</h4>
                                 <button onclick="copyMarketingContent()" class="btn-ghost px-2.5 py-1 rounded-md text-[11px] flex-shrink-0">
-                                    复制文案
+                                    <span id="mkt-btn-copy-text">复制文案</span>
                                 </button>
                             </div>
                             <div id="mkt-result-body" class="p-4 rounded-lg bg-dark-900 border border-dark-border text-[12px] text-slate-400 leading-relaxed font-mono whitespace-pre-wrap max-h-[280px] overflow-y-auto">
@@ -102,10 +102,10 @@
                             <div class="flex items-center justify-between mb-4">
                                 <div class="flex items-center gap-2">
                                     <i class="fas fa-shield-virus text-accent-emerald text-sm"></i>
-                                    <h4 class="font-semibold text-white text-sm">《新广告法》与平台违禁词质检报告</h4>
+                                    <h4 id="mkt-compliance-title" class="font-semibold text-white text-sm">《新广告法》与平台违禁词质检报告</h4>
                                 </div>
                                 <div class="flex items-center gap-2 flex-shrink-0">
-                                    <span class="text-[11px] text-slate-500">合规评分</span>
+                                    <span id="mkt-compliance-score-label" class="text-[11px] text-slate-500">合规评分</span>
                                     <span id="mkt-score" class="text-[15px] font-semibold text-accent-emerald font-mono">100 / 100</span>
                                 </div>
                             </div>

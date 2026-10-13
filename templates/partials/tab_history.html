@@ -6,8 +6,8 @@
                 <div class="glass-card px-4 py-3 flex items-center justify-between flex-wrap gap-3">
                     <div class="flex items-center gap-2 min-w-0">
                         <i class="fas fa-clock-rotate-left text-accent-gold text-sm"></i>
-                        <h3 class="font-semibold text-white text-sm">服务可用性与延迟趋势</h3>
-                        <span class="text-[11px] text-slate-600 hidden sm:inline">共享巡检器每 3s 探测并落盘 SQLite</span>
+                        <h3 id="hist-tab-title" class="font-semibold text-white text-sm">服务可用性与延迟趋势</h3>
+                        <span id="hist-tab-desc" class="text-[11px] text-slate-600 hidden sm:inline">共享巡检器每 3s 探测并落盘 SQLite</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <div class="flex rounded-lg overflow-hidden border border-dark-border">
@@ -25,7 +25,7 @@
                         <div class="flex items-center justify-between mb-3">
                             <div class="flex items-center gap-2">
                                 <i class="fas fa-heart-pulse text-accent-emerald text-xs"></i>
-                                <h4 class="text-slate-200 text-[13px] font-medium">各服务在线率（窗口内聚合 %）</h4>
+                                <h4 id="hist-uptime-title" class="text-slate-200 text-[13px] font-medium">各服务在线率（窗口内聚合 %）</h4>
                             </div>
                             <span class="text-[10px] text-slate-600 font-mono">0 = 离线窗口</span>
                         </div>
@@ -37,7 +37,7 @@
                         <div class="flex items-center justify-between mb-3">
                             <div class="flex items-center gap-2">
                                 <i class="fas fa-stopwatch text-accent-amber text-xs"></i>
-                                <h4 class="text-slate-200 text-[13px] font-medium">TCP 探测延迟（ms 本机回环）</h4>
+                                <h4 id="hist-latency-title" class="text-slate-200 text-[13px] font-medium">TCP 探测延迟（ms 本机回环）</h4>
                             </div>
                             <span class="text-[10px] text-slate-600 font-mono">实测值，非预设</span>
                         </div>
@@ -50,9 +50,11 @@
                     <div class="flex items-center justify-between mb-3">
                         <div class="flex items-center gap-2">
                             <i class="fas fa-receipt text-accent-sand text-xs"></i>
-                            <h4 class="text-slate-200 text-[13px] font-medium">历史事件回放（最近 60 条，倒序）</h4>
+                            <h4 id="hist-events-title" class="text-slate-200 text-[13px] font-medium">历史事件回放（最近 60 条，倒序）</h4>
                         </div>
-                        <button onclick="loadHistory(currentHistoryRange)" class="btn-ghost px-2.5 py-1 rounded-md text-[11px]">刷新</button>
+                        <button onclick="loadHistory(currentHistoryRange)" class="btn-ghost px-2.5 py-1 rounded-md text-[11px]">
+                            <span id="hist-refresh-btn-text">刷新</span>
+                        </button>
                     </div>
                     <div id="history-event-list" class="bg-dark-900 rounded-lg p-3 font-mono text-[11px] overflow-y-auto space-y-1.5 border border-dark-border max-h-72">
                         <div class="text-slate-700">加载中</div>

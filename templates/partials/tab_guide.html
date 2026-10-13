@@ -12,14 +12,14 @@
                                     <i class="fas fa-gem text-sm"></i>
                                 </div>
                                 <div class="min-w-0">
-                                    <div class="text-[13px] text-white font-medium truncate">琼华海外轻奢 · AI 独立站智能导购 (Global Concierge)</div>
+                                    <div id="guide-panel-title" class="text-[13px] text-white font-medium truncate">琼华海外轻奢 · AI 独立站智能导购 (Global Concierge)</div>
                                     <div class="text-[11px] text-accent-emerald flex items-center gap-1.5">
                                         <span class="w-1 h-1 rounded-full bg-accent-emerald"></span>
-                                        多语言多轮会话 + 全球直邮/货币换算与工具自纠错
+                                        <span id="guide-subtitle-text">多语言多轮会话 + 全球直邮/货币换算与工具自纠错</span>
                                     </div>
                                 </div>
                             </div>
-                            <button onclick="clearGuideChat()" class="btn-ghost px-2.5 py-1 rounded-md text-[11px]">
+                            <button id="guide-clear-btn" onclick="clearGuideChat()" class="btn-ghost px-2.5 py-1 rounded-md text-[11px]">
                                 清空
                             </button>
                         </div>
@@ -31,7 +31,7 @@
                                 <div class="w-7 h-7 rounded-md bg-accent-sand/15 text-accent-sand flex items-center justify-center text-[11px] flex-shrink-0 mt-0.5">
                                     <i class="fas fa-robot"></i>
                                 </div>
-                                <div class="rounded-xl rounded-tl-sm bg-dark-700 border border-dark-border text-[13px] leading-relaxed px-4 py-3 max-w-[85%] text-slate-300">
+                                <div id="guide-welcome-msg" class="rounded-xl rounded-tl-sm bg-dark-700 border border-dark-border text-[13px] leading-relaxed px-4 py-3 max-w-[85%] text-slate-300">
                                     您好！我是琼华珠宝全球独立站的资深 AI 选品顾问「Qionghua Concierge」。<br><br>
                                     我可以为您智能挑选天然翡翠、莫桑石、珍珠等轻奢饰品，支持按美元/多币种预算与欧美礼遇季场景推荐，也可帮您查询 GIA 国际鉴定证书与全球直邮规范。请问您今天想挑选哪类首饰？
                                 </div>
@@ -40,14 +40,14 @@
 
                         <!-- 快捷提问词：统一 chip 样式，去掉 emoji 与彩色底 -->
                         <div class="px-4 py-2.5 border-t border-dark-border flex items-center gap-2 overflow-x-auto">
-                            <span class="text-[11px] text-slate-600 whitespace-nowrap">快捷测试</span>
-                            <button onclick="sendQuickPrompt('帮我推荐一款 $200-$500 送礼的天然和田玉吊坠，支持国际直邮吗？')" class="chip">
+                            <span id="guide-quick-label" class="text-[11px] text-slate-600 whitespace-nowrap">快捷测试</span>
+                            <button id="guide-chip-1" onclick="sendQuickPrompt('帮我推荐一款 $200-$500 送礼的天然和田玉吊坠，支持国际直邮吗？')" class="chip">
                                 送礼天然玉石 ($200-$500)
                             </button>
-                            <button onclick="sendQuickPrompt('有没有 500 元无门槛优惠券？')" class="chip">
+                            <button id="guide-chip-2" onclick="sendQuickPrompt('有没有 500 元无门槛优惠券？')" class="chip">
                                 测试券超出自纠错
                             </button>
-                            <button onclick="sendQuickPrompt('莫桑钻和天然钻石有什么区别？附带 GIA/IGI 权威证书吗？')" class="chip">
+                            <button id="guide-chip-3" onclick="sendQuickPrompt('莫桑钻和天然钻石有什么区别？附带 GIA/IGI 权威证书吗？')" class="chip">
                                 莫桑钻与 GIA 国际认证
                             </button>
                         </div>
@@ -56,7 +56,7 @@
                         <div class="p-4 border-t border-dark-border">
                             <form onsubmit="handleGuideSend(event)" class="flex gap-2.5">
                                 <input id="guide-input" type="text" placeholder="输入您对珠宝的需求，如“想买个两千元左右显气质的珍珠项链”…" class="flex-1 bg-dark-900 border border-dark-border rounded-lg px-4 py-2.5 text-[13px] focus:outline-none text-white placeholder-slate-600" />
-                                <button type="submit" class="btn-primary px-5 py-2.5 rounded-lg text-[13px] flex items-center">
+                                <button id="guide-send-btn" type="submit" class="btn-primary px-5 py-2.5 rounded-lg text-[13px] flex items-center">
                                     发送
                                 </button>
                             </form>
@@ -69,7 +69,7 @@
                             <div class="flex items-center justify-between pb-3 border-b border-dark-border mb-4">
                                 <div class="flex items-center gap-2">
                                     <i class="fas fa-route text-accent-amber text-sm"></i>
-                                    <h3 class="font-semibold text-white text-sm">Agent 推理时序与自纠错跟踪</h3>
+                                    <h3 id="guide-trace-title" class="font-semibold text-white text-sm">Agent 推理时序与自纠错跟踪</h3>
                                 </div>
                                 <span id="guide-self-correct-badge" class="hidden px-2 py-0.5 rounded text-[10px] font-mono bg-accent-amber/15 text-accent-amber border border-accent-amber/30">
                                     触发纠错机制
@@ -79,24 +79,24 @@
                             <div id="guide-trace-steps" class="space-y-2">
                                 <div class="px-3 py-2.5 rounded-lg bg-dark-700/40 border border-dark-border text-[11px]">
                                     <div class="flex items-center justify-between text-slate-500 font-mono mb-1">
-                                        <span>Step 1 · 意图路由</span>
-                                        <span class="text-accent-emerald">READY</span>
+                                        <span id="guide-step-1-title">Step 1 · 意图路由</span>
+                                        <span id="guide-step-1-status" class="text-accent-emerald">READY</span>
                                     </div>
-                                    <div class="text-slate-400">等待用户输入，激活分类状态机…</div>
+                                    <div id="guide-step-1-detail" class="text-slate-400">等待用户输入，激活分类状态机…</div>
                                 </div>
                                 <div class="px-3 py-2.5 rounded-lg bg-dark-700/40 border border-dark-border text-[11px]">
                                     <div class="flex items-center justify-between text-slate-500 font-mono mb-1">
-                                        <span>Step 2 · 向量混合检索</span>
-                                        <span class="text-slate-600">IDLE</span>
+                                        <span id="guide-step-2-title">Step 2 · 向量混合检索</span>
+                                        <span id="guide-step-2-status" class="text-slate-600">IDLE</span>
                                     </div>
-                                    <div class="text-slate-600">BM25 + 向量空间待命</div>
+                                    <div id="guide-step-2-detail" class="text-slate-600">BM25 + 向量空间待命</div>
                                 </div>
                                 <div class="px-3 py-2.5 rounded-lg bg-dark-700/40 border border-dark-border text-[11px]">
                                     <div class="flex items-center justify-between text-slate-500 font-mono mb-1">
-                                        <span>Step 3 · 工具调用与校验</span>
-                                        <span class="text-slate-600">IDLE</span>
+                                        <span id="guide-step-3-title">Step 3 · 工具调用与校验</span>
+                                        <span id="guide-step-3-status" class="text-slate-600">IDLE</span>
                                     </div>
-                                    <div class="text-slate-600">支持优惠券合规性与库存实时校验</div>
+                                    <div id="guide-step-3-detail" class="text-slate-600">支持优惠券合规性与库存实时校验</div>
                                 </div>
                             </div>
                         </div>
@@ -104,13 +104,13 @@
                         <!-- 架构指标（全部为运行时实测/实报，不留写死的假数） -->
                         <div class="mt-4 p-3 rounded-lg bg-dark-900 border border-dark-border text-[11px] font-mono space-y-1.5 text-slate-500">
                             <div class="flex justify-between">
-                                <span>推演框架：</span><span class="text-slate-200">LangGraph 反思状态机</span>
+                                <span id="guide-lbl-framework">推演框架：</span><span id="guide-framework-val" class="text-slate-200">LangGraph 反思状态机</span>
                             </div>
                             <div class="flex justify-between">
-                                <span>单步耗时：</span><span id="guide-latency" class="text-accent-gold">—</span>
+                                <span id="guide-lbl-latency">单步耗时：</span><span id="guide-latency" class="text-accent-gold">—</span>
                             </div>
                             <div class="flex justify-between">
-                                <span>应答来源：</span><span id="guide-backend" class="text-slate-500">—</span>
+                                <span id="guide-lbl-backend">应答来源：</span><span id="guide-backend" class="text-slate-500">—</span>
                             </div>
                         </div>
                     </div>

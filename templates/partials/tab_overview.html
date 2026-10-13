@@ -44,7 +44,7 @@
             <!-- KPI 1: Brand / GMV -->
             <div class="p-3.5 rounded-xl bg-dark-900/70 border border-dark-border hover:border-amber-500/30 transition-all group">
                 <div class="flex items-center justify-between text-slate-400 text-[11px] mb-1.5">
-                    <span class="group-hover:text-amber-200/90 transition-colors">Brand / DTC 累计全域 GMV</span>
+                    <span id="kpi-gmv-title" class="group-hover:text-amber-200/90 transition-colors">Brand / DTC 累计全域 GMV</span>
                     <div class="w-6 h-6 rounded-md bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-accent-gold">
                         <i class="fas fa-chart-column text-xs"></i>
                     </div>
@@ -53,7 +53,7 @@
                     ¥2,458,790
                 </div>
                 <div class="text-[10px] text-slate-400 mt-1.5 flex items-center justify-between font-mono">
-                    <span class="text-slate-500">折合 $342,800 USD</span>
+                    <span id="kpi-gmv-sub" class="text-slate-500">折合 $342,800 USD</span>
                     <span class="text-accent-emerald font-semibold">+34.2% YoY</span>
                 </div>
             </div>
@@ -61,7 +61,7 @@
             <!-- KPI 2: Real-time Sales Revenue -->
             <div class="p-3.5 rounded-xl bg-dark-900/70 border border-dark-border hover:border-amber-500/30 transition-all group">
                 <div class="flex items-center justify-between text-slate-400 text-[11px] mb-1.5">
-                    <span class="group-hover:text-amber-200/90 transition-colors">Real-time Sales Revenue (今日)</span>
+                    <span id="kpi-rev-title" class="group-hover:text-amber-200/90 transition-colors">Real-time Sales Revenue (今日)</span>
                     <div class="w-6 h-6 rounded-md bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-accent-gold">
                         <i class="fas fa-sack-dollar text-xs"></i>
                     </div>
@@ -70,7 +70,7 @@
                     ¥2,458,790
                 </div>
                 <div class="text-[10px] text-slate-400 mt-1.5 flex items-center justify-between font-mono">
-                    <span class="text-slate-500">实时成单入账</span>
+                    <span id="kpi-rev-sub" class="text-slate-500">实时成单入账</span>
                     <span class="text-accent-gold flex items-center gap-1"><i class="fas fa-signal text-[9px]"></i> 实时流</span>
                 </div>
             </div>
@@ -78,7 +78,7 @@
             <!-- KPI 3: AI Content ROI Ratio -->
             <div class="p-3.5 rounded-xl bg-dark-900/70 border border-dark-border hover:border-amber-500/30 transition-all group">
                 <div class="flex items-center justify-between text-slate-400 text-[11px] mb-1.5">
-                    <span class="group-hover:text-amber-200/90 transition-colors">AI Content ROI Ratio</span>
+                    <span id="kpi-roi-title" class="group-hover:text-amber-200/90 transition-colors">AI Content ROI Ratio</span>
                     <div class="w-6 h-6 rounded-md bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-accent-gold">
                         <i class="fas fa-chart-line text-xs"></i>
                     </div>
@@ -87,7 +87,7 @@
                     47.2x
                 </div>
                 <div class="text-[10px] text-slate-400 mt-1.5 flex items-center justify-between font-mono">
-                    <span class="text-slate-500">人效综合放大倍数</span>
+                    <span id="kpi-roi-sub" class="text-slate-500">人效综合放大倍数</span>
                     <span class="text-accent-emerald font-semibold">+18.5% 环比</span>
                 </div>
             </div>
@@ -95,7 +95,7 @@
             <!-- KPI 4: Total AI Orders & Agent 集群在线探测保活 -->
             <div class="p-3.5 rounded-xl bg-dark-900/70 border border-dark-border hover:border-amber-500/30 transition-all group">
                 <div class="flex items-center justify-between text-slate-400 text-[11px] mb-1.5">
-                    <span class="group-hover:text-amber-200/90 transition-colors">Total AI Orders (智能接单)</span>
+                    <span id="kpi-orders-title" class="group-hover:text-amber-200/90 transition-colors">Total AI Orders (智能接单)</span>
                     <div class="w-6 h-6 rounded-md bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-accent-gold">
                         <i class="fas fa-cart-shopping text-xs"></i>
                     </div>
@@ -107,7 +107,7 @@
                     </span>
                 </div>
                 <div class="text-[10px] text-slate-400 mt-1.5 flex items-center justify-between font-mono">
-                    <span class="text-slate-500">零人工干预直通单</span>
+                    <span id="kpi-orders-sub" class="text-slate-500">零人工干预直通单</span>
                     <span class="text-accent-cyan font-semibold">99.4% 履约率</span>
                 </div>
             </div>
@@ -126,7 +126,7 @@
                     <i class="fas fa-filter text-accent-gold text-xs"></i>
                     <h3 class="font-semibold text-white text-[13px] tracking-wide">E-commerce Conversion</h3>
                 </div>
-                <span class="tag tag-accent text-[9px] font-mono">DTC 漏斗</span>
+                <span id="funnel-tag" class="tag tag-accent text-[9px] font-mono">DTC 漏斗</span>
             </div>
 
             <!-- 4 阶梯队形漏斗卡片 (金色与暖橙发光进度) -->
@@ -192,14 +192,14 @@
                         <span>Orders</span>
                         <span class="text-amber-100 font-mono">(9,120)</span>
                     </div>
-                    <div class="text-[10px] text-rose-100/90 mt-0.5 font-mono">
+                    <div id="funnel-order-note" class="text-[10px] text-rose-100/90 mt-0.5 font-mono">
                         成单转化率 13.8% (行业基线 2.8%)
                     </div>
                 </div>
             </div>
 
             <div class="pt-2 border-t border-dark-border/60 text-[10px] text-slate-400 flex items-center justify-between font-mono">
-                <span>出海全链路转化增益</span>
+                <span id="funnel-bottom-note">出海全链路转化增益</span>
                 <span class="text-accent-emerald font-bold">+34.8% AI Lift</span>
             </div>
         </div>

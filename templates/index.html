@@ -1077,8 +1077,12 @@
                 'funnel-tag': 'DTC 漏斗',
                 'funnel-order-note': '成单转化率 13.8% (行业基线 2.8%)',
                 'funnel-bottom-note': '出海全链路转化增益',
-                'guide-subtitle': '<span class="w-1 h-1 rounded-full bg-accent-emerald"></span>多语言多轮会话 + 全球直邮/货币换算与工具自纠错',
+                'guide-panel-title': '琼华海外轻奢 · AI 独立站智能导购 (Global Concierge)',
+                'guide-subtitle': '<span class="w-1 h-1 rounded-full bg-accent-emerald"></span><span id="guide-subtitle-text">多语言多轮会话 + 全球直邮/货币换算与工具自纠错</span>',
+                'guide-subtitle-text': '多语言多轮会话 + 全球直邮/货币换算与工具自纠错',
+                'guide-welcome-msg': '您好！我是琼华珠宝全球独立站的资深 AI 选品顾问「Qionghua Concierge」。<br><br>我可以为您智能挑选天然翡翠、莫桑石、珍珠等轻奢饰品，支持按美元/多币种预算与欧美礼遇季场景推荐，也可帮您查询 GIA 国际鉴定证书与全球直邮规范。请问您今天想挑选哪类首饰？',
                 'guide-clear-btn': '清空',
+                'guide-quick-label': '快捷测试',
                 'guide-chip-1': '送礼天然玉石 ($200-$500)',
                 'guide-chip-2': '测试券超出自纠错',
                 'guide-chip-3': '莫桑钻与 GIA 国际认证',
@@ -1086,6 +1090,16 @@
                 'guide-send-btn': '发送',
                 'guide-trace-title': 'Agent 推理时序与自纠错跟踪',
                 'guide-self-correct-badge': '触发纠错机制',
+                'guide-step-1-title': 'Step 1 · 意图路由',
+                'guide-step-1-detail': '等待用户输入，激活分类状态机…',
+                'guide-step-2-title': 'Step 2 · 向量混合检索',
+                'guide-step-2-detail': 'BM25 + 向量空间待命',
+                'guide-step-3-title': 'Step 3 · 工具调用与校验',
+                'guide-step-3-detail': '支持优惠券合规性与库存实时校验',
+                'guide-lbl-framework': '推演框架：',
+                'guide-framework-val': 'LangGraph 反思状态机',
+                'guide-lbl-latency': '单步耗时：',
+                'guide-lbl-backend': '应答来源：',
                 'mkt-banner-step': '工序定位：第二道 · 全渠道矩阵分发与合规风控 (Coze)',
                 'mkt-banner-desc': '接收来自「出海社媒工场 (LangGraph)」或「短视频切片 (FunASR)」的母版内容进行 5 大海外渠道派生',
                 'mkt-banner-back': '<i class="fas fa-arrow-left text-[10px]"></i> 返回深度创作工场',
@@ -1302,15 +1316,29 @@
                 'funnel-tag': 'DTC Funnel',
                 'funnel-order-note': 'Order Conversion Rate 13.8% (Benchmark 2.8%)',
                 'funnel-bottom-note': 'Full-Funnel DTC Conversion Lift',
-                'guide-subtitle': '<span class="w-1 h-1 rounded-full bg-accent-emerald"></span>Multi-turn Concierge · Worldwide Shipping & Self-Correction Engine',
+                'guide-panel-title': 'Qionghua Fine Jewelry · Global AI Concierge',
+                'guide-subtitle': '<span class="w-1 h-1 rounded-full bg-accent-emerald"></span><span id="guide-subtitle-text">Multi-turn Concierge · Worldwide Shipping & Self-Correction Engine</span>',
+                'guide-subtitle-text': 'Multi-turn Concierge · Worldwide Shipping & Self-Correction Engine',
+                'guide-welcome-msg': 'Hello! I am "Qionghua Concierge", your AI jewelry advisor for our global DTC atelier.<br><br>I can curate fine jadeite, moissanite, and organic pearl jewelry, recommend gifts across USD and international currencies, and verify GIA/GRA certifications with worldwide insured shipping. What kind of fine jewelry are you looking for today?',
                 'guide-clear-btn': 'Clear',
+                'guide-quick-label': 'Quick Test:',
                 'guide-chip-1': 'Gift Natural Jade ($200-$500)',
                 'guide-chip-2': 'Test Self-Correction ($500 Coupon)',
                 'guide-chip-3': 'Moissanite & GIA/GRA Cert',
                 'guide-input-placeholder': 'Ask anything, e.g. "Recommend a classic D-color moissanite ring under $400"...',
                 'guide-send-btn': 'Send',
-                'guide-trace-title': 'Agent Reasoning Pipeline & Self-Correction Trace',
+                'guide-trace-title': 'Agent Reasoning Timeline & Self-Correction Trace',
                 'guide-self-correct-badge': 'Self-Correction Triggered',
+                'guide-step-1-title': 'Step 1 · Intent Routing',
+                'guide-step-1-detail': 'Waiting for user input, state machine standby...',
+                'guide-step-2-title': 'Step 2 · Hybrid Vector Search',
+                'guide-step-2-detail': 'BM25 + Vector embeddings ready',
+                'guide-step-3-title': 'Step 3 · Tool Execution & Guardrails',
+                'guide-step-3-detail': 'Validating coupon policy & live inventory',
+                'guide-lbl-framework': 'Engine:',
+                'guide-framework-val': 'LangGraph Reflection State Machine',
+                'guide-lbl-latency': 'Latency:',
+                'guide-lbl-backend': 'Source:',
                 'mkt-banner-step': 'Stage 2 · Omnichannel Matrix Distribution & Compliance (Coze)',
                 'mkt-banner-desc': 'Derives 5 overseas channel variants from LangGraph & FunASR master copy',
                 'mkt-banner-back': '<i class="fas fa-arrow-left text-[10px]"></i> Back to Deep Studio',
@@ -1609,23 +1637,26 @@
             // 7. Guide Tab
             const guideSub = document.querySelector('#tab-guide .text-accent-emerald');
             if (guideSub) guideSub.innerHTML = p['guide-subtitle'];
-            const guideClear = document.querySelector('#tab-guide button[onclick="clearGuideChat()"]');
-            if (guideClear) guideClear.textContent = p['guide-clear-btn'];
-            const chip1 = document.querySelector('#tab-guide button[onclick*="sendQuickPrompt"][onclick*="200"]');
+            // 7. Guide Tab
+            const welcomeEl = document.getElementById('guide-welcome-msg');
+            if (welcomeEl) {
+                welcomeEl.innerHTML = p['guide-welcome-msg'];
+            }
+            const chip1 = document.getElementById('guide-chip-1');
             if (chip1) {
                 chip1.textContent = p['guide-chip-1'];
                 chip1.setAttribute('onclick', l === 'en' 
                     ? "sendQuickPrompt('Recommend a natural Hetian jade pendant between $200-$500 for a luxury gift. Is worldwide shipping supported?')"
                     : "sendQuickPrompt('帮我推荐一款 $200-$500 送礼的天然和田玉吊坠，支持国际直邮吗？')");
             }
-            const chip2 = document.querySelector('#tab-guide button[onclick*="sendQuickPrompt"][onclick*="500"]');
+            const chip2 = document.getElementById('guide-chip-2');
             if (chip2) {
                 chip2.textContent = p['guide-chip-2'];
                 chip2.setAttribute('onclick', l === 'en'
                     ? "sendQuickPrompt('Do you have an unconditional $500 voucher code?')"
                     : "sendQuickPrompt('有没有 500 元无门槛优惠券？')");
             }
-            const chip3 = document.querySelector('#tab-guide button[onclick*="sendQuickPrompt"][onclick*="莫桑"]');
+            const chip3 = document.getElementById('guide-chip-3');
             if (chip3) {
                 chip3.textContent = p['guide-chip-3'];
                 chip3.setAttribute('onclick', l === 'en'
@@ -1634,8 +1665,6 @@
             }
             const guideInput = document.getElementById('guide-input');
             if (guideInput) guideInput.placeholder = p['guide-input-placeholder'];
-            const guideSend = document.querySelector('#tab-guide button[type="submit"]');
-            if (guideSend) guideSend.textContent = p['guide-send-btn'];
 
             // 8. Knowledge Base (RAG) Tab
             const ragInput = document.getElementById('rag-input');
@@ -1708,6 +1737,16 @@
             // 13. Comprehensive element text replacement from I18N_PACK
             [
                 'sidebar-status-text', 'hud-title-badge', 'btn-cmd-palette-label', 'btn-failover-label', 'btn-failover-sublabel',
+                'kpi-gmv-title', 'kpi-gmv-sub', 'kpi-rev-title', 'kpi-rev-sub',
+                'kpi-roi-title', 'kpi-roi-sub', 'kpi-orders-title', 'kpi-orders-sub',
+                'funnel-tag', 'funnel-order-note', 'funnel-bottom-note',
+                'guide-panel-title', 'guide-subtitle-text', 'guide-clear-btn', 'guide-quick-label',
+                'guide-chip-1', 'guide-chip-2', 'guide-chip-3', 'guide-send-btn',
+                'guide-trace-title', 'guide-self-correct-badge',
+                'guide-step-1-title', 'guide-step-1-detail',
+                'guide-step-2-title', 'guide-step-2-detail',
+                'guide-step-3-title', 'guide-step-3-detail',
+                'guide-lbl-framework', 'guide-framework-val', 'guide-lbl-latency', 'guide-lbl-backend',
                 'xhs-banner-step', 'xhs-source-badge', 'xhs-banner-pipe-btn', 'xhs-panel-title', 'xhs-preset-label',
                 'xhs-btn-preset-1', 'xhs-btn-preset-2', 'xhs-btn-preset-3',
                 'xhs-lbl-product', 'xhs-lbl-tone', 'xhs-tone-opt-0', 'xhs-tone-opt-1', 'xhs-tone-opt-2',
@@ -3537,13 +3576,14 @@
             const thinkingDiv = document.createElement('div');
             thinkingDiv.id = 'guide-thinking-indicator';
             thinkingDiv.className = "flex items-start gap-3";
+            const isEn = (OmniStore.get('lang') || 'zh') === 'en';
             thinkingDiv.innerHTML = `
                 <div class="w-7 h-7 rounded-md bg-accent-sand/15 text-accent-sand flex items-center justify-center text-[11px] flex-shrink-0 mt-0.5 animate-pulse">
                     <i class="fas fa-robot"></i>
                 </div>
                 <div class="rounded-xl rounded-tl-sm bg-dark-700/60 border border-dark-border text-[12px] leading-relaxed px-3.5 py-2 text-slate-400 flex items-center gap-2">
                     <span class="w-1.5 h-1.5 rounded-full bg-accent-sand animate-ping"></span>
-                    <span>AI 正在多跳意图推理并检索知识库...</span>
+                    <span>${isEn ? 'AI is performing multi-hop reasoning & RAG retrieval...' : 'AI 正在多跳意图推理并检索知识库...'}</span>
                 </div>
             `;
             container.appendChild(thinkingDiv);
@@ -3596,18 +3636,20 @@
 
             } catch (err) {
                 if (thinkingDiv && thinkingDiv.parentNode) thinkingDiv.remove();
-                await appendAgentMessage("抱歉，导购中枢响应异常，已自动切入本地兜底模式。");
+                const isEn = (OmniStore.get('lang') || 'zh') === 'en';
+                await appendAgentMessage(isEn ? "Apologies, concierge encountered an issue. Switched to offline fallback." : "抱歉，导购中枢响应异常，已自动切入本地兜底模式。");
             }
         }
 
         function clearGuideChat() {
+            const isEn = (OmniStore.get('lang') || 'zh') === 'en';
             document.getElementById('guide-messages').innerHTML = `
                 <div class="flex items-start gap-3">
                     <div class="w-7 h-7 rounded-md bg-accent-sand/15 text-accent-sand flex items-center justify-center text-[11px] flex-shrink-0 mt-0.5">
                         <i class="fas fa-robot"></i>
                     </div>
-                    <div class="rounded-xl rounded-tl-sm bg-dark-700 border border-dark-border text-[13px] leading-relaxed px-4 py-3 max-w-[85%]">
-                        会话已清空，小琼随时为您服务！
+                    <div id="guide-welcome-msg" class="rounded-xl rounded-tl-sm bg-dark-700 border border-dark-border text-[13px] leading-relaxed px-4 py-3 max-w-[85%] text-slate-300">
+                        ${isEn ? 'Chat history cleared. Qionghua Concierge is at your service!' : '会话已清空，小琼随时为您服务！'}
                     </div>
                 </div>
             `;

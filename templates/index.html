@@ -16,7 +16,7 @@
     <link href="/static/vendor/fontawesome/css/all.min.css" rel="stylesheet">
     <script src="/static/vendor/chart.umd.js"></script>
     <!-- 双模式数据源：本地后端优先，失败自动降级（静态托管也能完整演示） -->
-    <script src="/static/omni-api.js"></script>
+    <script src="/static/omni-api.js?v=2.8.2"></script>
     <script>
         /* ============================================================
          * Design Tokens v6 —— 「曜石深空 × 霓虹翡翠 · Obsidian Cyber-Emerald」
@@ -3819,10 +3819,36 @@
                         };
                     } catch (customErr) {
                         console.warn('BYOK call failed, fallback to OmniAPI:', customErr);
-                        data = await OmniAPI.guideChat(msg, guideHistory);
+                        showToast(isEn ? `BYOK Upstream failed (${customErr.message}), switched to local fallback` : `私有 Key 上游请求失败: ${customErr.message}，已自动切入本地仿真兜底`, 'warning');
+                        if (typeof OmniAPI !== 'undefined' && OmniAPI.guideChat) {
+                            data = await OmniAPI.guideChat(msg, guideHistory);
+                        } else {
+                            data = {
+                                reply: isEn ? "Apologies, concierge encountered an issue. Switched to offline fallback." : "抱歉，导购中枢响应异常，已自动切入本地兜底模式。",
+                                backend: 'fallback:offline',
+                                latency_ms: 12,
+                                trace: [{ node: 'BYOK_Fallback', status: 'retry', detail: customErr.message }]
+                            };
+                        }
+                        if (data && data.trace) {
+                            data.trace.unshift({
+                                node: 'BYOK_Upstream',
+                                status: 'retry',
+                                detail: `私有 Key 调度失败: ${customErr.message}，已降级为本地仿真`
+                            });
+                        }
                     }
                 } else {
-                    data = await OmniAPI.guideChat(msg, guideHistory);
+                    if (typeof OmniAPI !== 'undefined' && OmniAPI.guideChat) {
+                        data = await OmniAPI.guideChat(msg, guideHistory);
+                    } else {
+                        data = {
+                            reply: isEn ? "Apologies, concierge offline." : "导购中枢离线中，请稍后再试。",
+                            backend: 'fallback:offline',
+                            latency_ms: 10,
+                            trace: []
+                        };
+                    }
                 }
                 if (thinkingDiv && thinkingDiv.parentNode) thinkingDiv.remove();
                 await appendAgentMessage(data.reply);
@@ -3870,7 +3896,8 @@
             } catch (err) {
                 if (thinkingDiv && thinkingDiv.parentNode) thinkingDiv.remove();
                 const isEn = (OmniStore.get('lang') || 'zh') === 'en';
-                await appendAgentMessage(isEn ? "Apologies, concierge encountered an issue. Switched to offline fallback." : "抱歉，导购中枢响应异常，已自动切入本地兜底模式。");
+                console.error('queryGuideAgent error:', err);
+                await appendAgentMessage(isEn ? `Apologies, concierge encountered an issue (${err.message}).` : `抱歉，导购中枢响应异常（${err.message}），已自动切入本地兜底模式。`);
             }
         }
 
@@ -5637,7 +5664,8 @@
                 resBox.innerHTML = `<i class="fas fa-spinner fa-spin mr-1.5 text-accent-cyan"></i> ${isEn ? 'Sending ping to' : '正在请求'} ${baseUrl}/chat/completions ...`;
             }
 
-            const endpoint = baseUrl.replace(/\/+$/, '') + '/chat/completions';
+            const cleanUrl = baseUrl.trim().replace(/\/+$/, '');
+            const endpoint = cleanUrl.endsWith('/chat/completions') ? cleanUrl : (cleanUrl + '/chat/completions');
             const t0 = performance.now();
 
             try {
@@ -5692,9 +5720,9 @@
         async function callCustomLlm(messages, options = {}) {
             const key = OmniStore.getCustomApiKey();
             if (!key) throw new Error('No custom API key set');
-            const baseUrl = (OmniStore.get('customApiBaseUrl') || 'https://api.deepseek.com/v1').replace(/\/+$/, '');
+            const rawUrl = (OmniStore.get('customApiBaseUrl') || 'https://api.deepseek.com/v1').trim().replace(/\/+$/, '');
             const model = options.model || OmniStore.get('customApiModel') || 'deepseek-chat';
-            const endpoint = baseUrl + '/chat/completions';
+            const endpoint = rawUrl.endsWith('/chat/completions') ? rawUrl : (rawUrl + '/chat/completions');
 
             const t0 = performance.now();
             const resp = await fetch(endpoint, {

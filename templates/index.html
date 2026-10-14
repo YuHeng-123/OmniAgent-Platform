@@ -713,15 +713,15 @@
     <main class="flex-1 flex flex-col bg-dark-900 overflow-hidden relative min-w-0">
 
         <!-- 顶部全局工具栏 (灵动岛 HUD 中枢架构) -->
-        <header class="h-14 bg-dark-800/95 border-b border-dark-border flex items-center justify-between px-3 sm:px-6 gap-2 z-30 flex-shrink-0 relative">
+        <header class="h-14 bg-dark-800/95 border-b border-dark-border flex items-center justify-between px-2 sm:px-4 lg:px-6 gap-1.5 sm:gap-2 z-30 flex-shrink-0 relative">
             <!-- 左侧：窄屏展开按钮与页面标题 -->
-            <div class="flex items-center gap-2.5 min-w-0">
+            <div class="flex items-center gap-2 min-w-0">
                 <button onclick="toggleSidebar()" class="lg:hidden btn-ghost w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0" title="展开导航">
                     <i class="fas fa-bars text-[13px]"></i>
                 </button>
-                <h1 id="page-title" class="text-[14px] sm:text-[15px] font-semibold text-white truncate flex items-center">
-                    <i class="fas fa-layer-group text-accent-emerald mr-2 text-sm"></i>
-                    全域智能体调度总览大盘
+                <h1 id="page-title" class="text-[13px] sm:text-[14px] font-semibold text-white truncate max-w-[130px] sm:max-w-[170px] xl:max-w-none flex items-center">
+                    <i class="fas fa-layer-group text-accent-emerald mr-1.5 text-sm flex-shrink-0"></i>
+                    <span class="truncate">全域智能体调度总览大盘</span>
                 </h1>
                 <!-- 企业级多租户 / 空间隔离切换器 (超宽屏显示，常规屏收纳以防挤压顶栏) -->
                 <div class="hidden 2xl:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-dark-950/80 border border-dark-border text-xs ml-2 flex-shrink-0">
@@ -737,7 +737,7 @@
             <!-- 中间：灵动岛 HUD 状态胶囊 (Dynamic Island Capsule - 纯横向胶囊永不折行) -->
             <div class="relative flex items-center justify-center flex-shrink-0">
                 <div id="dynamic-island" onclick="toggleDynamicIsland()" class="cursor-pointer group select-none transition-transform hover:scale-[1.02] active:scale-[0.98] flex-shrink-0 whitespace-nowrap">
-                    <div class="h-8 sm:h-9 px-3 sm:px-4 rounded-full bg-dark-950/90 border border-dark-border/90 hover:border-accent-cyan/60 shadow-lg shadow-black/50 backdrop-blur-md flex items-center gap-2 sm:gap-2.5 transition-all flex-shrink-0 whitespace-nowrap">
+                    <div class="h-8 sm:h-9 px-2.5 sm:px-3.5 rounded-full bg-dark-950/90 border border-dark-border/90 hover:border-accent-cyan/60 shadow-lg shadow-black/50 backdrop-blur-md flex items-center gap-1.5 sm:gap-2 transition-all flex-shrink-0 whitespace-nowrap">
                         <span class="relative flex h-2 w-2 flex-shrink-0">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
                             <span class="relative inline-flex rounded-full h-2 w-2 bg-accent-emerald"></span>
@@ -746,13 +746,13 @@
                         <span id="hud-title-badge" class="text-[11px] font-mono font-medium text-slate-200 hidden sm:inline flex-shrink-0">中枢 HUD</span>
                         <span class="h-3 w-[1px] bg-dark-border hidden sm:inline flex-shrink-0"></span>
                         
-                        <div class="flex items-center gap-2 text-[11px] font-mono flex-shrink-0 whitespace-nowrap">
+                        <div class="flex items-center gap-1.5 sm:gap-2 text-[11px] font-mono flex-shrink-0 whitespace-nowrap">
                             <span class="text-emerald-400 flex items-center gap-1 flex-shrink-0">
                                 <i class="fas fa-server text-[9px]"></i>
                                 <span id="hud-online-badge">7/7 在线</span>
                             </span>
-                            <span class="text-slate-600 hidden lg:inline">·</span>
-                            <span class="text-accent-cyan hidden lg:flex items-center gap-1 flex-shrink-0">
+                            <span class="text-slate-600 hidden xl:inline">·</span>
+                            <span class="text-accent-cyan hidden xl:flex items-center gap-1 flex-shrink-0">
                                 <i class="fas fa-route text-[9px]"></i>
                                 <span id="hud-proxy-badge">OpenAI代理</span>
                             </span>
@@ -847,30 +847,30 @@
             </div>
 
             <!-- 右侧：音效触感、RBAC 角色、指令中枢与容灾热切演示 -->
-            <div class="flex items-center gap-2 sm:gap-2.5 flex-shrink-0">
+            <div class="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
                 <!-- 用户私有 API Key 设置入口 (BYOK - Bring Your Own Key) -->
-                <button id="btn-apikey-modal" type="button" onclick="openApiKeyModal()" class="btn-ghost px-2.5 py-1.5 rounded-md text-[11px] font-mono flex items-center gap-1.5 border border-dark-border text-slate-300 hover:text-white hover:border-amber-400/40 relative" title="自定义 API Key / Configure Custom API Key">
+                <button id="btn-apikey-modal" type="button" onclick="openApiKeyModal()" class="btn-ghost px-2 py-1.5 rounded-md text-[11px] font-mono flex items-center gap-1.5 border border-dark-border text-slate-300 hover:text-white hover:border-amber-400/40 relative" title="自定义 API Key / Configure Custom API Key">
                     <i id="icon-apikey-status" class="fas fa-key text-[11px] text-amber-400"></i>
-                    <span id="label-apikey-btn" class="hidden sm:inline text-slate-300">API Key</span>
+                    <span id="label-apikey-btn" class="hidden md:inline text-slate-300">API Key</span>
                     <span id="dot-apikey-active" class="hidden w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                 </button>
 
                 <!-- 中英文双语语言切换器 (i18n Language Switcher) -->
-                <button id="btn-lang-toggle" onclick="toggleLanguage()" class="btn-ghost px-2.5 py-1.5 rounded-md text-[11px] font-mono flex items-center gap-1.5 border border-dark-border text-slate-300 hover:text-white hover:border-accent-cyan/40" title="Switch Language / 切换中英文">
+                <button id="btn-lang-toggle" onclick="toggleLanguage()" class="btn-ghost px-2 py-1.5 rounded-md text-[11px] font-mono flex items-center gap-1 border border-dark-border text-slate-300 hover:text-white hover:border-accent-cyan/40" title="Switch Language / 切换中英文">
                     <i class="fas fa-globe text-[11px] text-accent-cyan"></i>
                     <span id="label-lang-toggle" class="text-slate-300 font-semibold">EN</span>
                 </button>
 
                 <!-- UI 拟真音频交互反馈 (Web Audio Synthesizer) -->
-                <button id="btn-sound-toggle" onclick="toggleAudioSound()" class="btn-ghost px-2.5 py-1.5 rounded-md text-[11px] font-mono flex items-center gap-1.5 border border-dark-border text-slate-300 hover:text-white hover:border-accent-emerald/40" title="切换 UI 拟真音频交互反馈">
+                <button id="btn-sound-toggle" onclick="toggleAudioSound()" class="btn-ghost px-2 py-1.5 rounded-md text-[11px] font-mono flex items-center gap-1 border border-dark-border text-slate-300 hover:text-white hover:border-accent-emerald/40" title="切换 UI 拟真音频交互反馈">
                     <i id="icon-sound-toggle" class="fas fa-volume-high text-[11px] text-accent-emerald"></i>
-                    <span id="label-sound-toggle" class="hidden lg:inline text-slate-400">音效:开</span>
+                    <span id="label-sound-toggle" class="hidden 2xl:inline text-slate-400">音效:开</span>
                 </button>
 
                 <!-- 4-Tier 企业级 RBAC 角色身份切换 -->
-                <div class="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-md bg-dark-950/80 border border-dark-border text-xs">
-                    <i class="fas fa-user-shield text-accent-gold text-[11px]"></i>
-                    <select id="rbac-role-select" onchange="switchRbacRole(this.value)" class="bg-transparent text-slate-200 text-[11px] focus:outline-none cursor-pointer font-mono">
+                <div class="hidden sm:flex items-center gap-1 px-1.5 py-1 rounded-md bg-dark-950/80 border border-dark-border text-xs">
+                    <i class="fas fa-user-shield text-accent-gold text-[11px] flex-shrink-0"></i>
+                    <select id="rbac-role-select" onchange="switchRbacRole(this.value)" class="bg-transparent text-slate-200 text-[11px] focus:outline-none cursor-pointer font-mono max-w-[105px] xl:max-w-none truncate">
                         <option value="admin" class="bg-dark-900 text-slate-200">系统总管 (Admin)</option>
                         <option value="operator" class="bg-dark-900 text-slate-200">运营专家 (Operator)</option>
                         <option value="analyst" class="bg-dark-900 text-slate-200">数据分析师 (Analyst)</option>
@@ -879,22 +879,22 @@
                 </div>
 
                 <!-- 企业后台异步任务中心快捷入口 -->
-                <button id="btn-job-center" type="button" onclick="openJobCenterDrawer()" class="btn-ghost px-2.5 py-1.5 rounded-md text-[11px] font-mono flex items-center gap-1.5 border border-dark-border text-slate-300 hover:text-white hover:border-accent-cyan/40 relative" title="打开企业后台分布式任务中心">
+                <button id="btn-job-center" type="button" onclick="openJobCenterDrawer()" class="btn-ghost px-2 py-1.5 rounded-md text-[11px] font-mono flex items-center gap-1 border border-dark-border text-slate-300 hover:text-white hover:border-accent-cyan/40 relative" title="打开企业后台分布式任务中心">
                     <i class="fas fa-microchip text-[11px] text-accent-cyan"></i>
-                    <span class="hidden xl:inline text-slate-300">任务中心</span>
+                    <span class="hidden 2xl:inline text-slate-300">任务中心</span>
                     <span id="job-center-badge" class="px-1.5 py-0.2 rounded-full bg-accent-cyan/20 border border-accent-cyan/40 text-[9px] font-mono text-accent-cyan">0</span>
                 </button>
 
-                <button type="button" onclick="toggleCommandPalette()" class="btn-ghost px-2.5 py-1.5 rounded-md text-[11px] font-mono flex items-center gap-1.5 border border-dark-border text-slate-300 hover:text-white hover:border-accent-cyan/40" title="呼出全局指令中枢 (Ctrl + K / Cmd + K)">
+                <button type="button" onclick="toggleCommandPalette()" class="btn-ghost px-2 py-1.5 rounded-md text-[11px] font-mono flex items-center gap-1 border border-dark-border text-slate-300 hover:text-white hover:border-accent-cyan/40" title="呼出全局指令中枢 (Ctrl + K / Cmd + K)">
                     <i class="fas fa-terminal text-[10px] text-accent-cyan"></i>
-                    <span id="btn-cmd-palette-label" class="hidden md:inline text-slate-400">指令</span>
+                    <span id="btn-cmd-palette-label" class="hidden xl:inline text-slate-400">指令</span>
                     <kbd class="px-1.5 py-0.5 rounded bg-dark-950 border border-dark-border text-[9px] text-slate-400 font-mono">⌘K</kbd>
                 </button>
 
-                <button onclick="triggerQuickFailover()" class="btn-ghost px-3 py-1.5 rounded-md text-[11px] whitespace-nowrap flex items-center gap-1.5 border border-accent-gold/40 text-accent-gold hover:bg-accent-gold/10">
+                <button onclick="triggerQuickFailover()" class="btn-ghost px-2.5 py-1.5 rounded-md text-[11px] whitespace-nowrap flex items-center gap-1 border border-accent-gold/40 text-accent-gold hover:bg-accent-gold/10">
                     <i class="fas fa-bolt text-[10px]"></i>
-                    <span id="btn-failover-label" class="hidden sm:inline">容灾热切演示</span>
-                    <span id="btn-failover-sublabel" class="sm:hidden">热切</span>
+                    <span id="btn-failover-label" class="hidden xl:inline">容灾热切演示</span>
+                    <span id="btn-failover-sublabel" class="xl:hidden">热切</span>
                 </button>
             </div>
         </header>
@@ -978,17 +978,17 @@
             };
 
             const ROLE_LABELS_ZH = {
-                admin: '系统总管 (Admin · 全权管控)',
-                operator: '运营专家 (Operator · 业务流转)',
-                analyst: '数据分析师 (Analyst · 只读决策)',
-                auditor: '合规审计员 (Auditor · 审查归档)'
+                admin: '系统总管 (Admin)',
+                operator: '运营专家 (Operator)',
+                analyst: '数据分析 (Analyst)',
+                auditor: '合规审计 (Auditor)'
             };
 
             const ROLE_LABELS_EN = {
-                admin: 'System Admin (Full Access)',
-                operator: 'Operations Lead (Workflows)',
-                analyst: 'Data Analyst (Read-Only)',
-                auditor: 'Compliance Auditor (Audit Log)'
+                admin: 'Admin',
+                operator: 'Operator',
+                analyst: 'Analyst',
+                auditor: 'Auditor'
             };
 
             const TENANT_LABELS_ZH = {

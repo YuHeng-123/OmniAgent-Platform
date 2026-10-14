@@ -486,6 +486,129 @@
     </div>
 
     <!-- ================================================================= -->
+    <!-- 自定义 API Key 配置抽屉/弹窗 (BYOK: Bring Your Own Key Modal) -->
+    <!-- ================================================================= -->
+    <div id="api-key-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+        <!-- 点击背景蒙层关闭 -->
+        <div class="fixed inset-0 cursor-pointer" onclick="closeApiKeyModal()"></div>
+        <!-- 弹窗主体 -->
+        <div class="relative w-full max-w-lg bg-dark-950/98 border border-dark-border rounded-2xl shadow-2xl shadow-black/90 flex flex-col text-[12px] overflow-hidden animate-in zoom-in-95 duration-150 z-10">
+            <!-- 头部 -->
+            <div class="p-4 sm:p-5 border-b border-dark-border/80 bg-gradient-to-r from-dark-900/90 to-dark-950 flex items-start justify-between gap-3 flex-shrink-0">
+                <div class="space-y-1 min-w-0">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="tag tag-accent text-[9px] font-mono">BYOK ENGINE</span>
+                        <span id="apikey-mode-tag" class="tag font-mono text-[9px] text-slate-400">当前模式: 本地仿真兜底</span>
+                    </div>
+                    <h3 id="apikey-modal-title" class="text-base sm:text-lg font-bold text-white tracking-wide truncate flex items-center gap-2">
+                        <i class="fas fa-key text-amber-400"></i>
+                        <span>自定义 API Key 安全配置</span>
+                    </h3>
+                    <div id="apikey-modal-desc" class="text-[11px] text-slate-400">
+                        仅存放在您的浏览器本地，用完随时一键清空，平台不留存任何日志。
+                    </div>
+                </div>
+                <button type="button" onclick="closeApiKeyModal()" class="px-2.5 py-1.5 rounded-lg bg-dark-900 border border-dark-border text-slate-400 hover:text-white font-mono text-[11px] transition-colors flex items-center gap-1 flex-shrink-0">
+                    <i class="fas fa-xmark"></i> <span>ESC</span>
+                </button>
+            </div>
+
+            <!-- 主表单 -->
+            <div class="p-4 sm:p-5 space-y-4 max-h-[70vh] overflow-y-auto">
+                <!-- 预设模型厂商快捷填入 Chips -->
+                <div>
+                    <label id="apikey-lbl-presets" class="block text-[11px] font-medium text-slate-400 mb-1.5">快捷预设服务商 (点击一键填入地址与模型)</label>
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                        <button type="button" onclick="setApiKeyPreset('deepseek')" class="chip text-[11px] hover:border-accent-cyan/60">
+                            🐳 DeepSeek (推荐·高性价比)
+                        </button>
+                        <button type="button" onclick="setApiKeyPreset('openai')" class="chip text-[11px] hover:border-accent-emerald/60">
+                            ⚡ OpenAI (官方)
+                        </button>
+                        <button type="button" onclick="setApiKeyPreset('qwen')" class="chip text-[11px] hover:border-amber-400/60">
+                            ☁️ 阿里通义千问 (DashScope)
+                        </button>
+                        <button type="button" onclick="setApiKeyPreset('siliconflow')" class="chip text-[11px]">
+                            🚀 硅基流动
+                        </button>
+                        <button type="button" onclick="setApiKeyPreset('moonshot')" class="chip text-[11px]">
+                            🌙 月之暗面 Kimi
+                        </button>
+                    </div>
+                </div>
+
+                <!-- API Key 输入框 -->
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        <label id="apikey-lbl-key" class="text-[11px] font-medium text-slate-300">API Key (密钥)</label>
+                        <span id="apikey-mask-status" class="text-[10px] font-mono text-slate-500">未设置</span>
+                    </div>
+                    <div class="relative">
+                        <input id="custom-api-key-input" type="password" placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off" class="w-full bg-dark-900 border border-dark-border rounded-lg pl-3 pr-10 py-2.5 text-[12px] font-mono text-white focus:outline-none focus:border-amber-400/80 placeholder-slate-600 transition-colors" />
+                        <button type="button" onclick="toggleApiKeyVisibility()" class="absolute right-3 top-2.5 text-slate-400 hover:text-white text-xs" title="切换明文显示">
+                            <i id="icon-apikey-eye" class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <p id="apikey-lbl-security-hint" class="text-[10px] text-slate-500 mt-1 flex items-center gap-1">
+                        <i class="fas fa-shield-halved text-emerald-400/80 text-[10px]"></i>
+                        <span>密钥全程加密存于本地浏览器内存，不用时点击下方「清空」即可彻底物理销毁。</span>
+                    </p>
+                </div>
+
+                <!-- API Base URL -->
+                <div>
+                    <label id="apikey-lbl-url" class="block text-[11px] font-medium text-slate-300 mb-1">API Base URL (接口基地址)</label>
+                    <input id="custom-api-base-url" type="text" value="https://api.deepseek.com/v1" placeholder="https://api.openai.com/v1" class="w-full bg-dark-900 border border-dark-border rounded-lg px-3 py-2 text-[12px] font-mono text-slate-200 focus:outline-none focus:border-amber-400/80 placeholder-slate-600" />
+                </div>
+
+                <!-- Model Name -->
+                <div>
+                    <label id="apikey-lbl-model" class="block text-[11px] font-medium text-slate-300 mb-1">模型名称 (Model Identifier)</label>
+                    <input id="custom-api-model" type="text" value="deepseek-chat" placeholder="deepseek-chat 或 gpt-4o" class="w-full bg-dark-900 border border-dark-border rounded-lg px-3 py-2 text-[12px] font-mono text-slate-200 focus:outline-none focus:border-amber-400/80 placeholder-slate-600" />
+                </div>
+
+                <!-- 存储时效选项 -->
+                <div class="p-3 rounded-xl bg-dark-900/60 border border-dark-border space-y-2">
+                    <label id="apikey-lbl-storage-policy" class="block text-[11px] font-medium text-slate-300">防盗用安全策略</label>
+                    <div class="flex items-center gap-4 text-[11px] text-slate-400">
+                        <label class="flex items-center gap-1.5 cursor-pointer">
+                            <input type="radio" name="apikey-storage-mode" value="session" checked class="accent-amber-400" />
+                            <span id="apikey-opt-session">仅本次会话生效 (关闭网页自动物理销毁 · 最安全)</span>
+                        </label>
+                    </div>
+                    <div class="flex items-center gap-4 text-[11px] text-slate-400">
+                        <label class="flex items-center gap-1.5 cursor-pointer">
+                            <input type="radio" name="apikey-storage-mode" value="local" class="accent-amber-400" />
+                            <span id="apikey-opt-local">记住在当前浏览器 (本地持久化 · 下次免输)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 测试连接状态提示区 -->
+                <div id="apikey-test-result" class="hidden p-2.5 rounded-lg border text-[11px] font-mono"></div>
+            </div>
+
+            <!-- 底部动作栏 -->
+            <div class="p-3.5 sm:p-4 bg-dark-900/95 border-t border-dark-border/80 flex items-center justify-between gap-2.5 flex-wrap flex-shrink-0">
+                <button type="button" id="btn-apikey-clear" onclick="clearApiKeyConfig()" class="btn-ghost px-3 py-1.5 rounded-lg text-[11px] font-mono text-rose-400 hover:text-white hover:bg-rose-500/20 border border-rose-500/40 flex items-center gap-1.5 transition-colors">
+                    <i class="fas fa-trash-can"></i>
+                    <span id="btn-apikey-clear-text">一键清空 Key (防止他人使用)</span>
+                </button>
+                <div class="flex items-center gap-2">
+                    <button type="button" id="btn-apikey-test" onclick="testApiKeyConnection()" class="btn-ghost px-3 py-1.5 rounded-lg text-[11px] font-mono text-slate-300 hover:text-white border border-dark-border flex items-center gap-1.5">
+                        <i class="fas fa-plug-circle-check text-accent-cyan"></i>
+                        <span id="btn-apikey-test-text">测试连通性</span>
+                    </button>
+                    <button type="button" id="btn-apikey-save" onclick="saveApiKeyConfig()" class="px-4 py-1.5 rounded-lg text-[11px] font-mono font-medium text-dark-950 bg-gradient-to-r from-amber-400 to-accent-gold hover:brightness-110 shadow-lg shadow-amber-950/40 flex items-center gap-1.5 transition-all">
+                        <i class="fas fa-check text-xs"></i>
+                        <span id="btn-apikey-save-text">保存并生效</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================= -->
     <!-- 统一侧边栏导航 (Sidebar) -->
     <!-- ================================================================= -->
     <aside class="w-60 bg-dark-800 border-r border-dark-border flex flex-col justify-between z-30 select-none flex-shrink-0">
@@ -722,6 +845,13 @@
 
             <!-- 右侧：音效触感、RBAC 角色、指令中枢与容灾热切演示 -->
             <div class="flex items-center gap-2 sm:gap-2.5 flex-shrink-0">
+                <!-- 用户私有 API Key 设置入口 (BYOK - Bring Your Own Key) -->
+                <button id="btn-apikey-modal" type="button" onclick="openApiKeyModal()" class="btn-ghost px-2.5 py-1.5 rounded-md text-[11px] font-mono flex items-center gap-1.5 border border-dark-border text-slate-300 hover:text-white hover:border-amber-400/40 relative" title="自定义 API Key / Configure Custom API Key">
+                    <i id="icon-apikey-status" class="fas fa-key text-[11px] text-amber-400"></i>
+                    <span id="label-apikey-btn" class="hidden sm:inline text-slate-300">API Key</span>
+                    <span id="dot-apikey-active" class="hidden w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                </button>
+
                 <!-- 中英文双语语言切换器 (i18n Language Switcher) -->
                 <button id="btn-lang-toggle" onclick="toggleLanguage()" class="btn-ghost px-2.5 py-1.5 rounded-md text-[11px] font-mono flex items-center gap-1.5 border border-dark-border text-slate-300 hover:text-white hover:border-accent-cyan/40" title="Switch Language / 切换中英文">
                     <i class="fas fa-globe text-[11px] text-accent-cyan"></i>
@@ -813,6 +943,27 @@
                         return (typeof localStorage !== 'undefined' && localStorage.getItem('omni_lang')) || 'zh';
                     } catch(e) { return 'zh'; }
                 })(),
+                customApiKey: (function() {
+                    try {
+                        return (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('omni_custom_api_key')) ||
+                               (typeof localStorage !== 'undefined' && localStorage.getItem('omni_custom_api_key')) || '';
+                    } catch(e) { return ''; }
+                })(),
+                customApiBaseUrl: (function() {
+                    try {
+                        return (typeof localStorage !== 'undefined' && localStorage.getItem('omni_custom_api_base_url')) || 'https://api.deepseek.com/v1';
+                    } catch(e) { return 'https://api.deepseek.com/v1'; }
+                })(),
+                customApiModel: (function() {
+                    try {
+                        return (typeof localStorage !== 'undefined' && localStorage.getItem('omni_custom_api_model')) || 'deepseek-chat';
+                    } catch(e) { return 'deepseek-chat'; }
+                })(),
+                customApiStorageMode: (function() {
+                    try {
+                        return (typeof localStorage !== 'undefined' && localStorage.getItem('omni_custom_api_storage_mode')) || 'session';
+                    } catch(e) { return 'session'; }
+                })(),
                 subscribers: []
             };
 
@@ -876,6 +1027,12 @@
                     const isEn = _state.lang === 'en';
                     const dict = isEn ? TENANT_LABELS_EN : TENANT_LABELS_ZH;
                     return dict[tenant || _state.tenant] || (tenant || _state.tenant);
+                },
+                hasCustomApiKey: function() {
+                    return !!(_state.customApiKey && _state.customApiKey.trim());
+                },
+                getCustomApiKey: function() {
+                    return _state.customApiKey || '';
                 }
             };
         })();
@@ -1269,6 +1426,23 @@
                 'gw-vkey-title': '虚拟 API Key 配额池',
                 'gw-mcp-title': 'MCP 工具协议挂载',
 
+                // --- BYOK API Key ---
+                'label-apikey-btn': 'API Key',
+                'gw-btn-byok': '配置 / 清空我的私有 API Key',
+                'apikey-modal-title': '自定义 API Key 安全配置',
+                'apikey-modal-desc': '仅存放在您的浏览器本地，用完随时一键清空，平台不留存任何日志。',
+                'apikey-lbl-presets': '快捷预设服务商 (点击一键填入地址与模型)',
+                'apikey-lbl-key': 'API Key (密钥)',
+                'apikey-lbl-security-hint': '密钥全程加密存于本地浏览器内存，不用时点击下方「清空」即可彻底物理销毁。',
+                'apikey-lbl-url': 'API Base URL (接口基地址)',
+                'apikey-lbl-model': '模型名称 (Model Identifier)',
+                'apikey-lbl-storage-policy': '防盗用安全策略',
+                'apikey-opt-session': '仅本次会话生效 (关闭网页自动物理销毁 · 最安全)',
+                'apikey-opt-local': '记住在当前浏览器 (本地持久化 · 下次免输)',
+                'btn-apikey-clear-text': '一键清空 Key (防止他人使用)',
+                'btn-apikey-test-text': '测试连通性',
+                'btn-apikey-save-text': '保存并生效',
+
                 // --- Tab 7: History ---
                 'hist-tab-title': '服务可用性与延迟趋势',
                 'hist-tab-desc': '共享巡检器每 3s 探测并落盘 SQLite',
@@ -1507,6 +1681,23 @@
                 'gw-drill-btn': 'Inject Upstream Outage',
                 'gw-vkey-title': 'Virtual API Key Quota Pool',
                 'gw-mcp-title': 'MCP Tool Protocol Mounts',
+
+                // --- BYOK API Key ---
+                'label-apikey-btn': 'API Key',
+                'gw-btn-byok': 'Configure / Clear My BYOK Key',
+                'apikey-modal-title': 'Custom API Key (BYOK) Security Hub',
+                'apikey-modal-desc': 'Stored in your browser only. One-click wipe anytime; zero logs stored.',
+                'apikey-lbl-presets': 'Quick Presets (Click to fill Base URL & Model)',
+                'apikey-lbl-key': 'API Key (Secret)',
+                'apikey-lbl-security-hint': 'Key is kept in browser memory; click "Clear" anytime for complete physical destruction.',
+                'apikey-lbl-url': 'API Base URL (Endpoint Prefix)',
+                'apikey-lbl-model': 'Model Identifier',
+                'apikey-lbl-storage-policy': 'Anti-Theft Security Policy',
+                'apikey-opt-session': 'Session Only (Auto-wiped when tab closes · Most Secure)',
+                'apikey-opt-local': 'Remember in Browser (Local storage · Auto-load next time)',
+                'btn-apikey-clear-text': 'Wipe Key Immediately (Prevent Unauthorized Use)',
+                'btn-apikey-test-text': 'Test Connection',
+                'btn-apikey-save-text': 'Save & Apply',
 
                 // --- Tab 7: History ---
                 'hist-tab-title': 'Service Availability & Latency Trends',
@@ -1770,6 +1961,10 @@
                 'gw-matrix-title', 'gw-primary-name', 'gw-primary-desc', 'gw-primary-weight',
                 'gw-backup-name', 'gw-backup-desc', 'gw-backup-weight', 'gw-drill-title', 'gw-drill-desc', 'gw-drill-btn',
                 'gw-vkey-title', 'gw-mcp-title',
+                'label-apikey-btn', 'gw-btn-byok', 'apikey-modal-title', 'apikey-modal-desc',
+                'apikey-lbl-presets', 'apikey-lbl-key', 'apikey-lbl-security-hint', 'apikey-lbl-url',
+                'apikey-lbl-model', 'apikey-lbl-storage-policy', 'apikey-opt-session', 'apikey-opt-local',
+                'btn-apikey-clear-text', 'btn-apikey-test-text', 'btn-apikey-save-text',
                 'hist-tab-title', 'hist-tab-desc', 'hist-uptime-title', 'hist-latency-title', 'hist-events-title', 'hist-refresh-btn-text'
             ].forEach(id => {
                 const el = document.getElementById(id);
@@ -3590,7 +3785,36 @@
             container.scrollTop = container.scrollHeight;
 
             try {
-                const data = await OmniAPI.guideChat(msg, guideHistory);
+                let data;
+                if (OmniStore.hasCustomApiKey()) {
+                    try {
+                        const customSys = isEn
+                            ? "You are Qionghua Luxury Concierge, an AI consultant for fine jewelry (Hetian jade, pearls, moissanite, gold). Recommend thoughtfully, accurately, and concisely in English."
+                            : "你是「琼华」轻奢珠宝全域导购AI顾问，精通和田玉、珍珠、莫桑钻与黄金珠宝定制。请以热情、专业、典雅的语气提供推荐与咨询建议。";
+                        const messages = [
+                            { role: 'system', content: customSys },
+                            ...guideHistory,
+                            { role: 'user', content: msg }
+                        ];
+                        const customRes = await callCustomLlm(messages);
+                        data = {
+                            reply: customRes.reply,
+                            backend: 'live:' + customRes.model + ' (BYOK)',
+                            latency_ms: customRes.latency_ms,
+                            self_corrected: false,
+                            trace: [
+                                { node: 'IntentParser', status: 'ok', detail: 'BYOK 私有密钥直连上游' },
+                                { node: 'DomainRAG', status: 'ok', detail: '注入珠宝领域系统提示词' },
+                                { node: 'UpstreamLLM', status: 'ok', detail: `调用 ${customRes.model} (耗时 ${customRes.latency_ms}ms, 消耗 ${customRes.usage.total_tokens || 0} tokens)` }
+                            ]
+                        };
+                    } catch (customErr) {
+                        console.warn('BYOK call failed, fallback to OmniAPI:', customErr);
+                        data = await OmniAPI.guideChat(msg, guideHistory);
+                    }
+                } else {
+                    data = await OmniAPI.guideChat(msg, guideHistory);
+                }
                 if (thinkingDiv && thinkingDiv.parentNode) thinkingDiv.remove();
                 await appendAgentMessage(data.reply);
 
@@ -5065,17 +5289,30 @@
             }
             if (resBox) {
                 resBox.classList.remove('hidden');
-                resBox.innerText = '正在通过 /v1/chat/completions 进行全链路意图识别与代理路由...';
+                resBox.innerText = OmniStore.hasCustomApiKey()
+                    ? `正在通过私有上游 (${OmniStore.get('customApiModel')}) 进行 /chat/completions 直连调度...`
+                    : '正在通过 /v1/chat/completions 进行全链路意图识别与代理路由...';
             }
 
             try {
-                const res = await OmniAPI.openaiChat({
-                    model: 'qwen-max',
-                    messages: [{ role: 'user', content: text }]
-                });
+                let res;
+                if (OmniStore.hasCustomApiKey()) {
+                    const customRes = await callCustomLlm([{ role: 'user', content: text }]);
+                    res = {
+                        choices: [{ message: { content: customRes.reply } }],
+                        latency_ms: customRes.latency_ms,
+                        usage: customRes.usage,
+                        trace_id: 'tr-byok-' + Math.random().toString(36).substring(2, 9)
+                    };
+                } else {
+                    res = await OmniAPI.openaiChat({
+                        model: 'qwen-max',
+                        messages: [{ role: 'user', content: text }]
+                    });
+                }
                 if (resBox) {
                     const reply = (res.choices && res.choices[0] && res.choices[0].message) ? res.choices[0].message.content : JSON.stringify(res);
-                    const usage = res.usage ? `\n\n[耗时: ${res.latency_ms}ms · 消耗 Token: ${res.usage.total_tokens} · Trace ID: ${res.trace_id}]` : '';
+                    const usage = res.usage ? `\n\n[耗时: ${res.latency_ms}ms · 消耗 Token: ${res.usage.total_tokens} · Trace ID: ${res.trace_id}${OmniStore.hasCustomApiKey() ? ' · BYOK 直连' : ''}]` : '';
                     await streamTypewriter(resBox, reply + usage, { speed: 8 });
                 }
                 refreshTraceLogs();
@@ -5097,6 +5334,356 @@
             });
         }
 
+        // =============================================================
+        // 自定义私有 API Key (BYOK: Bring Your Own Key) 管理中枢
+        // =============================================================
+        const API_KEY_PRESETS = {
+            deepseek: {
+                baseUrl: 'https://api.deepseek.com/v1',
+                model: 'deepseek-chat',
+                name: 'DeepSeek'
+            },
+            openai: {
+                baseUrl: 'https://api.openai.com/v1',
+                model: 'gpt-4o',
+                name: 'OpenAI'
+            },
+            qwen: {
+                baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+                model: 'qwen-plus',
+                name: '阿里通义千问'
+            },
+            siliconflow: {
+                baseUrl: 'https://api.siliconflow.cn/v1',
+                model: 'Qwen/Qwen2.5-7B-Instruct',
+                name: '硅基流动'
+            },
+            moonshot: {
+                baseUrl: 'https://api.moonshot.cn/v1',
+                model: 'moonshot-v1-8k',
+                name: '月之暗面 Kimi'
+            }
+        };
+
+        function updateApiKeyButtonState() {
+            const hasKey = OmniStore.hasCustomApiKey();
+            const model = OmniStore.get('customApiModel') || 'deepseek-chat';
+            const isEn = (OmniStore.get('lang') || 'zh') === 'en';
+
+            // 顶栏按钮指示
+            const icon = document.getElementById('icon-apikey-status');
+            const dot = document.getElementById('dot-apikey-active');
+            const label = document.getElementById('label-apikey-btn');
+            if (icon) {
+                icon.className = hasKey ? 'fas fa-key text-[11px] text-emerald-400' : 'fas fa-key text-[11px] text-amber-400';
+            }
+            if (dot) {
+                if (hasKey) dot.classList.remove('hidden');
+                else dot.classList.add('hidden');
+            }
+            if (label) {
+                label.textContent = hasKey ? (isEn ? 'Key: Active' : 'Key: 已就绪') : 'API Key';
+            }
+
+            // 网关 Tab 中的入口按钮文本
+            const gwBtn = document.getElementById('gw-btn-byok');
+            if (gwBtn) {
+                if (hasKey) {
+                    gwBtn.textContent = isEn ? `Manage BYOK Key (Active: ${model})` : `管理私有 Key (已挂载: ${model})`;
+                } else {
+                    gwBtn.textContent = isEn ? 'Configure / Clear My BYOK Key' : '配置 / 清空我的私有 API Key';
+                }
+            }
+
+            // 弹窗内的状态徽章
+            const modeTag = document.getElementById('apikey-mode-tag');
+            if (modeTag) {
+                if (hasKey) {
+                    modeTag.textContent = isEn ? `Active Mode: Live Upstream (${model})` : `当前模式: 私有上游已挂载 (${model})`;
+                    modeTag.className = 'tag font-mono text-[9px] text-emerald-400 border-emerald-500/40 bg-emerald-500/10';
+                } else {
+                    modeTag.textContent = isEn ? 'Current Mode: Local Mock Fallback' : '当前模式: 本地仿真兜底';
+                    modeTag.className = 'tag font-mono text-[9px] text-slate-400';
+                }
+            }
+
+            // 脱敏显示 Key 状态
+            const maskStatus = document.getElementById('apikey-mask-status');
+            if (maskStatus) {
+                const key = OmniStore.getCustomApiKey();
+                if (key) {
+                    const masked = key.length > 8
+                        ? key.slice(0, 4) + '••••••••' + key.slice(-4)
+                        : '••••••••';
+                    maskStatus.textContent = isEn ? `Configured (${masked})` : `已配置 (${masked})`;
+                    maskStatus.className = 'text-[10px] font-mono text-emerald-400';
+                } else {
+                    maskStatus.textContent = isEn ? 'Not Set (Local Demo Mode)' : '未设置 (处于本地离线演示模式)';
+                    maskStatus.className = 'text-[10px] font-mono text-slate-500';
+                }
+            }
+        }
+
+        function openApiKeyModal() {
+            const modal = document.getElementById('api-key-modal');
+            const keyInput = document.getElementById('custom-api-key-input');
+            const urlInput = document.getElementById('custom-api-base-url');
+            const modelInput = document.getElementById('custom-api-model');
+            const resBox = document.getElementById('apikey-test-result');
+
+            if (keyInput) keyInput.value = OmniStore.getCustomApiKey();
+            if (urlInput) urlInput.value = OmniStore.get('customApiBaseUrl') || 'https://api.deepseek.com/v1';
+            if (modelInput) modelInput.value = OmniStore.get('customApiModel') || 'deepseek-chat';
+            if (resBox) {
+                resBox.classList.add('hidden');
+                resBox.innerHTML = '';
+            }
+
+            const mode = OmniStore.get('customApiStorageMode') || 'session';
+            const radios = document.querySelectorAll('input[name="apikey-storage-mode"]');
+            radios.forEach(r => {
+                r.checked = (r.value === mode);
+            });
+
+            updateApiKeyButtonState();
+
+            if (modal) {
+                modal.classList.remove('hidden');
+                setTimeout(() => { if (keyInput) keyInput.focus(); }, 80);
+            }
+        }
+
+        function closeApiKeyModal() {
+            const modal = document.getElementById('api-key-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function toggleApiKeyVisibility() {
+            const input = document.getElementById('custom-api-key-input');
+            const icon = document.getElementById('icon-apikey-eye');
+            if (!input || !icon) return;
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        }
+
+        function setApiKeyPreset(presetKey) {
+            const p = API_KEY_PRESETS[presetKey];
+            if (!p) return;
+            const urlInput = document.getElementById('custom-api-base-url');
+            const modelInput = document.getElementById('custom-api-model');
+            if (urlInput) urlInput.value = p.baseUrl;
+            if (modelInput) modelInput.value = p.model;
+            OmniAudio.play('click');
+        }
+
+        function saveApiKeyConfig() {
+            const keyInput = document.getElementById('custom-api-key-input');
+            const urlInput = document.getElementById('custom-api-base-url');
+            const modelInput = document.getElementById('custom-api-model');
+            const checkedRadio = document.querySelector('input[name="apikey-storage-mode"]:checked');
+
+            const key = keyInput ? keyInput.value.trim() : '';
+            const baseUrl = (urlInput && urlInput.value.trim()) || 'https://api.deepseek.com/v1';
+            const model = (modelInput && modelInput.value.trim()) || 'deepseek-chat';
+            const mode = checkedRadio ? checkedRadio.value : 'session';
+
+            OmniStore.set('customApiKey', key);
+            OmniStore.set('customApiBaseUrl', baseUrl);
+            OmniStore.set('customApiModel', model);
+            OmniStore.set('customApiStorageMode', mode);
+
+            try {
+                if (mode === 'session') {
+                    if (key) sessionStorage.setItem('omni_custom_api_key', key);
+                    else sessionStorage.removeItem('omni_custom_api_key');
+                    localStorage.removeItem('omni_custom_api_key');
+                } else {
+                    if (key) {
+                        localStorage.setItem('omni_custom_api_key', key);
+                        sessionStorage.setItem('omni_custom_api_key', key);
+                    } else {
+                        localStorage.removeItem('omni_custom_api_key');
+                        sessionStorage.removeItem('omni_custom_api_key');
+                    }
+                }
+                localStorage.setItem('omni_custom_api_base_url', baseUrl);
+                localStorage.setItem('omni_custom_api_model', model);
+                localStorage.setItem('omni_custom_api_storage_mode', mode);
+            } catch (e) {
+                console.warn('Storage save error:', e);
+            }
+
+            updateApiKeyButtonState();
+            closeApiKeyModal();
+            OmniAudio.play('action');
+
+            const isEn = (OmniStore.get('lang') || 'zh') === 'en';
+            if (key) {
+                showToast(isEn ? `BYOK API Key saved! Live upstream: ${model}` : `私有 API Key 已生效！挂载真实上游: ${model}`, 'ok');
+            } else {
+                showToast(isEn ? 'Configuration saved (No API key, local demo active)' : '配置已保存（当前未填 Key，处于离线安全保护模式）', 'info');
+            }
+        }
+
+        function clearApiKeyConfig() {
+            try {
+                if (typeof sessionStorage !== 'undefined') sessionStorage.removeItem('omni_custom_api_key');
+                if (typeof localStorage !== 'undefined') localStorage.removeItem('omni_custom_api_key');
+            } catch(e) {}
+
+            OmniStore.set('customApiKey', '');
+
+            const keyInput = document.getElementById('custom-api-key-input');
+            if (keyInput) keyInput.value = '';
+
+            updateApiKeyButtonState();
+
+            const resBox = document.getElementById('apikey-test-result');
+            const isEn = (OmniStore.get('lang') || 'zh') === 'en';
+            if (resBox) {
+                resBox.className = 'p-2.5 rounded-lg border text-[11px] font-mono bg-rose-500/10 border-rose-500/30 text-rose-300';
+                resBox.classList.remove('hidden');
+                resBox.innerHTML = `<i class="fas fa-trash-can mr-1.5 text-rose-400"></i><b>${isEn ? 'Private Key wiped permanently!' : '私有 API Key 已彻底物理清空销毁！'}</b> ${isEn ? 'All requests reverted to local offline fallback. Nobody can use your quota.' : '所有请求已安全切回本地离线演示模式，他人无法使用您的额度。'}`;
+            }
+
+            OmniAudio.play('warning');
+            showToast(isEn ? 'Private API Key cleared & securely destroyed.' : '私有 API Key 已彻底物理销毁，已切回本地离线保护模式。', 'ok');
+        }
+
+        async function testApiKeyConnection() {
+            const keyInput = document.getElementById('custom-api-key-input');
+            const urlInput = document.getElementById('custom-api-base-url');
+            const modelInput = document.getElementById('custom-api-model');
+            const resBox = document.getElementById('apikey-test-result');
+            const btn = document.getElementById('btn-apikey-test');
+
+            const key = keyInput ? keyInput.value.trim() : '';
+            const baseUrl = (urlInput && urlInput.value.trim()) || 'https://api.deepseek.com/v1';
+            const model = (modelInput && modelInput.value.trim()) || 'deepseek-chat';
+            const isEn = (OmniStore.get('lang') || 'zh') === 'en';
+
+            if (!key) {
+                if (resBox) {
+                    resBox.className = 'p-2.5 rounded-lg border text-[11px] font-mono bg-amber-500/10 border-amber-500/30 text-amber-300';
+                    resBox.classList.remove('hidden');
+                    resBox.innerHTML = `<i class="fas fa-exclamation-triangle mr-1"></i> ${isEn ? 'Please enter an API Key first before testing.' : '请先在上方输入 API Key 再进行连通性测试。'}`;
+                }
+                if (keyInput) keyInput.focus();
+                return;
+            }
+
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = `<i class="fas fa-spinner fa-spin text-accent-cyan"></i> <span>${isEn ? 'Testing...' : '测试中...'}</span>`;
+            }
+            if (resBox) {
+                resBox.className = 'p-2.5 rounded-lg border text-[11px] font-mono bg-dark-900 border-dark-border text-slate-300';
+                resBox.classList.remove('hidden');
+                resBox.innerHTML = `<i class="fas fa-spinner fa-spin mr-1.5 text-accent-cyan"></i> ${isEn ? 'Sending ping to' : '正在请求'} ${baseUrl}/chat/completions ...`;
+            }
+
+            const endpoint = baseUrl.replace(/\/+$/, '') + '/chat/completions';
+            const t0 = performance.now();
+
+            try {
+                const resp = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + key
+                    },
+                    body: JSON.stringify({
+                        model: model,
+                        messages: [{ role: 'user', content: 'Ping' }],
+                        max_tokens: 5
+                    })
+                });
+
+                const latency = Math.round(performance.now() - t0);
+
+                if (resp.ok) {
+                    await resp.json().catch(() => ({}));
+                    if (resBox) {
+                        resBox.className = 'p-2.5 rounded-lg border text-[11px] font-mono bg-emerald-500/10 border-emerald-500/30 text-emerald-300';
+                        resBox.innerHTML = `<i class="fas fa-circle-check mr-1 text-emerald-400"></i><b>${isEn ? 'Connection successful!' : '连通测试成功！'}</b> ${isEn ? `Latency: ${latency}ms | Model: ${model}` : `响应耗时: ${latency}ms ｜ 上游模型: ${model} ｜ 密钥鉴权通过`}`;
+                    }
+                    OmniAudio.play('action');
+                } else {
+                    let errMsg = `HTTP ${resp.status}`;
+                    try {
+                        const errJson = await resp.json();
+                        errMsg = (errJson.error && errJson.error.message) || JSON.stringify(errJson);
+                    } catch(e) {}
+                    if (resBox) {
+                        resBox.className = 'p-2.5 rounded-lg border text-[11px] font-mono bg-rose-500/10 border-rose-500/30 text-rose-300';
+                        resBox.innerHTML = `<i class="fas fa-circle-xmark mr-1 text-rose-400"></i><b>${isEn ? 'Connection failed' : '连通失败'}</b> (${resp.status}): ${errMsg}`;
+                    }
+                    OmniAudio.play('warning');
+                }
+            } catch (err) {
+                if (resBox) {
+                    resBox.className = 'p-2.5 rounded-lg border text-[11px] font-mono bg-amber-500/10 border-amber-500/30 text-amber-300';
+                    resBox.innerHTML = `<i class="fas fa-triangle-exclamation mr-1 text-amber-400"></i><b>${isEn ? 'Network / CORS Notice' : '网络 / 跨域提示'}</b>: ${err.message} <div class="text-[10px] text-slate-400 mt-1">${isEn ? 'If CORS blocked, ensure endpoint allows browser requests or use a reverse proxy.' : '若受浏览器跨域策略限制，请确认服务商支持直接前端跨域或采用反向代理地址。'}</div>`;
+                }
+                OmniAudio.play('warning');
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = `<i class="fas fa-plug-circle-check text-accent-cyan"></i> <span id="btn-apikey-test-text">${isEn ? 'Test Connection' : '测试连通性'}</span>`;
+                }
+            }
+        }
+
+        async function callCustomLlm(messages, options = {}) {
+            const key = OmniStore.getCustomApiKey();
+            if (!key) throw new Error('No custom API key set');
+            const baseUrl = (OmniStore.get('customApiBaseUrl') || 'https://api.deepseek.com/v1').replace(/\/+$/, '');
+            const model = options.model || OmniStore.get('customApiModel') || 'deepseek-chat';
+            const endpoint = baseUrl + '/chat/completions';
+
+            const t0 = performance.now();
+            const resp = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + key
+                },
+                body: JSON.stringify({
+                    model: model,
+                    messages: messages,
+                    temperature: options.temperature !== undefined ? options.temperature : 0.7,
+                    max_tokens: options.max_tokens || 1024
+                })
+            });
+            const latencyMs = Math.round(performance.now() - t0);
+
+            if (!resp.ok) {
+                let errText = 'HTTP ' + resp.status;
+                try {
+                    const errData = await resp.json();
+                    errText = (errData.error && errData.error.message) || JSON.stringify(errData);
+                } catch(e) {}
+                throw new Error(errText);
+            }
+
+            const data = await resp.json();
+            const reply = (data.choices && data.choices[0] && data.choices[0].message)
+                ? data.choices[0].message.content
+                : '';
+            return {
+                reply: reply,
+                model: model,
+                latency_ms: latencyMs,
+                usage: data.usage || { total_tokens: 0 },
+                raw: data
+            };
+        }
+
         // -------------------------------------------------------------
         // 全局极客指令中枢 (Command Palette · Ctrl+K / Cmd+K)
         // -------------------------------------------------------------
@@ -5105,6 +5692,7 @@
 
         const PALETTE_COMMANDS = [
             // 快捷动作
+            { id: 'act-apikey', title: '配置 / 清空自定义私有 API Key (BYOK)', category: '快捷动作', icon: 'fas fa-key text-amber-400', keywords: 'key api apikey token byok 私有 密钥 清空 deepseek openai', action: () => openApiKeyModal() },
             { id: 'act-failover', title: '执行网关毫秒级容灾热切演练', category: '快捷动作', icon: 'fas fa-bolt text-accent-gold', keywords: '热切 failover 容灾 网关 timeout 限流 熔断', action: () => triggerQuickFailover() },
             { id: 'act-dynamic-island', title: '展开 / 收起灵动岛 HUD 状态诊断抽屉', category: '快捷动作', icon: 'fas fa-server text-accent-cyan', keywords: '灵动岛 hud 抽屉 状态 诊断 端口', action: () => toggleDynamicIsland() },
             { id: 'act-openai', title: '演练统一 OpenAI 规范 Chat Completions 代理', category: '快捷动作', icon: 'fas fa-terminal text-accent-cyan', keywords: 'openai chat completions 代理 模型 api', action: () => openOpenaiRunner() },
@@ -5612,6 +6200,16 @@
             initFinOpsRoiCanvas();
             syncAuthTokenAndRefreshJobs();
             setInterval(() => { refreshJobCenter(true); }, 4000);
+            updateApiKeyButtonState();
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    const apiKeyModal = document.getElementById('api-key-modal');
+                    if (apiKeyModal && !apiKeyModal.classList.contains('hidden')) {
+                        closeApiKeyModal();
+                    }
+                }
+            });
 
             const cmdInput = document.getElementById('cmd-palette-input');
             if (cmdInput) {

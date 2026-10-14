@@ -633,6 +633,9 @@
       startSample();
     };
 
+    return state;
+  }
+
   function localXhsGenerate(req) {
     var t0 = performance.now();
     var isEn = isLangEn();

@@ -821,7 +821,10 @@
                                 <i class="fas fa-terminal text-accent-cyan text-[10px]"></i>
                                 <span>统一 OpenAI 规范代理端点: <code class="text-accent-cyan font-mono">/v1/chat/completions</code></span>
                             </span>
-                            <span class="text-slate-500 font-mono text-[10px]">POST 契约透传</span>
+                            <button id="btn-hud-byok" type="button" onclick="openApiKeyModal()" class="text-[10px] font-mono flex items-center gap-1.5 px-2 py-0.5 rounded border border-amber-400/30 bg-amber-400/10 text-amber-300 hover:bg-amber-400/20 transition-colors cursor-pointer" title="点击配置或清空您的私有 API Key">
+                                <i class="fas fa-key text-[9px]"></i>
+                                <span id="label-hud-byok">配置私有 Key</span>
+                            </button>
                         </div>
                         <div class="flex items-center gap-2">
                             <input id="hud-proxy-input" type="text" value="为海南沉香设计一段东方雅物介绍" class="flex-1 bg-dark-950 border border-dark-border rounded-lg px-3 py-1.5 text-[11px] text-white focus:outline-none focus:border-accent-cyan" placeholder="输入测试指令..." />
@@ -5292,12 +5295,34 @@
             const text = input ? input.value.trim() : '你好';
             if (!text) return;
 
+            // 智能识别：若用户直接在指令输入框内粘贴了 API Key（如 sk- 开头或长无空格字符串）
+            if (text.startsWith('sk-') || (/^[a-zA-Z0-9_\-]{30,}$/.test(text) && !text.includes(' '))) {
+                OmniStore.set('customApiKey', text);
+                try {
+                    sessionStorage.setItem('omni_custom_api_key', text);
+                } catch(e) {}
+                updateApiKeyButtonState();
+
+                // 恢复默认测试指令并隐藏密钥明文，防止在界面暴露
+                if (input) input.value = '为海南沉香设计一段东方雅物介绍';
+
+                if (resBox) {
+                    resBox.classList.remove('hidden');
+                    resBox.className = 'p-2.5 rounded-lg border text-[11px] font-mono bg-emerald-500/10 border-emerald-500/30 text-emerald-300 leading-relaxed';
+                    resBox.innerHTML = '<i class="fas fa-circle-check text-emerald-400 mr-1.5"></i><b>已自动识别并绑定您的私有 API Key！</b><div class="text-[10px] text-slate-300 mt-1">系统已将密钥安全存入 Session 内存（仅当前会话有效，关闭网页自动清空）。现已打开安全设置窗口，您可直接点击「测试连通性」！</div>';
+                }
+                openApiKeyModal();
+                showToast('已自动识别并导入私有 API Key！', 'ok');
+                return;
+            }
+
             if (btn) {
                 btn.disabled = true;
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin text-[10px]"></i> <span>调度中</span>';
             }
             if (resBox) {
                 resBox.classList.remove('hidden');
+                resBox.className = 'p-2 rounded-lg bg-dark-950 border border-dark-border text-[11px] font-mono text-slate-300 max-h-24 overflow-y-auto leading-relaxed';
                 resBox.innerText = OmniStore.hasCustomApiKey()
                     ? `正在通过私有上游 (${OmniStore.get('customApiModel')}) 进行 /chat/completions 直连调度...`
                     : '正在通过 /v1/chat/completions 进行全链路意图识别与代理路由...';
@@ -5401,6 +5426,19 @@
                     gwBtn.textContent = isEn ? `Manage BYOK Key (Active: ${model})` : `管理私有 Key (已挂载: ${model})`;
                 } else {
                     gwBtn.textContent = isEn ? 'Configure / Clear My BYOK Key' : '配置 / 清空我的私有 API Key';
+                }
+            }
+
+            // HUD 抽屉内的私有 Key 状态按钮
+            const hudByokBtn = document.getElementById('btn-hud-byok');
+            const hudByokLabel = document.getElementById('label-hud-byok');
+            if (hudByokBtn && hudByokLabel) {
+                if (hasKey) {
+                    hudByokBtn.className = 'text-[10px] font-mono flex items-center gap-1.5 px-2 py-0.5 rounded border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 transition-colors cursor-pointer';
+                    hudByokLabel.textContent = isEn ? `Key: ${model}` : `私有 Key 已就绪 (${model})`;
+                } else {
+                    hudByokBtn.className = 'text-[10px] font-mono flex items-center gap-1.5 px-2 py-0.5 rounded border border-amber-400/30 bg-amber-400/10 text-amber-300 hover:bg-amber-400/20 transition-colors cursor-pointer';
+                    hudByokLabel.textContent = isEn ? 'Set API Key' : '🔑 配置私有 Key';
                 }
             }
 

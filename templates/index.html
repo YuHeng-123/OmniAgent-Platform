@@ -3758,15 +3758,23 @@
             container.scrollTop = container.scrollHeight;
         }
 
-        function appendAgentMessage(reply) {
+        function appendAgentMessage(reply, source) {
             const container = document.getElementById('guide-messages');
             const div = document.createElement('div');
             div.className = "flex items-start gap-3";
+            const isEn = (OmniStore.get('lang') || 'zh') === 'en';
+            const isLive = source && source.startsWith('live:');
+            const tagHtml = isLive
+                ? `<div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 mb-1.5"><i class="fas fa-bolt text-[9px]"></i> ${isEn ? 'Live Upstream Model' : '真实私有大模型直连'} (${source.replace('live:', '')})</div>`
+                : `<div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-mono bg-dark-900 border border-dark-border text-slate-400 mb-1.5"><i class="fas fa-shield-halved text-slate-500 text-[9px]"></i> ${isEn ? 'Local Offline Demo (0 Tokens · Key Safe & Cleared)' : '本地离线脱机仿真 · 0 Token 消耗（Key 已彻底清空离线）'}</div>`;
+
             div.innerHTML = `
                 <div class="w-7 h-7 rounded-md bg-accent-sand/15 text-accent-sand flex items-center justify-center text-[11px] flex-shrink-0 mt-0.5">
                     <i class="fas fa-robot"></i>
                 </div>
-                <div class="agent-bubble-text rounded-xl rounded-tl-sm bg-dark-700 border border-dark-border text-[13px] leading-relaxed px-4 py-3 max-w-[85%] text-slate-300 whitespace-pre-wrap">
+                <div class="rounded-xl rounded-tl-sm bg-dark-700 border border-dark-border px-4 py-3 max-w-[85%] text-slate-300">
+                    ${tagHtml}
+                    <div class="agent-bubble-text text-[13px] leading-relaxed whitespace-pre-wrap"></div>
                 </div>
             `;
             container.appendChild(div);
@@ -3854,7 +3862,7 @@
                     }
                 }
                 if (thinkingDiv && thinkingDiv.parentNode) thinkingDiv.remove();
-                await appendAgentMessage(data.reply);
+                await appendAgentMessage(data.reply, data.backend);
 
                 // 更新右侧决策跟踪链
                 const traceBox = document.getElementById('guide-trace-steps');
@@ -3900,7 +3908,7 @@
                 if (thinkingDiv && thinkingDiv.parentNode) thinkingDiv.remove();
                 const isEn = (OmniStore.get('lang') || 'zh') === 'en';
                 console.error('queryGuideAgent error:', err);
-                await appendAgentMessage(isEn ? `Apologies, concierge encountered an issue (${err.message}).` : `抱歉，导购中枢响应异常（${err.message}），已自动切入本地兜底模式。`);
+                await appendAgentMessage(isEn ? `Apologies, concierge encountered an issue (${err.message}).` : `抱歉，导购中枢响应异常（${err.message}），已自动切入本地兜底模式。`, 'fallback:error');
             }
         }
 

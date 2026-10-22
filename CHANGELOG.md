@@ -32,8 +32,9 @@
 
 ### 新增 —— `tools/check_image_files.py`（+ CI 里的 hadolint）
 
-- 解析 `Dockerfile` 的 `COPY` 行，与 `server.py` 的本地 `import` 静态对账，缺一个就 `exit 1`；
-  不依赖 Docker，已接进 CI。实测：`COPY = core, routers, server.py, services.yaml, static, templates` → `[OK]`。
+- 解析 `Dockerfile` 的 `COPY` 行，与 `server.py` 的本地 `import` 静态对账，缺一个就 `exit 1`；已接进 CI。
+  实测：`COPY = core, routers, server.py, services.yaml, static, templates` → `[OK]`。
+- CI 另加 `hadolint`（`failure-threshold: error`），在无 Docker 环境里兜镜像层规则。
 
 ### 变更 —— 演示数据脱敏
 

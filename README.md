@@ -298,14 +298,8 @@ run.bat                                   # 或 ./run.sh
 > 但它**不是业务服务** —— `/` 会如实返回 `{"mock": true}`。它存在的唯一目的，是让
 > 探测 → 状态翻转 → 差异事件广播 → 事件回放 这条链路可以完整演示一遍。
 
-想让「启动」按钮也能用（不必每次手动起监听），在 `services.yaml` 里给服务加上一行：
-
-```yaml
-start_cmd: ["python", "tools/mock_service.py", "8002", "--id", "coze-material-studio"]
-```
-
-`services.yaml` 里已经留了注释好的这一行，取消注释即可。没配 `start_cmd` 的服务，
-「启动」按钮会如实返回 `not-configured` —— 控制台不假装知道你没告诉过它的启动方式。
+想让「启动」按钮也能用，`services.yaml` 里已经留了注释好的 `start_cmd` 一行，取消注释即可。
+没配 `start_cmd` 的服务，「启动」按钮会如实返回 `not-configured` —— 控制台不假装知道你没告诉过它的启动方式。
 
 ---
 

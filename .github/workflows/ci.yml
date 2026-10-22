@@ -53,6 +53,11 @@ jobs:
       - name: Verify event bus is diff-driven
         run: python verify_event_bus.py evidence/event-bus-diff.txt
 
+      # 六项编排层实测（冷启动 / 探测 / SSE 首帧 / 上下线时延），无阈值断言：
+      # 目的是让每次运行都留下一次真实测量，跟 artifact 里的上一版直接对比。
+      - name: Orchestration benchmark (6 real measurements)
+        run: python evals/bench.py --samples 10 --json evidence/bench-ci.json
+
       - name: Rebuild docs and assert no drift
         run: |
           python build_docs.py

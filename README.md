@@ -1,13 +1,27 @@
-# OmniAgent Platform 2.8 · Agent Runtime + MCP 网关（附 6 个业务接入靶场）
+# OmniAgent Platform 2.8 · 多服务拓扑控制台与编排层（附 2 个收编 Labs 模块）
 
-**这个仓库的核心只有两样东西。**
+**先说清这个仓库是什么、不是什么** —— 这一段每一句都能在代码里指到行。
 
-一套 **Agent Runtime**：`LLMProvider` + `Tool` 双抽象与注册表、单步并行多工具调用、
-「错误即上下文」自纠错、最大步数 + 超时双熔断。一层 **MCP 网关**：鉴权 → 审计 → 配额 → 路由
-四层中间件、租户 / 项目 / 凭据三级配额、RPM 与 Token 双熔断、控制面与执行面分离。
+它是一层**编排与观测面**：把 N 个异构服务（HTTP / SSE / Streamlit / Gradio）收进一张由
+`services.yaml` 驱动的拓扑，用**真 TCP 探测**驱动一条 SSE 事件总线，起停接口真的拉起 / 终止进程，
+双模式数据源保证前端**不把演示数据当线上数据**，敏感操作由 HMAC-SHA256 JWT + 4-Tier RBAC 守着。
 
-控制台只是它们的**观测面**。另外 6 个业务模块是**接入靶场** —— 导购、RAG、数据分析各自接进来，
-用来证明这套 Runtime 不绑定单一业务：换一个业务，内核不用改。
+| 层 | 是什么 | 代码在哪 |
+|---|---|---|
+| 编排与观测面 | 拓扑单一来源 → 并发探测 → 差异事件广播 → SQLite 历史 → 9 页控制台 | `services.yaml` · `core/state.py` · `routers/events.py` · `routers/system.py` |
+| 起停管控 | 按端口找 PID、真终止、只认 `start_cmd`、先过角色校验 | `core/process.py` · `core/security.py` |
+| 任务队列 | 带锁状态机（pending → running → done/failed），异步端点复用 | `core/tasks.py` |
+| 协议代理 · 容灾**仿真** | OpenAI 协议统一代理 + 三场景热切演练（响应自带 `simulated: true`） | `routers/gateway.py` |
+| 接入靶场 · 8 端 | 异构服务接入样本：导购 / 素材 / RAG / 数据分析 / 情报 / 音视频 / 内容工场 | 各自独立仓库，见「接入靶场」一节 |
+| Labs 源码 · 2 个 | LangGraph 出海流水线、FunClip Windows 封装（源码收编，运行时独立） | `labs/` |
+
+**它不是什么**（写在开头，而不是藏到文末）：
+
+- **不是 Agent Runtime，也不是 MCP 网关。** 那两样的实现在生产项目里，不在这个仓库 ——
+  这里没有 `LLMProvider`、没有 Tool 注册表、没有配额账本、没有真熔断（全仓 grep 为 0）。
+  本仓库是那套东西的**观测面与接入示范**：这条边界写清楚，比含糊地暗示「我也有」值钱。
+- **网关的「主备热切」是仿真**：它不熔断任何真实上游，token 是样例数值。
+- **8 个服务里 6 个的运行时不在本仓库**；compose 只起控制台一个容器。
 
 > **脱敏声明**：本仓库所有业务模块均为脱敏示例，不含任何真实客户数据与生产配置；
 > 服务名、商品名、经营数据都是构造的样例，接口里以 `demo-sample` / `fallback:local-demo` 如实标注。
@@ -19,23 +33,10 @@
 
 ![OmniAgent Platform Hero Banner](assets/hero-banner.jpg)
 
-![架构总览：左侧 Runtime 与 MCP 网关为核心，右侧 6 个业务接入靶场，底部基础设施层](assets/architecture.svg)
+![架构总览：控制台本体 + 双模式数据源适配层 + 被编排的 7 个独立微服务](assets/architecture.svg)
 
-## 两层结构
-
-| 层 | 是什么 | 代码在哪 |
-|---|---|---|
-| **核心 · Runtime** | `LLMProvider` / `Tool` 双抽象与注册表；单步并行多工具调用；错误即上下文自纠错；步数 + 超时双熔断 | `server.py` 装配层 · `routers/business.py` · `core/models.py` |
-| **核心 · MCP 网关** | 鉴权 → 审计 → 配额 → 路由 四层中间件；租户 / 项目 / 凭据三级配额；RPM 与 Token 双熔断；控制面与执行面分离 | `routers/gateway.py` · `core/security.py` |
-| 观测面 · 控制台 | 8 端口拓扑、事件总线、历史曲线、任务中心、4 角色视窗 | `templates/` · `static/` |
-| **接入靶场 · 6 + 2** | 导购 / 内容 / 素材 / RAG / 数据分析 / 情报抓取，加 2 个 Labs 收编模块 | 各自独立仓库，见「接入靶场」一节 |
-| 基础设施 | FastAPI 微内核装配、Postgres / SQLite / Redis、SQLite 历史库、GitHub Actions | `core/` · `docker-compose.yml` · `.github/workflows/ci.yml` |
-
-v2.8 的一次性改动（微内核解耦 `core/`+`routers/`、HMAC-SHA256 JWT 多租户 + 4-Tier RBAC、
-后台异步任务队列、4 角色视窗与 SKU 归因抽屉）逐条列在
-[CHANGELOG.md](CHANGELOG.md)，README 不再复述一遍。
-
----
+> 六项实测数字（冷启动 / 探测 / SSE 首帧 / 上下线时延）见下方「实测数字」一节，
+> 报告 JSON 与采样数一并提交在 `evals/reports/`。
 
 ## 界面预览
 
@@ -77,9 +78,6 @@ v2.8 的一次性改动（微内核解耦 `core/`+`routers/`、HMAC-SHA256 JWT �
 | 历史 | 在线率 / 延迟曲线（SQLite 落盘，24h 保留）与事件时序回放 |
 | 工场 | Instagram & TikTok 出海工场 · LangGraph 1.0 (HITL 人在环路状态机审批与海报生成) |
 | 切片 | 达摩院 FunClip 多模态音视频智能切片（带锁异步任务队列后台执行） |
-
-**它是什么**：一套「Agent 集群编排」的可运行演示 —— 拓扑配置化、前后端真接口、断网自动降级、有断言测试、有 CI。
-**它不是什么**：8 个微服务里 6 个的运行时不在本仓库（源码收编的 2 个见 Labs 章节）；页面里的经营数据是**构造的样例数据**（接口 `metrics_source: demo-sample` 如实标注）。
 
 ## 三种打开方式（都是真的能跑）
 
@@ -123,11 +121,14 @@ docker compose up --build      # 控制台起在 http://127.0.0.1:8888
 
 ---
 
-## 接入靶场：8 个服务，证明核心不绑定单一业务
+## 接入靶场：8 个异构服务，证明编排层不绑定单一技术栈
 
-这 8 个不是「并列的 8 个产品」，而是同一套 Runtime 的**接入样本**。
-每接一个，都是在验证内核的通用性 —— 导购走 SSE 长连接、RAG 走检索、数据分析走 Text-to-SQL，
-三种完全不同的调用形态共用同一套工具注册表与网关配额。
+这 8 个不是「并列的 8 个产品」，而是**接入样本**：导购走 SSE 长连接、RAG 走检索接口、
+数据分析走 Text-to-SQL、音视频走 Gradio —— 四种完全不同的调用形态被同一张拓扑纳管：
+同一个 `services.yaml`、同一条事件总线、同一套起停与鉴权。
+
+> 边界：这里验证的是**编排层**的通用性，不是「同一套 Agent Runtime 跑四种业务」——
+> 后者在生产项目里，本仓库不假装拥有它（见开头的「它不是什么」）。
 
 控制台本身不含业务逻辑，它编排的是下面这些独立项目（各自一个仓库 / 一个端口）：
 
@@ -237,7 +238,7 @@ GET /api/v1/events/stream   (text/event-stream)
 
 ## 可验证性：不用 clone 也能核对
 
-四条客观证据，都可以在仓库里直接看到原始输出，不需要相信我：
+五条客观证据，都可以在仓库里直接看到原始输出，不需要相信我：
 
 | 证据 | 在哪看 | 现在是什么 |
 |---|---|---|
@@ -245,8 +246,36 @@ GET /api/v1/events/stream   (text/event-stream)
 | 五层验证原始输出 | `evidence/selftest-omni.txt`、`evidence/event-bus-diff.txt`、`evidence/frontend-wiring.txt` | 每次 CI 跑完作为 artifact 上传 |
 | 端口探针 | `python check_services.py` | 读 `services.yaml` 逐端口 TCP 探测，输出在线表 |
 | 仓库自检 | `tools/check_image_files.py` | 对账 Dockerfile 的 `COPY` 清单与 `server.py` 的本地 import —— 防「镜像能 build、一启动就崩」 |
+| 实测数字 | `evals/bench.py` + `evals/reports/` | 六项指标带 n / p50 / p95 与环境指纹，一条命令复跑，见下一节 |
 
 **CI 徽章就是上面这四条的合并结果**，点开能看每次运行的原始日志。
+
+## 实测数字（`evals/bench.py` 可复跑）
+
+本机一次真实运行的结果，不是估计值。报告 JSON（含采样数、环境指纹、commit）一起提交在
+[`evals/reports/`](evals/reports/)，一条命令复跑：
+
+```bash
+.venv/Scripts/python evals/bench.py --samples 30
+```
+
+| 指标 | n | p50 | p95 | max |
+|---|---|---|---|---|
+| 冷启动 → 首次 `/healthz` 200 | 1 | 574.63 ms | — | — |
+| `/healthz` 往返 | 30 | 370.73 ms | 374.35 ms | 376.66 ms |
+| 8 端口并发 TCP 探测一轮 | 30 | 362.29 ms | 373.41 ms | 386.87 ms |
+| SSE 建连 → 第一帧事件 | 5 | 22.01 ms | 26.44 ms | 27.08 ms |
+| 端口开始监听 → 上线事件 | 1 | 2709.74 ms | — | — |
+| 端口监听终止 → 下线事件 | 1 | 3375.51 ms | — | — |
+
+怎么读（不然数字没有意义）：
+
+- **上下线时延由巡检周期支配，不是由代码效率支配。** `interval_sec: 3.0`，端到端必然落在
+  「0 ~ 3s + 探针耗时」之间，单次样本（n=1）只能说明量级。要压它改配置，不用改代码。
+- **`/healthz` 和探测一轮几乎一样慢，这不是巧合**：`/healthz` 内部先跑一轮 8 端口探测，
+  离线态耗时 ≈ `probe.timeout_sec`。**这是本基准顺手测出来的真实缺陷**（健康检查耦合了业务端口），
+  已写进「诚实边界」，未修 —— 动它会改 `/healthz` 的响应契约和 4 条断言，属 v3.0 的活。
+- **SSE 首帧这一项才是这层代码自己的开销**：建连后立刻推接入说明与 8 条就绪播报，不等巡检。
 
 ## 测试与 CI
 
@@ -260,8 +289,9 @@ GET /api/v1/events/stream   (text/event-stream)
 | ③ 事件总线专项 | `.venv/Scripts/python verify_event_bus.py` | 注入式端口探测，断言「停掉一个服务 → 流里真的出现下线事件」 |
 | ④ 前端接线审计 | `.venv/Scripts/python tools/audit_frontend_wiring.py` | 静态分析：`onclick` 是否有实现、`OmniAPI.xxx` 是否真的存在、`getElementById` 是否有悬空 id —— 抓「按钮点了没反应」 |
 | ⑤ 运行时端到端 | `.venv/Scripts/python tools/audit_runtime.py` | 起真服务：真拉起一个假监听进程 → 同一条 SSE 流上等「上线」→ 点 stop → 等「下线」→ 校验历史落盘（**自己拉的进程自己杀，不碰你正在跑的服务**） |
+| ⑥ 实测基准 | `.venv/Scripts/python evals/bench.py` | 六项指标带 n / p50 / p95 落 JSON（见「实测数字」一节）；**无阈值断言**，只负责每次运行都留下一份真实测量 |
 
-CI（`.github/workflows/ci.yml`）在每次 push / PR 上跑：**ruff check + ruff format --check** → pytest → 前端接线审计 → 全链路自检 → 事件总线专项验证 → **重跑 `build_docs.py` 并断言 `docs/` 无漂移** → 构建 Docker 镜像 → 上传 evidence 为 artifact。
+CI（`.github/workflows/ci.yml`）在每次 push / PR 上跑：**ruff check + ruff format --check** → pytest → 前端接线审计 → 全链路自检 → 事件总线专项验证 → **六项实测基准** → **重跑 `build_docs.py` 并断言 `docs/` 无漂移** → 构建 Docker 镜像 → 上传 evidence 为 artifact。
 
 > v2.6 起：`labs/` 收编模块不参与以上任何一步（`pytest.ini` 排除收集、`ruff.toml` 排除 lint、`.dockerignore` 不打包）—— 各模块重依赖独立管理，控制台不为它们背书。
 
@@ -316,6 +346,10 @@ run.bat                                   # 或 ./run.sh
 - **8 个微服务里 6 个是独立项目**（运行时不在本仓库内）；funclip-studio 与 graph-xiaohongshu 的**源码**已收编进 `labs/`（`:7860` / `:8020`），但运行时同样需要各自起。本仓库是控制台 + 编排层 + Labs 源码。想看真实链路，需要各自把服务起起来。
 - **端口探测的目标地址是 `PROBE_HOST`**（默认 `127.0.0.1`，容器里指 `host.docker.internal`），不做远程服务发现 —— 它探的是「本机/宿主」这一台。
 - **作者本机没装 Docker CLI，`docker build` 只跑在 CI 里。** 三条证据：① 按 Dockerfile 的 `COPY` 清单在空目录复刻「镜像内文件集」，直接 `python server.py` → `/healthz` 200、首页 200；② `tools/check_image_files.py` 静态对账 `COPY` 与 `server.py` 的本地 `import`；③ CI 的 `hadolint` + `docker build`，**2026-10-22 起连续通过**（此前被 lint 卡住、从未执行过）。**修之前 Dockerfile 只 COPY 了 `server.py` / `templates` / `static`，漏掉 `core/` 与 `routers/`**：镜像能 build 成功，容器一启动就 `ModuleNotFoundError: No module named 'core'`（已补 COPY）。
+- **`/healthz` 会先跑一轮 8 端口探测**（离线态 ~370ms，约等于 `probe.timeout_sec`），
+  所以它不是纯进程健康检查。这个数是 `evals/bench.py` 测出来的，本版未改。
+- **`evals/` 只测编排层，不测模型效果。** 本仓库没有模型调用链，任何 recall@k / 裁判打分
+  在这里都没有测量对象；报告里写 `skipped` 的指标就是 skipped，不补默认值。
 - **事件总线的心跳是 12s 一次**（3s 探测 × 4 轮），只有状态**变化**才实时推送 —— 这是刻意压掉刷屏，不是采样不到。
 - **本仓库最初版本的演示数据里带过真实业务品牌名，已整体脱敏**（服务名、商品名、话术、营销文案、英文品牌名与架构图标签共 117 处，
   生成产物 `docs/` 一并重建）。**注意：git 历史里仍能检出旧名**，彻底清理需要重写历史并 force push，

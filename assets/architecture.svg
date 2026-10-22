@@ -19,7 +19,7 @@
   <rect x="0" y="0" width="1200" height="790" fill="#f1f5f9"/>
 
   <!-- ============ 标题 ============ -->
-  <text class="t h1" x="40" y="46">OmniAgent Platform 2.0 · 架构总览</text>
+  <text class="t h1" x="40" y="46">OmniAgent Platform 2.8 · 架构总览</text>
   <text class="t bd" x="40" y="70">一个控制台编排 7 个独立 AI 微服务；前端依赖全本地化，后端可选、可缺省、缺省时如实降级</text>
 
   <!-- ============ Band 1: 控制台 ============ -->
@@ -158,4 +158,5 @@
     <text class="t sm" x="916" y="754">只是在顶栏如实标注在线数</text>
   </g>
 
+  <text class="t sm" x="40" y="778">注：v2.7 起 :8020（Labs 内容工场）也注册为探针服务；本图按 v2.0 的 7 服务布局绘制，未画第 8 个节点。控制台本体结构未变。</text>
 </svg>

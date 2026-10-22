@@ -5,6 +5,46 @@
 
 ## [未发布]
 
+### 修复 —— README 把「生产项目里的 Runtime / MCP 网关」写成了本仓库的核心
+
+上一版首屏写着「核心 = Agent Runtime（`LLMProvider` + `Tool` 双抽象、并行多工具、双熔断）
++ MCP 网关（四层中间件、三级配额）」，并把代码位置指到 `routers/gateway.py`。实测全仓 grep：
+
+| 关键词 | 命中 | 关键词 | 命中 |
+|---|---|---|---|
+| `LLMProvider` / `Provider` | 0 | `quota` | 0 |
+| `register_tool` / `tool_call` | 0 | `circuit` | 1（仿真场景名） |
+| `max_steps` | 0 | `audit` | 8（都是 `TRACE_AUDIT_LOGS` 日志表） |
+
+`routers/gateway.py` 实际是「OpenAI 协议统一代理 + 三个 preset 故障场景字典」
+（`FAILOVER_SCENARIOS`，响应自带 `simulated: true`），不是熔断实现。这段描述还与 README
+自己的「诚实边界」直接矛盾 —— 文末早就写着「网关没接真实大模型」「热切是仿真」「6 个运行时不在本仓库」。
+
+- 首屏改为「编排与观测面 / 接入靶场 / Labs 源码」三层，每层都标了真实代码位置
+- 新增「它不是什么」三条，把边界从文末搬到开头：不是 Runtime、不是 MCP 网关、热切是仿真
+- 「接入靶场」一节删掉「同一套 Runtime、共用工具注册表与网关配额」的说法，
+  改为「验证编排层的通用性，不假装拥有生产实现」
+- 架构图 alt 文案改回与图一致；图内版本号 2.0 → 2.8，补图注说明 v2.7 起的第 8 个端口未画
+- 控制台 `<title>` / `og:title`：「企业级全域 AI 智能体控制中枢」→「多服务拓扑控制台与编排层」，`docs/` 重建
+- 验证：`pytest -q` 仍 **70 passed**（该条只改文案与生成物）
+
+### 新增 —— `evals/bench.py`：把「能跑」换成可对比的六个数字
+
+README 原来只有「能跑」和「有测试」两句话，没有一个可对比的量。而本仓库没有模型调用链
+（网关未接真实大模型），所以 recall@k / LLM-as-Judge / 首 token 这类评测在这里**没有测量对象**，
+硬编一组数就是造假。基准改为测真正存在的东西：
+
+- 六项：冷启动 → 首次 `/healthz` 200 · `/healthz` 往返 · 8 端口并发 TCP 探测 · SSE 建连 → 首帧 ·
+  端口监听 → 上线事件 · 端口终止 → 下线事件
+- 每项带 n / p50 / p95 / max，报告落 `evals/reports/*.json`，含版本、Python、平台、commit、采样数
+- 拿不到就写 `skipped` 并注明原因；端口全在线或不可 bind 时不补默认值
+- 只挑空闲拓扑端口，被终止的进程是本脚本自己 spawn 的；不碰正在跑的服务
+- CI 每次运行跑一遍（`--samples 10`），报告进 artifact，可与上一版直接对比
+
+**实测暴露一个真实缺陷**：`/healthz` 内部先跑一轮 8 端口探测，离线态 p50 **370.73 ms**
+（≈ `probe.timeout_sec` 0.35s），健康检查耦合了业务端口。已写入「诚实边界」，本版未修 ——
+改它会动 `/healthz` 的响应契约与 4 条断言，留作 v3.0。
+
 ### 修复 —— CI 连续 15 次全红，pytest 与 docker build 从未真正执行过
 
 - 失败点固定在 `ruff format --check`（`core/state.py` 的 `TRACE_AUDIT_LOGS.extendleft([...])`

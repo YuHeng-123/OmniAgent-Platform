@@ -322,13 +322,13 @@ start_cmd: ["python", "tools/mock_service.py", "8002", "--id", "coze-material-st
 - **`/api/v1/gateway/simulate_failover` 是仿真端点**，它不真的去熔断某个上游，只演示「主备热切」这个形态；响应里自带 `"simulated": true`，主路由名一律写「上游主模型（仿真占位）」—— 2.1 之前这里曾残留编造的模型名 `DeepSeek-V3`（已清除并有断言防回归），token 数值也标注了 `token_usage_note: 样例数值，非真实计费`。
 - **8 个微服务里 6 个是独立项目**（运行时不在本仓库内）；funclip-studio 与 graph-xiaohongshu 的**源码**已收编进 `labs/`（`:7860` / `:8020`），但运行时同样需要各自起。本仓库是控制台 + 编排层 + Labs 源码。想看真实链路，需要各自把服务起起来。
 - **端口探测的目标地址是 `PROBE_HOST`**（默认 `127.0.0.1`，容器里指 `host.docker.internal`），不做远程服务发现 —— 它探的是「本机/宿主」这一台。
-- **作者本机没装 Docker CLI，`docker build` 从未在本机跑过。** 三条替代验证：① 按 Dockerfile 的 `COPY` 清单在空目录复刻出「镜像内文件集」，直接 `python server.py`，`/healthz` 返回 200、首页 200 —— 证明文件集足够；② `tools/check_image_files.py` 静态对账 `COPY` 清单与 `server.py` 的本地 `import`，已接进 CI；③ CI 里的 `docker build` 步骤 + `hadolint`。**注意 ③ 此前从未真正执行过** —— lint 卡在第 5 步，把后面的 pytest 与 docker build 全挡住了（见下一条）。**修之前 Dockerfile 只 COPY 了 `server.py` / `templates` / `static`，漏掉 `core/` 与 `routers/`**：镜像能 build 成功，容器一启动就 `ModuleNotFoundError: No module named 'core'`（已补 COPY）。「镜像能不能 build 成功」这条，仍以 CI 结果为准，不以本机为准。
+- **作者本机没装 Docker CLI，`docker build` 只跑在 CI 里。** 三条证据：① 按 Dockerfile 的 `COPY` 清单在空目录复刻「镜像内文件集」，直接 `python server.py` → `/healthz` 200、首页 200；② `tools/check_image_files.py` 静态对账 `COPY` 与 `server.py` 的本地 `import`；③ CI 的 `hadolint` + `docker build`，**2026-10-22 起连续通过**（此前被 lint 卡住、从未执行过）。**修之前 Dockerfile 只 COPY 了 `server.py` / `templates` / `static`，漏掉 `core/` 与 `routers/`**：镜像能 build 成功，容器一启动就 `ModuleNotFoundError: No module named 'core'`（已补 COPY）。
 - **事件总线的心跳是 12s 一次**（3s 探测 × 4 轮），只有状态**变化**才实时推送 —— 这是刻意压掉刷屏，不是采样不到。
 - **本仓库最初版本的演示数据里带过真实业务品牌名，已整体脱敏**（服务名、商品名、话术、营销文案、英文品牌名与架构图标签共 117 处，
   生成产物 `docs/` 一并重建）。**注意：git 历史里仍能检出旧名**，彻底清理需要重写历史并 force push，
   这一步尚未执行 —— 与其假装干净，不如把这件事写在明面上。
-- **CI 曾经连续 15 次全红**（`ruff format --check` 卡在第 5 步，导致 pytest 与 `docker build` 从未真正执行）。
-  已修复并 pin 住 ruff 版本；这条记在这里是因为「徽章是绿的」这个说法本身也曾经是假的。
+- **CI 曾经连续 15 次全红**（`ruff format --check` 卡在第 5 步，pytest 与 `docker build` 从未真正执行）。
+  已修复并 pin 住 ruff；现在徽章是绿的，而且是真的绿 —— 上面 15 个步骤每次都跑完。
 - **已原生落地 HMAC-SHA256 JWT 多租户鉴权与 RBAC 4-Tier 角色矩阵守卫**：支持 `tenant-hq` / `tenant-tiktok` / `tenant-embroidery` 多租户数据隔离，敏感操作（起停微服务）在服务端严格进行角色校验与 HTTP 403 拦截，并接入后台异步任务状态机队列。业务数据与模型推理仍然遵守严谨的真实/样例标注规范，不冒充线上闭源大模型。
 
 ---

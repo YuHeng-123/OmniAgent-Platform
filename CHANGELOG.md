@@ -21,6 +21,15 @@
 - **验证**：按新清单复刻文件集，`OMNI_PORT=8899 python server.py` → `/healthz` 200
   （`services_total: 8`）、首页 200、8 个探针按 `services.yaml` 列出。`docker build` 本身仍以 CI 结果为准。
 
+### 修复 —— 事件总线验证脚本的注入点失效（2.8 拆模块后没跟上）
+
+- `verify_event_bus.py` 一直 patch 的是 `server.probe_port`，但 2.8 把探测实现搬进了
+  `core/state.py`，巡检器调用的是**那个模块的全局** —— 等于什么都没改：翻转不生效，
+  脚本一直等一条永远不会来的状态变化，**在 CI 里以超时失败**。
+- 修：注入点改为 `core_state.probe_port`（保留 `server` 侧再导出）。本地与 CI 均回到
+  `结论: PASS —— 事件由共享巡检器的状态差异驱动`（`:7860` 翻转 → 3.4s 后出现「状态变化：上线」）。
+- 这条也解释了为什么「事件总线是真探测」这句宣传此前只能靠人眼背书：验证脚本本身是坏的。
+
 ### 新增 —— `tools/check_image_files.py`（+ CI 里的 hadolint）
 
 - 解析 `Dockerfile` 的 `COPY` 行，与 `server.py` 的本地 `import` 静态对账，缺一个就 `exit 1`；

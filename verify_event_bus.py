@@ -34,12 +34,16 @@ import uvicorn
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, BASE_DIR)
 
+import core.state as core_state  # noqa: E402
 import server  # noqa: E402
 
 OUT_PATH = sys.argv[1] if len(sys.argv) > 1 else os.path.join(BASE_DIR, "evidence", "event-bus-diff.txt")
 
 # ---------------------------------------------------------------- 注入式探测
-REAL_PROBE = server.probe_port
+# 2.8 把探测实现搬进了 core/state.py（微内核拆分），而巡检器调用的是**模块全局**的
+# probe_port。所以注入点必须是 core_state.probe_port —— 只 patch server 那边的再导出
+# 等于什么都没改：巡检器照样走真探测，翻转不生效，脚本会一直等一条永远不会来的状态变化。
+REAL_PROBE = core_state.probe_port
 FLIP_PORT = 7860  # 巡检器第 2 轮起把 FunClip 的在线状态翻转
 _flip = {"calls": 0, "first": None, "online": 0}
 
@@ -65,7 +69,8 @@ async def fake_probe(port, timeout=0.35):
     return online, latency
 
 
-server.probe_port = fake_probe
+core_state.probe_port = fake_probe
+server.probe_port = fake_probe  # 保留：server 侧还有再导出的引用
 
 
 def free_port(start):

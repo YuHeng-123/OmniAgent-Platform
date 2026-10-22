@@ -10,7 +10,7 @@ docs/ 存在        = True
 ========================================================================
 == [1] GET /  主控台页面
 ========================================================================
-HTTP 200, 447728 bytes
+HTTP 200, 585086 bytes
 含 'OmniAgent'    = True
 含外部 CDN 引用   = False  (必须为 False，否则断网白屏)
 引用 ./static/    = True
@@ -30,7 +30,7 @@ HTTP 200, 447728 bytes
   "metrics_source": "demo-sample"
 }
   port 8000  offline   企业 AI 统一网关
-  port 8001  offline   琼华珠宝 AI 智能导购
+  port 8001  offline   Jewelry Advisor Demo · AI 智能导购
   port 8002  offline   多平台爆款素材工作台
   port 8510  offline   AI 数据分析专家
   port 8501  offline   企业级智能知识库 (RAG)
@@ -43,9 +43,9 @@ HTTP 200, 447728 bytes
 ========================================================================
 backend      = fallback:local-demo
 model        = 本地规则引擎 (离线降级)
-latency_ms   = 359   (实测，不是写死的常数)
+latency_ms   = 352   (实测，不是写死的常数)
 trace 节点数 = 3
-reply 前 120 字 = 收到您的咨询！小琼随时在为您服务。琼华珠宝坚持选用天然玉石、优质珍珠与切工宝石，支持 7 天无理由退换及终身免费清洗保养。请问您今天想挑选哪类饰品？
+reply 前 120 字 = 收到您的咨询！小安随时在为您服务。Jewelry Advisor Demo坚持选用天然玉石、优质珍珠与切工宝石，支持 7 天无理由退换及终身免费清洗保养。请问您今天想挑选哪类饰品？
 
 ========================================================================
 == [4] POST /api/v1/guide/chat  自纠错链路（500 元券压力测试）
@@ -91,7 +91,7 @@ Q: 近半年趋势
   "primary_detail": "上游主模型响应超时(>3000ms)，触发熔断阈值",
   "failover_model": "本地兜底规则引擎 (Mock Fallback)",
   "failover_status": "200 OK",
-  "switch_latency_ms": 46,
+  "switch_latency_ms": 43,
   "token_usage": {
     "prompt": 120,
     "completion": 310,
@@ -104,9 +104,9 @@ Q: 近半年趋势
 ========================================================================
 == [8] docs/ 静态站 —— 模拟 GitHub Pages（后端不存在）
 ========================================================================
-HTTP 200    450904 B  /docs/
-HTTP 200    450904 B  /docs/index.html  含 'OmniAgent' = True
-HTTP 200     59605 B  /docs/static/omni-api.js  含 'OmniAPI' = True
+HTTP 200    588262 B  /docs/
+HTTP 200    588262 B  /docs/index.html  含 'OmniAgent' = True
+HTTP 200     91581 B  /docs/static/omni-api.js  含 'OmniAPI' = True
 HTTP 200    451131 B  /docs/static/vendor/tailwind.js
 HTTP 200    205475 B  /docs/static/vendor/chart.umd.js
 HTTP 200    102025 B  /docs/static/vendor/fontawesome/css/all.min.css
@@ -120,7 +120,7 @@ HTTP 200    150124 B  /docs/static/vendor/fontawesome/webfonts/fa-solid-900.woff
 ========================================================================
 == [10] docs/index.html 静态化自检
 ========================================================================
-bytes                = 450904
+bytes                = 588262
 残留 Jinja2 标记     = 0  (应为 0)
 残留绝对 /static/    = 0  (应为 0)
 含静态演示角标逻辑   = True
@@ -130,15 +130,15 @@ bytes                = 450904
 == [11] GET /api/v1/events/stream  中枢事件总线（SSE，真实端口探测驱动）
 ========================================================================
 HTTP 200   content-type = text/event-stream; charset=utf-8
-  [06:21:55] [MASTER     ] (info) 事件总线接入成功：本流由真实 TCP 端口探测驱动，每 3s 巡检一次，当前在线 0/8。
-  [06:21:55] [GATEWAY    ] (warn) 企业 AI 统一网关（:8000）未响应，标记为离线。
-  [06:21:55] [ECOM-AGENT ] (warn) 琼华珠宝 AI 智能导购（:8001）未响应，标记为离线。
-  [06:21:55] [MARKETING  ] (warn) 多平台爆款素材工作台（:8002）未响应，标记为离线。
-  [06:21:55] [ANALYTICS  ] (warn) AI 数据分析专家（:8510）未响应，标记为离线。
-  [06:21:55] [RAG        ] (warn) 企业级智能知识库 (RAG)（:8501）未响应，标记为离线。
-  [06:21:55] [COLLECTOR  ] (warn) 自动化情报抓取平台（:8765）未响应，标记为离线。
-  [06:21:55] [FUNCLIP    ] (warn) 多模态音视频智能体 (FunClip)（:7860）未响应，标记为离线。
-  [06:21:55] [LABS-XHS   ] (warn) 内容工厂 (Labs)（:8020）未响应，标记为离线。
+  [20:11:23] [MASTER     ] (info) 事件总线接入成功：本流由真实 TCP 端口探测驱动，每 3s 巡检一次，当前在线 0/8。
+  [20:11:23] [GATEWAY    ] (warn) 企业 AI 统一网关（:8000）未响应，标记为离线。
+  [20:11:23] [ECOM-AGENT ] (warn) Jewelry Advisor Demo · AI 智能导购（:8001）未响应，标记为离线。
+  [20:11:23] [MARKETING  ] (warn) 多平台爆款素材工作台（:8002）未响应，标记为离线。
+  [20:11:23] [ANALYTICS  ] (warn) AI 数据分析专家（:8510）未响应，标记为离线。
+  [20:11:23] [RAG        ] (warn) 企业级智能知识库 (RAG)（:8501）未响应，标记为离线。
+  [20:11:23] [COLLECTOR  ] (warn) 自动化情报抓取平台（:8765）未响应，标记为离线。
+  [20:11:23] [FUNCLIP    ] (warn) 多模态音视频智能体 (FunClip)（:7860）未响应，标记为离线。
+  [20:11:23] [LABS-XHS   ] (warn) 内容工厂 (Labs)（:8020）未响应，标记为离线。
 初始事件条数 = 9  (1 条接入说明 + 8 条服务就绪播报)
 docs 残留写死时间戳 19:15:02 = False  (应为 False)
 docs 含 startEvents 接线     = True  (应为 True)

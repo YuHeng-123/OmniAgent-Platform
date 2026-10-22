@@ -28,8 +28,10 @@
 
 ### 变更 —— 演示数据脱敏
 
-- 70 处：`services.yaml` / `core/config.py` 服务名、`routers/business.py` 与 `static/omni-api.js`
-  的商品名与话术、`templates/*` 营销文案 → `Jewelry Advisor Demo` / `AURORA`；`docs/` 由 `build_docs.py` 重生成。
+- **117 处**（第一轮 70 处中文名 + 第二轮 47 处英文品牌名 `Qionghua`，含 `assets/architecture.svg`
+  里的节点标签、`evidence/` 里的实测输出）：`services.yaml` / `core/config.py` 服务名、
+  `routers/business.py` 与 `static/omni-api.js` 商品名与话术、`templates/*` 营销文案与中英 i18n
+  → `Jewelry Advisor Demo` / `AURORA`；`docs/` 与 `evidence/` 全部重新生成。
 - 改后 `pytest -q` 仍 **70 passed**。
 - **遗留**：git 历史仍可检出旧品牌名（17 个 commit），彻底清理需 `git filter-repo` + force push，**未执行**。
 

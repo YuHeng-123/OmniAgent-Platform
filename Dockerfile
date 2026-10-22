@@ -20,6 +20,11 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY server.py services.yaml ./
+# server.py 直接 import core.* 与 routers.*（微内核装配层 + 业务路由分层）——
+# 2026-10 之前的版本漏了这两行，镜像能 build 成功但一启动就 ModuleNotFoundError，
+# compose 起来看到的是 restart 循环。改动这段请连同 check_image_files.py 一起跑。
+COPY core/ ./core/
+COPY routers/ ./routers/
 COPY templates/ ./templates/
 COPY static/ ./static/
 

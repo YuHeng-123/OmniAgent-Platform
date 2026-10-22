@@ -1,100 +1,50 @@
-# OmniAgent Platform 2.8 · 企业级全域 AI 智能体控制中枢 (Global DTC E-Commerce & Content Studio)
+# OmniAgent Platform 2.8 · 多服务拓扑控制台与编排层（附 2 个收编 Labs 模块）
 
-把 **8 个各自独立的 AI 微服务**，收进一个统一控制台 —— 一个页面看清整个 Agent 集群的拓扑、在线状态与业务闭环。
-已全面升级为 **企业生产级架构**：多角色视窗、爆款实效归因抽屉、core/routers 微内核分层解耦、HMAC-SHA256 JWT 多租户鉴权、4-Tier RBAC 敏感守卫拦截，以及后台分布式异步任务队列。
+**先说清这个仓库是什么、不是什么** —— 这一段每一句都能在代码里指到行。
 
-![python](https://img.shields.io/badge/python-3.10%2B-blue)
-![frontend deps](https://img.shields.io/badge/frontend%20deps-100%25%20local-brightgreen)
-![external CDN](https://img.shields.io/badge/external%20CDN-0-critical)
-![tests](https://img.shields.io/badge/pytest-70%20tests-brightgreen)
-![architecture](https://img.shields.io/badge/architecture-modular%20core%2Frouters-brightgreen)
-![security](https://img.shields.io/badge/security-JWT%20%2B%20RBAC%204--Tier-blue)
-![license](https://img.shields.io/badge/license-MIT-blue)
+它是一层**编排与观测面**：把 N 个异构服务（HTTP / SSE / Streamlit / Gradio）收进一张由
+`services.yaml` 驱动的拓扑，用**真 TCP 探测**驱动一条 SSE 事件总线，起停接口真的拉起 / 终止进程，
+双模式数据源保证前端**不把演示数据当线上数据**，敏感操作由 HMAC-SHA256 JWT + 4-Tier RBAC 守着。
+
+| 层 | 是什么 | 代码在哪 |
+|---|---|---|
+| 编排与观测面 | 拓扑单一来源 → 并发探测 → 差异事件广播 → SQLite 历史 → 9 页控制台 | `services.yaml` · `core/state.py` · `routers/events.py` · `routers/system.py` |
+| 起停管控 | 按端口找 PID、真终止、只认 `start_cmd`、先过角色校验 | `core/process.py` · `core/security.py` |
+| 任务队列 | 带锁状态机（pending → running → done/failed），异步端点复用 | `core/tasks.py` |
+| 协议代理 · 容灾**仿真** | OpenAI 协议统一代理 + 三场景热切演练（响应自带 `simulated: true`） | `routers/gateway.py` |
+| 接入靶场 · 8 端 | 异构服务接入样本：导购 / 素材 / RAG / 数据分析 / 情报 / 音视频 / 内容工场 | 各自独立仓库，见「接入靶场」一节 |
+| Labs 源码 · 2 个 | LangGraph 出海流水线、FunClip Windows 封装（源码收编，运行时独立） | `labs/` |
+
+**它不是什么**（写在开头，而不是藏到文末）：
+
+- **不是 Agent Runtime，也不是 MCP 网关。** 那两样的实现在生产项目里，不在这个仓库 ——
+  这里没有 `LLMProvider`、没有 Tool 注册表、没有配额账本、没有真熔断（全仓 grep 为 0）。
+  本仓库是那套东西的**观测面与接入示范**：这条边界写清楚，比含糊地暗示「我也有」值钱。
+- **网关的「主备热切」是仿真**：它不熔断任何真实上游，token 是样例数值。
+- **8 个服务里 6 个的运行时不在本仓库**；compose 只起控制台一个容器。
+
+> **脱敏声明**：本仓库所有业务模块均为脱敏示例，不含任何真实客户数据与生产配置；
+> 服务名、商品名、经营数据都是构造的样例，接口里以 `demo-sample` / `fallback:local-demo` 如实标注。
 
 [![CI](https://github.com/YuHeng-123/OmniAgent-Platform/actions/workflows/ci.yml/badge.svg)](https://github.com/YuHeng-123/OmniAgent-Platform/actions/workflows/ci.yml)
 [![Live Demo](https://img.shields.io/badge/%F0%9F%8C%90_Live_Demo-GitHub_Pages-2ea44f?style=for-the-badge)](https://yuheng-123.github.io/OmniAgent-Platform/)
-<!-- ↑ CI 徽章已激活：每次 push 自动跑 70 项测试 + ruff + docker build。 -->
+![python](https://img.shields.io/badge/python-3.10%2B-blue)
+![license](https://img.shields.io/badge/license-MIT-blue)
 
 ![OmniAgent Platform Hero Banner](assets/hero-banner.jpg)
 
-![架构总览](assets/architecture.svg)
+![架构总览：控制台本体 + 双模式数据源适配层 + 被编排的 7 个独立微服务](assets/architecture.svg)
 
----
-
-## 🚀 v2.8 企业级生产架构升级 (Enterprise Architecture Evolution)
-
-系统在保持 **100% 离线自包含** 与 **100% 历史契约兼容** 的前提下，完成了一整套现代企业级全栈演进：
-
-```
-                                 ┌─────────────────────────────────────────────────────────────┐
-                                 │       OmniAgent Platform 2.8 统一控制台 (前端/双模渲染)      │
-                                 └──────────────┬───────────────────────────────┬──────────────┘
-                                                │                               │
-                      [JWT + X-Tenant-ID Header]▼                               ▼ [WebSocket / SSE]
-                                 ┌─────────────────────────────────────────────────────────────┐
-                                 │                FastAPI 微内核装配层 (server.py)             │
-                                 │         trace_id_middleware / tenant_context / CORS        │
-                                 └──────────────┬───────────────────────────────┬──────────────┘
-                                                │                               │
-                   ┌────────────────────────────┴─────────────┐   ┌─────────────┴────────────────────────────┐
-                   ▼                                          ▼   ▼                                          ▼
-       ┌────────────────────────┐                 ┌───────────────────────┐                     ┌────────────────────────┐
-       │   routers/ 业务路由分层 │                 │ core/security.py 守卫 │                     │ core/tasks.py 异步状态机│
-       ├────────────────────────┤                 ├───────────────────────┤                     ├────────────────────────┤
-       │ • system (探针/服务管控) │ ──────────────▶ │ • HMAC-SHA256 JWT 签发│                     │ • 状态机 PENDING ➔     │
-       │ • events (SSE 差异推送) │                 │ • 多租户隔离 (tenant) │                     │   RUNNING ➔ COMPLETED  │
-       │ • gateway (容灾热切仿真)│                 │ • RBAC 4-Tier 权限矩阵│                     │ • FunClip 长视频切片   │
-       │ • business (导购/营销)  │                 │ • 敏感操作 403 强拦截 │ ◀───────────────────┤ • 出海社媒批量批处理   │
-       │ • labs (深度工场状态机) │                 └───────────────────────┘                     └────────────────────────┘
-       └────────────────────────┘
-```
-
-### 1. 👑 多角色动态视窗 (Persona Views)
-总览页顶部提供 4 大专业角色视窗，一键过滤大盘视图，赋能跨岗位业务协同：
-- **👑 经营决策大盘**：只聚焦 GMV、ROAS、漏斗转化、核心爆款与投资回报率 ROI。
-- **⚡ 出海运营工场**：聚焦多语言出海社媒文案生成流水线、实时短视频切片工位与 HITL 状态。
-- **🛠️ 架构运维拓扑**：聚焦 2.5D 力导向 HUD、端口在线率探测、毫秒级延迟曲线与事件总线。
-- **🌐 全域调度总览**：全量微服务集群监控、服务起停管控与状态一览。
-
-### 2. 💎 爆款 SKU 深度实效归因抽屉 (Interactive SKU Attribution Drawer)
-点击商品卡片（如莫桑石钻戒 / 翡翠吊坠），右侧滑出全维度分析抽屉：
-- **转化漏斗与 ROAS 归因**：曝光量 ➔ 详情页点击 ➔ 加购 ➔ 成交，ROAS 3.82 商业归因。
-- **Prompt 演进与 A/B 测试**：V1.0 通用词 ➔ V2.1 奢品光影 ➔ V3.0 出海场景转化词多代对比，实效提升 +75%。
-- **短视频 15s 完播留存曲线**：前 3 秒黄金抓手、7 秒卖点翻转、12 秒行动号召完播率分析。
-- **实操闭环**：导出实效 JSON 报告、同步导购知识库、一键派生 3 套新变体。
-
-### 3. 🏗️ 后端模块化分层解耦 (Monolith to Modular Microkernel)
-将原本 2,470 行庞大的单体 `server.py` 平滑无损拆解为符合领域驱动（DDD）规范的工程体系：
-- **`core/config.py`**：统一常量、配置读取与拓扑容灾回退；
-- **`core/models.py`**：Pydantic 请求体契约校验；
-- **`core/state.py`**：探针轮询、熔断器计数与系统遥测状态；
-- **`core/process.py`**：子进程启停安全管理与 PID 表维护；
-- **`core/templates.py`**：模板加载器与上下文构建器；
-- **`core/security.py`**：自包含 HMAC-SHA256 JWT Token 签发与 RBAC 权限矩阵校验；
-- **`core/tasks.py`**：支持多租户与带锁状态机管理的后台异步任务中心；
-- **`routers/`**：`system.py`、`events.py`、`gateway.py`、`business.py`、`labs.py`；
-- **`server.py`**：精简为 200 行清晰的微内核装配器，对外保持 100% 接口与契约兼容。
-
-### 4. 🛡️ 企业级多租户与 4-Tier RBAC 敏感操作守卫
-- **自包含 HMAC-SHA256 JWT**：自动签发与验签，支持 `tenant-hq` (北美独立站旗舰), `tenant-tiktok` (TikTok Shop 全球矩阵), `tenant-embroidery` (Instagram 欧美轻奢独立站) 多租户隔离；
-- **4-Tier RBAC 角色矩阵**：Admin (系统总管), Operator (运营专家), Analyst (数据分析师), Auditor (合规审计员)；
-- **服务端 403 权限守卫**：敏感操作（如启停微服务）在服务端严格守卫，只读角色尝试操作时直接返回标准 HTTP 403 `PERMISSION_DENIED`，前端展示高风险告警。
-
-### 5. ⚡ 分布式异步任务队列与状态机抽屉 (Distributed Task Center)
-- **解耦长耗时操作**：视频切片（FunClip）与出海多语言批量文案生成接入后台任务队列，避免阻塞 Web 网关；
-- **任务状态机**：严格流转 `PENDING` ➔ `RUNNING` ➔ `COMPLETED` / `FAILED`，支持多租户查询与重试；
-- **前端任务中心抽屉**：顶栏灵动岛在途任务实时徽章，右滑出任务中心监控状态、进度条与执行耗时，支持 4 秒轮询与快速派发。
-
----
+> 六项实测数字（冷启动 / 探测 / SSE 首帧 / 上下线时延）见下方「实测数字」一节，
+> 报告 JSON 与采样数一并提交在 `evals/reports/`。
 
 ## 界面预览
 
-> 界面主题全新升级为「**曜石深空 × 霓虹翡翠 · Obsidian Cyber-Emerald**」：深邃暗夜黑底 (`#0B0F19`) + 霓虹翡翠绿 (`#10B981`) + 量子青 (`#06B6D4`) + 纳米级磨砂毛玻璃卡片与精密呼吸微动效，专为次世代全域 AI 智能体控制中枢打造。
 > 以下截图全部来自本机真实运行 —— 控制台起在 `:8899`，8 个业务端口用仓库自带的
 > `tools/mock_service.py` 占位，浏览器实际操作后截取，非设计稿。
 
 **总览 · 全域智能体调度大盘**
-7/7 在线，每张卡片带真实的起停按钮；右侧「中枢事件总线」由真 TCP 探测的差异驱动。
+每张卡片带真实的起停按钮；右侧「中枢事件总线」由真 TCP 探测的差异驱动。
 
 ![总览](assets/screenshots/01-overview.png)
 
@@ -103,30 +53,8 @@
 
 ![导购](assets/screenshots/03-guide.png)
 
-**爆款营销工场 · 多平台文案 + 违禁词质检**
-选渠道、填卖点，一键生成文案，并逐条给出《广告法》违禁词检出与合规改写建议。
-
-![营销](assets/screenshots/05-marketing.png)
-
-**数据分析决策 · Text-to-SQL**
-自然语言 → SQL → 动态图表 → 经营结论，并自动标注「发现潜力品」以便一键转营销。
-
-![分析](assets/screenshots/06-analytics.png)
-
-**模型调度网关与容灾中枢**
-点「注入主链路宕机故障」后：上游超时 / 限流 → 自动热切备用链路，全程业务无感。
-
-![网关](assets/screenshots/04-gateway.png)
-
-**企业知识库检索 · RAG**
-BM25 + 向量混合检索，命中切片带置信度与关键词高亮。
-
-![知识库](assets/screenshots/07-rag.png)
-
-**历史趋势与事件回放**
-数据落 SQLite（24h 保留）。在线率曲线中段那道坑，就是一次真实的「某服务下线 → 后被重新拉起」。
-
-![历史趋势](assets/screenshots/02-history.png)
+> 其余 5 屏（营销工场 / 数据分析 / 网关容灾 / 知识库 / 历史趋势）见
+> [assets/screenshots](assets/screenshots/)，同样是本机实跑后截取，非设计稿。
 
 **移动端 · 窄屏抽屉导航**
 窗口窄于 1024px 时侧栏自动收起为抽屉，手机也能完整操作。
@@ -137,7 +65,7 @@ BM25 + 向量混合检索，命中切片带置信度与关键词高亮。
 
 ## 60 秒看懂
 
-控制台就 7 个页面，每个页面都能真的点、真的出结果：
+控制台 9 个页面，每个页面都能真的点、真的出结果：
 
 | 页面 | 它演示什么 |
 |---|---|
@@ -151,73 +79,58 @@ BM25 + 向量混合检索，命中切片带置信度与关键词高亮。
 | 工场 | Instagram & TikTok 出海工场 · LangGraph 1.0 (HITL 人在环路状态机审批与海报生成) |
 | 切片 | 达摩院 FunClip 多模态音视频智能切片（带锁异步任务队列后台执行） |
 
-**它是什么**：一套「Agent 集群编排」的可运行演示 —— 拓扑配置化、前后端真接口、断网自动降级、有断言测试、有 CI。
-**它不是什么**：8 个微服务里 6 个的运行时不在本仓库（源码收编的 2 个见 Labs 章节）；页面里的经营数据是**构造的样例数据**（接口 `metrics_source: demo-sample` 如实标注）。
-
 ## 三种打开方式（都是真的能跑）
 
 | 场景 | 怎么跑 | 说明 |
 |---|---|---|
-| 🌐 **在线演示 · 零后端** | **[已上线 → yuheng-123.github.io/OmniAgent-Platform](https://yuheng-123.github.io/OmniAgent-Platform/)** | 纯静态、依赖全本地化，**断网也能渲染**；数据来自内置降级层，页面顶栏会明确标注「静态演示模式」。离线场景可双击本地 `docs/index.html` |
-| 💻 **本地全功能** | `run.bat`（Windows）/ `./run.sh`（macOS·Linux） | 真后端、真接口、真耗时；8 个服务在线时亮绿点并实时数出来 |
+| 🌐 **在线演示 · 零后端** | **[已上线 → yuheng-123.github.io/OmniAgent-Platform](https://yuheng-123.github.io/OmniAgent-Platform/)** | 纯静态、依赖全本地化，**断网也能渲染**；数据来自内置降级层，顶栏标注「静态演示模式」。也可直接双击 `docs/index.html` |
+| 💻 **本地全功能** | `run.bat` / `./run.sh` | 真后端、真接口、真耗时；8 个服务在线时亮绿点并实时数出来 |
 | 🐳 **容器里跑** | `docker compose up --build` | 控制台镜像化（python-slim · 非 root · 带 healthcheck），历史库落命名卷 |
 
-### 本地一键启动
+### 本地
 
 ```bash
-# Windows
-run.bat
-
-# macOS / Linux
-chmod +x run.sh && ./run.sh
+run.bat                                # Windows，首次自动建 .venv 并装依赖
+chmod +x run.sh && ./run.sh            # macOS / Linux
 ```
 
-首次运行会自动建 `.venv` 并装依赖，然后启动在 <http://127.0.0.1:8888>。
-健康检查：<http://127.0.0.1:8888/healthz>（版本 / 运行时长 / 拓扑来源 / 实时在线数）。
+启动在 <http://127.0.0.1:8888>，健康检查 <http://127.0.0.1:8888/healthz>（版本 / 运行时长 / 拓扑来源 / 实时在线数）。
+不想用脚本就 `python server.py`；端口可换：`OMNI_PORT=8899 python server.py`。
 
-手动方式：
-
-```bash
-python -m venv .venv
-.venv/Scripts/python -m pip install -r requirements.txt   # Windows
-python server.py
-```
-
-端口可换：`OMNI_PORT=8899 python server.py`（默认 8888）。
-
-### Docker 一键启动
+### Docker
 
 ```bash
 docker compose up --build      # 控制台起在 http://127.0.0.1:8888
 ```
 
-容器化有两个**必须**设置的网络变量，镜像里已经写好，原因值得记一下：
+容器化有两个**必须**设置的网络变量，镜像里已写好，原因值得记一下：
 
 | 变量 | 容器里的值 | 为什么 |
 |---|---|---|
-| `OMNI_HOST` | `0.0.0.0` | 进程若只 bind `127.0.0.1`，Docker 的端口发布（`-p 8888:8888`）是把宿主机端口 DNAT 到容器 eth0，**从宿主机根本打不通**；更坑的是容器自带 healthcheck 从 loopback 打是通的，于是变成「显示健康、实际访问不了」的静默失败 |
-| `OMNI_PROBE_HOST` | `host.docker.internal` | 容器内的 `127.0.0.1` 是容器自己，探不到跑在宿主机上的 8 个微服务 —— 不设这个，面板恒显示 0/8 |
+| `OMNI_HOST` | `0.0.0.0` | 进程若只 bind `127.0.0.1`，端口发布把宿主机端口 DNAT 到容器 eth0，**从宿主机根本打不通**；更坑的是容器自带 healthcheck 从 loopback 打是通的，变成「显示健康、实际访问不了」的静默失败 |
+| `OMNI_PROBE_HOST` | `host.docker.internal` | 容器内的 `127.0.0.1` 是容器自己，探不到宿主上的 8 个服务 —— 不设这个，面板恒显示 0/8 |
 
-> **边界说明**：「起停按钮」在容器里只对**容器内**的进程有效（容器看不到宿主机的进程表）。要演示停服→下线事件，请用本地方式跑，或让微服务也一起容器化进同一网络。
+> **边界**：compose 只起**控制台一个容器**，另外 7 个业务服务的运行时不在本仓库，所以「一键起全套」不成立；
+> 起停按钮在容器里也只对容器内进程有效（容器看不到宿主机进程表）。
 
 ### 部署到 GitHub Pages
 
-`docs/` 目录是**自包含**的（HTML + `static/vendor/` 全部前端库都在里面），可直接作为发布目录：
-
-1. 把仓库推到 GitHub
-2. **Settings → Pages → Source: Deploy from a branch → Branch: `main` / 目录: `/docs`**
-3. 访问 `https://YuHeng-123.github.io/OmniAgent-Platform/`
-
-> `docs/` 由 `build_docs.py` 生成，**不要手改**。改了 `templates/index.html` 或 `static/` 之后重跑：
-> ```bash
-> .venv/Scripts/python build_docs.py
-> ```
+`docs/` 是自包含产物（HTML + `static/vendor/` 全部前端库），直接作为发布目录：
+**Settings → Pages → Deploy from a branch → `main` / `/docs`**。
+`docs/` 由 `build_docs.py` 生成，**不要手改**；改了 `templates/` 或 `static/` 之后重跑 `.venv/Scripts/python build_docs.py`。
 
 ---
 
-## 8 个微服务矩阵
+## 接入靶场：8 个异构服务，证明编排层不绑定单一技术栈
 
-控制台本身不包含业务逻辑，它编排的是下面这些独立项目（各自一个仓库 / 一个端口）：
+这 8 个不是「并列的 8 个产品」，而是**接入样本**：导购走 SSE 长连接、RAG 走检索接口、
+数据分析走 Text-to-SQL、音视频走 Gradio —— 四种完全不同的调用形态被同一张拓扑纳管：
+同一个 `services.yaml`、同一条事件总线、同一套起停与鉴权。
+
+> 边界：这里验证的是**编排层**的通用性，不是「同一套 Agent Runtime 跑四种业务」——
+> 后者在生产项目里，本仓库不假装拥有它（见开头的「它不是什么」）。
+
+控制台本身不含业务逻辑，它编排的是下面这些独立项目（各自一个仓库 / 一个端口）：
 
 | 端口 | 服务 | 角色 | 技术栈 |
 |---|---|---|---|
@@ -300,59 +213,69 @@ GET /api/v1/events/stream   (text/event-stream)
 ```
 
 它把底层 `scan_ports` 做注入：第 1 轮取真实探测结果，第 2 轮起把 `:7860` 的在线状态**翻转**，
-然后断言流里**确实出现了一条由差异触发的状态变化事件**。
+然后断言流里确实出现一条由差异触发的状态变化事件。**翻转而不是写死「置为离线」**，
+是因为脚本必须和运行环境无关 —— 有服务开着就验下线、一个没起就验上线，两个方向都得成立。
+（原来的写法硬编码「置为离线」，在一台服务全没起的机器上永远等不到变化，把好好的代码验成 FAIL。）
 
-> 为什么是「翻转」而不是「置为离线」：脚本必须和运行环境无关 ——
-> 你机器上 7 个服务开着，就翻成下线（验下线事件）；一个都没起，就翻成上线（验上线事件）。
-> 两个方向都能证明事件是差异驱动的。**这个坑是实测踩出来的**：原来的写法硬编码「置为离线」，
-> 在一台 7 个服务全没起的机器上会永远等不到变化，把好好的代码验成 FAIL。
-
-实测输出（那一次本机 7 个服务都没起，所以注入方向是「上线」）：
-
-```
-T+ 0.4s  [MASTER  ] (info) 事件总线接入成功：…当前在线 0/7
-T+ 0.4s  [FUNCLIP ] (warn) 多模态音视频智能体 (FunClip)（:7860）未响应，标记为离线。
-T+ 3.8s  [HEALTH  ] (ok)   多模态音视频智能体 (FunClip)（:7860）状态变化：上线，已重新纳入调度。
-T+13.9s  [HEALTH  ] (info) 全局健康巡检完成，0/7 在线，本轮无状态变化。
-结论: PASS —— 事件确实由状态差异驱动，非定时文本播报
-```
-
-> **现场演示怎么用**：把任意一个服务停掉（例如 `:7860`），**3 秒内**右侧面板就会出现一条红色的下线事件；
-> 再启动它，3 秒内出现绿色的上线事件。比任何形容词都有说服力。
+原始输出见 [evidence/event-bus-diff.txt](evidence/event-bus-diff.txt)。
+**现场演示怎么用**：停掉任意一个服务（例如 `:7860`），3 秒内右侧面板就出现红色下线事件；
+再启动，3 秒内出现绿色上线事件 —— 比任何形容词都有说服力。
 
 ---
 
-## 1.0 → 2.8 改了什么（每条都有实测）
+## 1.0 → 2.8 改了什么
 
-| # | 过去的问题 | 现在的做法 |
+25 条带实测的改动明细在 [CHANGELOG.md](CHANGELOG.md)，这里只留能看出成色的几类：
+
+| 类别 | 1.0 的样子 | 现在 |
 |---|---|---|
-| 1 | 导购接口接了 8001 却 `pass` 丢弃结果，页面回的是写死的套话 | 真解析 SSE 流；失败才降级，且 `backend` 如实标注 |
-| 2 | `latency_ms` 是写死的常数（38 / 22 / 42） | 全部 `time.perf_counter()` 实测；前端拿不到就显示 `—`，不预设假数 |
-| 3 | 前端 4 个 CDN（tailwind / fontawesome / chart.js / Google Fonts），断网即白屏 | 全部本地化到 `static/vendor/`，改系统字体栈，**零外部请求** |
-| 4 | 假模型名 `Gemini-3.8-Flash` | 移除编造模型名（pytest 里有断言防回归） |
-| 5 | 同步 socket 探测端口阻塞 async 事件循环 | `asyncio.open_connection` + `asyncio.gather` 并发探测 |
-| 6 | CORS `allow_origins=["*"]` + `credentials=True`（浏览器规范禁止） | `allow_credentials=False` |
-| 7 | 只能在本地跑，无法静态演示 | 新增 `docs/` 纯静态版 + `build_docs.py` 构建脚本 |
-| 8 | 事件总线是**写死的 6 行文本**（时间戳永远停在 `19:15:02`），标着 LIVE 却永不刷新 | 改为真 SSE 差异驱动流（见上一节）；降级时角标明确写「示例事件流」 |
-| 9 | 7 个服务的端口/名称/事件标签硬编码在 `server.py`，加服务得改代码 | 抽到 `services.yaml`；坏配置自动回退内置默认，`/overview/stats` 里的 `config_source` 可直接看出拓扑来自哪 |
-| 10 | 没有任何自动化测试，改动靠人肉点页面 | **70 条 pytest 断言**（拓扑 / 事件总线纯函数 / 前端本地化 / API 契约 / labs 契约 / docs 一致性 / 健康检查 / 历史与起停 / JWT 鉴权 / RBAC 守卫 / 异步状态机）+ GitHub Actions CI |
-| 11 | `docs/` 是手工产物，容易和源码悄悄脱节 | CI 每次重跑 `build_docs.py` 再 `git diff --exit-code -- docs/` 断言无漂移 |
-| 12 | 导购页硬写「驱动模型：DeepSeek-V3 / Flash」、单步耗时预设 `38 ms` | 假模型名删除；耗时改为「实测值，拿不到显示 `—`」；新增**应答来源**直接显示 `live:` / `fallback:` |
-| 13 | 冗余脚本 `start.bat`、`start_all_services.py`（指向并不存在的 `:9999`）、3 个 `.bak` | 清理；`start_all_services.py` 换成读 `services.yaml` 的 `check_services.py` 就绪检查 |
-| 14 | 编造模型名只清了前端：网关页 3 处 + 仿真端点 2 处仍写着 `DeepSeek-V3`，防回归断言也只扫 2 个文件 | 全部改为「上游主模型（仿真占位）」；断言扩到 5 个交付代码文件（连注释里的历史对照都不放行） |
-| 15 | 导购链路硬编码 `8001`，改 yaml 端口后代码不跟着变 | 端口/路径改从拓扑读取（`GUIDE_PORT` / `GUIDE_CHAT_PATH`），换上游只改配置 |
-| 16 | 缺工程标准件：favicon 404、无 `/healthz`、404 返回裸 JSON、版本号三处各写各的、无 LICENSE/CHANGELOG | 补齐：`static/favicon.svg`、`GET /healthz`、带提示的统一 404（Pages 侧配 `docs/404.html`）、`APP_VERSION` 单一来源、MIT LICENSE + CHANGELOG + .editorconfig |
-| 17 | 演示「停掉一个服务 → 3 秒内弹下线事件」得手动去命令行杀进程 | 服务卡片上的**起停按钮** + `POST /services/{id}/stop\|start`；`stop` 只杀监听在配置端口上的进程，`start` 没配 `start_cmd` 就如实返回 `not-configured` |
-| 18 | 面板只有「此刻」的快照，没有任何历史 | SQLite 落盘 + `GET /api/v1/history/probes`（在线率 / 平均延迟曲线）与 `/events/recent`（事件回放），新增**历史趋势**页签 |
-| 19 | 每个 SSE 连接各自跑一套端口探测，开 3 个页面就探 3 遍 | 重构为**全局共享巡检器**（lifespan 内一个 asyncio 任务）：只探测一次，事件统一 diff 后广播给所有订阅者 |
-| 20 | `zip()` 没有 `strict=`，探测结果与端口错位会静默截断 | 全部补 `strict=True`，错位立即抛错 |
-| 21 | 容器化只是「写了文件」：`uvicorn.run(host="127.0.0.1")` 写死 → 端口发布打不通却显示健康；探测写死 `127.0.0.1` → 容器里恒显示 0/7；`./data` 绑定挂载碰到非 root 写权限 | 新增 `OMNI_HOST` / `OMNI_PROBE_HOST` 两个可配置项（本机默认不变，仍是回环）；改用命名卷；pytest 加 7 条断言锁死这两处，`/healthz` 暴露 `networking` 便于排障 |
-| 22 | 单体大泥球 2,470 行 `server.py` 难以维护与扩展 | **领域分层解耦**：拆分为 `core/` 与 `routers/`，微内核装配器精简至 200 行，100% 保持历史契约兼容 |
-| 23 | 缺乏企业多租户数据隔离与权限守卫 | **企业安全准入**：自包含 HMAC-SHA256 JWT Token 签发、多租户上下文隔离 (`X-Tenant-ID`)、4-Tier RBAC 敏感守卫服务端拦截 (HTTP 403 `PERMISSION_DENIED`) |
-| 24 | 长耗时音视频切片与批量文案阻塞 Web 网关 | **后台分布式异步任务队列**：带锁状态机（`PENDING` ➔ `RUNNING` ➔ `COMPLETED` / `FAILED`），顶栏在途徽章与右滑状态机抽屉 |
-| 25 | 大盘视角单一缺乏零售商业深度 | **4 大角色动态视窗 (Persona Views)** + **爆款 SKU 深度实效归因抽屉**（转化漏斗、ROAS、Prompt 演进对比、15s 完播曲线、派生变体闭环） |
+| 假数据 | `latency_ms` 写死 38/22/42；事件总线是写死的 6 行文本，时间戳永远停在 `19:15:02` 却标着 LIVE | 全部 `perf_counter()` 实测，拿不到就显示 `—`；事件流改真 SSE，只有状态**变化**才推 |
+| 编造模型名 | 页面与网关仿真里写着 `Gemini-3.8-Flash` / `DeepSeek-V3` | 全部移除，pytest 有断言扫 5 个交付代码文件防回归 |
+| 断网即白屏 | 4 个外部 CDN（tailwind / chart.js / fontawesome / Google Fonts） | 全部本地化到 `static/vendor/`，零外部请求 |
+| 假接线 | 导购接了 8001 却 `pass` 丢结果，页面回写死的套话 | 真解析 SSE；失败才降级，响应里 `backend` 字段如实标注 `live:` / `fallback:` |
+| 工程标准件 | 无测试、无 `/healthz`、favicon 404、版本号三处各写各的、无 LICENSE | 70 条断言 + `GET /healthz` + `APP_VERSION` 单一来源 + MIT / CHANGELOG / CI |
+| 大泥球 | 2,470 行单体 `server.py` | 拆成 `core/` + `routers/`，装配层 200 行，契约 100% 兼容 |
 
----
+## 可验证性：不用 clone 也能核对
+
+五条客观证据，都可以在仓库里直接看到原始输出，不需要相信我：
+
+| 证据 | 在哪看 | 现在是什么 |
+|---|---|---|
+| 断言测试 | `tests/`（`test_omni.py` 66 条 + 企业安全/异步 4 条） | **70 条，本地全绿** |
+| 五层验证原始输出 | `evidence/selftest-omni.txt`、`evidence/event-bus-diff.txt`、`evidence/frontend-wiring.txt` | 每次 CI 跑完作为 artifact 上传 |
+| 端口探针 | `python check_services.py` | 读 `services.yaml` 逐端口 TCP 探测，输出在线表 |
+| 仓库自检 | `tools/check_image_files.py` | 对账 Dockerfile 的 `COPY` 清单与 `server.py` 的本地 import —— 防「镜像能 build、一启动就崩」 |
+| 实测数字 | `evals/bench.py` + `evals/reports/` | 六项指标带 n / p50 / p95 与环境指纹，一条命令复跑，见下一节 |
+
+**CI 徽章就是上面这四条的合并结果**，点开能看每次运行的原始日志。
+
+## 实测数字（`evals/bench.py` 可复跑）
+
+本机一次真实运行的结果，不是估计值。报告 JSON（含采样数、环境指纹、commit）一起提交在
+[`evals/reports/`](evals/reports/)，一条命令复跑：
+
+```bash
+.venv/Scripts/python evals/bench.py --samples 30
+```
+
+| 指标 | n | p50 | p95 | max |
+|---|---|---|---|---|
+| 冷启动 → 首次 `/healthz` 200 | 1 | 574.63 ms | — | — |
+| `/healthz` 往返 | 30 | 370.73 ms | 374.35 ms | 376.66 ms |
+| 8 端口并发 TCP 探测一轮 | 30 | 362.29 ms | 373.41 ms | 386.87 ms |
+| SSE 建连 → 第一帧事件 | 5 | 22.01 ms | 26.44 ms | 27.08 ms |
+| 端口开始监听 → 上线事件 | 1 | 2709.74 ms | — | — |
+| 端口监听终止 → 下线事件 | 1 | 3375.51 ms | — | — |
+
+怎么读（不然数字没有意义）：
+
+- **上下线时延由巡检周期支配，不是由代码效率支配。** `interval_sec: 3.0`，端到端必然落在
+  「0 ~ 3s + 探针耗时」之间，单次样本（n=1）只能说明量级。要压它改配置，不用改代码。
+- **`/healthz` 和探测一轮几乎一样慢，这不是巧合**：`/healthz` 内部先跑一轮 8 端口探测，
+  离线态耗时 ≈ `probe.timeout_sec`。**这是本基准顺手测出来的真实缺陷**（健康检查耦合了业务端口），
+  已写进「诚实边界」，未修 —— 动它会改 `/healthz` 的响应契约和 4 条断言，属 v3.0 的活。
+- **SSE 首帧这一项才是这层代码自己的开销**：建连后立刻推接入说明与 8 条就绪播报，不等巡检。
 
 ## 测试与 CI
 
@@ -366,8 +289,9 @@ T+13.9s  [HEALTH  ] (info) 全局健康巡检完成，0/7 在线，本轮无状�
 | ③ 事件总线专项 | `.venv/Scripts/python verify_event_bus.py` | 注入式端口探测，断言「停掉一个服务 → 流里真的出现下线事件」 |
 | ④ 前端接线审计 | `.venv/Scripts/python tools/audit_frontend_wiring.py` | 静态分析：`onclick` 是否有实现、`OmniAPI.xxx` 是否真的存在、`getElementById` 是否有悬空 id —— 抓「按钮点了没反应」 |
 | ⑤ 运行时端到端 | `.venv/Scripts/python tools/audit_runtime.py` | 起真服务：真拉起一个假监听进程 → 同一条 SSE 流上等「上线」→ 点 stop → 等「下线」→ 校验历史落盘（**自己拉的进程自己杀，不碰你正在跑的服务**） |
+| ⑥ 实测基准 | `.venv/Scripts/python evals/bench.py` | 六项指标带 n / p50 / p95 落 JSON（见「实测数字」一节）；**无阈值断言**，只负责每次运行都留下一份真实测量 |
 
-CI（`.github/workflows/ci.yml`）在每次 push / PR 上跑：**ruff check + ruff format --check** → pytest → 前端接线审计 → 全链路自检 → 事件总线专项验证 → **重跑 `build_docs.py` 并断言 `docs/` 无漂移** → 构建 Docker 镜像 → 上传 evidence 为 artifact。
+CI（`.github/workflows/ci.yml`）在每次 push / PR 上跑：**ruff check + ruff format --check** → pytest → 前端接线审计 → 全链路自检 → 事件总线专项验证 → **六项实测基准** → **重跑 `build_docs.py` 并断言 `docs/` 无漂移** → 构建 Docker 镜像 → 上传 evidence 为 artifact。
 
 > v2.6 起：`labs/` 收编模块不参与以上任何一步（`pytest.ini` 排除收集、`ruff.toml` 排除 lint、`.dockerignore` 不打包）—— 各模块重依赖独立管理，控制台不为它们背书。
 
@@ -403,14 +327,8 @@ run.bat                                   # 或 ./run.sh
 > 但它**不是业务服务** —— `/` 会如实返回 `{"mock": true}`。它存在的唯一目的，是让
 > 探测 → 状态翻转 → 差异事件广播 → 事件回放 这条链路可以完整演示一遍。
 
-想让「启动」按钮也能用（不必每次手动起监听），在 `services.yaml` 里给服务加上一行：
-
-```yaml
-start_cmd: ["python", "tools/mock_service.py", "8002", "--id", "coze-material-studio"]
-```
-
-`services.yaml` 里已经留了注释好的这一行，取消注释即可。没配 `start_cmd` 的服务，
-「启动」按钮会如实返回 `not-configured` —— 控制台不假装知道你没告诉过它的启动方式。
+想让「启动」按钮也能用，`services.yaml` 里已经留了注释好的 `start_cmd` 一行，取消注释即可。
+没配 `start_cmd` 的服务，「启动」按钮会如实返回 `not-configured` —— 控制台不假装知道你没告诉过它的启动方式。
 
 ---
 
@@ -427,8 +345,17 @@ start_cmd: ["python", "tools/mock_service.py", "8002", "--id", "coze-material-st
 - **`/api/v1/gateway/simulate_failover` 是仿真端点**，它不真的去熔断某个上游，只演示「主备热切」这个形态；响应里自带 `"simulated": true`，主路由名一律写「上游主模型（仿真占位）」—— 2.1 之前这里曾残留编造的模型名 `DeepSeek-V3`（已清除并有断言防回归），token 数值也标注了 `token_usage_note: 样例数值，非真实计费`。
 - **8 个微服务里 6 个是独立项目**（运行时不在本仓库内）；funclip-studio 与 graph-xiaohongshu 的**源码**已收编进 `labs/`（`:7860` / `:8020`），但运行时同样需要各自起。本仓库是控制台 + 编排层 + Labs 源码。想看真实链路，需要各自把服务起起来。
 - **端口探测的目标地址是 `PROBE_HOST`**（默认 `127.0.0.1`，容器里指 `host.docker.internal`），不做远程服务发现 —— 它探的是「本机/宿主」这一台。
-- **容器镜像在本机没有构建过。** 作者的环境没装 Docker CLI，所以 `Dockerfile` / `docker-compose.yml` 未经 `docker build` 验证；CI 里那条 `docker build` 步骤也要等仓库推上去才会真正执行。其中**最容易踩的两个坑已在代码层修掉并有断言锁定**（监听地址、探测地址、非 root 写权限），但「镜像能不能 build 成功」这一条仍属未验证。
+- **作者本机没装 Docker CLI，`docker build` 只跑在 CI 里。** 三条证据：① 按 Dockerfile 的 `COPY` 清单在空目录复刻「镜像内文件集」，直接 `python server.py` → `/healthz` 200、首页 200；② `tools/check_image_files.py` 静态对账 `COPY` 与 `server.py` 的本地 `import`；③ CI 的 `hadolint` + `docker build`，**2026-10-22 起连续通过**（此前被 lint 卡住、从未执行过）。**修之前 Dockerfile 只 COPY 了 `server.py` / `templates` / `static`，漏掉 `core/` 与 `routers/`**：镜像能 build 成功，容器一启动就 `ModuleNotFoundError: No module named 'core'`（已补 COPY）。
+- **`/healthz` 会先跑一轮 8 端口探测**（离线态 ~370ms，约等于 `probe.timeout_sec`），
+  所以它不是纯进程健康检查。这个数是 `evals/bench.py` 测出来的，本版未改。
+- **`evals/` 只测编排层，不测模型效果。** 本仓库没有模型调用链，任何 recall@k / 裁判打分
+  在这里都没有测量对象；报告里写 `skipped` 的指标就是 skipped，不补默认值。
 - **事件总线的心跳是 12s 一次**（3s 探测 × 4 轮），只有状态**变化**才实时推送 —— 这是刻意压掉刷屏，不是采样不到。
+- **本仓库最初版本的演示数据里带过真实业务品牌名，已整体脱敏**（服务名、商品名、话术、营销文案、英文品牌名与架构图标签共 117 处，
+  生成产物 `docs/` 一并重建）。**注意：git 历史里仍能检出旧名**，彻底清理需要重写历史并 force push，
+  这一步尚未执行 —— 与其假装干净，不如把这件事写在明面上。
+- **CI 曾经连续 15 次全红**（`ruff format --check` 卡在第 5 步，pytest 与 `docker build` 从未真正执行）。
+  已修复并 pin 住 ruff；现在徽章是绿的，而且是真的绿 —— 上面 15 个步骤每次都跑完。
 - **已原生落地 HMAC-SHA256 JWT 多租户鉴权与 RBAC 4-Tier 角色矩阵守卫**：支持 `tenant-hq` / `tenant-tiktok` / `tenant-embroidery` 多租户数据隔离，敏感操作（起停微服务）在服务端严格进行角色校验与 HTTP 403 拦截，并接入后台异步任务状态机队列。业务数据与模型推理仍然遵守严谨的真实/样例标注规范，不冒充线上闭源大模型。
 
 ---
@@ -436,64 +363,18 @@ start_cmd: ["python", "tools/mock_service.py", "8002", "--id", "coze-material-st
 ## 目录结构
 
 ```
-OmniAgent-Platform/
-├─ server.py              # FastAPI 微内核装配层（路由聚合、CORS、trace_id 与租户上下文中间件、启动入口）
-├─ core/                  # ★ 核心领域层（解耦自原本 2,470 行单体 server.py）
-│  ├─ config.py           # 统一配置、常量、版本单一来源 APP_VERSION 与 services.yaml 解析
-│  ├─ models.py           # Pydantic 契约模型
-│  ├─ state.py            # 全局探测状态、熔断器、系统遥测缓存
-│  ├─ process.py          # 子进程管理与安全启停管控
-│  ├─ templates.py        # Jinja2 模板加载与上下文组装
-│  ├─ security.py         # 自包含 HMAC-SHA256 JWT 签发/解码与 RBAC 403 权限守卫
-│  └─ tasks.py            # 分布式异步任务队列与状态机（PENDING ➔ RUNNING ➔ COMPLETED）
-├─ routers/               # ★ 业务路由分层模块
-│  ├─ system.py           # 探针/服务管控/JWT Token 签发/任务中心 API
-│  ├─ events.py           # SSE 差异驱动实时事件总线
-│  ├─ gateway.py          # 网关容灾热切仿真与 Trace 审计
-│  ├─ business.py         # 智能导购 (LangGraph) / 营销工场 / 数据分析 (DuckDB) / RAG 检索
-│  └─ labs.py             # 达摩院 FunClip 视频切片与出海社媒工场异步状态机接口
-├─ services.yaml          # ★ 唯一拓扑来源：端口/名称/事件标签/探测参数/导购路径/start_cmd，加服务只改这里
-├─ check_services.py      # 就绪检查：读 services.yaml，逐个 TCP 探测并打印在线表
-├─ build_docs.py          # 生成 docs/ 静态演示版（复用 server.py 拓扑与版本号，单一来源）
-├─ selftest_omni.py       # 11 组离线自检 → evidence/
-├─ verify_event_bus.py    # 事件总线「差异驱动」专项验证 → evidence/
-├─ tests/
-│  ├─ conftest.py         # 真 uvicorn 线程 fixture（不用会阻塞的 TestClient）
-│  ├─ test_omni.py        # 66 条断言：拓扑/事件总线/前端本地化/API 契约/labs/健康检查/历史与起停
-│  └─ test_enterprise_security_and_tasks.py # ★ 企业级 JWT 鉴权、RBAC 403 拦截与异步任务流转测试
-├─ requirements.txt       # 运行依赖（+ psutil：服务起停用）
-├─ requirements-dev.txt   # + pytest / ruff / pre-commit
-├─ run.bat / run.sh       # 一键启动（自动建 venv 装依赖）
-├─ Dockerfile             # 控制台镜像（python-slim + 非 root + healthcheck）
-├─ docker-compose.yml     # 一键起控制台，数据卷持久化历史库
-├─ .dockerignore
-├─ ruff.toml              # lint 规则
-├─ .pre-commit-config.yaml
-├─ .github/workflows/ci.yml
-├─ assets/architecture.svg
-├─ assets/screenshots/    # README 用的真机截图（本机实跑后截取）
-├─ LICENSE                # MIT
-├─ CHANGELOG.md           # 完整变更记录（含 2.8 企业级全栈升级）
-├─ .editorconfig
-├─ data/                  # 运行时产物（不入 git）：omni_history.db —— 历史曲线与事件回放的落盘库
-├─ templates/
-│  ├─ index.html          # 主控台页面（Jinja2 模板；含角色视窗、SKU 抽屉、任务中心抽屉）
-│  └─ partials/           # 模块化子组件（tab_overview, tab_guide, tab_xhs 等）
-├─ static/
-│  ├─ omni-api.js         # 双模式数据源适配层（JWT 自动注入、异步任务流拉取、真接口 ⇄ 内置降级）
-│  ├─ favicon.svg         # 站点图标（渐变立方体，与品牌标识同款）
-│  └─ vendor/             # 本地化前端库：tailwind / chart.js / fontawesome
-├─ docs/                  # ← GitHub Pages 发布目录（build_docs.py 生成，勿手改）
-│  ├─ index.html
-│  ├─ 404.html            # Pages 自定义 404（带返回首页链接）
-│  └─ static/…            # 自包含副本（含 favicon）
-├─ labs/                  # ★ v2.6 收编的纵深模块源码（不进 CI / 不进镜像）
-│  ├─ README.md           # Labs 导航与边界说明
-│  ├─ graph-xiaohongshu/  # LangGraph 1.0 出海社媒营销 Agent（探针端口 :8020）
-│  └─ funclip-studio/     # FunClip 封装层 + 上游源码（探针端口 :7860）
-└─ evidence/
-   ├─ selftest-omni.txt   # 全链路实测证据
-   └─ event-bus-diff.txt  # 事件总线差异驱动验证证据
+server.py           # FastAPI 微内核装配层：路由聚合 / CORS / trace_id 与租户上下文 / 启动入口
+core/               # 领域层：config（版本与配置单一来源）· models · state · process · templates
+                    #          security（HMAC JWT + RBAC 守卫）· tasks（带锁状态机任务队列）
+routers/            # 业务路由：system · events(SSE) · gateway(热切仿真) · business · labs
+services.yaml       # ★ 唯一拓扑来源：端口 / 名称 / 事件标签 / 探测参数 / start_cmd
+tests/              # 70 条断言（conftest 起真 uvicorn 线程，不用会阻塞的 TestClient）
+tools/              # check_image_files（镜像文件集对账）· audit_frontend_wiring · audit_runtime · mock_service
+build_docs.py       # 生成 docs/ 静态演示版；check_services.py 做端口就绪检查；selftest / verify_event_bus
+templates/ static/  # 控制台模板与前端（omni-api.js 是双模式数据源适配层，vendor/ 全本地化）
+docs/               # GitHub Pages 发布目录（build_docs.py 生成，勿手改）
+labs/               # v2.6 收编的纵深模块源码（不进 CI / 不进镜像，见 labs/README.md）
+evidence/           # 实测证据落盘：selftest-omni.txt · event-bus-diff.txt
 ```
 
 ---

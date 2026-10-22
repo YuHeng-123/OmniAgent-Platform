@@ -1,0 +1,63 @@
+{
+  "generated_at": "2026-10-22T20:28:45+08:00",
+  "version": "2.8.0",
+  "commit": "1e473a5",
+  "env": {
+    "python": "3.13.13",
+    "platform": "Windows-11-10.0.26300-SP0",
+    "cpu_count": 16
+  },
+  "probe_config": {
+    "interval_sec": 3.0,
+    "heartbeat_every": 4,
+    "timeout_sec": 0.35
+  },
+  "samples": {
+    "http": 30,
+    "sse": 5
+  },
+  "metrics": {
+    "cold_start_ms": {
+      "n": 1,
+      "value_ms": 574.63,
+      "what": "进程启动 → 首次 /healthz 200"
+    },
+    "healthz_ms": {
+      "n": 30,
+      "min_ms": 358.43,
+      "p50_ms": 370.73,
+      "p95_ms": 374.35,
+      "max_ms": 376.66,
+      "what": "/healthz 往返（该接口内部会做一轮 8 端口探测）"
+    },
+    "topology_scan_ms": {
+      "n": 30,
+      "min_ms": 355.62,
+      "p50_ms": 362.29,
+      "p95_ms": 373.41,
+      "max_ms": 386.87,
+      "what": "8 端口并发 TCP 探测一轮（含 HTTP 层）"
+    },
+    "sse_first_frame_ms": {
+      "n": 5,
+      "min_ms": 16.3,
+      "p50_ms": 22.01,
+      "p95_ms": 26.44,
+      "max_ms": 27.08,
+      "what": "SSE 建连 → 第一帧事件"
+    },
+    "target_port": 8000,
+    "event_online_ms": {
+      "n": 1,
+      "value_ms": 2709.74,
+      "what": "端口开始监听 → 事件总线上线事件（含巡检周期）"
+    },
+    "event_offline_ms": {
+      "n": 1,
+      "value_ms": 3375.51,
+      "what": "端口监听终止 → 事件总线下线事件（含巡检周期）"
+    }
+  },
+  "notes": [],
+  "scope": "只测本仓库真实存在的编排层能力；不含模型效果评测（本仓库无模型调用链）。"
+}

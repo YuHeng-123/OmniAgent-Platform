@@ -7,7 +7,9 @@ name: CI
 #   4. 重跑 build_docs.py 并断言 docs/ 与源码一致（防止线上演示版悄悄过期）
 on:
   push:
-    branches: [main, master]
+    # work/** 是为了让「工作分支上做改造、不直推 main」这件事也能被 CI 验证 ——
+    # 否则分支提交永远跑不到 CI，改完只能靠本机自证。
+    branches: [main, master, "work/**"]
   pull_request:
   workflow_dispatch:
 
@@ -51,6 +53,11 @@ jobs:
       - name: Verify event bus is diff-driven
         run: python verify_event_bus.py evidence/event-bus-diff.txt
 
+      # 六项编排层实测（冷启动 / 探测 / SSE 首帧 / 上下线时延），无阈值断言：
+      # 目的是让每次运行都留下一次真实测量，跟 artifact 里的上一版直接对比。
+      - name: Orchestration benchmark (6 real measurements)
+        run: python evals/bench.py --samples 10 --json evidence/bench-ci.json
+
       - name: Rebuild docs and assert no drift
         run: |
           python build_docs.py
@@ -64,6 +71,18 @@ jobs:
       - name: Service readiness check (informational)
         continue-on-error: true
         run: python check_services.py
+
+      # 静态对账：Dockerfile 的 COPY 清单必须覆盖 server.py 的所有本地 import。
+      # 2.8.0 曾漏掉 core/ 与 routers/ —— 镜像能 build、容器一启动就 ModuleNotFoundError。
+      - name: Image file set matches Dockerfile COPY list
+        run: python tools/check_image_files.py
+
+      # 本机没有 Docker CLI 时，用 hadolint 兜住镜像层问题（DL 系列规则）
+      - name: Lint Dockerfile (hadolint)
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile
+          failure-threshold: error
 
       - name: Docker image builds
         run: docker build -t omniagent-console:ci .

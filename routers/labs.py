@@ -176,7 +176,7 @@ async def _execute_xhs_generate(req: LabsXhsGenerateRequest) -> Dict[str, Any]:
         },
         "wechat": {
             "title": f"真正懂玉的女人，都在悄悄佩戴【{pname}】",
-            "author": "玉见东方美学",
+            "author": "AURORA 东方美学",
             "quote": "「玉之美，有如君子之德；温润内敛，胜过一切繁复堆叠。」",
             "content": wechat_content,
             "stats": {"reads": "10万+", "wow": "890", "likes": "1.2k"},

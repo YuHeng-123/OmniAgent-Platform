@@ -56,55 +56,55 @@
 
   // 导购知识池（与 server.py GUIDE_PRODUCTS 镜像）
   var GUIDE_PRODUCTS = [
-    { tag: '福禄双全', name: '【玉见·福禄双全】天然和田碧玉平安扣吊坠', price: 1680, list: 2399,
+    { tag: '福禄双全', name: '【AURORA·福禄双全】天然和田碧玉平安扣吊坠', price: 1680, list: 2399,
       spec: '新疆且末老料，油润细腻，附国家级宝玉石质检证书',
       fit: ['长辈', '妈妈', '婆婆', '平安', '玉'] },
-    { tag: '月满西楼', name: '【玉见·月满西楼】天然淡水无瑕珍珠项链', price: 1120, list: 1480,
+    { tag: '月满西楼', name: '【AURORA·月满西楼】天然淡水无瑕珍珠项链', price: 1120, list: 1480,
       spec: '8-9mm 微瑕近圆，正圆强光皮光极亮',
       fit: ['长辈', '妈妈', '婆婆', '优雅', '珍珠', '通勤'] },
-    { tag: '星辰大海', name: '【玉见·星辰大海】D色莫桑钻经典六爪戒指', price: 699, list: 2999,
+    { tag: '星辰大海', name: '【AURORA·星辰大海】D色莫桑钻经典六爪戒指', price: 699, list: 2999,
       spec: 'D色/VVS1 切工，GRA 独立腰码证书，火彩直逼天然钻',
       fit: ['女友', '老婆', '求婚', '结婚', '纪念', '戒指', '莫桑'] },
-    { tag: '竹报平安', name: '【玉见·竹报平安】天然和田玉青白玉竹节手串', price: 668, list: 880,
+    { tag: '竹报平安', name: '【AURORA·竹报平安】天然和田玉青白玉竹节手串', price: 668, list: 880,
       spec: '青白玉竹节雕工，15颗均色，弹力绳双层打结',
       fit: ['自己', '手串', '日常', '玉'] },
-    { tag: '鸿运当头', name: '【玉见·鸿运当头】天然南红玛瑙平安无事牌', price: 968, list: 1280,
+    { tag: '鸿运当头', name: '【AURORA·鸿运当头】天然南红玛瑙平安无事牌', price: 968, list: 1280,
       spec: '川料柿子红，满色满肉，牌形方正',
       fit: ['爸爸', '男士', '本命年', '转运'] },
-    { tag: '映月', name: '【玉见·映月】925银镶和田玉小方牌项链', price: 359, list: 459,
+    { tag: '映月', name: '【AURORA·映月】925银镶和田玉小方牌项链', price: 359, list: 459,
       spec: '入门款，青白玉小方牌+925银链，白领通勤首选',
       fit: ['入门', '学生', '预算', '通勤', '项链'] },
-    { tag: '岁岁团圆', name: '【玉见·岁岁团圆】天然珍珠耳钉 7-8mm', price: 528, list: 680,
+    { tag: '岁岁团圆', name: '【AURORA·岁岁团圆】天然珍珠耳钉 7-8mm', price: 528, list: 680,
       spec: '正圆强光，耳针925银，配防丢耳塞',
       fit: ['女友', '老婆', '耳饰', '珍珠', '日常'] },
-    { tag: '金玉满堂', name: '【玉见·金玉满堂】足金镶嵌和田玉小吊坠', price: 1688, list: 1980,
+    { tag: '金玉满堂', name: '【AURORA·金玉满堂】足金镶嵌和田玉小吊坠', price: 1688, list: 1980,
       spec: '足金镶口+和田青玉，金玉良缘的经典组合',
       fit: ['金', '贵气', '婚嫁', '妈妈'] }
   ];
 
   var GUIDE_PRODUCTS_EN = [
-    { tag: 'Fortune & Serenity', name: '【Yujian · Fortune】Natural Hetian Nephrite Jade Donut Pendant', price: 268, list: 380,
+    { tag: 'Fortune & Serenity', name: '【AURORA · Fortune】Natural Hetian Nephrite Jade Donut Pendant', price: 268, list: 380,
       spec: 'Authentic old-mine Hetian jade, oily texture, accompanied by NGTC/GIA lab certificate',
       fit: ['elder', 'mom', 'peace', 'jade', 'heritage'] },
-    { tag: 'Moonlit Horizon', name: '【Yujian · Moonlit】Natural Freshwater Cultured Pearl Strand', price: 165, list: 240,
+    { tag: 'Moonlit Horizon', name: '【AURORA · Moonlit】Natural Freshwater Cultured Pearl Strand', price: 165, list: 240,
       spec: '8-9mm near-round, strong metallic mirror luster, sterling clasp',
       fit: ['mother', 'wife', 'elegant', 'pearl', 'commute'] },
-    { tag: 'Starlight Solitaire', name: '【Yujian · Starlight】Classic 6-Prong D-Color Moissanite Ring', price: 99, list: 399,
+    { tag: 'Starlight Solitaire', name: '【AURORA · Starlight】Classic 6-Prong D-Color Moissanite Ring', price: 99, list: 399,
       spec: 'D-Color / VVS1 cut, laser-inscribed GRA certificate, diamond-rivaling fire',
       fit: ['girlfriend', 'wife', 'proposal', 'engagement', 'ring', 'moissanite'] },
-    { tag: 'Serene Bamboo', name: '【Yujian · Bamboo】Natural Nephrite Bamboo Joint Bracelet', price: 110, list: 160,
+    { tag: 'Serene Bamboo', name: '【AURORA · Bamboo】Natural Nephrite Bamboo Joint Bracelet', price: 110, list: 160,
       spec: 'Carved bamboo joint beads, uniform green hue, double elastic strung',
       fit: ['daily', 'bracelet', 'jade', 'men'] },
-    { tag: 'Scarlet Talisman', name: '【Yujian · Fortune】Natural South Red Agate Talisman Plaque', price: 140, list: 185,
+    { tag: 'Scarlet Talisman', name: '【AURORA · Fortune】Natural South Red Agate Talisman Plaque', price: 140, list: 185,
       spec: 'Vibrant persimmon red, solid core, symmetrical talisman carving',
       fit: ['dad', 'men', 'protection', 'agate'] },
-    { tag: 'Crescent Moon', name: '【Yujian · Crescent】S925 Sterling Inlaid Jade Pendant', price: 55, list: 85,
+    { tag: 'Crescent Moon', name: '【AURORA · Crescent】S925 Sterling Inlaid Jade Pendant', price: 55, list: 85,
       spec: 'Entry-level piece, nephrite tablet with sterling chain, modern minimalist wear',
       fit: ['budget', 'entry', 'student', 'commute', 'necklace'] },
-    { tag: 'Luminous Studs', name: '【Yujian · Luminous】7-8mm Cultured Pearl Stud Earrings', price: 79, list: 110,
+    { tag: 'Luminous Studs', name: '【AURORA · Luminous】7-8mm Cultured Pearl Stud Earrings', price: 79, list: 110,
       spec: 'Round high-luster pearls with S925 anti-loss silicone backs',
       fit: ['girlfriend', 'earrings', 'pearl', 'daily'] },
-    { tag: 'Golden Harmony', name: '【Yujian · Harmony】Solid Gold Inlaid Nephrite Jade Pendant', price: 280, list: 360,
+    { tag: 'Golden Harmony', name: '【AURORA · Harmony】Solid Gold Inlaid Nephrite Jade Pendant', price: 280, list: 360,
       spec: 'Solid gold bezel + authentic green jade, timeless heirloom craftsmanship',
       fit: ['gold', 'luxury', 'wedding', 'mom'] }
   ];
@@ -180,15 +180,15 @@
       } else {
         steps.push({ node: '工具调用 (Tool Calling)', status: 'retry', detail: "调用 get_coupon('500元无门槛') 失败：券面额超出系统上限" });
         steps.push({ node: '⚡ 自动反思与自纠错 (Self-Correction)', status: 'done', detail: '触发纠错策略：自动降级检索最接近规则，回正为【满2000减200】与【新人50元立减】' });
-        reply = '非常抱歉呀，小玉帮您查了一下，目前店内没有【500元无门槛券】哦～ 不过小玉为您申请到了当前最划算的组合：\n\n1. **新人专享礼**：满 300 减 50 元立减券；\n2. **珠宝品类大额券**：满 2000 减 200 元满减券！\n\n如果您今天选购【天然和田玉青海老料吊坠】（原价 ¥1,880），再凑单一个小银饰，即可直接立减 200 元，非常划算！需要我帮您锁定领券名额吗？';
+        reply = '非常抱歉呀，小安帮您查了一下，目前店内没有【500元无门槛券】哦～ 不过小安为您申请到了当前最划算的组合：\n\n1. **新人专享礼**：满 300 减 50 元立减券；\n2. **珠宝品类大额券**：满 2000 减 200 元满减券！\n\n如果您今天选购【天然和田玉青海老料吊坠】（原价 ¥1,880），再凑单一个小银饰，即可直接立减 200 元，非常划算！需要我帮您锁定领券名额吗？';
       }
     } else if (isCoupon) {
       if (isEn) {
         steps.push({ node: 'Tool Calling (list_coupons)', status: 'done', detail: 'Executed list_coupons(active=True), returned 2 active codes + 1 VIP live voucher tier' });
-        reply = 'Here are the active stackable offers currently available on Yujian Global DTC:\n\n1. **New Buyer Gift**: $50 off orders over $300 (auto-applied at checkout);\n2. **Fine Jewelry VIP Tier**: $200 off orders over $2,000 across jade and pearls;\n3. **Concierge Secret Code**: Live stream code **LUXURY88** provides an additional 12% off.\n\nWould you like me to configure a curated package tailored to your budget?';
+        reply = 'Here are the active stackable offers currently available on AURORA Global DTC:\n\n1. **New Buyer Gift**: $50 off orders over $300 (auto-applied at checkout);\n2. **Fine Jewelry VIP Tier**: $200 off orders over $2,000 across jade and pearls;\n3. **Concierge Secret Code**: Live stream code **LUXURY88** provides an additional 12% off.\n\nWould you like me to configure a curated package tailored to your budget?';
       } else {
         steps.push({ node: '工具调用 (Tool Calling)', status: 'done', detail: '执行 list_coupons(active=True)，返回 2 张可用券 + 1 条直播福袋规则' });
-        reply = '现在店内能叠的优惠小玉帮您理好了：\n\n1. **新人专享礼**：满 300 减 50 元立减券（下单页自动带出）；\n2. **珠宝品类大额券**：满 2000 减 200 元，玉石/珍珠通用；\n3. **私域暗号**：直播间蹲「整点福袋」，可抽 88 折码，与大额券二选一不叠加。\n\n搭配建议：选【映月】925银镶和田玉方牌（¥359）可直接用新人券；两件拼到 ¥2,000 用大额券最划算。需要我按您的预算配个组合吗？';
+        reply = '现在店内能叠的优惠小安帮您理好了：\n\n1. **新人专享礼**：满 300 减 50 元立减券（下单页自动带出）；\n2. **珠宝品类大额券**：满 2000 减 200 元，玉石/珍珠通用；\n3. **私域暗号**：直播间蹲「整点福袋」，可抽 88 折码，与大额券二选一不叠加。\n\n搭配建议：选【映月】925银镶和田玉方牌（¥359）可直接用新人券；两件拼到 ¥2,000 用大额券最划算。需要我按您的预算配个组合吗？';
       }
     } else if (isAfterSales) {
       if (isEn) {
@@ -196,7 +196,7 @@
         reply = 'Here is our overseas white-glove warranty and return policy:\n\n1. **30-Day Hassle-Free Returns**: Eligible for unworn jewelry with security tags intact, with prepaid return shipping labels;\n2. **1-Year Complimentary Warranty**: Complimentary restringing and prong maintenance for all artisanal pieces;\n3. **Lifetime Spa & Care**: Free sonic cleaning, re-polishing, and earring post replacements worldwide;\n4. **Dual Authentication**: Each jewel ships with NGTC/GRA certification, guaranteed authentic.\n\nWould you like to initiate a return or request a complimentary jewelry spa service?';
       } else {
         steps.push({ node: '工具调用 (Tool Calling)', status: 'done', detail: '执行 query_after_sales_policy()，命中《售后服务手册 v3.2》4 条' });
-        reply = '小玉把售后政策给您讲清楚，放心买：\n\n1. **7 天无理由退换**：签收起 7 天内、吊牌完好的都可退换，店铺运费险已默认勾选；\n2. **1 年免费质保**：绳线老化、佩戴中断线，免费换新绳并重新手工编织；\n3. **终身免费养护**：清洗、抛光、换耳针，寄回或到店都行；\n4. **证书复验**：每件附国家级 CMA/CNAS 质检证书，支持任何权威机构复检，假一赔十。\n\n您是想办理退换，还是想给手上的宝贝做个养护？';
+        reply = '小安把售后政策给您讲清楚，放心买：\n\n1. **7 天无理由退换**：签收起 7 天内、吊牌完好的都可退换，店铺运费险已默认勾选；\n2. **1 年免费质保**：绳线老化、佩戴中断线，免费换新绳并重新手工编织；\n3. **终身免费养护**：清洗、抛光、换耳针，寄回或到店都行；\n4. **证书复验**：每件附国家级 CMA/CNAS 质检证书，支持任何权威机构复检，假一赔十。\n\n您是想办理退换，还是想给手上的宝贝做个养护？';
       }
     } else if (isCare) {
       var pearl = lower.indexOf('珍珠') >= 0 || lower.indexOf('pearl') >= 0;
@@ -222,10 +222,10 @@
     } else if (isDiff) {
       if (isEn) {
         steps.push({ node: 'Knowledge Retrieval (RAG)', status: 'done', detail: 'Matched domain knowledge chunk #381: Moissanite Optics & Physical Durability vs Mined Diamonds' });
-        reply = 'Here is an expert comparison regarding Moissanite vs. Natural Diamonds:\n\n1. **Physical Hardness**: Natural diamond is pure carbon (Mohs 10). Moissanite is silicon carbide (Mohs 9.25), second only to diamond, ensuring permanent brilliance without scuffing or clouding;\n2. **Optical Brilliance**: Moissanite delivers a dispersion rate of 0.104—over 2.4x the fire of mined diamond—radiating captivating rainbow fire under direct light;\n3. **Quality & Authentication**: Every Yujian Moissanite gemstone is certified D Color / VVS1 clarity with a laser-inscribed GRA certificate for complete authenticity.';
+        reply = 'Here is an expert comparison regarding Moissanite vs. Natural Diamonds:\n\n1. **Physical Hardness**: Natural diamond is pure carbon (Mohs 10). Moissanite is silicon carbide (Mohs 9.25), second only to diamond, ensuring permanent brilliance without scuffing or clouding;\n2. **Optical Brilliance**: Moissanite delivers a dispersion rate of 0.104—over 2.4x the fire of mined diamond—radiating captivating rainbow fire under direct light;\n3. **Quality & Authentication**: Every AURORA Moissanite gemstone is certified D Color / VVS1 clarity with a laser-inscribed GRA certificate for complete authenticity.';
       } else {
         steps.push({ node: '知识检索 (RAG)', status: 'done', detail: '命中珠宝百科知识切片 #381：《莫桑钻与天然钻石光学特质比对》' });
-        reply = '这是很多顾客关心的专业问题，小玉为您通俗解答：\n\n1. **物理成分**：天然钻石是纯碳晶体（硬度10）；莫桑石是碳化硅（硬度9.25），硬度非常接近，日常佩戴不易磨损；\n2. **火彩表现**：莫桑钻的色散值（0.104）高于天然钻石，在阳光下火彩更耀眼；\n3. **品质与证书**：玉见选用的每一颗莫桑石均为 D色/VVS1 级切工，并配备 GRA 独立腰码证书，支持专业复检，请放心选购！';
+        reply = '这是很多顾客关心的专业问题，小安为您通俗解答：\n\n1. **物理成分**：天然钻石是纯碳晶体（硬度10）；莫桑石是碳化硅（硬度9.25），硬度非常接近，日常佩戴不易磨损；\n2. **火彩表现**：莫桑钻的色散值（0.104）高于天然钻石，在阳光下火彩更耀眼；\n3. **品质与证书**：AURORA 选用的每一颗莫桑石均为 D色/VVS1 级切工，并配备 GRA 独立腰码证书，支持专业复检，请放心选购！';
       }
     } else {
       var picks = _pickGuideProducts(msg);
@@ -247,7 +247,7 @@
           steps.push({ node: '工具调用 (Tool Calling)', status: 'done', detail: '执行 query_products(keywords="' + msg.slice(0, 12) + '")，命中 ' + picks.length + ' 款商品' });
           steps.push({ node: '决策合成 (Synthesis)', status: 'done', detail: '结合送礼/自戴场景与预算，生成亲和力导购话术' });
           var icons = ['🌟', '💍', '📿'];
-          var lines = ['按您提到的需求，小玉挑了这几款最合适的：', ''];
+          var lines = ['按您提到的需求，小安挑了这几款最合适的：', ''];
           picks.forEach(function (p, i) {
             lines.push(icons[i % icons.length] + ' **' + p.name + '**');
             lines.push('- ' + p.spec);
@@ -260,13 +260,13 @@
       } else {
         if (isEn) {
           steps.push({ node: 'Semantic Intent Understanding', status: 'done', detail: 'Standard concierge query response' });
-          reply = 'Welcome to Yujian Global Luxury DTC 🌸 I am your AI Jewelry Concierge. I can assist you with: curating fine jewelry by budget, explaining GIA/GRA certifications and gemstone optics, verifying coupon tiers, and arranging worldwide insured courier delivery. What fine jewelry piece may I show you today?';
+          reply = 'Welcome to AURORA Global Luxury DTC 🌸 I am your AI Jewelry Concierge. I can assist you with: curating fine jewelry by budget, explaining GIA/GRA certifications and gemstone optics, verifying coupon tiers, and arranging worldwide insured courier delivery. What fine jewelry piece may I show you today?';
         } else {
           steps.push({ node: '语义理解', status: 'done', detail: '常规意图应答' });
           var welcomePool = [
-            '收到您的咨询！小玉随时在为您服务。玉见珠宝坚持选用天然玉石、优质珍珠与切工宝石，支持 7 天无理由退换及终身免费清洗保养。请问您今天想挑选哪类饰品？',
-            '您好呀～小玉在的。无论想找送长辈的平安扣、送爱人的珍珠，还是日常戴的入门款，告诉我场合和预算，我来帮您配三套方案。也可以直接问我优惠、售后和保养～',
-            '欢迎光临玉见珠宝 🌸 小玉可以帮您：按预算选款、讲清证书与材质、查优惠组合、安排售后养护。您先说说想看哪一类？'
+            '收到您的咨询！小安随时在为您服务。Jewelry Advisor Demo坚持选用天然玉石、优质珍珠与切工宝石，支持 7 天无理由退换及终身免费清洗保养。请问您今天想挑选哪类饰品？',
+            '您好呀～小安在的。无论想找送长辈的平安扣、送爱人的珍珠，还是日常戴的入门款，告诉我场合和预算，我来帮您配三套方案。也可以直接问我优惠、售后和保养～',
+            '欢迎光临Jewelry Advisor Demo 🌸 小安可以帮您：按预算选款、讲清证书与材质、查优惠组合、安排售后养护。您先说说想看哪一类？'
           ];
           reply = welcomePool[msg.length % welcomePool.length];
         }
@@ -346,9 +346,9 @@
         content = '[Visual: 4K macro lens sweep across facet dispersion]\n(Host / Voiceover - Energetic & Confident):\n"Stop overpaying 10x for mined diamonds that lose half their value at checkout!\nLook at this piece right here—the newly certified [' + pname + ']!\n\n[Zoom into GRA certificate laser inscription]:\nD-Color, VVS1 clarity, and passes electronic diamond testers in 1 second flat!\nTap the showcase link below—insured worldwide express shipping with full 30-day money-back guarantee. In 3, 2, 1, grab yours before this holiday drop sells out!"';
       } else if (platform === 'wechat') {
         title = '[VIP Private Client Preview] Timeless Splendor —— ' + pname + ' Annual Capsule Release';
-        content = 'Dear VIP Client,\n\nTrue luxury lies in enduring grace. The Yujian Atelier is delighted to present our private capsule release —— [' + pname + '].\n\n· Hand-selected raw gemstone polished to silken tactile perfection;\n· Housed in our bespoke sandalwood presentation chest with microfiber spa kit;\n· Dedicated VIP concierge line with complimentary lifetime re-polishing and re-stringing.\n\nMay this jewel bring timeless serenity to you and your loved ones. Please reply to reserve your numbered edition.';
+        content = 'Dear VIP Client,\n\nTrue luxury lies in enduring grace. The AURORA Atelier is delighted to present our private capsule release —— [' + pname + '].\n\n· Hand-selected raw gemstone polished to silken tactile perfection;\n· Housed in our bespoke sandalwood presentation chest with microfiber spa kit;\n· Dedicated VIP concierge line with complimentary lifetime re-polishing and re-stringing.\n\nMay this jewel bring timeless serenity to you and your loved ones. Please reply to reserve your numbered edition.';
       } else if (platform === 'tmall') {
-        title = '[Yujian Haute Joaillerie] ' + pname + ' —— Certified Authenticity & Ethical Brilliance';
+        title = '[AURORA Haute Joaillerie] ' + pname + ' —— Certified Authenticity & Ethical Brilliance';
         content = '[Product Highlights]\n· ' + ((req.selling_points || '').trim() || 'Certified Raw Gemstone · Artisanal Handcraft · Individual Lab Certification') + '\n· Accompanied by official NGTC/GIA/GRA certificate with online registry lookup\n\n[Specifications]\n· Materials: Certified Moissanite / Grade-A Jadeite / Cultured Pearls | Metal: S925 Platinum Plated / 18K Solid Gold\n· Included: Luxury Presentation Box + Velvet Travel Pouch + Polishing Cloth + Certificate Card\n\n[White-Glove Services]\n✓ 30-Day Hassle-Free Returns with complimentary return labels\n✓ 1-Year Free Restringing & Lifetime Sonic Cleaning Spa\n✓ Dispatched within 24 hours via DHL/FedEx Insured Worldwide Shipping';
       } else if (platform === 'moments') {
         title = 'Everyday Luxury Curation · ' + pname;
@@ -360,12 +360,12 @@
         content = '救命！真的没有人能拒绝天然玉石的温润感吧😭\n最近刚入手的这款【' + pname + '】，实物比图片高级一万倍！\n\n🌿 **材质细节**：\n选用温润老料，日光下泛着通透的油脂光泽，戴上瞬间冷白皮拉满！锁骨位置恰到好处，不管是搭法式衬衫还是新中式旗袍都绝配！\n\n💎 **关于品质**：\n每一件都带权威质检证书，真正东方女性骨子里的温润与贵气～\n送长辈或者犒赏自己都体面到不行，百元预算戴出万元质感！\n\n#我的国风穿搭 #小众首饰 #东方美学 #珠宝好物分享 #' + pname;
       } else if (platform === 'douyin') {
         title = '【带货口播脚本】30秒讲透为什么这届年轻人都在戴' + pname + '？';
-        content = '【镜头：特写首饰在光下的油脂光泽】\n（主播话术，语速欢快有力）：\n“所有女生！别再买那些戴两次就发黑的合金首饰了！\n看一下我手上这条刚刚从展厅抢出来的——【' + pname + '】！\n\n（展示质检证书与切工细节）：\n天然原矿老料，一石一证，每一件都在一物一拍！\n以前专柜随随便便都要两三千，今天在小玉的直播间，直接把中间商差价砍到底！\n左下角小黄车直接拍，支持全国权威机构复检，假一赔十！3、2、1，上链接！”';
+        content = '【镜头：特写首饰在光下的油脂光泽】\n（主播话术，语速欢快有力）：\n“所有女生！别再买那些戴两次就发黑的合金首饰了！\n看一下我手上这条刚刚从展厅抢出来的——【' + pname + '】！\n\n（展示质检证书与切工细节）：\n天然原矿老料，一石一证，每一件都在一物一拍！\n以前专柜随随便便都要两三千，今天在小安的直播间，直接把中间商差价砍到底！\n左下角小黄车直接拍，支持全国权威机构复检，假一赔十！3、2、1，上链接！”';
       } else if (platform === 'wechat') {
         title = '【私域臻品】温润如玉，岁岁平安 —— ' + pname + '年度私享鉴赏';
-        content = '尊敬的贵宾客户：\n\n玉能养人，亦能寄托心愿。玉见工坊历时三月精雕细琢，甄选上乘玉料，为您呈献本季限定之作 ——【' + pname + '】。\n\n· 原矿老料手工开相，触手温润如凝脂；\n· 搭配特制国风沉香礼盒，随礼赠定制保养真皮擦布；\n· VIP 私享专线特权，尊享终身免费复检与绳线焕新服务。\n\n愿此玉伴您与家人四季常安，福泽绵长。欢迎垂询您的专属珠宝顾问。';
+        content = '尊敬的贵宾客户：\n\n玉能养人，亦能寄托心愿。AURORA 工坊历时三月精雕细琢，甄选上乘玉料，为您呈献本季限定之作 ——【' + pname + '】。\n\n· 原矿老料手工开相，触手温润如凝脂；\n· 搭配特制国风沉香礼盒，随礼赠定制保养真皮擦布；\n· VIP 私享专线特权，尊享终身免费复检与绳线焕新服务。\n\n愿此玉伴您与家人四季常安，福泽绵长。欢迎垂询您的专属珠宝顾问。';
       } else if (platform === 'tmall') {
-        title = '【玉见甄选】' + pname + ' —— 一证一物，戴得放心';
+        title = '【AURORA 甄选】' + pname + ' —— 一证一物，戴得放心';
         content = '【商品亮点】\n· ' + ((req.selling_points || '').trim() || '原矿老料 · 手工精雕 · 一物一证') + '\n· 权威机构质检证书随货同行，支持任意权威机构复检\n\n【参数规格】\n· 材质：天然和田玉 / 淡水珍珠 / 莫桑石（按款）｜金属：S925 / 足金镶口\n· 赠品：东方国风锦盒 + 沉香香片 + 专业擦玉布 + 证书保护套\n\n【贴心服务】\n✓ 7 天无理由退换（吊牌完好），运费险默认赠送\n✓ 1 年免费换绳织补，终身免费清洗养护\n✓ 收货后 48 小时内发货，顺丰保价包邮\n\n【温馨提示】玉石色泽自然天成，同一块料不同光线下呈现略有差异，实物为准。';
       } else if (platform === 'moments') {
         title = '朋友圈日常分享 · ' + pname;
@@ -693,7 +693,7 @@
         },
         wechat: {
           title: "Why True Connoisseurs Quietly Choose " + pname,
-          author: 'Yujian Fine Jewelry',
+          author: 'AURORA Fine Jewelry',
           quote: '"The beauty of jade reflects virtue—subtle and timeless, transcending transient trends."',
           content: wechatContent,
           stats: { reads: '100k+', wow: '890', likes: '1.2k' }
@@ -759,7 +759,7 @@
         },
         wechat: {
           title: '真正懂玉的女人，都在悄悄佩戴【' + pname + '】',
-          author: '玉见东方美学',
+          author: 'AURORA 东方美学',
           quote: '「玉之美，有如君子之德；温润内敛，胜过一切繁复堆叠。」',
           content: wechatContent,
           stats: { reads: '10万+', wow: '890', likes: '1.2k' }
@@ -1117,7 +1117,7 @@
 
   var SAMPLE_SERVICES_META = [
     { id: 'ai-gateway', name: '企业 AI 统一网关', port: 8000 },
-    { id: 'ecom-ai-guide', name: '玉见珠宝 AI 智能导购', port: 8001 },
+    { id: 'ecom-ai-guide', name: 'Jewelry Advisor Demo · AI 智能导购', port: 8001 },
     { id: 'coze-material-studio', name: '多平台爆款素材工作台', port: 8002 },
     { id: 'ai-data-analysis-assistant', name: 'AI 数据分析专家', port: 8510 },
     { id: 'ai-knowledge-assistant', name: '企业级智能知识库 (RAG)', port: 8501 },
@@ -1150,7 +1150,7 @@
       { ts: '23:41:02', tag: 'HEALTH', level: 'err', msg: '多模态音视频智能体 (FunClip)（:7860）状态变化：下线，流量已摘除。' },
       { ts: '23:41:05', tag: 'HEALTH', level: 'ok', msg: '多模态音视频智能体 (FunClip)（:7860）状态变化：上线，已重新纳入调度。' },
       { ts: '23:40:36', tag: 'HEALTH', level: 'info', msg: '全局健康巡检完成，7/7 在线，本轮无状态变化。' },
-      { ts: '23:39:12', tag: 'ECOM-AGENT', level: 'ok', msg: '玉见珠宝 AI 智能导购（:8001）已就绪。' },
+      { ts: '23:39:12', tag: 'ECOM-AGENT', level: 'ok', msg: 'Jewelry Advisor Demo · AI 智能导购（:8001）已就绪。' },
       { ts: '23:38:59', tag: 'MASTER', level: 'info', msg: '事件总线接入成功：本流由真实 TCP 端口探测驱动，每 3s 巡检一次，当前在线 7/7。' }
     ];
     var events = [];

@@ -3,6 +3,92 @@
 本项目遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 的组织方式，
 版本号遵循[语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [未发布]
+
+### 修复 —— README 把「生产项目里的 Runtime / MCP 网关」写成了本仓库的核心
+
+上一版首屏写着「核心 = Agent Runtime（`LLMProvider` + `Tool` 双抽象、并行多工具、双熔断）
++ MCP 网关（四层中间件、三级配额）」，并把代码位置指到 `routers/gateway.py`。实测全仓 grep：
+
+| 关键词 | 命中 | 关键词 | 命中 |
+|---|---|---|---|
+| `LLMProvider` / `Provider` | 0 | `quota` | 0 |
+| `register_tool` / `tool_call` | 0 | `circuit` | 1（仿真场景名） |
+| `max_steps` | 0 | `audit` | 8（都是 `TRACE_AUDIT_LOGS` 日志表） |
+
+`routers/gateway.py` 实际是「OpenAI 协议统一代理 + 三个 preset 故障场景字典」
+（`FAILOVER_SCENARIOS`，响应自带 `simulated: true`），不是熔断实现。这段描述还与 README
+自己的「诚实边界」直接矛盾 —— 文末早就写着「网关没接真实大模型」「热切是仿真」「6 个运行时不在本仓库」。
+
+- 首屏改为「编排与观测面 / 接入靶场 / Labs 源码」三层，每层都标了真实代码位置
+- 新增「它不是什么」三条，把边界从文末搬到开头：不是 Runtime、不是 MCP 网关、热切是仿真
+- 「接入靶场」一节删掉「同一套 Runtime、共用工具注册表与网关配额」的说法，
+  改为「验证编排层的通用性，不假装拥有生产实现」
+- 架构图 alt 文案改回与图一致；图内版本号 2.0 → 2.8，补图注说明 v2.7 起的第 8 个端口未画
+- 控制台 `<title>` / `og:title`：「企业级全域 AI 智能体控制中枢」→「多服务拓扑控制台与编排层」，`docs/` 重建
+- 验证：`pytest -q` 仍 **70 passed**（该条只改文案与生成物）
+
+### 新增 —— `evals/bench.py`：把「能跑」换成可对比的六个数字
+
+README 原来只有「能跑」和「有测试」两句话，没有一个可对比的量。而本仓库没有模型调用链
+（网关未接真实大模型），所以 recall@k / LLM-as-Judge / 首 token 这类评测在这里**没有测量对象**，
+硬编一组数就是造假。基准改为测真正存在的东西：
+
+- 六项：冷启动 → 首次 `/healthz` 200 · `/healthz` 往返 · 8 端口并发 TCP 探测 · SSE 建连 → 首帧 ·
+  端口监听 → 上线事件 · 端口终止 → 下线事件
+- 每项带 n / p50 / p95 / max，报告落 `evals/reports/*.json`，含版本、Python、平台、commit、采样数
+- 拿不到就写 `skipped` 并注明原因；端口全在线或不可 bind 时不补默认值
+- 只挑空闲拓扑端口，被终止的进程是本脚本自己 spawn 的；不碰正在跑的服务
+- CI 每次运行跑一遍（`--samples 10`），报告进 artifact，可与上一版直接对比
+
+**实测暴露一个真实缺陷**：`/healthz` 内部先跑一轮 8 端口探测，离线态 p50 **370.73 ms**
+（≈ `probe.timeout_sec` 0.35s），健康检查耦合了业务端口。已写入「诚实边界」，本版未修 ——
+改它会动 `/healthz` 的响应契约与 4 条断言，留作 v3.0。
+
+### 修复 —— CI 连续 15 次全红，pytest 与 docker build 从未真正执行过
+
+- 失败点固定在 `ruff format --check`（`core/state.py` 的 `TRACE_AUDIT_LOGS.extendleft([...])`
+  不符合当前 ruff-format 换行规则），而 lint 排在 pytest 之前 ——
+  70 条断言、五层验证、`docker build` **一次都没在 CI 里跑过**，徽章却一直被当绿用。
+- 根因之一：`requirements-dev.txt` 写 `ruff>=0.6` 没锁，CI 拉最新版与作者本地旧版漂移（本地过、CI 不过）。
+- 修复：`ruff format core/state.py`（纯格式）+ 把 ruff 锁到 `==0.16.10`。
+
+### 修复 —— 镜像缺 `core/` 与 `routers/`：能 build、一启动就崩
+
+- `Dockerfile` 只 COPY `server.py` / `templates` / `static`，而 `server.py` 依赖 `core.*`、`routers.*`
+  → 镜像 build 成功、容器启动即 `ModuleNotFoundError: No module named 'core'`，compose 里是 restart 循环。
+- **实测复现**：按旧 COPY 清单复刻文件集跑 `python server.py` → 报同一个错。已补两行 COPY。
+- **验证**：按新清单复刻文件集，`OMNI_PORT=8899 python server.py` → `/healthz` 200
+  （`services_total: 8`）、首页 200、8 个探针按 `services.yaml` 列出。`docker build` 本身仍以 CI 结果为准。
+
+### 修复 —— 事件总线验证脚本的注入点失效（2.8 拆模块后没跟上）
+
+- `verify_event_bus.py` 一直 patch 的是 `server.probe_port`，但 2.8 把探测实现搬进了
+  `core/state.py`，巡检器调用的是**那个模块的全局** —— 等于什么都没改：翻转不生效，
+  脚本一直等一条永远不会来的状态变化，**在 CI 里以超时失败**。
+- 修：注入点改为 `core_state.probe_port`（保留 `server` 侧再导出）。本地与 CI 均回到
+  `结论: PASS —— 事件由共享巡检器的状态差异驱动`（`:7860` 翻转 → 3.4s 后出现「状态变化：上线」）。
+- 这条也解释了为什么「事件总线是真探测」这句宣传此前只能靠人眼背书：验证脚本本身是坏的。
+
+### 新增 —— `tools/check_image_files.py`（+ CI 里的 hadolint）
+
+- 解析 `Dockerfile` 的 `COPY` 行，与 `server.py` 的本地 `import` 静态对账，缺一个就 `exit 1`；已接进 CI。
+  实测：`COPY = core, routers, server.py, services.yaml, static, templates` → `[OK]`。
+- CI 另加 `hadolint`（`failure-threshold: error`），在无 Docker 环境里兜镜像层规则。
+
+### 变更 —— 演示数据脱敏
+
+- **117 处**（第一轮 70 处中文名 + 第二轮 47 处英文品牌名 `Qionghua`，含 `assets/architecture.svg`
+  里的节点标签、`evidence/` 里的实测输出）：`services.yaml` / `core/config.py` 服务名、
+  `routers/business.py` 与 `static/omni-api.js` 商品名与话术、`templates/*` 营销文案与中英 i18n
+  → `Jewelry Advisor Demo` / `AURORA`；`docs/` 与 `evidence/` 全部重新生成。
+- 改后 `pytest -q` 仍 **70 passed**。
+- **遗留**：git 历史仍可检出旧品牌名（17 个 commit），彻底清理需 `git filter-repo` + force push，**未执行**。
+
+### 变更 —— README 收敛（523 → 370 行）
+
+首屏改「核心 = Runtime + MCP 网关 / 其余 = 接入靶场」两层叙事，加脱敏声明与「可验证性」一节；删掉 ASCII 架构图、6 个自述徽章、25 行 v2.8 清单、5 张重复截图、整棵目录树与重复的实测输出。「诚实边界」保留，并补两条（git 历史未清理、CI 曾是假的绿）。
+
 ## [2.8.0] - 2026-10-13
 
 ### 新增 —— 企业级生产架构升级：多角色视窗、爆款归因抽屉、微内核解耦、JWT 多租户鉴权与异步任务中心

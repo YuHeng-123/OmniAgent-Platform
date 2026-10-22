@@ -83,28 +83,28 @@
   ];
 
   var GUIDE_PRODUCTS_EN = [
-    { tag: 'Fortune & Serenity', name: '【Qionghua · Fortune】Natural Hetian Nephrite Jade Donut Pendant', price: 268, list: 380,
+    { tag: 'Fortune & Serenity', name: '【Yujian · Fortune】Natural Hetian Nephrite Jade Donut Pendant', price: 268, list: 380,
       spec: 'Authentic old-mine Hetian jade, oily texture, accompanied by NGTC/GIA lab certificate',
       fit: ['elder', 'mom', 'peace', 'jade', 'heritage'] },
-    { tag: 'Moonlit Horizon', name: '【Qionghua · Moonlit】Natural Freshwater Cultured Pearl Strand', price: 165, list: 240,
+    { tag: 'Moonlit Horizon', name: '【Yujian · Moonlit】Natural Freshwater Cultured Pearl Strand', price: 165, list: 240,
       spec: '8-9mm near-round, strong metallic mirror luster, sterling clasp',
       fit: ['mother', 'wife', 'elegant', 'pearl', 'commute'] },
-    { tag: 'Starlight Solitaire', name: '【Qionghua · Starlight】Classic 6-Prong D-Color Moissanite Ring', price: 99, list: 399,
+    { tag: 'Starlight Solitaire', name: '【Yujian · Starlight】Classic 6-Prong D-Color Moissanite Ring', price: 99, list: 399,
       spec: 'D-Color / VVS1 cut, laser-inscribed GRA certificate, diamond-rivaling fire',
       fit: ['girlfriend', 'wife', 'proposal', 'engagement', 'ring', 'moissanite'] },
-    { tag: 'Serene Bamboo', name: '【Qionghua · Bamboo】Natural Nephrite Bamboo Joint Bracelet', price: 110, list: 160,
+    { tag: 'Serene Bamboo', name: '【Yujian · Bamboo】Natural Nephrite Bamboo Joint Bracelet', price: 110, list: 160,
       spec: 'Carved bamboo joint beads, uniform green hue, double elastic strung',
       fit: ['daily', 'bracelet', 'jade', 'men'] },
-    { tag: 'Scarlet Talisman', name: '【Qionghua · Fortune】Natural South Red Agate Talisman Plaque', price: 140, list: 185,
+    { tag: 'Scarlet Talisman', name: '【Yujian · Fortune】Natural South Red Agate Talisman Plaque', price: 140, list: 185,
       spec: 'Vibrant persimmon red, solid core, symmetrical talisman carving',
       fit: ['dad', 'men', 'protection', 'agate'] },
-    { tag: 'Crescent Moon', name: '【Qionghua · Crescent】S925 Sterling Inlaid Jade Pendant', price: 55, list: 85,
+    { tag: 'Crescent Moon', name: '【Yujian · Crescent】S925 Sterling Inlaid Jade Pendant', price: 55, list: 85,
       spec: 'Entry-level piece, nephrite tablet with sterling chain, modern minimalist wear',
       fit: ['budget', 'entry', 'student', 'commute', 'necklace'] },
-    { tag: 'Luminous Studs', name: '【Qionghua · Luminous】7-8mm Cultured Pearl Stud Earrings', price: 79, list: 110,
+    { tag: 'Luminous Studs', name: '【Yujian · Luminous】7-8mm Cultured Pearl Stud Earrings', price: 79, list: 110,
       spec: 'Round high-luster pearls with S925 anti-loss silicone backs',
       fit: ['girlfriend', 'earrings', 'pearl', 'daily'] },
-    { tag: 'Golden Harmony', name: '【Qionghua · Harmony】Solid Gold Inlaid Nephrite Jade Pendant', price: 280, list: 360,
+    { tag: 'Golden Harmony', name: '【Yujian · Harmony】Solid Gold Inlaid Nephrite Jade Pendant', price: 280, list: 360,
       spec: 'Solid gold bezel + authentic green jade, timeless heirloom craftsmanship',
       fit: ['gold', 'luxury', 'wedding', 'mom'] }
   ];
@@ -185,7 +185,7 @@
     } else if (isCoupon) {
       if (isEn) {
         steps.push({ node: 'Tool Calling (list_coupons)', status: 'done', detail: 'Executed list_coupons(active=True), returned 2 active codes + 1 VIP live voucher tier' });
-        reply = 'Here are the active stackable offers currently available on Qionghua Global DTC:\n\n1. **New Buyer Gift**: $50 off orders over $300 (auto-applied at checkout);\n2. **Fine Jewelry VIP Tier**: $200 off orders over $2,000 across jade and pearls;\n3. **Concierge Secret Code**: Live stream code **LUXURY88** provides an additional 12% off.\n\nWould you like me to configure a curated package tailored to your budget?';
+        reply = 'Here are the active stackable offers currently available on Yujian Global DTC:\n\n1. **New Buyer Gift**: $50 off orders over $300 (auto-applied at checkout);\n2. **Fine Jewelry VIP Tier**: $200 off orders over $2,000 across jade and pearls;\n3. **Concierge Secret Code**: Live stream code **LUXURY88** provides an additional 12% off.\n\nWould you like me to configure a curated package tailored to your budget?';
       } else {
         steps.push({ node: '工具调用 (Tool Calling)', status: 'done', detail: '执行 list_coupons(active=True)，返回 2 张可用券 + 1 条直播福袋规则' });
         reply = '现在店内能叠的优惠小玉帮您理好了：\n\n1. **新人专享礼**：满 300 减 50 元立减券（下单页自动带出）；\n2. **珠宝品类大额券**：满 2000 减 200 元，玉石/珍珠通用；\n3. **私域暗号**：直播间蹲「整点福袋」，可抽 88 折码，与大额券二选一不叠加。\n\n搭配建议：选【映月】925银镶和田玉方牌（¥359）可直接用新人券；两件拼到 ¥2,000 用大额券最划算。需要我按您的预算配个组合吗？';
@@ -222,7 +222,7 @@
     } else if (isDiff) {
       if (isEn) {
         steps.push({ node: 'Knowledge Retrieval (RAG)', status: 'done', detail: 'Matched domain knowledge chunk #381: Moissanite Optics & Physical Durability vs Mined Diamonds' });
-        reply = 'Here is an expert comparison regarding Moissanite vs. Natural Diamonds:\n\n1. **Physical Hardness**: Natural diamond is pure carbon (Mohs 10). Moissanite is silicon carbide (Mohs 9.25), second only to diamond, ensuring permanent brilliance without scuffing or clouding;\n2. **Optical Brilliance**: Moissanite delivers a dispersion rate of 0.104—over 2.4x the fire of mined diamond—radiating captivating rainbow fire under direct light;\n3. **Quality & Authentication**: Every Qionghua Moissanite gemstone is certified D Color / VVS1 clarity with a laser-inscribed GRA certificate for complete authenticity.';
+        reply = 'Here is an expert comparison regarding Moissanite vs. Natural Diamonds:\n\n1. **Physical Hardness**: Natural diamond is pure carbon (Mohs 10). Moissanite is silicon carbide (Mohs 9.25), second only to diamond, ensuring permanent brilliance without scuffing or clouding;\n2. **Optical Brilliance**: Moissanite delivers a dispersion rate of 0.104—over 2.4x the fire of mined diamond—radiating captivating rainbow fire under direct light;\n3. **Quality & Authentication**: Every Yujian Moissanite gemstone is certified D Color / VVS1 clarity with a laser-inscribed GRA certificate for complete authenticity.';
       } else {
         steps.push({ node: '知识检索 (RAG)', status: 'done', detail: '命中珠宝百科知识切片 #381：《莫桑钻与天然钻石光学特质比对》' });
         reply = '这是很多顾客关心的专业问题，小玉为您通俗解答：\n\n1. **物理成分**：天然钻石是纯碳晶体（硬度10）；莫桑石是碳化硅（硬度9.25），硬度非常接近，日常佩戴不易磨损；\n2. **火彩表现**：莫桑钻的色散值（0.104）高于天然钻石，在阳光下火彩更耀眼；\n3. **品质与证书**：玉见选用的每一颗莫桑石均为 D色/VVS1 级切工，并配备 GRA 独立腰码证书，支持专业复检，请放心选购！';
@@ -260,7 +260,7 @@
       } else {
         if (isEn) {
           steps.push({ node: 'Semantic Intent Understanding', status: 'done', detail: 'Standard concierge query response' });
-          reply = 'Welcome to Qionghua Global Luxury DTC 🌸 I am your AI Jewelry Concierge. I can assist you with: curating fine jewelry by budget, explaining GIA/GRA certifications and gemstone optics, verifying coupon tiers, and arranging worldwide insured courier delivery. What fine jewelry piece may I show you today?';
+          reply = 'Welcome to Yujian Global Luxury DTC 🌸 I am your AI Jewelry Concierge. I can assist you with: curating fine jewelry by budget, explaining GIA/GRA certifications and gemstone optics, verifying coupon tiers, and arranging worldwide insured courier delivery. What fine jewelry piece may I show you today?';
         } else {
           steps.push({ node: '语义理解', status: 'done', detail: '常规意图应答' });
           var welcomePool = [
@@ -346,9 +346,9 @@
         content = '[Visual: 4K macro lens sweep across facet dispersion]\n(Host / Voiceover - Energetic & Confident):\n"Stop overpaying 10x for mined diamonds that lose half their value at checkout!\nLook at this piece right here—the newly certified [' + pname + ']!\n\n[Zoom into GRA certificate laser inscription]:\nD-Color, VVS1 clarity, and passes electronic diamond testers in 1 second flat!\nTap the showcase link below—insured worldwide express shipping with full 30-day money-back guarantee. In 3, 2, 1, grab yours before this holiday drop sells out!"';
       } else if (platform === 'wechat') {
         title = '[VIP Private Client Preview] Timeless Splendor —— ' + pname + ' Annual Capsule Release';
-        content = 'Dear VIP Client,\n\nTrue luxury lies in enduring grace. The Qionghua Atelier is delighted to present our private capsule release —— [' + pname + '].\n\n· Hand-selected raw gemstone polished to silken tactile perfection;\n· Housed in our bespoke sandalwood presentation chest with microfiber spa kit;\n· Dedicated VIP concierge line with complimentary lifetime re-polishing and re-stringing.\n\nMay this jewel bring timeless serenity to you and your loved ones. Please reply to reserve your numbered edition.';
+        content = 'Dear VIP Client,\n\nTrue luxury lies in enduring grace. The Yujian Atelier is delighted to present our private capsule release —— [' + pname + '].\n\n· Hand-selected raw gemstone polished to silken tactile perfection;\n· Housed in our bespoke sandalwood presentation chest with microfiber spa kit;\n· Dedicated VIP concierge line with complimentary lifetime re-polishing and re-stringing.\n\nMay this jewel bring timeless serenity to you and your loved ones. Please reply to reserve your numbered edition.';
       } else if (platform === 'tmall') {
-        title = '[Qionghua Haute Joaillerie] ' + pname + ' —— Certified Authenticity & Ethical Brilliance';
+        title = '[Yujian Haute Joaillerie] ' + pname + ' —— Certified Authenticity & Ethical Brilliance';
         content = '[Product Highlights]\n· ' + ((req.selling_points || '').trim() || 'Certified Raw Gemstone · Artisanal Handcraft · Individual Lab Certification') + '\n· Accompanied by official NGTC/GIA/GRA certificate with online registry lookup\n\n[Specifications]\n· Materials: Certified Moissanite / Grade-A Jadeite / Cultured Pearls | Metal: S925 Platinum Plated / 18K Solid Gold\n· Included: Luxury Presentation Box + Velvet Travel Pouch + Polishing Cloth + Certificate Card\n\n[White-Glove Services]\n✓ 30-Day Hassle-Free Returns with complimentary return labels\n✓ 1-Year Free Restringing & Lifetime Sonic Cleaning Spa\n✓ Dispatched within 24 hours via DHL/FedEx Insured Worldwide Shipping';
       } else if (platform === 'moments') {
         title = 'Everyday Luxury Curation · ' + pname;
@@ -693,7 +693,7 @@
         },
         wechat: {
           title: "Why True Connoisseurs Quietly Choose " + pname,
-          author: 'Qionghua Fine Jewelry',
+          author: 'Yujian Fine Jewelry',
           quote: '"The beauty of jade reflects virtue—subtle and timeless, transcending transient trends."',
           content: wechatContent,
           stats: { reads: '100k+', wow: '890', likes: '1.2k' }

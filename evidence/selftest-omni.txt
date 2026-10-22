@@ -30,7 +30,7 @@ HTTP 200, 447728 bytes
   "metrics_source": "demo-sample"
 }
   port 8000  offline   企业 AI 统一网关
-  port 8001  offline   琼华珠宝 AI 智能导购
+  port 8001  offline   玉见珠宝 AI 智能导购
   port 8002  offline   多平台爆款素材工作台
   port 8510  offline   AI 数据分析专家
   port 8501  offline   企业级智能知识库 (RAG)
@@ -45,7 +45,7 @@ backend      = fallback:local-demo
 model        = 本地规则引擎 (离线降级)
 latency_ms   = 359   (实测，不是写死的常数)
 trace 节点数 = 3
-reply 前 120 字 = 收到您的咨询！小琼随时在为您服务。琼华珠宝坚持选用天然玉石、优质珍珠与切工宝石，支持 7 天无理由退换及终身免费清洗保养。请问您今天想挑选哪类饰品？
+reply 前 120 字 = 收到您的咨询！小玉随时在为您服务。玉见珠宝坚持选用天然玉石、优质珍珠与切工宝石，支持 7 天无理由退换及终身免费清洗保养。请问您今天想挑选哪类饰品？
 
 ========================================================================
 == [4] POST /api/v1/guide/chat  自纠错链路（500 元券压力测试）
@@ -132,7 +132,7 @@ bytes                = 450904
 HTTP 200   content-type = text/event-stream; charset=utf-8
   [06:21:55] [MASTER     ] (info) 事件总线接入成功：本流由真实 TCP 端口探测驱动，每 3s 巡检一次，当前在线 0/8。
   [06:21:55] [GATEWAY    ] (warn) 企业 AI 统一网关（:8000）未响应，标记为离线。
-  [06:21:55] [ECOM-AGENT ] (warn) 琼华珠宝 AI 智能导购（:8001）未响应，标记为离线。
+  [06:21:55] [ECOM-AGENT ] (warn) 玉见珠宝 AI 智能导购（:8001）未响应，标记为离线。
   [06:21:55] [MARKETING  ] (warn) 多平台爆款素材工作台（:8002）未响应，标记为离线。
   [06:21:55] [ANALYTICS  ] (warn) AI 数据分析专家（:8510）未响应，标记为离线。
   [06:21:55] [RAG        ] (warn) 企业级智能知识库 (RAG)（:8501）未响应，标记为离线。

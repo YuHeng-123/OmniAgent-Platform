@@ -114,7 +114,7 @@
 
     <rect x="326" y="544" width="270" height="100" rx="12" fill="#ffffff" stroke="#cbd5e1"/>
     <text class="t mono" x="344" y="572" font-size="15" font-weight="700" fill="#2563eb">:8001</text>
-    <text class="t bd" x="344" y="598">琼华珠宝 AI 智能导购</text>
+    <text class="t bd" x="344" y="598">玉见珠宝 AI 智能导购</text>
     <text class="t sm" x="344" y="618">Business · 核心业务 Agent</text>
     <text class="t sm" x="344" y="634">LangGraph + SQLite + SSE</text>
 

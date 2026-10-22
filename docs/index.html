@@ -8888,6 +8888,36 @@
             // 拿不到后端（GitHub Pages / file:// / 服务未启）自动降级为示例事件并改标
             OmniAPI.startEvents({ onEvent: appendEventLine, onMode: setEventBusMode });
 
+            // 静态托管（GitHub Pages / file:// / 后端未启）时，页面上的经营指标全部是 build_docs
+            // 内置的样例数据。侧栏那行 10px 小字太容易被忽略，访客第一眼只会看到 GMV 与 QPS 大数字，
+            // 因此这里在页面最顶部再压一条显式声明，把「演示」这个前提说到前面。
+            function showStaticDemoNotice(isEn) {
+                if (document.getElementById('static-demo-notice')) return;
+                const bar = document.createElement('div');
+                bar.id = 'static-demo-notice';
+                bar.setAttribute('role', 'note');
+                bar.style.cssText = [
+                    'position:fixed', 'top:0', 'left:0', 'right:0', 'z-index:9999',
+                    'display:flex', 'align-items:center', 'justify-content:center',
+                    'flex-wrap:wrap', 'gap:4px 10px', 'padding:8px 16px',
+                    'background:rgba(69,26,3,0.97)',
+                    'border-bottom:1px solid rgba(251,191,36,0.5)',
+                    'color:#fde68a',
+                    'font:13px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif',
+                    'text-align:center', 'backdrop-filter:blur(8px)',
+                    'box-shadow:0 6px 18px rgba(0,0,0,0.45)'
+                ].join(';');
+                bar.innerHTML = isEn
+                    ? '<b style="color:#fbbf24;letter-spacing:.3px;">STATIC DEMO</b>'
+                      + '<span>Every metric on this page (QPS / GMV / conversion / ROI) is a built-in sample, '
+                      + 'not a production measurement. Real figures and how they were measured are in the README.</span>'
+                    : '<b style="color:#fbbf24;letter-spacing:.3px;">静态演示</b>'
+                      + '<span>本页所有指标（QPS / GMV / 转化率 / ROI）均为内置样例数据，非生产实测；'
+                      + '真实口径与测量方式见 README「诚实边界」。</span>';
+                document.body.style.paddingTop = '40px';
+                document.body.appendChild(bar);
+            }
+
             // 运行时模式角标：连得上本地后端 → 显示真实在线数；连不上 → 明确标注"静态演示模式"
             const badge = document.createElement('div');
             badge.id = 'runtime-mode-badge';
@@ -8910,6 +8940,7 @@
                 } else {
                     badge.textContent = isEn ? 'Static Demo Mode · Built-in Samples' : '静态演示模式 · 内置样例数据';
                     badge.className = 'text-[10px] font-mono text-accent-amber px-3 pb-3';
+                    showStaticDemoNotice(isEn);
                 }
             });
 

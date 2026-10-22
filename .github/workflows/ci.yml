@@ -7,7 +7,9 @@ name: CI
 #   4. 重跑 build_docs.py 并断言 docs/ 与源码一致（防止线上演示版悄悄过期）
 on:
   push:
-    branches: [main, master]
+    # work/** 是为了让「工作分支上做改造、不直推 main」这件事也能被 CI 验证 ——
+    # 否则分支提交永远跑不到 CI，改完只能靠本机自证。
+    branches: [main, master, "work/**"]
   pull_request:
   workflow_dispatch:
 

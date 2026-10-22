@@ -7,53 +7,39 @@
 
 ### 修复 —— CI 连续 15 次全红，pytest 与 docker build 从未真正执行过
 
-- **问题**：`ruff format --check` 卡在 CI 第 5 步（`core/state.py` 的 `TRACE_AUDIT_LOGS.extendleft([...])`
-  不符合当前 ruff-format 的换行规则），而 lint 排在 pytest 之前 ——
-  **70 条断言、五层验证、`docker build` 一次都没在 CI 里跑过**，徽章却一直被当作「绿」来引用。
-- **根因之一**：`requirements-dev.txt` 写的是 `ruff>=0.6` 没锁定，CI 每次拉最新版，
-  与作者本地旧版规则不一致（本地过、CI 不过）。
-- **修复**：`ruff format core/state.py`（纯格式，无逻辑改动）+ 把 ruff 锁到 `==0.16.10`。
+- 失败点固定在 `ruff format --check`（`core/state.py` 的 `TRACE_AUDIT_LOGS.extendleft([...])`
+  不符合当前 ruff-format 换行规则），而 lint 排在 pytest 之前 ——
+  70 条断言、五层验证、`docker build` **一次都没在 CI 里跑过**，徽章却一直被当绿用。
+- 根因之一：`requirements-dev.txt` 写 `ruff>=0.6` 没锁，CI 拉最新版与作者本地旧版漂移（本地过、CI 不过）。
+- 修复：`ruff format core/state.py`（纯格式）+ 把 ruff 锁到 `==0.16.10`。
 
 ### 修复 —— 镜像缺 `core/` 与 `routers/`：能 build、一启动就崩
 
-- **问题**：`Dockerfile` 只 `COPY server.py services.yaml` + `templates/` + `static/`，
-  而 `server.py` 的 `from core.config import ...`、`from routers.business import ...` 全在这里面。
-  镜像 layers 是「成功」的，容器启动即 `ModuleNotFoundError: No module named 'core'`，
-  `docker compose up` 表现为 restart 循环。
-  **实测复现**：按旧 COPY 清单在空目录复刻文件集后执行 `python server.py` →
-  `File "server.py", line 31 ... ModuleNotFoundError: No module named 'core'`。
-- **修复**：补 `COPY core/ ./core/` 与 `COPY routers/ ./routers/`。
-- **实测验证**：按新 COPY 清单复刻文件集，`OMNI_PORT=8899 python server.py` →
-  `/healthz` 返回 `{"status":"ok","version":"2.8.0","services_total":8}`、首页 `200`，
-  8 个探针全部按 `services.yaml` 表列出。`docker build` 本身仍未跑过（本机无 Docker CLI），
-  已在 README「诚实边界」如实标注。
+- `Dockerfile` 只 COPY `server.py` / `templates` / `static`，而 `server.py` 依赖 `core.*`、`routers.*`
+  → 镜像 build 成功、容器启动即 `ModuleNotFoundError: No module named 'core'`，compose 里是 restart 循环。
+- **实测复现**：按旧 COPY 清单复刻文件集跑 `python server.py` → 报同一个错。已补两行 COPY。
+- **验证**：按新清单复刻文件集，`OMNI_PORT=8899 python server.py` → `/healthz` 200
+  （`services_total: 8`）、首页 200、8 个探针按 `services.yaml` 列出。`docker build` 本身仍以 CI 结果为准。
 
-### 新增 —— `tools/check_image_files.py`：没有 Docker 也能查「镜像里缺文件」
+### 新增 —— `tools/check_image_files.py`（+ CI 里的 hadolint）
 
-- 解析 `Dockerfile` 的 `COPY` 行得到镜像内顶层条目，再扫 `server.py` 的本地 `import`
-  逐个对账，缺一个就 `exit 1`。纯静态、不依赖 Docker，已接进 CI 当门禁。
-- 实测输出：`已 COPY = core, requirements.txt, routers, server.py, services.yaml, static, templates`，
-  `server.py 依赖 = core, routers` → `[OK]`。
-- CI 另加 `hadolint` 步骤（`failure-threshold: error`），在没有 Docker 的环境下兜住镜像层规则。
+- 解析 `Dockerfile` 的 `COPY` 行，与 `server.py` 的本地 `import` 静态对账，缺一个就 `exit 1`；
+  不依赖 Docker，已接进 CI。实测：`COPY = core, routers, server.py, services.yaml, static, templates` → `[OK]`。
 
-### 变更 —— 演示数据脱敏：移除真实业务与品牌名
+### 变更 —— 演示数据脱敏
 
-- `services.yaml` / `core/config.py` 的导购服务名、`routers/business.py` 与
-  `static/omni-api.js` 里的商品名、话术、营销文案，以及 `templates/` 与生成后的 `docs/`，
-  统一把公司业务名替换为通用演示名（`Jewelry Advisor Demo · AI 智能导购` / `AURORA` 系列）。
-- 共 70 处，`docs/` 由 `build_docs.py` 重新生成而非手改；改后 `pytest -q` 仍是 **70 passed**。
-- **遗留（如实记录）**：git 历史里仍能检出旧品牌名（`git log -S` 可查，17 个 commit）。
-  彻底清理需 `git filter-repo` 重写历史并 force push，**尚未执行**。
+- 70 处：`services.yaml` / `core/config.py` 服务名、`routers/business.py` 与 `static/omni-api.js`
+  的商品名与话术、`templates/*` 营销文案 → `Jewelry Advisor Demo` / `AURORA`；`docs/` 由 `build_docs.py` 重生成。
+- 改后 `pytest -q` 仍 **70 passed**。
+- **遗留**：git 历史仍可检出旧品牌名（17 个 commit），彻底清理需 `git filter-repo` + force push，**未执行**。
 
-### 变更 —— README 收敛：从「8 个微服务并列」改为主次两层叙事
+### 变更 —— README 收敛（523 → 376 行）
 
-- 首屏改成「核心 = Runtime + MCP 网关 / 其余 = 接入靶场」，并加一行脱敏声明。
-- 删除约 60 行 ASCII 架构图（正文已有 `assets/architecture.svg` 真图）、
-  6 个静态自述徽章（只留 CI / Live Demo / python / license）、25 行 v2.8 功能清单
-  （指向本 CHANGELOG）、5 张重复截图、整棵目录树压缩为关键路径。
-- 新增「可验证性」一节：把 pytest 数量、evidence 产物、探针、镜像文件集对账四条证据集中呈现。
-- 效果：README 523 → 388 行（**净删 135 行**），「诚实边界」一节保留并补了 2 条（历史未清理 / CI 曾全红）。
-
+- 首屏改「核心 = Runtime + MCP 网关 / 其余 = 接入靶场」两层叙事，并加脱敏声明。
+- 删：60 行 ASCII 架构图、6 个自述徽章、25 行 v2.8 清单（指向本文件）、5 张重复截图、
+  整棵目录树、事件总线一节里与 `evidence/` 重复的实测输出。
+- 增：「可验证性」一节（pytest 数 / evidence / 探针 / 镜像对账）；「诚实边界」补 2 条
+  （历史未清理、CI 曾是假的绿）。
 
 ## [2.8.0] - 2026-10-13
 

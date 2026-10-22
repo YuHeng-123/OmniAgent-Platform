@@ -65,6 +65,18 @@ jobs:
         continue-on-error: true
         run: python check_services.py
 
+      # 静态对账：Dockerfile 的 COPY 清单必须覆盖 server.py 的所有本地 import。
+      # 2.8.0 曾漏掉 core/ 与 routers/ —— 镜像能 build、容器一启动就 ModuleNotFoundError。
+      - name: Image file set matches Dockerfile COPY list
+        run: python tools/check_image_files.py
+
+      # 本机没有 Docker CLI 时，用 hadolint 兜住镜像层问题（DL 系列规则）
+      - name: Lint Dockerfile (hadolint)
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile
+          failure-threshold: error
+
       - name: Docker image builds
         run: docker build -t omniagent-console:ci .
 

@@ -1,4 +1,6 @@
 -r requirements.txt
 pytest>=8.0
-ruff>=0.6
+# ruff 必须锁定小版本：CI 曾因 ruff-format 规则漂移（本地旧版过、CI 新版不过）连续 15 次全红，
+# 且 lint 排在 pytest 之前，导致测试与 docker build 一次都没真正跑过。
+ruff==0.16.10
 pre-commit>=3.7

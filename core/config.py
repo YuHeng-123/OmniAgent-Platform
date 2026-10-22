@@ -34,7 +34,7 @@ _BUILTIN_SERVICES = [
     },
     {
         "id": "ecom-ai-guide",
-        "name": "琼华珠宝 AI 智能导购",
+        "name": "Jewelry Advisor Demo · AI 智能导购",
         "role": "核心业务 Agent",
         "port": 8001,
         "url": "http://127.0.0.1:8001",

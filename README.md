@@ -4,21 +4,24 @@
 
 它是一层**编排与观测面**：把 N 个异构服务（HTTP / SSE / Streamlit / Gradio）收进一张由
 `services.yaml` 驱动的拓扑，用**真 TCP 探测**驱动一条 SSE 事件总线，起停接口真的拉起 / 终止进程，
-双模式数据源保证前端**不把演示数据当线上数据**，敏感操作由 HMAC-SHA256 JWT + 4-Tier RBAC 守着。
+双模式数据源保证前端**不把演示数据当线上数据**，敏感操作由 HMAC-SHA256 JWT + 4-Tier RBAC 守着，
+网关代理端点的**租户鉴权（401）与配额（429）是真拦得住的**——上游转发仍是仿真，这句话下面有逐条说明。
 
 | 层 | 是什么 | 代码在哪 |
 |---|---|---|
 | 编排与观测面 | 拓扑单一来源 → 并发探测 → 差异事件广播 → SQLite 历史 → 9 页控制台 | `services.yaml` · `core/state.py` · `routers/events.py` · `routers/system.py` |
 | 起停管控 | 按端口找 PID、真终止、只认 `start_cmd`、先过角色校验 | `core/process.py` · `core/security.py` |
 | 任务队列 | 带锁状态机（pending → running → done/failed），异步端点复用 | `core/tasks.py` |
-| 协议代理 · 容灾**仿真** | OpenAI 协议统一代理 + 三场景热切演练（响应自带 `simulated: true`） | `routers/gateway.py` |
+| 协议代理 | OpenAI 协议统一代理：**真鉴权 + 真配额**；容灾热切是**仿真**（响应自带 `simulated: true`） | `routers/gateway.py` · `core/quota.py` · `core/security.py` |
 | 接入靶场 · 8 端 | 异构服务接入样本：导购 / 素材 / RAG / 数据分析 / 情报 / 音视频 / 内容工场 | 各自独立仓库，见「接入靶场」一节 |
 | Labs 源码 · 2 个 | LangGraph 出海流水线、FunClip Windows 封装（源码收编，运行时独立） | `labs/` |
 
 **它不是什么**（写在开头，而不是藏到文末）：
 
 - **不是 Agent Runtime，也不是 MCP 网关。** 那两样的实现在生产项目里，不在这个仓库 ——
-  这里没有 `LLMProvider`、没有 Tool 注册表、没有配额账本、没有真熔断（全仓 grep 为 0）。
+  这里没有 `LLMProvider`、没有 Tool 注册表、没有真熔断（全仓 grep 为 0）。
+  **配额账本这一轮加了**（`core/quota.py`，按租户分钟/天双窗口）——但它只管网关代理这一个入口，
+  不是全平台统一的计费账本。
   本仓库是那套东西的**观测面与接入示范**：这条边界写清楚，比含糊地暗示「我也有」值钱。
 - **网关的「主备热切」是仿真**：它不熔断任何真实上游，token 是样例数值。
 - **8 个服务里 6 个的运行时不在本仓库**；compose 只起控制台一个容器。
@@ -73,7 +76,7 @@
 | 导购 | 垂直轻奢电商独立站 AI 智能导购：优先真连 `:8001` 并解析它的 SSE 流，连不上才降级；8 类意图 + 商品池自动配品 |
 | 营销 | Shopify / TikTok Shop / Instagram / Meta Ads / Pinterest / YouTube Shorts 六渠道文案生成 + 全球广告合规风控质检 |
 | 分析 | 自然语言 → Text-to-SQL (DuckDB) → 动态图表 → 商业经营结论（8 类问法与潜力爆品挖掘） |
-| 网关 | 主备毫秒级热切仿真（响应自带 `simulated: true`）；三场景轮换（超时熔断 / 限流分流 / 质量降级重生成） |
+| 网关 | 代理端点真鉴权 + 真配额（401 / 429，响应头带剩余额度）；主备热切仍是仿真（`simulated: true`），三场景轮换演示超时熔断 / 限流分流 / 质量降级重生成 |
 | 知识库 | BM25 + 向量混合检索 (RAG)，命中切片带置信度与高亮标注 |
 | 历史 | 在线率 / 延迟曲线（SQLite 落盘，24h 保留）与事件时序回放 |
 | 工场 | Instagram & TikTok 出海工场 · LangGraph 1.0 (HITL 人在环路状态机审批与海报生成) |
@@ -342,7 +345,8 @@ run.bat                                   # 或 ./run.sh
 - **「停止」按钮会真的杀进程。** 它终止的是**监听在 `services.yaml` 配置端口上**的进程 —— 端口表之外的 PID 一律不碰，但配置内的会真停。演示前请确认那些进程停得起。
 - **「启动」按钮只认 `start_cmd`。** 没在 `services.yaml` 里配置启动命令的服务，点了会如实返回 `not-configured` 并提示怎么配 —— 控制台不假装知道你没告诉过它的启动方式。
 - **历史曲线是从控制台启动那一刻才开始记的。** 数据落在本地 SQLite（`data/omni_history.db`，不入 git），保留 24 小时；换个机器/清掉目录就是空的，静态演示模式下显示的是内置样例曲线而非真实历史。
-- **`/api/v1/gateway/simulate_failover` 是仿真端点**，它不真的去熔断某个上游，只演示「主备热切」这个形态；响应里自带 `"simulated": true`，主路由名一律写「上游主模型（仿真占位）」—— 2.1 之前这里曾残留编造的模型名 `DeepSeek-V3`（已清除并有断言防回归），token 数值也标注了 `token_usage_note: 样例数值，非真实计费`。
+- **网关的鉴权与配额是真的，转发是假的。** `/v1/chat/completions` 现在必须带有效租户 JWT，否则 **401**（`X-Tenant-ID` 标头不再能当身份凭证——那玩意儿谁都能编）；按租户计配额，超阈值 **429**，响应头带 `X-Quota-Remaining` / `Retry-After`。配额在 `core/quota.py`，**进程内存，多副本要换 Redis**。上游调用本身仍是 `await asyncio.sleep(0.038)` + 模板回复，响应里 `upstream: simulated` 写明。
+- **顺手补的一个洞**：2.8 之前 Bearer Token 解析失败会继续往下落到默认开发租户（`role=admin`），也就是**换个坏 Token 反而拿到管理员**。现在只要带了 Bearer 就以 Token 为准，解析不出来就是未认证。- **`/api/v1/gateway/simulate_failover` 是仿真端点**，它不真的去熔断某个上游，只演示「主备热切」这个形态；响应里自带 `"simulated": true`，主路由名一律写「上游主模型（仿真占位）」—— 2.1 之前这里曾残留编造的模型名 `DeepSeek-V3`（已清除并有断言防回归），token 数值也标注了 `token_usage_note: 样例数值，非真实计费`。
 - **8 个微服务里 6 个是独立项目**（运行时不在本仓库内）；funclip-studio 与 graph-xiaohongshu 的**源码**已收编进 `labs/`（`:7860` / `:8020`），但运行时同样需要各自起。本仓库是控制台 + 编排层 + Labs 源码。想看真实链路，需要各自把服务起起来。
 - **端口探测的目标地址是 `PROBE_HOST`**（默认 `127.0.0.1`，容器里指 `host.docker.internal`），不做远程服务发现 —— 它探的是「本机/宿主」这一台。
 - **作者本机没装 Docker CLI，`docker build` 只跑在 CI 里。** 三条证据：① 按 Dockerfile 的 `COPY` 清单在空目录复刻「镜像内文件集」，直接 `python server.py` → `/healthz` 200、首页 200；② `tools/check_image_files.py` 静态对账 `COPY` 与 `server.py` 的本地 `import`；③ CI 的 `hadolint` + `docker build`，**2026-10-22 起连续通过**（此前被 lint 卡住、从未执行过）。**修之前 Dockerfile 只 COPY 了 `server.py` / `templates` / `static`，漏掉 `core/` 与 `routers/`**：镜像能 build 成功，容器一启动就 `ModuleNotFoundError: No module named 'core'`（已补 COPY）。

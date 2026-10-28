@@ -5,6 +5,37 @@
 
 ## [未发布]
 
+
+### 新增 —— 网关的租户配额从「仿真日志」变成「真的 429」
+
+`FAILOVER_SCENARIOS` 里写着 429，但服务端从来没拒绝过任何请求——那是一段演示文本。
+本轮落成真的：
+
+- `core/quota.py`：按租户的分钟 / 天双窗口计数，超阈值返回 **429**，
+  带 `X-Quota-Limit` / `X-Quota-Remaining` / `X-Quota-Window` / `X-Quota-Used-Today` / `Retry-After`
+- `/api/v1/gateway/quota`：只读查询当前用量，不扣额度（给控制台与排障用）
+- 计数在进程内存，多副本要换 Redis——这句话写进 README 的「已知边界」，不藏着
+- 验证：`tests/test_gateway_auth_quota.py` 8 条，其中「被拦的请求响应里没有 `choices`」
+  证明它真的没走到生成，而不是"日志里写了一句"
+
+### 修复 —— 坏 Token 反而能拿到管理员
+
+`get_tenant_context()` 里 Bearer 解析失败会**继续往下走**，落到 `X-Tenant-ID` 或默认开发租户
+（`role=admin`）——也就是说：不带任何凭证是 admin，带一个**坏** Token 也是 admin。
+这等于鉴权形同虚设。
+
+- 现在只要带了 Bearer，就以 Token 为准；解析不出来就是 `is_authenticated=False`，不再向下降级
+- `/v1/chat/completions`（唯一会花模型额度的入口）改为 `require_tenant(jwt_only=True)`：
+  **`X-Tenant-ID` 标头不能当身份凭证**，返回 401 + `WWW-Authenticate: Bearer`
+- 只读接口继续容忍无登录（控制台要能直接打开），这条边界写进了 `core/security.py` 的注释
+- 前端 `openaiChat` 在无 JWT 时先调 `/api/v1/auth/token` 再请求，避免演示面板因为 401 掉到本地降级
+- 验证：`78 passed`（原 70 + 新 8），`ruff check .` 干净
+
+### 未改 —— 「主备热切是仿真」这句话仍然成立
+
+上游转发依旧是 `await asyncio.sleep(0.038)` + 模板回复，响应带 `upstream: simulated`。
+README 只把「鉴权与配额」从仿真改成已实现，**热切那句一个字没动**。
+
 ### 修复 —— README 把「生产项目里的 Runtime / MCP 网关」写成了本仓库的核心
 
 上一版首屏写着「核心 = Agent Runtime（`LLMProvider` + `Tool` 双抽象、并行多工具、双熔断）

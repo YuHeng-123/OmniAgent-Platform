@@ -1039,13 +1039,39 @@
         .catch(function () { return sampleTraces(n); });
     },
 
-    /** 统一 OpenAI 规范 Chat Completions 代理调用 */
+    /** 统一 OpenAI 规范 Chat Completions 代理调用
+     *  代理端点要真鉴权：没有 JWT 就 401。所以先确保拿到租户 Token 再调用，
+     *  拿不到才降级到本地演示（静态托管场景本来就没有后端）。 */
     openaiChat: function (payload) {
-      return apiCall('/v1/chat/completions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      }).catch(function () { return localOpenaiChat(payload); });
+      var self = this;
+      function call() {
+        return apiCall('/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      }
+      var hasToken = false;
+      try {
+        hasToken = !!(window.OmniStore && window.OmniStore.get('jwtToken'));
+      } catch (e) {}
+      if (hasToken) {
+        return call().catch(function () { return localOpenaiChat(payload); });
+      }
+      var tenant = 'tenant-hq';
+      var role = 'admin';
+      try {
+        tenant = (window.OmniStore && window.OmniStore.get('tenant')) || tenant;
+        role = (window.OmniStore && window.OmniStore.get('role')) || role;
+      } catch (e) {}
+      return self.requestAuthToken(tenant, role, 'usr-' + role)
+        .then(function (res) {
+          if (res && res.access_token && window.OmniStore) {
+            window.OmniStore.set('jwtToken', res.access_token);
+          }
+          return call();
+        })
+        .catch(function () { return localOpenaiChat(payload); });
     },
 
     /** 企业级后台异步任务流水查询 */

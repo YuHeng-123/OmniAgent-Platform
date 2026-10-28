@@ -86,6 +86,13 @@ def get_tenant_context(request: Request) -> Dict[str, Any]:
 
     向后兼容设计：若未传任何认证信息，返回具备管理员权限的默认本地租户上下文，
     保证现有本地测试与单测 100% 畅通通过。
+
+    **注意**：这里刻意不抛 401——控制台和只读接口依赖"无登录也能看"。
+    需要真拦的地方用 ``require_tenant``（见下），它才把"没有身份"当成错误。
+
+    本轮修的一个洞：以前 Bearer Token 解析失败会继续往下走，
+    落到 `X-Tenant-ID` 或默认开发租户上——也就是**换个坏 Token 反而拿到 admin**。
+    现在只要带了 Bearer，就以 Token 为准：解析不出来就是未认证，不再向下降级。
     """
     auth_header = request.headers.get("authorization") or ""
     if auth_header.lower().startswith("bearer "):
@@ -99,6 +106,14 @@ def get_tenant_context(request: Request) -> Dict[str, Any]:
                 "auth_type": "jwt",
                 "is_authenticated": True,
             }
+        # 带了 Bearer 但无效：明确是"认证失败"，不许降级成默认管理员
+        return {
+            "tenant_id": "anonymous",
+            "role": "anonymous",
+            "user_id": "anonymous",
+            "auth_type": "invalid-jwt",
+            "is_authenticated": False,
+        }
 
     # 检查 X-Tenant-ID 标头
     header_tenant = request.headers.get("x-tenant-id")
@@ -120,6 +135,41 @@ def get_tenant_context(request: Request) -> Dict[str, Any]:
         "auth_type": "default-dev",
         "is_authenticated": False,
     }
+
+
+def require_tenant(request: Request, jwt_only: bool = False) -> Dict[str, Any]:
+    """必须有有效身份，否则 401。给"会花钱的接口"用（模型代理）。
+
+    ``jwt_only=True``：只认 Bearer JWT。控制台为了本地演示方便会带
+    ``X-Tenant-ID`` / ``X-Role`` 标头，那对只读接口够用，但**标头谁都能编**，
+    所以模型代理不接受它——否则"鉴权"等于让调用方自己声明自己是谁。
+    """
+    ctx = get_tenant_context(request)
+    if not ctx.get("is_authenticated"):
+        raise HTTPException(
+            status_code=401,
+            detail={
+                "status": "unauthorized",
+                "error": "AUTH_REQUIRED",
+                "message": "该接口需要有效的租户 Token（Authorization: Bearer <token>）",
+                "auth_type": ctx.get("auth_type"),
+            },
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    if jwt_only and ctx.get("auth_type") != "jwt":
+        raise HTTPException(
+            status_code=401,
+            detail={
+                "status": "unauthorized",
+                "error": "JWT_REQUIRED",
+                "message": "该接口只接受 JWT（X-Tenant-ID 标头不能作为身份凭证）",
+                "auth_type": ctx.get("auth_type"),
+            },
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return ctx
+
+
 
 
 def enforce_sensitive_action_role(request: Request, allowed_roles: Optional[List[str]] = None):

@@ -33,11 +33,14 @@
                 extend: {
                     colors: {
                         dark: {
-                            900: 'rgb(11 15 25 / <alpha-value>)',
-                            800: 'rgb(15 23 42 / <alpha-value>)',
-                            700: 'rgb(22 30 49 / <alpha-value>)',
-                            600: 'rgb(30 41 59 / <alpha-value>)',
-                            border: 'rgba(255, 255, 255, 0.08)'
+                            // 浅色企业主题：名字沿用 dark.*，值换成表面色，
+                            // 这样 500 多处 bg-dark-900 不用一个个改。
+                            950: 'rgb(248 250 252 / <alpha-value>)',
+                            900: 'rgb(255 255 255 / <alpha-value>)',
+                            800: 'rgb(255 255 255 / <alpha-value>)',
+                            700: 'rgb(249 250 251 / <alpha-value>)',
+                            600: 'rgb(243 244 246 / <alpha-value>)',
+                            border: 'rgba(16, 24, 40, 0.09)'
                         },
                         accent: {
                             gold: 'rgb(245 158 11 / <alpha-value>)',
@@ -85,24 +88,24 @@
 
         /* ---- 语义高保真极光色阶（暗夜晶体） ---- */
         :root {
-            --ink-white: #FFFFFF;
-            --ink-strong: #F8FAFC;
-            --ink-body: #E2E8F0;
-            --ink-soft: #CBD5E1;
-            --ink-mute: #94A3B8;
-            --ink-faint: #64748B;
-            --ink-ghost: #475569;
-            --ink-whisper: #334155;
+            --ink-white: #101828;
+            --ink-strong: #101828;
+            --ink-body: #1D2939;
+            --ink-soft: #344054;
+            --ink-mute: #475467;
+            --ink-faint: #667085;
+            --ink-ghost: #98A2B3;
+            --ink-whisper: #D0D5DD;
         }
         aside, header {
-            --ink-white: #FFFFFF;
-            --ink-strong: #F8FAFC;
-            --ink-body: #E2E8F0;
-            --ink-soft: #CBD5E1;
-            --ink-mute: #94A3B8;
-            --ink-faint: #64748B;
-            --ink-ghost: #475569;
-            --ink-whisper: #334155;
+            --ink-white: #101828;
+            --ink-strong: #101828;
+            --ink-body: #1D2939;
+            --ink-soft: #344054;
+            --ink-mute: #475467;
+            --ink-faint: #667085;
+            --ink-ghost: #98A2B3;
+            --ink-whisper: #D0D5DD;
         }
 
         /* 侧栏/顶栏晶透分割线 */
@@ -112,14 +115,10 @@
 
         /* ---- 全局底色：曜石深空 + 翡翠微星际网格辉光 ---- */
         body {
-            background:
-                radial-gradient(1200px 520px at 50% -10%, rgba(16, 185, 129, 0.12), transparent 68%),
-                radial-gradient(900px 420px at 85% 15%, rgba(6, 182, 212, 0.08), transparent 60%),
-                radial-gradient(800px 500px at 15% 85%, rgba(16, 185, 129, 0.06), transparent 65%),
-                #0B0F19;
-            color: #E2E8F0;
+            background: #F4F6F9;
+            color: #1D2939;
         }
-        ::selection { background: rgba(16, 185, 129, 0.35); color: #FFFFFF; }
+        ::selection { background: #D6E4FF; color: #101828; }
 
         /* Custom scrollbar：极窄暗晶滚动条 */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -131,11 +130,12 @@
         .glass-card {
             position: relative;
             background: rgba(17, 24, 39, 0.65);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 14px;
-            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            background: #FFFFFF;
+            border: 1px solid #E4E7EC;
+            border-radius: 10px;
+            box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
             transition: all .2s cubic-bezier(0.4, 0, 0.2, 1);
             overflow: hidden;
         }
@@ -146,7 +146,7 @@
             left: var(--glow-x, -300px);
             width: 320px;
             height: 320px;
-            background: radial-gradient(circle, rgba(16, 185, 129, 0.14) 0%, rgba(6, 182, 212, 0.04) 50%, transparent 75%);
+            background: none;
             transform: translate(-50%, -50%);
             pointer-events: none;
             opacity: 0;
@@ -175,11 +175,11 @@
         /* ---- 徽章 / 技术标签：赛博微标 ---- */
         .tag {
             display: inline-flex; align-items: center;
-            padding: 2px 8px; border-radius: 6px;
+            padding: 1px 6px; border-radius: 4px;
             font-size: 10px; line-height: 14px; font-family: "JetBrains Mono", Consolas, monospace;
-            color: #94A3B8; background: rgba(30, 41, 59, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(8px);
+            color: #475467; background: #F2F4F7;
+            border: 1px solid #E4E7EC;
+            backdrop-filter: none;
         }
         .tag-accent {
             color: #34D399;
@@ -264,12 +264,13 @@
             outline: none;
         }
 
-        /* ---- 事件流：深邃黑客终端 (Cyber Terminal) ---- */
+        /* ---- 事件流：浅色控制台（原来是近黑终端，浅色页里像一块洞） ---- */
         #event-log-container {
-            background: #070B12 !important;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.6);
+            background: #FAFBFC !important;
+            border: 1px solid #E4E7EC;
+            box-shadow: none;
         }
+        #failover-log-box { background: #FAFBFC !important; }
 
         /* ---- 窄屏适配：<1024px 侧边栏抽屉化 ---- */
         #sidebar-overlay { display: none; }
@@ -287,6 +288,59 @@
                 backdrop-filter: blur(4px);
             }
         }
+
+        /* ==================================================================
+         * 企业浅色主题覆盖层（2026-10 重做）
+         * 目标：去掉霓虹/玻璃/大圆角，回到「白底、细边、深字、一处强调」的数据面板观感。
+         * ================================================================== */
+        body { background: #F4F6F9 !important; color: #1D2939 !important; }
+
+        /* 去磨砂：浅色下毛玻璃会把字压灰 */
+        [class*="backdrop-blur"] { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+
+        /* 顶栏与侧栏：实心白 + 一条分隔线，不要发光边框 */
+        header, aside, nav {
+            background: #FFFFFF !important;
+            box-shadow: none !important;
+            border-color: #E4E7EC !important;
+        }
+
+        /* 圆角收敛：3xl/2xl 在数据面板里显得软 */
+        .rounded-3xl { border-radius: 12px !important; }
+        .rounded-2xl { border-radius: 10px !important; }
+
+        /* 悬停抬升改成轻微阴影，不做位移缩放 */
+        .card-perspective:hover { transform: none !important; box-shadow: 0 2px 8px rgba(16, 24, 40, 0.08) !important; }
+
+        /* 强调色在浅底上要压深一档才够对比度 */
+        [class*="text-accent-emerald"], [class*="text-emerald-3"], [class*="text-emerald-4"] { color: #067647 !important; }
+        [class*="text-accent-cyan"], [class*="text-cyan-3"], [class*="text-cyan-4"] { color: #0E7090 !important; }
+        [class*="text-accent-amber"], [class*="text-amber-3"], [class*="text-amber-4"] { color: #B54708 !important; }
+        [class*="text-accent-rose"], [class*="text-rose-3"], [class*="text-rose-4"] { color: #B42318 !important; }
+        [class*="text-accent-steel"], [class*="text-slate-4"] { color: #475467 !important; }
+
+        /* 分隔线：浅底上统一成灰 */
+        [class*="border-dark-border"], .border-dark-border { border-color: #E4E7EC !important; }
+        hr { border-color: #E4E7EC !important; }
+
+        /* 滚动条 */
+        ::-webkit-scrollbar-thumb { background: #D0D5DD !important; }
+
+        /* 表格/列表行高亮 */
+        tbody tr:hover { background: #F9FAFB !important; }
+
+        /* 深色代码块（事件流 / SQL）保留黑底，但把字色钉住，别被主题翻成深灰 */
+        pre, .font-mono code { color: inherit; }
+        #failover-log-box, #event-stream, #sql-display { color: #E4E7EC !important; }
+
+        /* 胶囊按钮在数据面板里显得软，收敛成 8px；圆形状态点不受影响 */
+        button[class*="rounded-full"] { border-radius: 8px !important; }
+        .tag-accent { color: #067647 !important; background: #ECFDF3 !important; border-color: #ABEFC6 !important; }
+
+        /* 顶栏 / 侧栏里的次级文字：浅底下 400/500 太浅，压深一档 */
+        header .text-slate-400, header .text-slate-500 { color: #475467 !important; }
+        aside .text-slate-400, aside .text-slate-500 { color: #475467 !important; }
+        aside .text-slate-600 { color: #667085 !important; }
     </style>
 </head>
 <body class="bg-dark-900 text-slate-200 antialiased h-screen flex overflow-hidden">
